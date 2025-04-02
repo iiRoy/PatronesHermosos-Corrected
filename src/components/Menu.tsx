@@ -1,3 +1,6 @@
+import Image from "next/image";
+import Link from "next/link";
+
 const menuItems = [
   {
     title: "MENU",
@@ -62,53 +65,24 @@ const menuItems = [
         href: "/list/results",
         visible: ["admin", "teacher", "student", "parent"],
       },
-      {
-        icon: "/attendance.png",
-        label: "Attendance",
-        href: "/list/attendance",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/calendar.png",
-        label: "Events",
-        href: "/list/events",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/message.png",
-        label: "Messages",
-        href: "/list/messages",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/announcement.png",
-        label: "Announcements",
-        href: "/list/announcements",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-  },
-  {
-    title: "OTHER",
-    items: [
-      {
-        icon: "/profile.png",
-        label: "Profile",
-        href: "/profile",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/setting.png",
-        label: "Settings",
-        href: "/settings",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/logout.png",
-        label: "Logout",
-        href: "/logout",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
     ],
   },
 ];
+
+const Menu = () => {
+  return (
+    <div className=' text-sm flex flex-col items-center justify-center'>
+      {menuItems.map(i=>(
+        <div key={i.title} className="mb-4 flex flex-col gap-2 items-center justify-center">
+          {i.items.map(item =>(
+            <Link href={item.href} key={item.label} className="flex items-center justify-center gap-2 p-2 rounded-md hover:bg-gray-200 transition duration-200 ease-in-out">
+              <Image src={item.icon} alt="" width={25} height={25} className="center min-w-[17px] min-h-[17px] ml-1 mr-1"/>
+              <span className="hidden lg:block">{item.label}</span>
+            </Link>
+          ))}
+        </div>))}
+    </div>
+  )
+}
+
+export default Menu
