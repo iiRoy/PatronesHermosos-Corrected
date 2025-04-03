@@ -6,7 +6,7 @@ const User = () => {
             <div className='flex flex-col w-full'>
                 <div className="mt-6 p-1 flex items-center lg:ml-2 justify-center lg:justify-start pb-0">
                     <Link href={"/"} className="flex items-center justify-center gap-2 p-2 ">
-                        <Image src={"/profile.png"} alt="user" width={25} height={25} className="min-w-[17px] min-h-[17px]" />
+                        <Image src={"/avatar.png"} alt="user" width={25} height={25} className="min-w-[17px] min-h-[17px] rounded-full" />
                         <div className='flex flex-col text-left hidden lg:block'>
                             <span className="text-sm leading-5">Usuario</span>
                             <span className='text-[10px] font-medium text-gray-500 hidden lg:block'>@Usuario</span>
