@@ -1,5 +1,5 @@
 import CountChart from "@/components/graphics/countChart"
-import UserCard from "@/components/UserCard"
+import UserCard from "@/components/headers_menu_users/UserCard"
 
 const EstadisticasAdmin = () => {
   return (
