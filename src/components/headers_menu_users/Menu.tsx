@@ -13,13 +13,13 @@ const menuItems = [
       },
       {
         icon: "/home.png",
-        label: "Sedes",
+        label: "SEDES",
         href: "/admin",
         visible: ["admin"],
       },
       {
         icon: "/class.png",
-        label: "Mi sede",
+        label: "Mi SEDE",
         href: "/list/classes",
         visible: ["coordinador"],
       },
@@ -53,9 +53,9 @@ const menuItems = [
 
 const Menu = () => {
   return (
-    <div className="text-sm flex flex-col items-center justify-center">
+    <div className="text-sm flex flex-col justify-center mr-4 ml-4">
       {menuItems.map((section) => (
-        <div key={section.title} className="mb-4 flex flex-col gap-7  justify-center">
+        <div key={section.title} className="mb-4 flex flex-col gap-7">
           {section.items.map((item) => (
             <OptionLink
               key={item.label}

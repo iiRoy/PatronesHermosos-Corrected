@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    font-family: 'Asap';
+}
+
 :root {
     --primary: #97639c;
     --primary-shade: #6E2D75;
@@ -496,10 +500,11 @@
 .option-link {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-items: start;
+    gap: 1vw;
     text-decoration: none;
     color: var(--text-color);
-    font-size: 20px;
+    font-size: clamp(1em, 1.5vw, 2em);
     transition: color 0.3s ease-in-out;
 }
 
@@ -508,13 +513,13 @@
 }
 
 .option-icon {
-    width: 25px;
-    height: 25px;
+    min-width:17px;
+    min-height:17px;
 }
 
 .option-label {
-    font-weight: 500;
-    white-space: nowrap;
+    font-weight: 300;
+    white-space: normal;
 }
 
 .option-link.active {
