@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import OptionLink from "../buttons_inputs/OptionLink";
 
 const menuItems = [
   {
@@ -13,13 +13,13 @@ const menuItems = [
       },
       {
         icon: "/home.png",
-        label: "SEDES",
-        href: "/",
+        label: "Sedes",
+        href: "/admin",
         visible: ["admin"],
       },
       {
         icon: "/class.png",
-        label: "Mi SEDE",
+        label: "Mi sede",
         href: "/list/classes",
         visible: ["coordinador"],
       },
@@ -53,18 +53,21 @@ const menuItems = [
 
 const Menu = () => {
   return (
-    <div className='text-sm flex flex-col items-center justify-center'>
-      {menuItems.map(i=>(
-        <div key={i.title} className="mb-4 flex flex-col gap-2 items-center justify-center">
-          {i.items.map(item =>(
-            <Link href={item.href} key={item.label} className="flex items-center justify-center gap-2 p-2 rounded-md hover:bg-gray-200 transition duration-200 ease-in-out text-center">
-              <Image src={item.icon} alt="" width={25} height={25} className="min-w-[17px] min-h-[17px] ml-1 mr-1"/>
-              <span className="hidden lg:block whitespace-normal text-center max-w-[70px]">{item.label}</span>
-            </Link>
+    <div className="text-sm flex flex-col items-center justify-center">
+      {menuItems.map((section) => (
+        <div key={section.title} className="mb-4 flex flex-col gap-7  justify-center">
+          {section.items.map((item) => (
+            <OptionLink
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              href={item.href}
+            />
           ))}
-        </div>))}
+        </div>
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default Menu
+export default Menu;

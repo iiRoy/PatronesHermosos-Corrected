@@ -1,3 +1,524 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --primary: #97639c;
+    --primary-shade: #6E2D75;
+    --primary-disabled: #301E31;
+    --secondary: #C57FAB;
+    --secondary-shade: #683756;
+    --secondary-disabled: #402436;
+    --success: #4B914E;
+    --success-dark: #125115;
+    --success-disabled: #2F352F;
+    --error: #CC445C;
+    --error-dark: #970922;
+    --error-disabled: #51262E;
+    --warning: #C17A37;
+    --warning-dark: #8D4807;
+    --warning-disabled: #503D2C;
+    --text-color: #ebe6eb;
+    --accent: #B77690;
+    --accent-disabled: #3F2831;
+    --dim: #616161;
+    --background: #110e11;
+}
+
+
+.custom-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 175px;
+    gap: 10px;
+    background-color: #6E2D75;
+    color: var(--text-color);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.round-button {
+    border-radius: 50%;
+    cursor: pointer;
+    border-color: transparent;
+    font-size: 24px;
+}
+
+.icon,
+.close {
+    font-size: 26px;
+    color: var(--text-color);
+}
+
+.close {
+    margin-left: auto;
+}
+
+.parent-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+.container-inputs {
+    width: 1200px;
+}
+
+
+.label-input {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.description {
+    color: var(--dim);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    background-color: var(--accent);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.input i {
+    color: var(--text-color);
+    margin-right: 10px;
+}
+
+.input input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-size: 16px;
+    width: 100%;
+}
+
+.error-text {
+    color: var(--text-color);
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.error-text-red {
+    color: var(--error);
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+
+/*Colores botones*/
+.button-primary {
+    background-color: var(--primary);
+}
+
+.button-primary:hover {
+    background-color: var(--primary-shade);
+}
+
+.primary-disabled {
+    background-color: var(--primary-disabled);
+    cursor: auto;
+}
+
+.button-secondary {
+    background-color: var(--secondary);
+}
+
+.button-secondary-shade {
+    background-color: var(--secondary-shade);
+}
+
+.button-secondary:hover {
+    background-color: var(--secondary-shade);
+}
+
+.secondary-disabled {
+    background-color: var(--secondary-disabled);
+    cursor: auto;
+}
+
+.button-success {
+    background-color: var(--success);
+}
+
+.button-success:hover {
+    background-color: var(--success-dark);
+}
+
+.success-disabled {
+    background-color: var(--success-disabled);
+    cursor: auto;
+}
+
+.button-error {
+    background-color: var(--error);
+}
+
+.button-error:hover {
+    background-color: var(--error-dark);
+}
+
+.error-disabled {
+    background-color: var(--error-disabled);
+    cursor: auto;
+}
+
+.button-warning {
+    background-color: var(--warning);
+}
+
+.button-warning:hover {
+    background-color: var(--warning-dark);
+}
+
+.warning-disabled {
+    background-color: var(--warning-disabled);
+    cursor: auto;
+}
+
+/*Colores inputs*/
+.input-accent {
+    background-color: var(--accent);
+}
+
+.input-accent-disabled {
+    background-color: var(--accent-disabled);
+}
+
+.input-primary {
+    background-color: var(--primary);
+}
+
+.input-primary-disabled {
+    background-color: var(--primary-disabled);
+}
+
+.input-secondary {
+    background-color: var(--secondary);
+}
+
+.input-secondary-disabled {
+    background-color: var(--secondary-disabled);
+}
+
+.input-secondary-shade {
+    background-color: var(--secondary-shade);
+}
+
+.input-secondary-shade-disabled {
+    background-color: #361C2D;
+}
+
+.input-text-color {
+    background-color: var(--text-color);
+}
+
+.input-text-color-disabled {
+    background-color: #686868;
+}
+
+.input-text-color i {
+    color: var(--background);
+}
+
+.input-warning {
+    background-color: var(--warning);
+}
+
+.dim {
+    color: var(--dim);
+}
+
+.dim i {
+    color: var(--dim);
+}
+
+/*Notificaciones*/
+
+.notification {
+    display: flex;
+    align-items: center;
+    background-color: #e6e1e5;
+    border-radius: 16px;
+    padding: 16px;
+    width: 400px;
+    position: relative;
+}
+
+.notification-green-two {
+    color: var(--text-color);
+    background-color: var(--success);
+}
+
+.notification-yellow-two {
+    color: var(--text-color);
+    background-color: var(--warning);
+}
+
+.notification-red-two {
+    color: var(--text-color);
+    background-color: var(--error);
+}
+
+.notification-purple-two {
+    color: var(--text-color);
+    background-color: var(--primary);
+}
+
+.notification-icon {
+    border-radius: 16px 0 0 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-icon-green {
+    background-color: var(--success);
+}
+
+.notification-icon-green-two {
+    background-color: var(--success-dark);
+}
+
+.notification-icon-yellow {
+    background-color: var(--warning);
+}
+
+.notification-icon-yellow-two {
+    background-color: var(--warning-dark);
+}
+
+.notification-icon-red {
+    background-color: var(--error);
+}
+
+.notification-icon-red-two {
+    background-color: var(--error-dark);
+}
+
+.notification-icon-purple {
+    background-color: var(--primary);
+}
+
+.notification-icon-purple-two {
+    background-color: var(--primary-shade);
+}
+
+.notification-icon .icon {
+    font-size: 24px;
+}
+
+.notification-content {
+    padding-left: 16px;
+    flex-grow: 1;
+}
+
+.notification-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.notification-title-green {
+    color: var(--success);
+}
+
+.notification-title-yellow {
+    color: var(--warning);
+}
+
+.notification-title-red {
+    color: var(--error);
+}
+
+.notification-title-purple {
+    color: var(--primary);
+}
+
+.notification-text {
+    font-size: 14px;
+    margin: 4px 0 0;
+}
+
+.notification-text-black {
+    color: black;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.notification-close-green {
+    color: var(--success);
+}
+
+.notification-close-green:hover {
+    color: var(--success-dark);
+}
+
+.notification-close-yellow {
+    color: var(--warning);
+}
+
+.notification-close-yellow:hover {
+    color: var(--warning-dark);
+}
+
+.notification-close-red {
+    color: var(--error);
+}
+
+.notification-close-red:hover {
+    color: var(--error-dark);
+}
+
+.notification-close-purple {
+    color: var(--primary);
+}
+
+.notification-close-yellow:hover {
+    color: var(--primary-shade);
+}
+
+.notification-close-white {
+    color: var(--text-color);
+}
+
+.notification-close-white:hover {
+    color: var(--dim);
+}
+
+
+/*Paginas*/
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pagination a,
+.pagination .dots {
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.pagination .prev,
+.pagination .next {
+    color: var(--text-color);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+}
+
+.pagination .double-arrow {
+    font-size: 22px;
+    margin-right: 4px;
+}
+
+.pagination .double-arrow-primary {
+    color: var(--primary);
+}
+
+.pagination .double-arrow-secondary-shade {
+    color: var(--secondary-shade);
+}
+
+.pagination .double-arrow-accent {
+    color: var(--accent);
+}
+
+.pagination .next .double-arrow {
+    margin-left: 4px;
+}
+
+.pagination .page {
+    background: transparent;
+    border: none;
+    color: white;
+}
+
+.pagination .active {
+    background-color: var(--primary);
+    color: white;
+    font-weight: bold;
+}
+
+.pagination .active-primary {
+    background-color: var(--primary);
+}
+
+.pagination .active-secondary-shade {
+    background-color: var(--secondary-shade);
+}
+
+.pagination .active-accent {
+    background-color: var(--accent);
+}
+
+.pagination .dots {
+    color: var(--text-color);
+}
+
+/*Option button*/
+
+.option-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 20px;
+    transition: color 0.3s ease-in-out;
+}
+
+.option-link:hover {
+    color: #c7c7c7;
+}
+
+.option-icon {
+    width: 25px;
+    height: 25px;
+}
+
+.option-label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.option-link.active {
+    color: var(--accent);
+    text-decoration: underline;
+    font-weight: bold;
+}
