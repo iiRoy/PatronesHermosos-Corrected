@@ -51,30 +51,42 @@ const CountChart = () => {
     return (
         <div className=''>
             {/*TITLE*/}
-            <div className=''>
-                <h1 className='flex justify-between items-center'>Colaboradores</h1>
-                <Image src="/more.png" alt="" width={20} height={20}/>
+            <div className='flex justify-between items-center'>
+                <h1 className='flex justify-between font-bold items-center text-2xl'>Colaboradores</h1>
+                <Image src="/moreDark.png" alt="" width={20} height={20}/>
             </div>
             {/*CHART*/}
-            <div className="">
-                {/*}
-                <ResponsiveContainer width="100%" height="100%">
+            <div className="w-full h-60%">
+                <div className="w-full h-full">
+                    <ResponsiveContainer>
                     <RadialBarChart cx="50%" cy="50%" innerRadius="10%" outerRadius="80%" barSize={10} data={data}>
                         <RadialBar
-                            minAngle={15}
                             label={{ position: 'insideStart', fill: '#fff' }}
                             background
-                            clockWise
                             dataKey="uv"
                         />
-                        <Legend iconSize={10} layout="vertical" verticalAlign="middle" wrapperStyle={style} />
+                        <Legend iconSize={10} layout="vertical" verticalAlign="middle" />
                     </RadialBarChart>
                 </ResponsiveContainer>
-                */}
+            </div>
             </div>
             {/*BOTTOM*/}
-            <div>
-                
+            <div className="flex justify-center items-center gap-16">
+                <div className="flex flex-col items-center text-primary">
+                    <div className="w-5 h-5 bg-primary rounded-full"/>
+                    <h1 className='font-semibold'>1,234</h1>
+                    <h2 className='text-xs text-gray-600'>Instructoras</h2>
+                </div>
+                <div className="flex flex-col items-center text-secondary">
+                    <div className="w-5 h-5 bg-secondary rounded-full"/>
+                    <h1 className='font-semibold'>1,234</h1>
+                    <h2 className='text-xs text-gray-600'>Facilitadoras</h2>
+                </div>
+                <div className="flex flex-col items-center text-accent">
+                    <div className="w-5 h-5 bg-accent rounded-full"/>
+                    <h1 className='font-semibold'>1,234</h1>
+                    <h2 className='text-xs text-gray-600'>Staff</h2>
+                </div>
             </div>
         </div>
     )
