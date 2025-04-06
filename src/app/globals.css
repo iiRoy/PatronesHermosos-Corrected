@@ -544,7 +544,7 @@
 .checkbox-circle:checked::before {
     content: '✔'; /* Marcar como seleccionado */
     color: white;
-    font-size: 10px;
+    font-size: 1vmax;
     position: absolute;
     top: 50%;
     left: 50%;
