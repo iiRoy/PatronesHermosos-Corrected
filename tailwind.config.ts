@@ -26,6 +26,9 @@ const config: Config = {
                 warning: '#C17A37',
                 error: '#CC445C',
             },
+            boxShadow: {
+                'custom-dark': '0 0.3vmax 0.5vmax rgba(0, 0, 0, 0.4)',
+            },
         },
     },
     plugins: [],

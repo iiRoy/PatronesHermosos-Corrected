@@ -10,30 +10,30 @@ import {
 const data = [
     {
         name: 'Total',
-        count: 530,
+        count: 117,
         fill: 'white',
     },
     {
         name: 'Instructoras',
-        count: 80,
-        fill: '#97639c',
-    },
-    {
-        name: 'Facilitadoras',
-        count: 110,
-        pv: 4567,
+        count: 22,
         fill: '#683756',
     },
     {
+        name: 'Facilitadoras',
+        count: 35,
+        pv: 4567,
+        fill: '#97639c',
+    },
+    {
         name: 'Staff',
-        count: 340,
+        count: 60,
         fill: '#B77690',
     },
 ];
 
 const CountChart = () => {
     return (
-        <div className='bg-white rounded-xl w-full h-full p-4'>
+        <div className='bg-white rounded-xl w-full h-full p-4 justify-between min-gap-2 flex flex-col'>
             {/*TITLE*/}
             <div className='flex justify-between items-center'>
                 <h1 className='flex justify-between font-bold items-center text-2xl'>
@@ -42,7 +42,7 @@ const CountChart = () => {
                 <Image src='/moreDark.png' alt='' width={20} height={20} />
             </div>
             {/*CHART*/}
-            <div className='relative w-full h-[75%]'>
+            <div className='relative w-full h-full'>
                 <ResponsiveContainer>
                     <RadialBarChart
                         cx='50%'
@@ -68,7 +68,7 @@ const CountChart = () => {
                 />
             </div>
             {/*BOTTOM*/}
-            <div className='flex justify-center items-center gap-16'>
+            <div className='flex justify-between gap-3 items-center w-auto ml-5 mr-5 mt-1'>
                 <div className='flex flex-col items-center text-primary'>
                     <div className='w-5 h-5 bg-primary rounded-full' />
                     <h1 className='font-semibold'>80</h1>
