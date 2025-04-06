@@ -531,9 +531,9 @@
 .checkbox-circle {
     appearance: none;
     -webkit-appearance: none;
-    width: 1.2vmax;
-    height: 1.2vmax;
-    min-width: 1.2vmax;
+    width: 1.6vmax;
+    height: 1.6vmax;
+    min-width: 1.6vmax;
     border-radius: 50%; /* Hacerlo circular */
     position: relative;
     outline: none;
@@ -569,19 +569,4 @@
 .checkbox-even:checked {
     background-color: var(--secondary-shade); /* Violeta oscuro cuando está seleccionado */
     border-color: var(--secondary-shade);
-}
-
-@keyframes fadeOutY {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-}
-
-.fade-out {
-    animation: fadeOutY 0.5s ease forwards;
 }
