@@ -14,7 +14,31 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari y Opera */
   }
+
+/* En tu archivo CSS global o módulo */
+.custom-scrollbar {
+    /* Para Firefox: barra delgada y colores personalizados */
+    scrollbar-width: auto;
+    scrollbar-color: #A259FF; /* thumb y track respectivamente */
+  }
   
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 8px;
+    width: 6px; /* Para scroll horizontal, o 'width' para vertical */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #2E2B3A; /* Color del fondo del scrollbar */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #B77690 0%, #C267FF 100%);
+    border-radius: 10px; /* Para redondear el thumb */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #C267FF 0%, #B77690 100%);
+  }  
 
 :root {
     --primary: #97639c;
