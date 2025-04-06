@@ -362,7 +362,7 @@ const CountChart = () => {
                                     fill={index === 0 ? '#97639c' : '#C57FAB'}
                                     radius={[10, 10, 0, 0]}
                                     isAnimationActive={false}
-                                    activeBar={index === 0 ? <Rectangle fill="#6E2D75" stroke="#3F2831" /> : <Rectangle fill="#683756" stroke="#3F2831" />}
+                                    activeBar={index === 0 ? <Rectangle fill="#6E2D75" /> : <Rectangle fill="#683756" />}
                                 />
                             ))}
                     </BarChart>
