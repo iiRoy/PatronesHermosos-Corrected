@@ -10,8 +10,8 @@
     --primary: #97639c;
     --primary-shade: #6E2D75;
     --primary-disabled: #301E31;
-    --secondary: #C57FAB;
-    --secondary-shade: #683756;
+    --secondary: #683756;
+    --secondary-shade: #C57FAB;
     --secondary-disabled: #402436;
     --success: #4B914E;
     --success-dark: #125115;
@@ -526,4 +526,62 @@
     color: var(--accent);
     text-decoration: underline;
     font-weight: bold;
+}
+
+.checkbox-circle {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.2vmax;
+    height: 1.2vmax;
+    min-width: 1.2vmax;
+    border-radius: 50%; /* Hacerlo circular */
+    position: relative;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkbox-circle:checked::before {
+    content: '✔'; /* Marcar como seleccionado */
+    color: white;
+    font-size: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checkbox-odd {
+    background-color: #eee;
+    border: 2px solid var(--primary-shade); /* Morado */
+}
+
+.checkbox-odd:checked {
+    background-color: var(--primary-shade); /* Morado cuando está seleccionado */
+    border-color: var(--primary-shade);
+}
+
+.checkbox-even {
+    background-color: #eee;
+    border: 2px solid var(--secondary-shade); /* Violeta oscuro */
+}
+
+.checkbox-even:checked {
+    background-color: var(--secondary-shade); /* Violeta oscuro cuando está seleccionado */
+    border-color: var(--secondary-shade);
+}
+
+@keyframes fadeOutY {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+.fade-out {
+    animation: fadeOutY 0.5s ease forwards;
 }
