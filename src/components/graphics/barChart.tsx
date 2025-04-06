@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     BarChart,
     Bar,
@@ -16,67 +16,62 @@ const CustomTick: React.FC<{
     x?: number;
     y?: number;
     payload?: { value: string };
-}> = ({ x = 0, y = 0, payload = { value: '' } }) => {
+    numElements: number;
+}> = ({ x = 0, y = 0, payload = { value: '' }, numElements }) => {
     const [chartWidth, setChartWidth] = useState<number>(window.innerWidth);
 
     useEffect(() => {
-        // Actualizar el ancho al montar el componente
         const updateWidth = () => setChartWidth(window.innerWidth);
         updateWidth();
         window.addEventListener('resize', updateWidth);
         return () => window.removeEventListener('resize', updateWidth);
     }, []);
 
-    // Ajuste del tamaño del texto y espaciado según el ancho
     const getFontSize = () => Math.max(chartWidth / 75, 14);
-    const getLineHeight = () =>
-        chartWidth > 800 ? 18 : chartWidth > 400 ? 16 : 14;
+    const getLineHeight = () => (chartWidth > 800 ? 18 : chartWidth > 400 ? 16 : 14);
     const fontSize = getFontSize();
     const lineHeight = getLineHeight();
 
-    // Ancho máximo permitido para el texto
-    const maxWidth = chartWidth / 20;
+    // Se calcula el ancho máximo permitido para el texto según el número de elementos
+    const maxWidth = chartWidth / (numElements * 2);
 
-    // Medir el ancho del texto usando canvas
+    // Función para medir el ancho de un texto usando un canvas
     const measureTextWidth = (text: string, fontSize: number) => {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         if (context) {
-            context.font = `${fontSize}px`;
+            context.font = `${fontSize}px sans-serif`;
             return context.measureText(text).width;
         }
         return 0;
     };
 
+    // Trunca una palabra si su ancho supera el máximo permitido y le agrega "..."
     const truncateWord = (word: string, maxWidth: number) => {
+        if (measureTextWidth(word, fontSize) <= maxWidth) return word;
         let truncated = word;
-        if (measureTextWidth(word, fontSize) > maxWidth) {
-            while (
-                measureTextWidth(truncated + '...', fontSize) > maxWidth &&
-                truncated.length > 1
-            ) {
-                truncated = truncated.slice(0, -6);
-            }
-            return truncated + '...';
+        // Se reduce el tamaño hasta que, al agregar "..." el ancho sea menor o igual a maxWidth
+        while (measureTextWidth(truncated + '...', fontSize) > maxWidth && truncated.length > 1) {
+            truncated = truncated.slice(0, -1);
         }
-        return word;
+        return truncated + '...';
     };
 
+    // Separa el texto en líneas, respetando el ancho máximo. Si el texto original se trunca,
+    // se le agrega "..." al final.
     const splitText = (text: string, maxWidth: number) => {
         const words = text.split(' ');
         const lines: string[] = [];
         let currentLine = '';
 
         words.forEach((word) => {
+            // Para cada palabra se valida si es muy ancha
             const processedWord = truncateWord(word, maxWidth);
-
-            const newLine = currentLine
-                ? `${currentLine} ${processedWord}`
-                : processedWord;
+            const newLine = currentLine ? `${currentLine} ${processedWord}` : processedWord;
             const lineWidth = measureTextWidth(newLine, fontSize);
 
-            if (lineWidth > maxWidth) {
-                if (currentLine) lines.push(currentLine);
+            if (lineWidth > maxWidth && currentLine) {
+                lines.push(currentLine);
                 currentLine = processedWord;
             } else {
                 currentLine = newLine;
@@ -85,9 +80,18 @@ const CustomTick: React.FC<{
 
         if (currentLine) lines.push(currentLine);
 
+        // Si se generan más de 2 líneas, se toman solo las dos primeras
         if (lines.length > 2) {
-            lines[1] = truncateWord(lines[1], maxWidth);
+            // Asegurarse de que la segunda línea indique que el texto fue truncado
+            if (!lines[1].endsWith('...')) {
+                lines[1] += '...';
+            }
             return lines.slice(0, 2);
+        }
+
+        // Si el texto mostrado es distinto al original, se agrega "..." al final de la última línea
+        if (lines.join(' ') !== text && !lines[lines.length - 1].endsWith('...')) {
+            lines[lines.length - 1] += '...';
         }
 
         return lines;
@@ -110,13 +114,7 @@ const CustomTick: React.FC<{
     }, []);
 
     return (
-        <text
-            x={x}
-            y={y + 15}
-            textAnchor='middle'
-            fill='#8E76A3FF'
-            fontSize={fontSize}
-        >
+        <text x={x} y={y + 15} textAnchor="middle" fill="#8E76A3FF" fontSize={fontSize}>
             {lines.map((line, index) => (
                 <tspan key={index} x={x} dy={index * lineHeight}>
                     {line}
@@ -202,15 +200,20 @@ const CountChart = () => {
         setFade(true); // Trigger fade-out
         setTimeout(() => {
             setSelectedSedes(updatedSedes);
-            setFilteredData(
-                data.filter((d) => updatedSedes.includes(d.name))
-            );
+            setFilteredData(data.filter((d) => updatedSedes.includes(d.name)));
             setFade(false); // Trigger fade-in
         }, 200); // Duration of fade-out transition
     };
 
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        // Después del primer render, desactivamos la animación
+        isFirstRender.current = false;
+    }, []);
+
     return (
-        <div className='bg-white rounded-xl w-full h-full p-4'>
+        <div className='bg-white rounded-xl w-full h-full p-4 flex flex-col justify-between'>
             {/*TITLE*/}
             <div className='flex justify-between items-center'>
                 <h1 className='flex justify-between font-bold items-center text-2xl'>
@@ -219,14 +222,14 @@ const CountChart = () => {
                 <Image src='/moreDark.png' alt='' width={20} height={20} />
             </div>
             {/*LEGEND AND FILTER*/}
-            <div className='flex justify-between items-center mt-4 mb-4 ml-7 mr-7'>
+            <div className='flex flex-col md:flex-row gap-3 md:gap-6 justify-between items-center mt-4 mb-4 ml-7 mr-7'>
                 {/* Leyenda Personalizada */}
                 <CustomLegend />
                 <div className='flex justify-between w-full items-center'>
                     {/* Search Bar Styled Filter */}
                     <div className='flex items-center w-full justify-end relative'>
                         <div
-                            className='flex items-center border border-gray-300 rounded-lg px-3 py-2 cursor-pointer w-full max-w-xs gap-3 bg-purple-100 text-primaryShade'
+                            className='flex items-center rounded-lg px-3 py-2 cursor-pointer w-full md:max-w-xs gap-3 bg-purple-100 text-primaryShade'
                             onClick={() => {
                                 const dropdown =
                                     document.getElementById('filter-dropdown');
@@ -246,7 +249,7 @@ const CountChart = () => {
                         {/* Dropdown Menu */}
                         <div
                             id='filter-dropdown'
-                            className='absolute top-full right-0 mt-2 w-full max-w-xs bg-white border border-gray-300 rounded-lg shadow-lg hidden z-10'
+                            className='absolute top-full right-0 mt-2 w-full md:max-w-xs bg-white border border-gray-300 rounded-lg shadow-lg hidden z-10'
                         >
                             {options.map((option, index) => (
                                 <div
@@ -304,7 +307,7 @@ const CountChart = () => {
                 </div>
             </div>
             {/*CHART*/}
-            <div className='w-[98%] h-[80%]'>
+            <div className='w-[98%] h-full'>
                 <ResponsiveContainer>
                     <BarChart
                         data={filteredData}
@@ -321,7 +324,7 @@ const CountChart = () => {
                         <XAxis
                             dataKey='name'
                             axisLine={false}
-                            tick={<CustomTick />}
+                            tick={<CustomTick numElements={filteredData.length} />}
                             tickLine={false}
                             interval={0}
                             height={60} // Aumenta el tamaño en Y del XAxis
@@ -358,11 +361,16 @@ const CountChart = () => {
                                 <Bar
                                     key={key}
                                     dataKey={key}
-                                    
                                     fill={index === 0 ? '#97639c' : '#C57FAB'}
                                     radius={[10, 10, 0, 0]}
-                                    isAnimationActive={false}
-                                    activeBar={index === 0 ? <Rectangle fill="#6E2D75" /> : <Rectangle fill="#683756" />}
+                                    activeBar={
+                                        index === 0 ? (
+                                            <Rectangle fill='#6E2D75' />
+                                        ) : (
+                                            <Rectangle fill='#683756' />
+                                        )
+                                    }
+                                    isAnimationActive={isFirstRender.current}
                                 />
                             ))}
                     </BarChart>
