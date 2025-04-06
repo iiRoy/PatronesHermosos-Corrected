@@ -29,7 +29,7 @@ export default function DashboardLayout({
                 <User />
             </div>
             {/*RIGHT*/}
-            <div className='w-[91%] md:w-[92%] lg:w-[83%] xl:w-[85%] bg-back overflow-y-auto bg-back'>
+            <div className='w-[91%] md:w-[92%] lg:w-[83%] xl:w-[85%] overflow-y-auto'>
                 {children}
             </div>
         </div>

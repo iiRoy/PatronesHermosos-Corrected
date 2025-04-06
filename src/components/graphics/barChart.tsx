@@ -8,6 +8,7 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
+    Rectangle,
     ResponsiveContainer,
 } from 'recharts';
 
@@ -315,7 +316,7 @@ const CountChart = () => {
                         <CartesianGrid
                             strokeDasharray='3 3'
                             vertical={false}
-                            stroke='#ddd'
+                            stroke='#BBA5BDFF'
                         />
                         <XAxis
                             dataKey='name'
@@ -357,9 +358,11 @@ const CountChart = () => {
                                 <Bar
                                     key={key}
                                     dataKey={key}
+                                    
                                     fill={index === 0 ? '#97639c' : '#C57FAB'}
                                     radius={[10, 10, 0, 0]}
                                     isAnimationActive={false}
+                                    activeBar={index === 0 ? <Rectangle fill="#6E2D75" stroke="#3F2831" /> : <Rectangle fill="#683756" stroke="#3F2831" />}
                                 />
                             ))}
                     </BarChart>
