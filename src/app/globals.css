@@ -10,59 +10,58 @@
 .scrollbar-hide {
     -ms-overflow-style: none; /* IE y Edge */
     scrollbar-width: none; /* Firefox */
-  }
-  .scrollbar-hide::-webkit-scrollbar {
+}
+.scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari y Opera */
-  }
+}
 
 /* En tu archivo CSS global o módulo */
 .custom-scrollbar {
     /* Para Firefox: barra delgada y colores personalizados */
     scrollbar-width: auto;
-    scrollbar-color: #A259FF; /* thumb y track respectivamente */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar {
-    height: 8px;
-    width: 6px; /* Para scroll horizontal, o 'width' para vertical */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: #2E2B3A; /* Color del fondo del scrollbar */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #B77690 0%, #C267FF 100%);
+    scrollbar-color: #a259ff; /* thumb y track respectivamente */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+    width: 8px; /* Para scroll horizontal, o 'width' para vertical */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #2e2b3a; /* Color del fondo del scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #b77690 0%, #c267ff 100%);
     border-radius: 10px; /* Para redondear el thumb */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #C267FF 0%, #B77690 100%);
-  }  
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #c267ff 0%, #b77690 100%);
+}
 
 :root {
     --primary: #97639c;
-    --primary-shade: #6E2D75;
-    --primary-disabled: #301E31;
+    --primary-shade: #6e2d75;
+    --primary-disabled: #301e31;
     --secondary: #683756;
-    --secondary-shade: #C57FAB;
+    --secondary-shade: #c57fab;
     --secondary-disabled: #402436;
-    --success: #4B914E;
+    --success: #4b914e;
     --success-dark: #125115;
-    --success-disabled: #2F352F;
-    --error: #CC445C;
+    --success-disabled: #2f352f;
+    --error: #cc445c;
     --error-dark: #970922;
-    --error-disabled: #51262E;
-    --warning: #C17A37;
-    --warning-dark: #8D4807;
-    --warning-disabled: #503D2C;
+    --error-disabled: #51262e;
+    --warning: #c17a37;
+    --warning-dark: #8d4807;
+    --warning-disabled: #503d2c;
     --text-color: #ebe6eb;
-    --accent: #B77690;
-    --accent-disabled: #3F2831;
+    --accent: #b77690;
+    --accent-disabled: #3f2831;
     --dim: #616161;
     --background: #110e11;
 }
-
 
 .custom-button {
     display: flex;
@@ -70,7 +69,7 @@
     justify-content: space-evenly;
     width: 175px;
     gap: 10px;
-    background-color: #6E2D75;
+    background-color: #6e2d75;
     color: var(--text-color);
     border: none;
     border-radius: 10px;
@@ -117,7 +116,6 @@
     width: 1200px;
 }
 
-
 .label-input {
     font-size: 24px;
     font-weight: bold;
@@ -163,7 +161,6 @@
     font-size: 14px;
     margin-top: 5px;
 }
-
 
 /*Colores botones*/
 .button-primary {
@@ -265,7 +262,7 @@
 }
 
 .input-secondary-shade-disabled {
-    background-color: #361C2D;
+    background-color: #361c2d;
 }
 
 .input-text-color {
@@ -454,7 +451,6 @@
     color: var(--dim);
 }
 
-
 /*Paginas*/
 
 .pagination {
@@ -532,9 +528,6 @@
 /*Option button*/
 
 .option-link {
-    display: flex;
-    align-items: center;
-    justify-items: start;
     gap: 1vw;
     text-decoration: none;
     color: var(--text-color);
@@ -546,14 +539,8 @@
     color: #c7c7c7;
 }
 
-.option-icon {
-    min-width:17px;
-    min-height:17px;
-}
-
 .option-label {
     font-weight: 300;
-    white-space: normal;
 }
 
 .option-link.active {
@@ -591,7 +578,9 @@
 }
 
 .checkbox-odd:checked {
-    background-color: var(--primary-shade); /* Morado cuando está seleccionado */
+    background-color: var(
+        --primary-shade
+    ); /* Morado cuando está seleccionado */
     border-color: var(--primary-shade);
 }
 
@@ -601,6 +590,8 @@
 }
 
 .checkbox-even:checked {
-    background-color: var(--secondary-shade); /* Violeta oscuro cuando está seleccionado */
+    background-color: var(
+        --secondary-shade
+    ); /* Violeta oscuro cuando está seleccionado */
     border-color: var(--secondary-shade);
 }

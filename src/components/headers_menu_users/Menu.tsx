@@ -53,9 +53,9 @@ const menuItems = [
 
 const Menu = () => {
     return (
-        <div className='text-sm flex flex-col justify-center mr-4 ml-4'>
+        <div className='text-[clamp(1rem,1.5vw,3rem)]'>
             {menuItems.map((section) => (
-                <div key={section.title} className='mb-4 flex flex-col gap-7'>
+                <div key={section.title} className="flex flex-col gap-[1.5vmax] px-2">
                     {section.items.map((item) => (
                         <OptionLink
                             key={item.label}

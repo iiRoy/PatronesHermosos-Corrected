@@ -11,11 +11,10 @@ export default function DashboardLayout({
     return (
         <div className='h-screen flex text-text bg-back'>
             {/* LEFT */}
-            <div className='w-[9%] md:w-[8%] lg:w-[17%] xl:w-[15%] overflow-x-hidden min-w-[11vmax] max-h-screen flex flex-col justify-between bg-[#2E1C31] rounded-tr-[10px] rounded-br-[10px] scrollbar-hide'>
-                <div className='mt-6 p-1 lg:p-0 lg:mt-10 flex items-center justify-center'>
+            <div className='pt-[1.9vw] gap-[4vw] w-[9%] md:w-[8%] lg:w-[18%] xl:w-[18%] overflow-x-hidden min-w-[8vh] max-h-screen flex flex-col items-center justify-between bg-[#2E1C31] rounded-tr-[10px] rounded-br-[10px] scrollbar-hide'>
+                <div className='p-1 lg:p-0 justify-center'>
                     <Link
                         href='/'
-                        className='flex items-center justify-center min-w-[30px] min-h-[30px] mb-4'
                     >
                         <Image
                             src='/logo.png'
