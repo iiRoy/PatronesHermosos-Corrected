@@ -202,6 +202,9 @@ const CountChart = () => {
         isFirstRender.current = false;
 
         const handleClickOutside = (event: MouseEvent) => {
+            if ((event.target as HTMLElement).closest('#filter-bar')) {
+                return;
+            }
             const dropdown = document.getElementById('filter-dropdown');
             if (dropdown && !dropdown.contains(event.target as Node)) {
                 dropdown.classList.add('hidden');
@@ -229,6 +232,7 @@ const CountChart = () => {
                 <div className='flex justify-between w-full items-center'>
                     <div className='flex items-center w-full justify-end relative'>
                         <div
+                            id='filter-bar'
                             className='flex items-center rounded-lg px-3 py-2 cursor-pointer w-full md:max-w-xs gap-3 bg-[#E6E1ECFF] text-primaryShade'
                             onClick={() => {
                                 const dropdown =
@@ -268,13 +272,13 @@ const CountChart = () => {
                                             const updatedSedes = e.target
                                                 .checked
                                                 ? [
-                                                    ...selectedSedes,
-                                                    option.value,
-                                                ]
+                                                      ...selectedSedes,
+                                                      option.value,
+                                                  ]
                                                 : selectedSedes.filter(
-                                                    (sede) =>
-                                                        sede !== option.value
-                                                );
+                                                      (sede) =>
+                                                          sede !== option.value
+                                                  );
                                             handleFilterChange(updatedSedes);
                                         }}
                                         className={`checkbox-circle mr-2 ${
@@ -361,7 +365,7 @@ const CountChart = () => {
                                     const formattedName =
                                         typeof name === 'string'
                                             ? name.charAt(0).toUpperCase() +
-                                            name.slice(1)
+                                              name.slice(1)
                                             : name;
                                     return [`${value}`, formattedName];
                                 }}
