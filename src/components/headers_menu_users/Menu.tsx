@@ -1,48 +1,51 @@
-import Image from 'next/image';
+'use client';
+
+import React from 'react';
 import OptionLink from '../buttons_inputs/OptionLink';
+import * as Icons from '../icons';
 
 const menuItems = [
     {
         title: 'MENU',
         items: [
             {
-                icon: '/result.png',
+                icon: 'Acorn',
                 label: 'Estadísticas',
                 href: '/list/results',
                 visible: ['admin', 'coordinador'],
             },
             {
-                icon: '/home.png',
+                icon: 'Acorn',
                 label: 'SEDES',
                 href: '/admin',
                 visible: ['admin'],
             },
             {
-                icon: '/class.png',
+                icon: 'Acorn',
                 label: 'Mi SEDE',
                 href: '/list/classes',
                 visible: ['coordinador'],
             },
             {
-                icon: '/teacher.png',
+                icon: 'Acorn',
                 label: 'Gestionar Usuarios',
                 href: '/list/teachers',
                 visible: ['admin'],
             },
             {
-                icon: '/student.png',
+                icon: 'Acorn',
                 label: 'Solicitudes',
                 href: '/list/students',
                 visible: ['admin', 'coordinador'],
             },
             {
-                icon: '/parent.png',
+                icon: 'Acorn',
                 label: 'Diplomas',
                 href: '/list/parents',
                 visible: ['admin', 'coordinador'],
             },
             {
-                icon: '/subject.png',
+                icon: 'Acorn',
                 label: 'Correos',
                 href: '/list/subjects',
                 visible: ['admin'],
@@ -51,19 +54,22 @@ const menuItems = [
     },
 ];
 
-const Menu = () => {
+const Menu: React.FC = () => {
     return (
         <div className='text-[clamp(1rem,1.5vw,3rem)]'>
             {menuItems.map((section) => (
                 <div key={section.title} className="flex flex-col gap-[1.5vmax] px-2">
-                    {section.items.map((item) => (
-                        <OptionLink
-                            key={item.label}
-                            label={item.label}
-                            icon={item.icon}
-                            href={item.href}
-                        />
-                    ))}
+                    {section.items.map((item) => {
+                        const IconComponent = Icons[item.icon as keyof typeof Icons];
+                        return (
+                            <OptionLink
+                                key={item.label}
+                                label={item.label}
+                                Icon={IconComponent}
+                                href={item.href}
+                            />
+                        );
+                    })}
                 </div>
             ))}
         </div>

@@ -1,0 +1,13 @@
+import React from 'react';
+
+interface IconProps {
+  width?: number;
+  height?: number;
+  color?: string;
+}
+
+const ExclamationMark: React.FC<IconProps> = ({ width = 24, height = 24, color = 'black' }) => (
+  <svg width={width} height={height} fill={color} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M13.875 18.75a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0ZM12 15a1.125 1.125 0 0 0 1.125-1.125V4.5a1.125 1.125 0 1 0-2.25 0v9.375A1.125 1.125 0 0 0 12 15Z"/> </svg> 
+);
+
+export default ExclamationMark;
