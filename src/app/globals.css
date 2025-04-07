@@ -1,44 +1,59 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
 
 * {
-    font-family: 'Asap';
+    font-family: "Asap", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
 }
+
+
 
 /* styles/globals.css o tu módulo CSS */
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE y Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari y Opera */
-  }
+    -ms-overflow-style: none;
+    /* IE y Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari y Opera */
+}
 
 /* En tu archivo CSS global o módulo */
 .custom-scrollbar {
     /* Para Firefox: barra delgada y colores personalizados */
     scrollbar-width: auto;
-    scrollbar-color: #A259FF; /* thumb y track respectivamente */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar {
+    scrollbar-color: #A259FF;
+    /* thumb y track respectivamente */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
     height: 8px;
-    width: 6px; /* Para scroll horizontal, o 'width' para vertical */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: #2E2B3A; /* Color del fondo del scrollbar */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb {
+    width: 6px;
+    /* Para scroll horizontal, o 'width' para vertical */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #2E2B3A;
+    /* Color del fondo del scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #B77690 0%, #C267FF 100%);
-    border-radius: 10px; /* Para redondear el thumb */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    border-radius: 10px;
+    /* Para redondear el thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #C267FF 0%, #B77690 100%);
-  }  
+}
 
 :root {
     --primary: #97639c;
@@ -541,8 +556,8 @@
 }
 
 .option-icon {
-    min-width:17px;
-    min-height:17px;
+    min-width: 17px;
+    min-height: 17px;
 }
 
 .option-label {
@@ -589,7 +604,8 @@
 }
 
 .checkbox-odd:checked {
-    background-color: var(--primary-shade); /* Morado cuando está seleccionado */
+    background-color: var(--primary-shade);
+    /* Morado cuando está seleccionado */
     border-color: var(--primary-shade);
 }
 
@@ -600,7 +616,8 @@
 }
 
 .checkbox-even:checked {
-    background-color: var(--secondary-shade); /* Violeta oscuro cuando está seleccionado */
+    background-color: var(--secondary-shade);
+    /* Violeta oscuro cuando está seleccionado */
     border-color: var(--secondary-shade);
 }
 
