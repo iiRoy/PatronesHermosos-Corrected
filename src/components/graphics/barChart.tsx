@@ -272,13 +272,13 @@ const CountChart = () => {
                                             const updatedSedes = e.target
                                                 .checked
                                                 ? [
-                                                      ...selectedSedes,
-                                                      option.value,
-                                                  ]
+                                                    ...selectedSedes,
+                                                    option.value,
+                                                ]
                                                 : selectedSedes.filter(
-                                                      (sede) =>
-                                                          sede !== option.value
-                                                  );
+                                                    (sede) =>
+                                                        sede !== option.value
+                                                );
                                             handleFilterChange(updatedSedes);
                                         }}
                                         className={`checkbox-circle mr-2 ${
@@ -311,7 +311,7 @@ const CountChart = () => {
             </div>
             {/*CHART*/}
             <div
-                className={`w-[98%] h-full transition-opacity duration-300 ${
+                className={`w-[0.9vm] h-full transition-opacity duration-300 ${
                     fade ? 'opacity-0' : 'opacity-100'
                 }`}
             >
@@ -365,7 +365,7 @@ const CountChart = () => {
                                     const formattedName =
                                         typeof name === 'string'
                                             ? name.charAt(0).toUpperCase() +
-                                              name.slice(1)
+                                            name.slice(1)
                                             : name;
                                     return [`${value}`, formattedName];
                                 }}
