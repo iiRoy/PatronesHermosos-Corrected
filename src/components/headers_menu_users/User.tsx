@@ -8,7 +8,7 @@ const User = () => {
                 <Link href={"/"} className="flex items-center justify-center gap-3 p-2">
                     <Image src={"/avatar.png"} alt="user" width={35} height={35} className="md:min-w-[3.5vw] md:min-h-[3.5vw] min-w-[5vmax] min-h-[5vmax] rounded-full" />
                     <div className='flex flex-col text-left hidden lg:block'>
-                        <span className="text-sm leading-5 text-[1.51vmax]">User</span>
+                        <span className="text-sm leading-5 text-[1.5vmax]">User</span>
                         <span className='text-[1vmax] font-medium text-textDim block break-all'>@username_example</span>
                     </div>
                 </Link>

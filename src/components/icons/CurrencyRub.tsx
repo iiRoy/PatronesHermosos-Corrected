@@ -1,0 +1,13 @@
+import React from 'react';
+
+interface IconProps {
+  width?: number;
+  height?: number;
+  color?: string;
+}
+
+const CurrencyRub: React.FC<IconProps> = ({ width = 24, height = 24, color = 'black' }) => (
+  <svg width={width} height={height} fill={color} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M13.875 14.625a6 6 0 1 0 0-12H8.25A1.125 1.125 0 0 0 7.125 3.75v8.625H5.25a1.125 1.125 0 1 0 0 2.25h1.875v1.5H5.25a1.125 1.125 0 1 0 0 2.25h1.875v1.875a1.125 1.125 0 0 0 2.25 0v-1.875H13.5a1.125 1.125 0 1 0 0-2.25H9.375v-1.5h4.5Zm-4.5-9.75h4.5a3.75 3.75 0 0 1 0 7.5h-4.5v-7.5Z"/> </svg> 
+);
+
+export default CurrencyRub;
