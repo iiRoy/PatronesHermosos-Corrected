@@ -1,6 +1,6 @@
 {
-  "name": "lama-dev-next-dashboard",
-  "version": "0.1.0",
+  "name": "patrones-hermosos",
+  "version": "0.2.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,17 +13,22 @@
     "bcrypt": "^5.1.1",
     "mysql2": "^3.14.0",
     "next": "^15.2.4",
-    "react": "^18",
-    "react-dom": "^18"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.4.1",
+    "react-select": "^5.10.1",
+    "recharts": "^2.15.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-select": "^5.0.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
-    "postcss": "^8",
+    "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
