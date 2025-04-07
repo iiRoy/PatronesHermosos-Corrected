@@ -11,7 +11,7 @@ export default function DashboardLayout({
     return (
         <div className='h-screen flex text-text bg-back'>
             {/* LEFT */}
-            <div className='pt-[1.9vw] gap-[4vw] w-[9%] md:w-[8%] lg:w-[18%] xl:w-[18%] overflow-x-hidden min-w-[8vh] max-h-screen flex flex-col items-center justify-between bg-[#2E1C31] rounded-tr-[10px] rounded-br-[10px] scrollbar-hide'>
+            <div className='pt-[1.9vw] gap-[3vw] w-[9%] md:w-[8%] lg:w-[18%] xl:w-[18%] overflow-x-hidden min-w-[10vw] max-h-screen flex flex-col items-center justify-between bg-[#2E1C31] rounded-tr-[1.5vmax] rounded-br-[1.5vmax] scrollbar-hide'>
                 <div className='p-1 lg:p-0 justify-center'>
                     <Link
                         href='/'
@@ -21,6 +21,7 @@ export default function DashboardLayout({
                             alt='logo'
                             width={110}
                             height={110}
+                            className='lg: max-w-[8vw] md: max-w-[5vw] sm: max-w-[7vw]'
                         />
                     </Link>
                 </div>

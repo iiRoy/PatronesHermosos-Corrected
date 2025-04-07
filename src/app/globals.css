@@ -547,6 +547,8 @@
 
 .option-label {
     font-weight: 300;
+    max-width: min-content;
+    text-align: center;
 }
 
 .option-link.active {

@@ -18,7 +18,7 @@ const OptionLink: React.FC<OptionLinkProps> = ({ label, icon, href }) => {
   href={href}
   className={`
     option-link ${pathname === href ? 'active' : ''}
-    inline-flex justify-center items-center gap-2 items-center
+    flex justify-center items-center gap-2 items-center
   `}
 >
   <Image
@@ -35,8 +35,7 @@ const OptionLink: React.FC<OptionLinkProps> = ({ label, icon, href }) => {
     className="
       option-label
       hidden
-      lg:inline-flex
-      text-center
+      lg:block
     "
   >
     {label}
