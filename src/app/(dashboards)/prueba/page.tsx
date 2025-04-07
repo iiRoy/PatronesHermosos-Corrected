@@ -29,7 +29,7 @@ const EstadisticasAdmin = () => {
                     onPageChange={(page) => console.log("Página cambiada:", page)}
                 />
                 <Pagination
-                    currentPage={9}
+                    currentPage={3}
                     totalPages={11}
                     variant="secondary-shade" //"accent" o "primary", "secondary-shade"
                     onPageChange={(page) => console.log("Página cambiada:", page)}
