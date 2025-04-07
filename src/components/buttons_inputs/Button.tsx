@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 
@@ -6,39 +8,49 @@ interface ButtonProps {
     variant: 'primary' | 'secondary' | 'success' | 'error' | 'warning';
     disabled?: boolean;
     round?: boolean;
-    icon?: string;
+    showLeftIcon?: boolean;
+    showRightIcon?: boolean;
+    leftIconPath?: string;
+    rightIconPath?: string;
     onClick?: () => void;
+    className?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
     label,
     variant,
-    disabled,
-    round,
-    icon,
+    disabled = false,
+    round = false,
+    showLeftIcon = false,
+    showRightIcon = false,
+    leftIconPath = '/student.png',
+    rightIconPath = '/student.png',
+    onClick,
+    className = '',
 }) => {
-    const baseClass = 'custom-button';
     const variantClass = `button-${variant}`;
     const disabledClass = disabled ? `${variant}-disabled dim` : '';
-    const roundClass = round ? 'round-button' : '';
+
+    // Aplica solo una base dependiendo de round
+    const baseClass = round ? 'round-button' : 'custom-button';
 
     return (
         <button
-            className={`${baseClass} ${variantClass} ${disabledClass} ${roundClass}`}
+            className={`${baseClass} ${variantClass} ${disabledClass} ${round ? 'aspect-square p-0 justify-center' : ''
+                } flex items-center gap-2 ${className}`}
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={label}
         >
-            {icon ? (
-                <Image
-                    src={icon}
-                    alt='icon'
-                    width={20}
-                    height={20}
-                    className='mr-2'
-                />
-            ) : (
-                <i className='fa-regular fa-star icon'></i>
+            {showLeftIcon && (
+                <Image src={leftIconPath} alt='left icon' width={20} height={20} />
             )}
-            {!round && <span className='label'>{label}</span>}
-            {!round && <i className='fa-solid fa-xmark close'></i>}
+
+            {!round && <span className="label">{label}</span>}
+
+            {showRightIcon && (
+                <Image src={rightIconPath} alt='right icon' width={20} height={20} />
+            )}
         </button>
     );
 };
