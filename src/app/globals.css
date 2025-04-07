@@ -567,7 +567,7 @@
     -webkit-appearance: none;
     width: 1.6vmax;
     height: 1.6vmax;
-    min-width: 1.6vmax;
+    padding: 1.2vh;
     border-radius: 50%; /* Hacerlo circular */
     position: relative;
     outline: none;
@@ -578,7 +578,7 @@
 .checkbox-circle:checked::before {
     content: '✔'; /* Marcar como seleccionado */
     color: white;
-    font-size: 1vmax;
+    font-size: 2vh;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -587,7 +587,7 @@
 
 .checkbox-odd {
     background-color: #eee;
-    border: 2px solid var(--primary-shade); /* Morado */
+    border: 0.5vh solid var(--primary-shade); /* Morado */
 }
 
 .checkbox-odd:checked {
@@ -597,7 +597,7 @@
 
 .checkbox-even {
     background-color: #eee;
-    border: 2px solid var(--secondary-shade); /* Violeta oscuro */
+    border: 0.5vh solid var(--secondary-shade); /* Violeta oscuro */
 }
 
 .checkbox-even:checked {

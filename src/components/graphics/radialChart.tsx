@@ -3,7 +3,6 @@ import Image from 'next/image';
 import {
     RadialBarChart,
     RadialBar,
-    Legend,
     ResponsiveContainer,
 } from 'recharts';
 
@@ -53,7 +52,7 @@ const CountChart = () => {
                         data={data}
                     >
                         <RadialBar
-                            background
+                            background={{fill: '#E6E1ECFF'}}
                             dataKey='count'
                             cornerRadius={10}
                         />
