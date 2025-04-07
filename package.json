@@ -1,6 +1,6 @@
 {
-  "name": "lama-dev-next-dashboard",
-  "version": "0.1.0",
+  "name": "patrones-hermosos",
+  "version": "0.2.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
