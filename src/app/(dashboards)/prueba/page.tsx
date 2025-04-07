@@ -8,6 +8,7 @@ import InputField from "@/components/buttons_inputs/InputField";
 import Notification from "@/components/buttons_inputs/Notification";
 import Button from "@/components/buttons_inputs/Button";
 import Checkbox from "@/components/buttons_inputs/Checkbox";
+import MessageCard from "@/components/buttons_inputs/MessageCard";
 
 const EstadisticasAdmin = () => {
     return (
@@ -147,6 +148,106 @@ const EstadisticasAdmin = () => {
                     checked={true}
                     bordered={false}
                     onChange={(val) => console.log('New state:', val)}
+                />
+
+                <MessageCard
+                    color="purple"
+                    icon={<img src="/student.png" alt="icon" />}
+                    title="Label"
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
+                    checkboxLabel="Acepto los términos"
+                    checkboxChecked={true}
+                    onCheckboxChange={(val) => console.log('New state:', val)}
+
+                    showAccept
+                    acceptVariant="success"
+                    acceptLabel="¡Sí!"
+                    acceptIcon="/plus.png"
+                    onAccept={() => console.log("Aceptado")}
+
+                    showDoubt
+                    doubtVariant="warning"
+                    doubtLabel="No se"
+                    doubtIcon="/edit.png"
+                    onDoubt={() => console.log("Prolongado")}
+
+                    showDecline
+                    declineVariant="error"
+                    declineLabel="No gracias"
+                    declineIcon="/close.png"
+                    onDecline={() => console.log("Declinado")}
+                />
+
+                <MessageCard
+                    color="green"
+                    icon={<img src="/student.png" alt="icon" />}
+                    title="Label"
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
+                    checkboxLabel="Acepto los términos"
+                    checkboxChecked={true}
+                    onCheckboxChange={(val) => console.log('New state:', val)}
+
+                    showAccept
+                    acceptVariant="success"
+                    acceptLabel="¡Sí!"
+                    acceptIcon="/plus.png"
+                    onAccept={() => console.log("Aceptado")}
+
+                    showDoubt
+                    doubtVariant="warning"
+                    doubtLabel="No se"
+                    doubtIcon="/edit.png"
+                    onDoubt={() => console.log("Prolongado")}
+
+                    showDecline
+                    declineVariant="error"
+                    declineLabel="No gracias"
+                    declineIcon="/close.png"
+                    onDecline={() => console.log("Declinado")}
+                />
+
+                <MessageCard
+                    color="yellow"
+                    icon={<img src="/student.png" alt="icon" />}
+                    title="Label"
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
+                    checkboxLabel="Acepto los términos"
+                    checkboxChecked={true}
+                    onCheckboxChange={(val) => console.log('New state:', val)}
+
+                    showAccept
+                    acceptVariant="success"
+                    acceptLabel="¡Sí!"
+                    acceptIcon="/plus.png"
+                    onAccept={() => console.log("Aceptado")}
+
+                    showDecline
+                    declineVariant="error"
+                    declineLabel="No gracias"
+                    declineIcon="/close.png"
+                    onDecline={() => console.log("Declinado")}
+                />
+
+                <MessageCard
+                    color="red"
+                    icon={<img src="/student.png" alt="icon" />}
+                    title="Label"
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
+                    checkboxLabel="Acepto los términos"
+                    checkboxChecked={true}
+                    onCheckboxChange={(val) => console.log('New state:', val)}
+
+                    showDoubt
+                    doubtVariant="warning"
+                    doubtLabel="No se"
+                    doubtIcon="/edit.png"
+                    onDoubt={() => console.log("Prolongado")}
+
+                    showDecline
+                    declineVariant="error"
+                    declineLabel="No gracias"
+                    declineIcon="/close.png"
+                    onDecline={() => console.log("Declinado")}
                 />
 
 
