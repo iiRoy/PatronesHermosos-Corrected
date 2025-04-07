@@ -8,37 +8,45 @@
 
 /* styles/globals.css o tu módulo CSS */
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE y Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari y Opera */
-  }
+    -ms-overflow-style: none;
+    /* IE y Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari y Opera */
+}
 
 /* En tu archivo CSS global o módulo */
 .custom-scrollbar {
     /* Para Firefox: barra delgada y colores personalizados */
     scrollbar-width: auto;
-    scrollbar-color: #A259FF; /* thumb y track respectivamente */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar {
+    scrollbar-color: #A259FF;
+    /* thumb y track respectivamente */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
     height: 8px;
-    width: 6px; /* Para scroll horizontal, o 'width' para vertical */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: #2E2B3A; /* Color del fondo del scrollbar */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb {
+    width: 6px;
+    /* Para scroll horizontal, o 'width' para vertical */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #2E2B3A;
+    /* Color del fondo del scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #B77690 0%, #C267FF 100%);
-    border-radius: 10px; /* Para redondear el thumb */
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    border-radius: 10px;
+    /* Para redondear el thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #C267FF 0%, #B77690 100%);
-  }  
+}
 
 :root {
     --primary: #97639c;
@@ -80,6 +88,7 @@
 }
 
 .round-button {
+    width: 50px;
     border-radius: 50%;
     cursor: pointer;
     border-color: transparent;
@@ -547,8 +556,8 @@
 }
 
 .option-icon {
-    min-width:17px;
-    min-height:17px;
+    min-width: 17px;
+    min-height: 17px;
 }
 
 .option-label {
@@ -568,7 +577,8 @@
     width: 1.6vmax;
     height: 1.6vmax;
     padding: 1.2vh;
-    border-radius: 50%; /* Hacerlo circular */
+    border-radius: 50%;
+    /* Hacerlo circular */
     position: relative;
     outline: none;
     cursor: pointer;
@@ -576,7 +586,8 @@
 }
 
 .checkbox-circle:checked::before {
-    content: '✔'; /* Marcar como seleccionado */
+    content: '✔';
+    /* Marcar como seleccionado */
     color: white;
     font-size: 2vh;
     position: absolute;
@@ -587,20 +598,148 @@
 
 .checkbox-odd {
     background-color: #eee;
-    border: 0.5vh solid var(--primary-shade); /* Morado */
+    border: 0.5vh solid var(--primary-shade);
+    /* Morado */
 }
 
 .checkbox-odd:checked {
-    background-color: var(--primary-shade); /* Morado cuando está seleccionado */
+    background-color: var(--primary-shade);
+    /* Morado cuando está seleccionado */
     border-color: var(--primary-shade);
 }
 
 .checkbox-even {
     background-color: #eee;
-    border: 0.5vh solid var(--secondary-shade); /* Violeta oscuro */
+    border: 0.5vh solid var(--secondary-shade);
+    /* Violeta oscuro */
 }
 
 .checkbox-even:checked {
-    background-color: var(--secondary-shade); /* Violeta oscuro cuando está seleccionado */
+    background-color: var(--secondary-shade);
+    /* Violeta oscuro cuando está seleccionado */
     border-color: var(--secondary-shade);
+}
+
+
+/*Checkboxes*/
+.checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Nativo pero estilizado */
+.checkbox-container input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox-container input[type="checkbox"]:checked::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Colored styles */
+.purple-checkbox {
+    color: var(--primary);
+}
+
+.green-checkbox {
+    color: var(--success);
+}
+
+.red-checkbox {
+    color: var(--error);
+}
+
+.yellow-checkbox {
+    color: var(--warning);
+}
+
+.white-checkbox {
+    color: var(--text-color);
+}
+
+.white-checkbox input[type="checkbox"] {
+    background-color: var(--text-color);
+}
+
+.purple-checkbox input[type="checkbox"] {
+    background-color: var(--primary);
+}
+
+.red-checkbox input[type="checkbox"] {
+    background-color: var(--error);
+}
+
+.green-checkbox input[type="checkbox"] {
+    background-color: var(--success);
+}
+
+.yellow-checkbox input[type="checkbox"] {
+    background-color: var(--warning);
+}
+
+/* Border when requested */
+.with-border.purple-checkbox input[type="checkbox"] {
+    background-color: transparent;
+    border-color: var(--text-color);
+}
+
+.with-border.purple-checkbox input[type="checkbox"] {
+    background-color: transparent;
+    border-color: var(--primary);
+}
+
+.with-border.red-checkbox input[type="checkbox"] {
+    background-color: transparent;
+    border-color: var(--error);
+}
+
+.with-border.green-checkbox input[type="checkbox"] {
+    background-color: transparent;
+    border-color: var(--success);
+}
+
+.with-border.yellow-checkbox input[type="checkbox"] {
+    background-color: transparent;
+    border-color: var(--warning);
+}
+
+/* When checked with border, fill background */
+.with-border.white-checkbox input[type="checkbox"]:checked {
+    background-color: var(--text-color);
+}
+
+.with-border.purple-checkbox input[type="checkbox"]:checked {
+    background-color: var(--primary);
+}
+
+.with-border.red-checkbox input[type="checkbox"]:checked {
+    background-color: var(--error);
+}
+
+.with-border.green-checkbox input[type="checkbox"]:checked {
+    background-color: var(--success);
+}
+
+.with-border.yellow-checkbox input[type="checkbox"]:checked {
+    background-color: var(--warning);
 }
