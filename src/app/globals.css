@@ -756,19 +756,19 @@
 }
 
 .border-purple {
-    border-left: 15px solid #9461b3;
+    border-left: 15px solid var(--primary);
 }
 
 .border-green {
-    border-left: 15px solid #4caf50;
+    border-left: 15px solid var(--success);
 }
 
 .border-red {
-    border-left: 15px solid #cf5e61;
+    border-left: 15px solid var(--error);
 }
 
 .border-yellow {
-    border-left: 15px solid #d38c4b;
+    border-left: 15px solid var(--warning);
 }
 
 .icon-title {
@@ -786,23 +786,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text-color);
 }
 
 .icon-purple {
-    background-color: #9461b3;
+    background-color: var(--primary);
 }
 
 .icon-green {
-    background-color: #4caf50;
+    background-color: var(--success);
 }
 
 .icon-red {
-    background-color: #cf5e61;
+    background-color: var(--error);
 }
 
 .icon-yellow {
-    background-color: #d38c4b;
+    background-color: var(--warning);
 }
 
 .title {
@@ -811,19 +811,19 @@
 }
 
 .title-purple {
-    color: #9461b3;
+    color: var(--primary);
 }
 
 .title-green {
-    color: #4caf50;
+    color: var(--success);
 }
 
 .title-red {
-    color: #cf5e61;
+    color: var(--error);
 }
 
 .title-yellow {
-    color: #d38c4b;
+    color: var(--warning);
 }
 
 .description {
