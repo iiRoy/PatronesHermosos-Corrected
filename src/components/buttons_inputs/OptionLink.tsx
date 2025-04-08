@@ -14,8 +14,7 @@ const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href }) => {
   const pathname = usePathname();
 
   // Cambiar el color del icono si la ruta coincide
-  const iconColor = pathname === href ? 'var(--accent)' : '#EBE6EB';
-  const iconWidth = pathname === href ? 0.2 : 1.3;
+  const iconWidth = pathname === href ? 0.2 : 1.1;
 
   return (
     <Link
