@@ -3,11 +3,13 @@ import React from 'react';
 interface IconProps {
   width?: number;
   height?: number;
-  color?: string;
+  strokeColor?: string;
+  fillColor?: string;
+  strokeWidth?: number;
 }
 
-const LineVertical: React.FC<IconProps> = ({ width = 24, height = 24, color = 'black' }) => (
-  <svg width={width} height={height} fill={color} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M13.125 2.25v19.5a1.125 1.125 0 1 1-2.25 0V2.25a1.125 1.125 0 1 1 2.25 0Z"/> </svg> 
+const LineVertical: React.FC<IconProps> = ({ width = 24, height = 24, strokeColor = 'currentColor', fillColor = 'none', strokeWidth = 1 }) => (
+  <svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"> <path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" d="M13.125 2.25v19.5a1.125 1.125 0 1 1-2.25 0V2.25a1.125 1.125 0 1 1 2.25 0Z"/> </svg> 
 );
 
 export default LineVertical;
