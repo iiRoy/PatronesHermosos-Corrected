@@ -4,9 +4,11 @@ import Checkbox from "@/components/buttons_inputs/Checkbox";
 
 type Variant = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
 
+type IconComponent = React.FC<{ width?: number; height?: number; color?: string }>;
+
 type MessageCardProps = {
     color: "purple" | "green" | "red" | "yellow";
-    icon: React.ReactNode;
+    Icon: React.FC<{ width?: number; height?: number; color?: string }>;
     title: string;
     description: string;
     checkboxLabel?: string;
@@ -21,23 +23,23 @@ type MessageCardProps = {
     // Configuración para cada botón
     acceptVariant?: Variant;
     acceptLabel?: string;
-    acceptIcon?: string;
+    acceptIcon?: IconComponent;
     onAccept?: () => void;
 
     doubtVariant?: Variant;
     doubtLabel?: string;
-    doubtIcon?: string;
+    doubtIcon?: IconComponent;
     onDoubt?: () => void;
 
     declineVariant?: Variant;
     declineLabel?: string;
-    declineIcon?: string;
+    declineIcon?: IconComponent;
     onDecline?: () => void;
 };
 
 export const MessageCard: React.FC<MessageCardProps> = ({
     color,
-    icon,
+    Icon,
     title,
     description,
     checkboxLabel,
@@ -50,23 +52,23 @@ export const MessageCard: React.FC<MessageCardProps> = ({
 
     acceptVariant = "success",
     acceptLabel = "Accept",
-    acceptIcon = "/check.png",
+    acceptIcon,
     onAccept,
 
     doubtVariant = "warning",
     doubtLabel = "Doubt",
-    doubtIcon = "/doubt.png",
+    doubtIcon,
     onDoubt,
 
     declineVariant = "error",
     declineLabel = "Decline",
-    declineIcon = "/decline.png",
+    declineIcon,
     onDecline,
 }) => {
     return (
         <div className={`message-card border-${color}`}>
             <div className="icon-title">
-                <div className={`message-icon icon-${color}`}>{icon}</div>
+                <div className={`message-icon icon-${color}`}>{<Icon width={25} height={25} />}</div>
                 <h2 className={`title title-${color}`}>{title}</h2>
             </div>
             <p className="description">{description}</p>
@@ -87,7 +89,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                     <Button
                         variant={acceptVariant}
                         showLeftIcon
-                        leftIconPath={acceptIcon}
+                        IconLeft={acceptIcon}
                         label={acceptLabel}
                         onClick={onAccept}
                     />
@@ -96,7 +98,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                     <Button
                         variant={doubtVariant}
                         showLeftIcon
-                        leftIconPath={doubtIcon}
+                        IconLeft={doubtIcon}
                         label={doubtLabel}
                         onClick={onDoubt}
                     />
@@ -105,7 +107,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                     <Button
                         variant={declineVariant}
                         showLeftIcon
-                        leftIconPath={declineIcon}
+                        IconLeft={declineIcon}
                         label={declineLabel}
                         onClick={onDecline}
                     />

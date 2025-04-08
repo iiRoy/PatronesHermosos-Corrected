@@ -26,8 +26,8 @@ const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href }) => {
       `}
     >
       <div className={`option-icon ${isActive ? 'active' : ''} flex items-center justify-center`}>
-        <DecoratedIcon 
-          strokeColor={'#2E1C31'} 
+        <DecoratedIcon
+          strokeColor={'#2E1C31'}
           fillColor={'currentColor'}
         />
       </div>

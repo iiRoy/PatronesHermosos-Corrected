@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 
 interface ButtonProps {
     label: string;
@@ -10,8 +9,8 @@ interface ButtonProps {
     round?: boolean;
     showLeftIcon?: boolean;
     showRightIcon?: boolean;
-    leftIconPath?: string;
-    rightIconPath?: string;
+    IconLeft?: React.FC<{ width?: number; height?: number; color?: string }>;
+    IconRight?: React.FC<{ width?: number; height?: number; color?: string }>;
     onClick?: () => void;
     className?: string;
 }
@@ -23,15 +22,13 @@ const Button: React.FC<ButtonProps> = ({
     round = false,
     showLeftIcon = false,
     showRightIcon = false,
-    leftIconPath = '/student.png',
-    rightIconPath = '/student.png',
+    IconLeft,
+    IconRight,
     onClick,
     className = '',
 }) => {
     const variantClass = `button-${variant}`;
     const disabledClass = disabled ? `${variant}-disabled dim` : '';
-
-    // Aplica solo una base dependiendo de round
     const baseClass = round ? 'round-button' : 'custom-button';
 
     return (
@@ -42,14 +39,14 @@ const Button: React.FC<ButtonProps> = ({
             disabled={disabled}
             aria-label={label}
         >
-            {showLeftIcon && (
-                <Image src={leftIconPath} alt='left icon' width={20} height={20} />
+            {showLeftIcon && IconLeft && (
+                <IconLeft width={20} height={20} />
             )}
 
             {!round && <span className="label">{label}</span>}
 
-            {showRightIcon && (
-                <Image src={rightIconPath} alt='right icon' width={20} height={20} />
+            {showRightIcon && IconRight && (
+                <IconRight width={20} height={20} />
             )}
         </button>
     );

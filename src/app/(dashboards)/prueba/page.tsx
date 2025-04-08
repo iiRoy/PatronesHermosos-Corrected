@@ -9,6 +9,8 @@ import Notification from "@/components/buttons_inputs/Notification";
 import Button from "@/components/buttons_inputs/Button";
 import Checkbox from "@/components/buttons_inputs/Checkbox";
 import MessageCard from "@/components/buttons_inputs/MessageCard";
+import { Acorn, ChatCircle, ChatCircleText, Check, Plus, Star, User, UserMinus, X } from "@/components/icons";
+import { Cross } from "recharts";
 
 const EstadisticasAdmin = () => {
     return (
@@ -40,7 +42,7 @@ const EstadisticasAdmin = () => {
                     placeholder="Placeholder"
                     error="Error"
                     variant="warning"
-                    iconSrc="/student.png"
+                    Icon={User}
                 />
                 <InputField
                     label="Sign In"
@@ -48,7 +50,7 @@ const EstadisticasAdmin = () => {
                     placeholder="Username"
                     showError={false}
                     variant="primary"
-                    iconSrc="/student.png"
+                    Icon={User}
                 />
                 <InputField
                     label="Sign In"
@@ -57,7 +59,7 @@ const EstadisticasAdmin = () => {
                     showError={false}
                     error="Error"
                     variant="primary-disabled"
-                    iconSrc="/student.png"
+                    Icon={User}
                 />
                 <InputField
                     label="Sign In"
@@ -65,46 +67,50 @@ const EstadisticasAdmin = () => {
                     placeholder="Username"
                     error="Error: That user doesn't exist"
                     variant="warning"
-                    iconSrc="/student.png"
+                    Icon={User}
                 />
                 <Notification
                     color="green"
                     variant="one"
                     title="¡Éxito!"
                     message="Tu acción se completó correctamente."
+                    Icon={ChatCircleText}
                 />
                 <Notification
                     color="purple"
                     variant="one"
                     title="Notificación"
                     message="Has recibido una notificación"
+                    Icon={ChatCircleText}
                 />
                 <Notification
                     color="red"
                     variant="two"
                     title="Error"
                     message="Hubo un problema al guardar los datos."
+                    Icon={ChatCircleText}
                 />
                 <Notification
                     color="yellow"
                     variant="two"
                     title="Advertencia"
                     message="Uno de los datos introducidos es incorrecto"
+                    Icon={ChatCircleText}
                 />
                 <Button
                     label="Perfil"
                     variant="secondary"
                     showLeftIcon
-                    leftIconPath="/student.png"
+                    IconLeft={User}
                     showRightIcon
-                    rightIconPath="/close.png"
+                    IconRight={Plus}
                 />
                 <Button
                     label="Add"
                     variant="primary"
                     round
                     showLeftIcon
-                    leftIconPath="/plus.png"
+                    IconLeft={Star}
                 />
                 <Button
                     label="Enviar"
@@ -152,7 +158,7 @@ const EstadisticasAdmin = () => {
 
                 <MessageCard
                     color="purple"
-                    icon={<img src="/student.png" alt="icon" />}
+                    Icon={User}
                     title="Label"
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
                     checkboxLabel="Acepto los términos"
@@ -162,25 +168,25 @@ const EstadisticasAdmin = () => {
                     showAccept
                     acceptVariant="success"
                     acceptLabel="¡Sí!"
-                    acceptIcon="/plus.png"
+                    acceptIcon={Check}
                     onAccept={() => console.log("Aceptado")}
 
                     showDoubt
                     doubtVariant="warning"
                     doubtLabel="No se"
-                    doubtIcon="/edit.png"
+                    doubtIcon={Acorn}
                     onDoubt={() => console.log("Prolongado")}
 
                     showDecline
                     declineVariant="error"
                     declineLabel="No gracias"
-                    declineIcon="/close.png"
+                    declineIcon={X}
                     onDecline={() => console.log("Declinado")}
                 />
 
                 <MessageCard
                     color="green"
-                    icon={<img src="/student.png" alt="icon" />}
+                    Icon={User}
                     title="Label"
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
                     checkboxLabel="Acepto los términos"
@@ -190,25 +196,25 @@ const EstadisticasAdmin = () => {
                     showAccept
                     acceptVariant="success"
                     acceptLabel="¡Sí!"
-                    acceptIcon="/plus.png"
+                    acceptIcon={Check}
                     onAccept={() => console.log("Aceptado")}
 
                     showDoubt
                     doubtVariant="warning"
                     doubtLabel="No se"
-                    doubtIcon="/edit.png"
+                    doubtIcon={Acorn}
                     onDoubt={() => console.log("Prolongado")}
 
                     showDecline
                     declineVariant="error"
                     declineLabel="No gracias"
-                    declineIcon="/close.png"
+                    declineIcon={X}
                     onDecline={() => console.log("Declinado")}
                 />
 
                 <MessageCard
                     color="yellow"
-                    icon={<img src="/student.png" alt="icon" />}
+                    Icon={User}
                     title="Label"
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
                     checkboxLabel="Acepto los términos"
@@ -218,19 +224,19 @@ const EstadisticasAdmin = () => {
                     showAccept
                     acceptVariant="success"
                     acceptLabel="¡Sí!"
-                    acceptIcon="/plus.png"
+                    acceptIcon={Check}
                     onAccept={() => console.log("Aceptado")}
 
                     showDecline
                     declineVariant="error"
                     declineLabel="No gracias"
-                    declineIcon="/close.png"
+                    declineIcon={X}
                     onDecline={() => console.log("Declinado")}
                 />
 
                 <MessageCard
                     color="red"
-                    icon={<img src="/student.png" alt="icon" />}
+                    Icon={User}
                     title="Label"
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vulputate orci sit amet nulla consequat, ac iaculis magna auctor. Nullam quis eros fermentum, condimentum neque ac, aliquet augue. Cras non bibendum eros. Maecenas non neque quam. Nam a elit a quam interdum suscipit et in lacus. Integer vitae luctus erat."
                     checkboxLabel="Acepto los términos"
@@ -240,13 +246,13 @@ const EstadisticasAdmin = () => {
                     showDoubt
                     doubtVariant="warning"
                     doubtLabel="No se"
-                    doubtIcon="/edit.png"
+                    doubtIcon={Acorn}
                     onDoubt={() => console.log("Prolongado")}
 
                     showDecline
                     declineVariant="error"
                     declineLabel="No gracias"
-                    declineIcon="/close.png"
+                    declineIcon={X}
                     onDecline={() => console.log("Declinado")}
                 />
 
