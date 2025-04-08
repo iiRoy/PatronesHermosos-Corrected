@@ -21,7 +21,7 @@ interface InputFieldProps {
     | 'secondary-shade-disabled'
     | 'text-color-disabled';
     dim?: boolean;
-    iconSrc?: string;
+    Icon: React.FC<{ width?: number; height?: number; color?: string }>;
     iconAlt?: string;
     iconSize?: number;
 }
@@ -35,9 +35,7 @@ const InputField: React.FC<InputFieldProps> = ({
     showError = true,
     variant = 'accent',
     dim = false,
-    iconSrc = '/student.png',
-    iconAlt = 'Icono',
-    iconSize = 16,
+    Icon,
 }) => {
     const inputClass = `input input-${variant}${dim ? ' dim' : ''}`;
     const errorClass =
@@ -48,16 +46,12 @@ const InputField: React.FC<InputFieldProps> = ({
     return (
         <div className="container-input">
             <div className="label-input">{label}</div>
-            {showDescription && description && <div className="description">{description}</div>}
+            {showDescription && description && <div className="description-input">{description}</div>}
             <div className={inputClass}>
-                {iconSrc && (
-                    <Image
-                        src={iconSrc}
-                        alt={iconAlt}
-                        width={iconSize}
-                        height={iconSize}
-                        style={{ marginRight: '8px' }}
-                    />
+                {Icon && (
+                    <div className='icon-input'>
+                        <Icon width={25} height={25} />
+                    </div>
                 )}
                 <input type="text" placeholder={placeholder} disabled={variant.includes('disabled')} />
             </div>

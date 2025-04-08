@@ -87,7 +87,7 @@
     border: none;
     border-radius: 10px;
     padding: 10px 20px;
-    font-size: 24px;
+    font-size: 15px;
     cursor: pointer;
 }
 
@@ -142,9 +142,16 @@
     margin-bottom: 5px;
 }
 
+.description-input {
+    color: var(--text-color);
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
 .input {
     display: flex;
     align-items: center;
+    gap: 10px;
     background-color: var(--accent);
     border-radius: 10px;
     padding: 10px;
@@ -153,6 +160,10 @@
 .input i {
     color: var(--text-color);
     margin-right: 10px;
+}
+
+.icon-input {
+    color: var(--text-color);
 }
 
 .input input {
