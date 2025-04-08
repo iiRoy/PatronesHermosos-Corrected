@@ -1,4 +1,3 @@
-// src/validators/auth.validator.js
 const { body, validationResult } = require('express-validator');
 
 const validateLogin = [

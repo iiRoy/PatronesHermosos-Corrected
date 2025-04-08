@@ -11,6 +11,8 @@ const logRequestMiddleware = require('./middlewares/logRequestMiddleware');
 const authRoutes = require('./routes/auth.routes');
 const venueRoutes = require('./routes/venue.routes');
 const participantRoutes = require('./routes/participant.routes');
+const superuserRoutes = require('./routes/superuser.routes');
+const collaboratorRoutes = require('./routes/collaborator.routes');
 
 app.use(express.json());
 app.use(morgan('dev'));
@@ -20,6 +22,8 @@ app.use(logRequestMiddleware); // Aplica el log para todas las peticiones
 app.use('/api/auth', authRoutes);
 app.use('/api/venues', venueRoutes);
 app.use('/api/participants', participantRoutes);
+app.use('/api/superusers', superuserRoutes);
+app.use('/api/collaborators', collaboratorRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
