@@ -4,6 +4,7 @@ const { validateVenue } = require('../validators/venueValidator');
 const venueController = require('../controllers/venue.controller');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
+// Rutas CRUD
 router.get('/', authMiddleware, venueController.getAll);
 router.post('/', authMiddleware, roleMiddleware(['admin']), validateVenue, venueController.create);
 router.get('/:id', authMiddleware, venueController.getById);

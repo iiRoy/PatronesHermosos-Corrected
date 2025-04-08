@@ -1,4 +1,4 @@
-// src/controllers/auth.controller.js
+
 
 const login = (req, res) => {
     const { email, password } = req.body;
