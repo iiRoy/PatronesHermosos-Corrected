@@ -549,10 +549,12 @@
     color: var(--text-color);
     font-size: clamp(1em, 1.5vw, 2em);
     transition: color 0.3s ease-in-out;
+    color: var(--text-color);
+    font-weight: 300;
 }
 
 .option-link:hover {
-    color: #c7c7c7;
+    color: var(--primary);
 }
 
 .option-icon {
@@ -560,8 +562,11 @@
     min-height: 17px;
 }
 
+.option-icon.active {
+    color: var(--accent);
+}
+
 .option-label {
-    font-weight: 300;
     max-width: min-content;
     text-align: center;
 }
@@ -569,7 +574,7 @@
 .option-link.active {
     color: var(--accent);
     text-decoration: underline;
-    font-weight: bold;
+    font-weight: bolder;
 }
 
 .checkbox-circle {

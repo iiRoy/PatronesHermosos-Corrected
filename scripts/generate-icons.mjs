@@ -18,21 +18,30 @@ if (fs.existsSync(outputPath)) {
 
 const generateIconComponent = (iconName, svgContent) => {
   const cleanedSvgContent = svgContent
-    .replace(/width="\d+"/g, '')
-    .replace(/height="\d+"/g, '')
+    // Eliminar cualquier stroke-width, stroke y fill existentes en cualquier elemento
+    .replace(/stroke-width="[^"]*"/g, '')
+    .replace(/stroke="[^"]*"/g, '')
     .replace(/fill="[^"]*"/g, '')
+    // Usar tanto stroke como fill para permitir personalización
+    .replace(/<path /g, '<path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
+    .replace(/<circle /g, '<circle stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
+    .replace(/<line /g, '<line stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
+    .replace(/<rect /g, '<rect stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
     .replace(/\s+/g, ' ')
-    .replace('<svg ', `<svg width={width} height={height} fill={color} `);
+    // Aplicar el color solo como stroke y fill en el SVG principal
+    .replace('<svg ', `<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" `);
 
   return `import React from 'react';
 
 interface IconProps {
   width?: number;
   height?: number;
-  color?: string;
+  strokeColor?: string;
+  fillColor?: string;
+  strokeWidth?: number;
 }
 
-const ${iconName}: React.FC<IconProps> = ({ width = 24, height = 24, color = 'black' }) => (
+const ${iconName}: React.FC<IconProps> = ({ width = 24, height = 24, strokeColor = 'currentColor', fillColor = 'none', strokeWidth = 1 }) => (
   ${cleanedSvgContent}
 );
 
