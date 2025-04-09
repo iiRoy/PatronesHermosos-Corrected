@@ -177,6 +177,7 @@ enum participants_status {
 enum collaborators_role {
   Staff
   Instructora
+  Facilitadora
   Pendiente
 }
 

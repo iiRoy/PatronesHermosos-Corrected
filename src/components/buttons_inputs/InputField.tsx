@@ -11,15 +11,15 @@ interface InputFieldProps {
     error?: string;
     showError?: boolean;
     variant?:
-    | 'accent'
-    | 'primary'
-    | 'secondary-shade'
-    | 'text-color'
-    | 'warning'
-    | 'accent-disabled'
-    | 'primary-disabled'
-    | 'secondary-shade-disabled'
-    | 'text-color-disabled';
+        | 'accent'
+        | 'primary'
+        | 'secondary-shade'
+        | 'text-color'
+        | 'warning'
+        | 'accent-disabled'
+        | 'primary-disabled'
+        | 'secondary-shade-disabled'
+        | 'text-color-disabled';
     dim?: boolean;
     Icon: React.FC<{ width?: number; height?: number; color?: string }>;
     iconAlt?: string;
@@ -44,16 +44,22 @@ const InputField: React.FC<InputFieldProps> = ({
             : 'error-text';
 
     return (
-        <div className="container-input">
-            <div className="label-input">{label}</div>
-            {showDescription && description && <div className="description-input">{description}</div>}
+        <div className='container-input'>
+            <div className='label-input'>{label}</div>
+            {showDescription && description && (
+                <div className='description-input'>{description}</div>
+            )}
             <div className={inputClass}>
                 {Icon && (
                     <div className='icon-input'>
                         <Icon width={25} height={25} />
                     </div>
                 )}
-                <input type="text" placeholder={placeholder} disabled={variant.includes('disabled')} />
+                <input
+                    type='text'
+                    placeholder={placeholder}
+                    disabled={variant.includes('disabled')}
+                />
             </div>
             {showError && error && <div className={errorClass}>{error}</div>}
         </div>

@@ -1,0 +1,47 @@
+[
+  {
+    "id_venue": 1,
+    "name": "Estefanía",
+    "paternal_name": "Meléndez",
+    "maternal_name": "Badillo",
+    "email": "matakarla@despacho.com",
+    "phone_number": "767-242-3884x96965",
+    "role": "Coordinadora Asociada"
+  },
+  {
+    "id_venue": 2,
+    "name": "Evelio",
+    "paternal_name": "Covarrubias",
+    "maternal_name": "Márquez",
+    "email": "ocaban@riojas-carvajal.com",
+    "phone_number": "484.677.3782x639",
+    "role": "Coordinadora Asociada"
+  },
+  {
+    "id_venue": 3,
+    "name": "Daniela",
+    "paternal_name": "Quiroz",
+    "maternal_name": "Montoya",
+    "email": "moralessessa@yahoo.com",
+    "phone_number": "016-582-0297",
+    "role": "Coordinadora Asociada"
+  },
+  {
+    "id_venue": 4,
+    "name": "María Teresa",
+    "paternal_name": "Gómez",
+    "maternal_name": "Palacios",
+    "email": "timoteopreciado@anaya.org",
+    "phone_number": "(603)341-9182x553",
+    "role": "Coordinadora Asociada"
+  },
+  {
+    "id_venue": 5,
+    "name": "David",
+    "paternal_name": "Valdez",
+    "maternal_name": "Durán",
+    "email": "rodriguezcarolina@hotmail.com",
+    "phone_number": "825-135-3465",
+    "role": "Coordinadora Asociada"
+  }
+]

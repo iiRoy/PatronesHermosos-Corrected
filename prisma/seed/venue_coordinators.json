@@ -1,0 +1,57 @@
+[
+  {
+    "id_venue": 1,
+    "name": "Cristal",
+    "paternal_name": "Galván",
+    "maternal_name": "Miramontes",
+    "email": "olivaresbeatriz@montanez-zayas.com",
+    "phone_number": "781.618.4959x31034",
+    "gender": "Femenino",
+    "username": "gonzalesbenito",
+    "password": "n0Eb4cOu&6"
+  },
+  {
+    "id_venue": 2,
+    "name": "Norma",
+    "paternal_name": "Quintanilla",
+    "maternal_name": "Ledesma",
+    "email": "fsalazar@montero.com",
+    "phone_number": "(125)674-6807x15451",
+    "gender": "Femenino",
+    "username": "aserrano",
+    "password": "_8YOK$7n9O"
+  },
+  {
+    "id_venue": 3,
+    "name": "Ignacio",
+    "paternal_name": "Marín",
+    "maternal_name": "Serrato",
+    "email": "chernandes@hotmail.com",
+    "phone_number": "1-450-541-5667",
+    "gender": "Femenino",
+    "username": "lmojica",
+    "password": "Qlf^7mLz^*"
+  },
+  {
+    "id_venue": 4,
+    "name": "Porfirio",
+    "paternal_name": "Vera",
+    "maternal_name": "Velásquez",
+    "email": "znoriega@villalobos.com",
+    "phone_number": "+71(4)6112545738",
+    "gender": "Femenino",
+    "username": "emontero",
+    "password": "L%7e@Xwl@g"
+  },
+  {
+    "id_venue": 5,
+    "name": "Ramiro",
+    "paternal_name": "Villegas",
+    "maternal_name": "Leyva",
+    "email": "rosarioandrea@yahoo.com",
+    "phone_number": "544-432-8309",
+    "gender": "Femenino",
+    "username": "rmaya",
+    "password": "z7IG0UUp#4"
+  }
+]

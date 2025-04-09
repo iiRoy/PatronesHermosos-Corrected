@@ -11,43 +11,43 @@ const menuItems = [
             {
                 icon: 'ChartBarHorizontal',
                 label: 'Estadísticas',
-                href: '/list/results',
+                href: '/admin',
                 visible: ['admin', 'coordinador'],
             },
             {
                 icon: 'Bank',
                 label: 'SEDES',
-                href: '/admin',
+                href: '/admin/sedes',
                 visible: ['admin'],
             },
             {
                 icon: 'Bank',
                 label: 'Mi SEDE',
-                href: '/list/classes',
+                href: '/admin/mi-sede',
                 visible: ['coordinador'],
             },
             {
                 icon: 'Users',
                 label: 'Gestionar Usuarios',
-                href: '/list/teachers',
+                href: '/admin/gestion-usuarios',
                 visible: ['admin'],
             },
             {
                 icon: 'PaperPlaneTilt',
                 label: 'Solicitudes',
-                href: '/list/students',
+                href: '/admin/solicitudes',
                 visible: ['admin', 'coordinador'],
             },
             {
                 icon: 'Certificate',
                 label: 'Diplomas',
-                href: '/list/parents',
+                href: '/admin/diplomas',
                 visible: ['admin', 'coordinador'],
             },
             {
                 icon: 'Envelope',
                 label: 'Correos',
-                href: '/list/subjects',
+                href: '/admin/correos',
                 visible: ['admin'],
             },
         ],
@@ -58,9 +58,13 @@ const Menu: React.FC = () => {
     return (
         <div className='text-[clamp(1rem,1.5vw,3rem)]'>
             {menuItems.map((section) => (
-                <div key={section.title} className="flex flex-col gap-[1.5vmax] px-2">
+                <div
+                    key={section.title}
+                    className='flex flex-col gap-[1.5vmax] px-2'
+                >
                     {section.items.map((item) => {
-                        const IconComponent = Icons[item.icon as keyof typeof Icons];
+                        const IconComponent =
+                            Icons[item.icon as keyof typeof Icons];
                         return (
                             <OptionLink
                                 key={item.label}

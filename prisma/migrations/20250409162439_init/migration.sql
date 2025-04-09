@@ -28,7 +28,7 @@ CREATE TABLE `collaborators` (
     `preferred_language` VARCHAR(255) NULL,
     `preferred_level` VARCHAR(255) NULL,
     `gender` VARCHAR(255) NULL,
-    `role` ENUM('Staff', 'Instructora', 'Pendiente') NOT NULL DEFAULT 'Pendiente',
+    `role` ENUM('Staff', 'Instructora', 'Facilitadora', 'Pendiente') NOT NULL DEFAULT 'Pendiente',
     `status` ENUM('Pendiente', 'Aprobada', 'Rechazada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
     `id_group` INTEGER UNSIGNED NULL,
 

@@ -33,21 +33,18 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <button
-            className={`${baseClass} ${variantClass} ${disabledClass} ${round ? 'aspect-square p-0 justify-center' : ''
-                } flex items-center gap-2 ${className}`}
+            className={`${baseClass} ${variantClass} ${disabledClass} ${
+                round ? 'aspect-square p-0 justify-center' : ''
+            } flex items-center gap-2 ${className}`}
             onClick={onClick}
             disabled={disabled}
             aria-label={label}
         >
-            {showLeftIcon && IconLeft && (
-                <IconLeft width={20} height={20} />
-            )}
+            {showLeftIcon && IconLeft && <IconLeft width={20} height={20} />}
 
-            {!round && <span className="label">{label}</span>}
+            {!round && <span className='label'>{label}</span>}
 
-            {showRightIcon && IconRight && (
-                <IconRight width={20} height={20} />
-            )}
+            {showRightIcon && IconRight && <IconRight width={20} height={20} />}
         </button>
     );
 };

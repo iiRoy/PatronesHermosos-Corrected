@@ -13,11 +13,9 @@ export default function DashboardLayout({
             {/* LEFT */}
             <div className='pt-[1.9vw] gap-[3vw] w-[9%] md:w-[8%] lg:w-[18%] xl:w-[18%] overflow-x-hidden min-w-[10vw] max-h-screen flex flex-col items-center justify-between bg-[#2E1C31] rounded-tr-[1.5vmax] rounded-br-[1.5vmax] scrollbar-hide'>
                 <div className='p-1 lg:p-0 justify-center'>
-                    <Link
-                        href='/'
-                    >
+                    <Link href='/'>
                         <Image
-                            src='/logo.png'
+                            src='/assets/logo.png'
                             alt='logo'
                             width={110}
                             height={110}
@@ -38,9 +36,7 @@ export default function DashboardLayout({
                     <div className='absolute top-[4vmax] right-[7vmax] w-[4vmax] h-[4vmax] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
                     <div className='absolute top-[3vmax] right-[12vmax] w-[2.5vmax] h-[2.5vmax] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
                 </div>
-                <div className='relative overflow-x-hidden z-0'>
-                    {children}
-                </div>
+                <div className='relative overflow-x-hidden z-0'>{children}</div>
             </div>
         </div>
     );

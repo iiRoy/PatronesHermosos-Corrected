@@ -1,0 +1,42 @@
+[
+  {
+    "id_venue": 1,
+    "name": "ITESM Puebla",
+    "location": "Chihuahua",
+    "address": "Cerrada Chile 181 Edif. 960 , Depto. 013\nNueva República de Corea, HGO 37940-2654",
+    "status": "Registrada con participantes",
+    "participation_file": "PDF"
+  },
+  {
+    "id_venue": 2,
+    "name": "MIT",
+    "location": "Nuevo León",
+    "address": "Circunvalación Norte Jurado 877 Edif. 190 , Depto. 659\nSan Aldonza de la Montaña, MEX 49027",
+    "status": "Registrada con participantes",
+    "participation_file": "PDF"
+  },
+  {
+    "id_venue": 3,
+    "name": "Universidad de los Andes",
+    "location": "Quintana Roo",
+    "address": "Calle Baja California Sur 852 Interior 772\nNueva Ucrania, VER 43030",
+    "status": "Registrada con participantes",
+    "participation_file": "PDF"
+  },
+  {
+    "id_venue": 4,
+    "name": "ITESM Guadalajara",
+    "location": "Tlaxcala",
+    "address": "Privada Sur Murillo 891 Edif. 135 , Depto. 290\nSan Isabel los bajos, CHIS 14388",
+    "status": "Registrada con participantes",
+    "participation_file": "PDF"
+  },
+  {
+    "id_venue": 5,
+    "name": "ITESM Monterrey",
+    "location": "Aguascalientes",
+    "address": "Retorno Alemania 494 466\nSan María Luisa los bajos, JAL 48969-1085",
+    "status": "Registrada con participantes",
+    "participation_file": "PDF"
+  }
+]

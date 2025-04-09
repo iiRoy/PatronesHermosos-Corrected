@@ -11,6 +11,10 @@ import {
     Rectangle,
     ResponsiveContainer,
 } from 'recharts';
+import withIconDecorator from '../decorators/IconDecorator';
+import * as Icons from '../icons';
+export const Options = withIconDecorator(Icons.DotsThree);
+export const Filtros = withIconDecorator(Icons.CaretDoubleDown);
 
 const CustomTick: React.FC<{
     x?: number;
@@ -32,7 +36,6 @@ const CustomTick: React.FC<{
         chartWidth > 800 ? 18 : chartWidth > 400 ? 16 : 14;
     const fontSize = getFontSize();
     const lineHeight = getLineHeight();
-
     const maxWidth = chartWidth / (numElements * 2);
 
     const measureTextWidth = (text: string, fontSize: number) => {
@@ -78,21 +81,15 @@ const CustomTick: React.FC<{
         });
 
         if (currentLine) lines.push(currentLine);
-
         if (lines.length > 2) {
-            if (!lines[1].endsWith('...')) {
-                lines[1] += '...';
-            }
+            if (!lines[1].endsWith('...')) lines[1] += '...';
             return lines.slice(0, 2);
         }
-
         if (
             lines.join(' ') !== text &&
             !lines[lines.length - 1].endsWith('...')
-        ) {
+        )
             lines[lines.length - 1] += '...';
-        }
-
         return lines;
     };
 
@@ -115,96 +112,64 @@ const CustomTick: React.FC<{
     );
 };
 
-const CustomLegend = () => {
-    const legendKeys = Object.keys(data[0]).filter((key) => key !== 'name');
-
-    return (
-        <div className='flex items-center gap-4'>
-            {legendKeys.map((key, index) => (
-                <div key={key} className='flex items-center gap-1'>
-                    <span
-                        className={`w-3 h-3 rounded-full ${
-                            index % 2 === 0 ? 'bg-primary' : 'bg-secondaryShade'
-                        }`}
-                    ></span>
-                    <span
-                        className={`font-medium ${
-                            index % 2 === 0
-                                ? 'text-primary'
-                                : 'text-secondaryShade'
-                        }`}
-                    >
-                        {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </span>
-                </div>
-            ))}
-        </div>
-    );
-};
-
-const data = [
-    {
-        name: 'ITESM Puebla',
-        participantes: 50,
-        colaboradores: 15,
-    },
-    {
-        name: 'MIT',
-        participantes: 100,
-        colaboradores: 32,
-    },
-    {
-        name: 'Universidad de los Andes',
-        participantes: 26,
-        colaboradores: 10,
-    },
-    {
-        name: 'ITESM Guadalajara',
-        participantes: 67,
-        colaboradores: 20,
-    },
-    {
-        name: 'ITESM Querétaro',
-        participantes: 15,
-        colaboradores: 5,
-    },
-    {
-        name: 'ITESM Monterrey',
-        participantes: 140,
-        colaboradores: 35,
-    },
-];
+const CustomLegend = ({ legendKeys }: { legendKeys: string[] }) => (
+    <div className='flex items-center gap-4'>
+        {legendKeys.map((key, index) => (
+            <div key={key} className='flex items-center gap-1'>
+                <span
+                    className={`w-3 h-3 rounded-full ${
+                        index % 2 === 0 ? 'bg-primary' : 'bg-secondaryShade'
+                    }`}
+                />
+                <span
+                    className={`font-medium ${
+                        index % 2 === 0 ? 'text-primary' : 'text-secondaryShade'
+                    }`}
+                >
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                </span>
+            </div>
+        ))}
+    </div>
+);
 
 const CountChart = () => {
-    const [filteredData, setFilteredData] = useState(data);
-    const [selectedSedes, setSelectedSedes] = useState<string[]>(
-        data.map((d) => d.name)
-    );
+    const [data, setData] = useState<any[]>([]);
+    const [filteredData, setFilteredData] = useState<any[]>([]);
+    const [selectedSedes, setSelectedSedes] = useState<string[]>([]);
     const [fade, setFade] = useState(false);
-
-    const options = data.map((d) => ({
-        value: d.name,
-        label: d.name,
-    }));
-
-    const handleFilterChange = (updatedSedes: string[]) => {
-        setFade(true); // Trigger fade-out
-        setTimeout(() => {
-            setSelectedSedes(updatedSedes);
-            setFilteredData(data.filter((d) => updatedSedes.includes(d.name)));
-            setFade(false); // Trigger fade-in
-        }, 200);
-    };
-
     const isFirstRender = useRef(true);
-    useEffect(() => {
 
-        isFirstRender.current = false;
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch('/api/dashboard', {
+                    headers: {
+                        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+                    },
+                });
+
+                if (!res.ok) {
+                    throw new Error('Fallo al obtener datos del servidor');
+                }
+
+                const json = await res.json();
+                setData(json.sedes);
+                setFilteredData(json.sedes);
+                setSelectedSedes(json.sedes.map((d: any) => d.name));
+
+                setTimeout(() => {
+                    isFirstRender.current = false;
+                }, 10);
+            } catch (error) {
+                console.error('❌ Error al obtener datos del backend:', error);
+            }
+        };
+
+        fetchData();
 
         const handleClickOutside = (event: MouseEvent) => {
-            if ((event.target as HTMLElement).closest('#filter-bar')) {
-                return;
-            }
+            if ((event.target as HTMLElement).closest('#filter-bar')) return;
             const dropdown = document.getElementById('filter-dropdown');
             if (dropdown && !dropdown.contains(event.target as Node)) {
                 dropdown.classList.add('hidden');
@@ -217,18 +182,38 @@ const CountChart = () => {
         };
     }, []);
 
+    const handleFilterChange = (updatedSedes: string[]) => {
+        setFade(true);
+        setTimeout(() => {
+            setSelectedSedes(updatedSedes);
+            setFilteredData(data.filter((d) => updatedSedes.includes(d.name)));
+            setFade(false);
+        }, 200);
+    };
+
+    const options = data.map((d) => ({
+        value: d.name,
+        label: d.name,
+    }));
+
     return (
         <div className='bg-white rounded-xl w-full h-full p-4 flex flex-col justify-between'>
-            {/*TITLE*/}
             <div className='flex justify-between items-center'>
-                <h1 className='flex justify-between font-bold items-center text-2xl'>
-                    Personas por SEDE
-                </h1>
-                <Image src='/moreDark.png' alt='' width={20} height={20} />
+                <h1 className='font-bold text-2xl'>Personas por SEDE</h1>
+                <Options
+                    fillColor='var(--secondary)'
+                    strokeColor='var(--secondary)'
+                    strokeWidth={3}
+                    width={30}
+                    height={30}
+                />
             </div>
-            {/*LEGEND AND FILTER*/}
             <div className='flex flex-col md:flex-row gap-3 md:gap-6 justify-between items-center mt-4 mb-4 ml-7 mr-7'>
-                <CustomLegend />
+                <CustomLegend
+                    legendKeys={Object.keys(data[0] || {}).filter(
+                        (key) => key !== 'name'
+                    )}
+                />
                 <div className='flex justify-between w-full items-center'>
                     <div className='flex items-center w-full justify-end relative'>
                         <div
@@ -241,12 +226,12 @@ const CountChart = () => {
                                     dropdown.classList.toggle('hidden');
                             }}
                         >
-                            <Image
-                                src='/date.png'
-                                alt='Filtros'
-                                width={20}
-                                height={20}
-                                className='ml-2'
+                            <Filtros
+                                fillColor='var(--primary)'
+                                strokeColor='var(--primary)'
+                                strokeWidth={1}
+                                width={25}
+                                height={25}
                             />
                             <span className='font-bold text-lg'>Filtros</span>
                         </div>
@@ -272,13 +257,13 @@ const CountChart = () => {
                                             const updatedSedes = e.target
                                                 .checked
                                                 ? [
-                                                    ...selectedSedes,
-                                                    option.value,
-                                                ]
+                                                      ...selectedSedes,
+                                                      option.value,
+                                                  ]
                                                 : selectedSedes.filter(
-                                                    (sede) =>
-                                                        sede !== option.value
-                                                );
+                                                      (sede) =>
+                                                          sede !== option.value
+                                                  );
                                             handleFilterChange(updatedSedes);
                                         }}
                                         className={`checkbox-circle mr-2 ${
@@ -292,24 +277,10 @@ const CountChart = () => {
                                     </span>
                                 </label>
                             ))}
-                            <div
-                                onClick={(e) => e.stopPropagation()}
-                                className='absolute inset-0'
-                                style={{ zIndex: -1 }}
-                                onMouseDown={() => {
-                                    const dropdown =
-                                        document.getElementById(
-                                            'filter-dropdown'
-                                        );
-                                    if (dropdown)
-                                        dropdown.classList.add('hidden');
-                                }}
-                            ></div>
                         </div>
                     </div>
                 </div>
             </div>
-            {/*CHART*/}
             <div
                 className={`w-[0.9vm] h-full transition-opacity duration-300 ${
                     fade ? 'opacity-0' : 'opacity-100'
@@ -365,7 +336,7 @@ const CountChart = () => {
                                     const formattedName =
                                         typeof name === 'string'
                                             ? name.charAt(0).toUpperCase() +
-                                            name.slice(1)
+                                              name.slice(1)
                                             : name;
                                     return [`${value}`, formattedName];
                                 }}
@@ -375,7 +346,7 @@ const CountChart = () => {
                                     border: '1px solid #ccc',
                                 }}
                             />
-                            {Object.keys(data[0])
+                            {Object.keys(data[0] || {})
                                 .filter((key) => key !== 'name')
                                 .map((key, index) => (
                                     <Bar
