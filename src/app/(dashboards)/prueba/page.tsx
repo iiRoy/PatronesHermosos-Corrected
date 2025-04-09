@@ -10,13 +10,11 @@ import Checkbox from '@/components/buttons_inputs/Checkbox';
 import MessageCard from '@/components/buttons_inputs/MessageCard';
 import {
     Acorn,
-    ChatCircle,
     ChatCircleText,
     Check,
     Plus,
     Star,
     User,
-    UserMinus,
     X,
 } from '@/components/icons';
 import { Cross } from 'recharts';

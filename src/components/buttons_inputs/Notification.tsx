@@ -7,7 +7,7 @@ interface NotificationProps {
     variant?: 'one' | 'two';
     title: string;
     message: string;
-    Icon?: React.FC<{ width?: number; height?: number; color?: string }>;
+    Icon?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
     className?: string;
 }
 

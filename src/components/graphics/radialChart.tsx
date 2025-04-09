@@ -39,12 +39,12 @@ const RadialChart = () => {
                     Colaboradores
                 </h1>
                 <Options
-                    fillColor='var(--secondary)'
-                    strokeColor='var(--secondary)'
-                    strokeWidth={3}
-                    width={30}
-                    height={30}
-                />
+                        fillColor='var(--secondary)'
+                        strokeColor='var(--secondary)'
+                        strokeWidth={2.5}
+                        width={"3vmax"}
+                        height={"3vmax"}
+                    />
             </div>
 
             {/* CHART */}

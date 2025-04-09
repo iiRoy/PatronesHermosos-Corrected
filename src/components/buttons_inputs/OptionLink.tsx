@@ -7,8 +7,8 @@ import withIconDecorator from '../decorators/IconDecorator';
 interface OptionLinkProps {
     label: string;
     Icon: React.FC<{
-        width?: number;
-        height?: number;
+        width?: number | string;
+        height?: number | string;
         strokeColor?: string;
         fillColor?: string;
         className?: string;
@@ -36,6 +36,8 @@ const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href }) => {
                 <DecoratedIcon
                     strokeColor={'#2E1C31'}
                     fillColor={'currentColor'}
+                    width={'2rem'}
+                    height={'2rem'}
                 />
             </div>
             <span className='option-label hidden lg:block'>{label}</span>

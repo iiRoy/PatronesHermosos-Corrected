@@ -39,8 +39,8 @@ const User = () => {
                     className='option-link w-auto h-auto flex items-center justify-center p-2 cursor-pointer relative'
                 >
                     <Notification 
-                        width={25}
-                        height={25}
+                        width={'1.5rem'}
+                        height={'1.5rem'}
                         strokeColor='#2E1C31'
                         strokeWidth={1}
                     />
@@ -53,8 +53,8 @@ const User = () => {
                     className='option-link flex items-center justify-center p-2'
                 >
                     <Info 
-                        width={25}
-                        height={25}
+                        width={'1.5rem'}
+                        height={'1.5rem'}
                         strokeColor='#2E1C31'
                         strokeWidth={1}
                     />
@@ -64,8 +64,8 @@ const User = () => {
                     className='option-link flex items-center justify-center p-2'
                 >
                     <Arrow
-                        width={25}
-                        height={25}
+                        width={'1.5rem'}
+                        height={'1.5rem'}
                         strokeColor='#2E1C31'
                         strokeWidth={1}
                     />

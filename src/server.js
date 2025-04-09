@@ -34,15 +34,12 @@ appNext.prepare().then(() => {
     app.use('/api/superusers', superuserRoutes);
     app.use('/api/collaborators', collaboratorRoutes);
 
-    // Ruta base del backend (opcional)
     app.get('/api', (req, res) => {
         res.send('¡API corriendo!');
     });
 
-    // Ruta para obtener datos de Gráfico de Barras
     app.get('/api/dashboard', async (req, res) => {
         try {
-            // 1. Obtener venues con relaciones
             const venues = await prisma.venues.findMany({
                 include: {
                     groups: {
@@ -54,7 +51,6 @@ appNext.prepare().then(() => {
                 },
             });
 
-            // 2. Obtener resumen de colaboradoras por rol
             const [instructoras, facilitadoras, staff] = await Promise.all([
                 prisma.collaborators.count({ where: { role: 'Instructora' } }),
                 prisma.collaborators.count({ where: { role: 'Facilitadora' } }),
@@ -69,9 +65,6 @@ appNext.prepare().then(() => {
                     prisma.venue_coordinators.count(),
                 ]);
 
-            const totalColaboradoras = instructoras + facilitadoras + staff;
-
-            // 3. Datos por sede
             const sedes = venues.map((venue) => {
                 let participantes = 0;
                 let colaboradores = 0;
@@ -88,7 +81,6 @@ appNext.prepare().then(() => {
                 };
             });
 
-            // 4. Respuesta final
             res.json({
                 sedes,
                 resumenColaboradoras: {

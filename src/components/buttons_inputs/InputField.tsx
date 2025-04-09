@@ -21,7 +21,7 @@ interface InputFieldProps {
         | 'secondary-shade-disabled'
         | 'text-color-disabled';
     dim?: boolean;
-    Icon: React.FC<{ width?: number; height?: number; color?: string }>;
+    Icon: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
     iconAlt?: string;
     iconSize?: number;
 }
