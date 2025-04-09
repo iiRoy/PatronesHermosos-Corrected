@@ -26,12 +26,14 @@ const Notification: React.FC<NotificationProps> = ({
     const notificationClass = `notification ${variant === 'two' ? `notification-${color}-two` : ''} ${className}`;
     const iconClass = `notification-icon ${variant === 'two' ? `notification-icon-${color}-two` : `notification-icon-${color}`}`;
     const titleClass = `notification-title${variant === 'one' ? ` notification-title-${color}` : ''}`;
-    const textClass = variant === 'one'
-        ? 'notification-text notification-text-black'
-        : 'notification-text';
-    const closeClass = variant === 'two'
-        ? 'notification-close notification-close-white'
-        : `notification-close notification-close-${color}`;
+    const textClass =
+        variant === 'one'
+            ? 'notification-text notification-text-black'
+            : 'notification-text';
+    const closeClass =
+        variant === 'two'
+            ? 'notification-close notification-close-white'
+            : `notification-close notification-close-${color}`;
 
     return (
         <div className={notificationClass}>
@@ -39,10 +41,10 @@ const Notification: React.FC<NotificationProps> = ({
                 {Icon ? (
                     <Icon width={24} height={24} />
                 ) : (
-                    <span className="icon">💬</span>
+                    <span className='icon'>💬</span>
                 )}
             </div>
-            <div className="notification-content">
+            <div className='notification-content'>
                 <h3 className={titleClass}>{title}</h3>
                 <p className={textClass}>{message}</p>
             </div>

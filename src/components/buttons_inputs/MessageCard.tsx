@@ -1,13 +1,17 @@
-import React from "react";
-import Button from "@/components/buttons_inputs/Button";
-import Checkbox from "@/components/buttons_inputs/Checkbox";
+import React from 'react';
+import Button from '@/components/buttons_inputs/Button';
+import Checkbox from '@/components/buttons_inputs/Checkbox';
 
 type Variant = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
 
-type IconComponent = React.FC<{ width?: number; height?: number; color?: string }>;
+type IconComponent = React.FC<{
+    width?: number;
+    height?: number;
+    color?: string;
+}>;
 
 type MessageCardProps = {
-    color: "purple" | "green" | "red" | "yellow";
+    color: 'purple' | 'green' | 'red' | 'yellow';
     Icon: React.FC<{ width?: number; height?: number; color?: string }>;
     title: string;
     description: string;
@@ -50,31 +54,33 @@ export const MessageCard: React.FC<MessageCardProps> = ({
     showDoubt = false,
     showDecline = false,
 
-    acceptVariant = "success",
-    acceptLabel = "Accept",
+    acceptVariant = 'success',
+    acceptLabel = 'Accept',
     acceptIcon,
     onAccept,
 
-    doubtVariant = "warning",
-    doubtLabel = "Doubt",
+    doubtVariant = 'warning',
+    doubtLabel = 'Doubt',
     doubtIcon,
     onDoubt,
 
-    declineVariant = "error",
-    declineLabel = "Decline",
+    declineVariant = 'error',
+    declineLabel = 'Decline',
     declineIcon,
     onDecline,
 }) => {
     return (
         <div className={`message-card border-${color}`}>
-            <div className="icon-title">
-                <div className={`message-icon icon-${color}`}>{<Icon width={25} height={25} />}</div>
+            <div className='icon-title'>
+                <div className={`message-icon icon-${color}`}>
+                    {<Icon width={25} height={25} />}
+                </div>
                 <h2 className={`title title-${color}`}>{title}</h2>
             </div>
-            <p className="description">{description}</p>
+            <p className='description'>{description}</p>
 
             {checkboxLabel && (
-                <div className="checkbox-row">
+                <div className='checkbox-row'>
                     <Checkbox
                         color={color}
                         label={checkboxLabel}
@@ -84,7 +90,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
                 </div>
             )}
 
-            <div className="button-row">
+            <div className='button-row'>
                 {showAccept && (
                     <Button
                         variant={acceptVariant}

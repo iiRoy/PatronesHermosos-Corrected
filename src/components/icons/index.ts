@@ -1,3 +1,5 @@
+'use client';
+
 export { default as Acorn } from './Acorn';
 export { default as AddressBook } from './AddressBook';
 export { default as AddressBookTabs } from './AddressBookTabs';

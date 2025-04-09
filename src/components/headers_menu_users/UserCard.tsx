@@ -1,15 +1,31 @@
+'use client';
 import Image from 'next/image';
+import withIconDecorator from '../decorators/IconDecorator';
+import * as Icons from '../icons';
+export const Options = withIconDecorator(Icons.DotsThree);
+const today = new Date();
+const formattedDate = today.toLocaleDateString('sv-SE', {
+  year: 'numeric',
+  month: '2-digit',
+});
+const finalDate = formattedDate.replace('-', '/');
 
-const UserCard = ({ type }: { type: string }) => {
+const UserCard = ({ type, count }: { type: string, count: number }) => {
     return (
         <div className='rounded-2xl text-text odd:bg-primaryShade even:bg-secondaryShade p-4 flex-1 min-w-[22vmax] md:min-w-[16vmax] w-auto'>
             <div className='flex justify-between items-center gap-4'>
                 <span className='text-[1vmax] bg-text px-[0.8vw] py-[0.2vw] rounded-full text-primary opacity-70'>
-                    2025/03
+                    {finalDate}
                 </span>
-                <Image src='/more.png' alt='' width={20} height={20} className='w-[1.5vmax] h-[1.5vmax]' />
+                <Options
+                        fillColor='var(--text-color)'
+                        strokeColor='var(--text-color)'
+                        strokeWidth={3}
+                        width={30}
+                        height={30}
+                    />
             </div>
-            <h1 className='text-[3vmax] font-bold'>1,234</h1>
+            <h1 className='text-[3vmax] font-bold'>{count}</h1>
             <h2 className='capitalize text-[1.3vmax] font-medium opacity-80'>
                 {type}
             </h2>

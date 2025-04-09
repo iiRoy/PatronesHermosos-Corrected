@@ -23,11 +23,11 @@ const Checkbox: React.FC<CheckboxProps> = ({
     return (
         <label className={`checkbox-container ${colorClass} ${borderClass}`}>
             <input
-                type="checkbox"
+                type='checkbox'
                 checked={checked}
                 onChange={(e) => onChange(e.target.checked)}
             />
-            <span className="label-text">{label}</span>
+            <span className='label-text'>{label}</span>
         </label>
     );
 };
