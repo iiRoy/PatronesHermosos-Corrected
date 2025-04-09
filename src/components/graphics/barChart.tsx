@@ -201,12 +201,12 @@ const CountChart = () => {
             <div className='flex justify-between items-center'>
                 <h1 className='font-bold text-2xl'>Personas por SEDE</h1>
                 <Options
-                    fillColor='var(--secondary)'
-                    strokeColor='var(--secondary)'
-                    strokeWidth={3}
-                    width={30}
-                    height={30}
-                />
+                        fillColor='var(--secondary)'
+                        strokeColor='var(--secondary)'
+                        strokeWidth={2.5}
+                        width={"3vmax"}
+                        height={"3vmax"}
+                    />
             </div>
             <div className='flex flex-col md:flex-row gap-3 md:gap-6 justify-between items-center mt-4 mb-4 ml-7 mr-7'>
                 <CustomLegend

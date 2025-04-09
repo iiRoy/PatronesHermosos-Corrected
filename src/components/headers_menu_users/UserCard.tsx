@@ -20,9 +20,9 @@ const UserCard = ({ type, count }: { type: string, count: number }) => {
                 <Options
                         fillColor='var(--text-color)'
                         strokeColor='var(--text-color)'
-                        strokeWidth={3}
-                        width={30}
-                        height={30}
+                        strokeWidth={2.5}
+                        width={"3vmax"}
+                        height={"3vmax"}
                     />
             </div>
             <h1 className='text-[3vmax] font-bold'>{count}</h1>

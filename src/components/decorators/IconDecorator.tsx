@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 interface IconProps {
-    width?: number;
-    height?: number;
+    width?: number | string;
+    height?: number | string;
     strokeColor?: string;
     strokeWidth?: number;
     fillColor?: string;

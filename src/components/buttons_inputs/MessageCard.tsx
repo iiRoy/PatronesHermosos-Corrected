@@ -5,14 +5,14 @@ import Checkbox from '@/components/buttons_inputs/Checkbox';
 type Variant = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
 
 type IconComponent = React.FC<{
-    width?: number;
-    height?: number;
+    width?: number | string;
+    height?: number | string;
     color?: string;
 }>;
 
 type MessageCardProps = {
     color: 'purple' | 'green' | 'red' | 'yellow';
-    Icon: React.FC<{ width?: number; height?: number; color?: string }>;
+    Icon: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
     title: string;
     description: string;
     checkboxLabel?: string;

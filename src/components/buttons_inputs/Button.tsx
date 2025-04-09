@@ -9,8 +9,8 @@ interface ButtonProps {
     round?: boolean;
     showLeftIcon?: boolean;
     showRightIcon?: boolean;
-    IconLeft?: React.FC<{ width?: number; height?: number; color?: string }>;
-    IconRight?: React.FC<{ width?: number; height?: number; color?: string }>;
+    IconLeft?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
+    IconRight?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
     onClick?: () => void;
     className?: string;
 }

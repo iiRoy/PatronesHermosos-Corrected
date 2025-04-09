@@ -2,7 +2,7 @@ import React from 'react';
 import fs from 'fs';
 import path from 'path';
 
-const iconsPath = './src/assets/icons';
+const iconsPath = './public/assets/icons';
 const outputPath = './src/components/icons';
 
 if (fs.existsSync(outputPath)) {
@@ -32,8 +32,8 @@ const generateIconComponent = (iconName, svgContent) => {
   return `import React from 'react';
 
 interface IconProps {
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   strokeColor?: string;
   fillColor?: string;
   strokeWidth?: number;

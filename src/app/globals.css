@@ -572,7 +572,7 @@
 .option-icon {
     min-width: 17px;
     min-height: 17px;
-    --icon-stroke-width: 1.2;
+    --icon-stroke-width: 2;
 }
 
 .option-icon.active {
