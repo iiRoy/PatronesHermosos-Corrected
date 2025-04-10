@@ -1,12 +1,12 @@
 {
     "name": "patrones-hermosos",
-    "version": "0.3.3",
+    "version": "0.5.2",
     "private": true,
-"scripts": {
-  "dev": "nodemon src/server.js", 
-  "build": "next build",
-  "start": "cross-env NODE_ENV=production node src/server.js"
-},
+    "scripts": {
+        "dev": "nodemon src/server.js",
+        "build": "next build",
+        "start": "cross-env NODE_ENV=production node src/server.js"
+    },
     "dependencies": {
         "@prisma/client": "^6.6.0",
         "express": "^5.1.0",

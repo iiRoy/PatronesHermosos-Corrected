@@ -24,11 +24,11 @@ export async function GET() {
     ]);
 
     const [colaboradores, participantes, mentoras, coordinadoras] = await Promise.all([
-        prisma.collaborators.count(),
-          prisma.participants.count(),
-          prisma.mentors.count(),
-          prisma.venue_coordinators.count()
-        ]);
+      prisma.collaborators.count(),
+      prisma.participants.count(),
+      prisma.mentors.count(),
+      prisma.venue_coordinators.count(),
+    ]);
 
     // 📊 Datos por sede
     const sedeData = venues.map((venue) => {
@@ -53,9 +53,8 @@ export async function GET() {
         instructoras,
         facilitadoras,
         staff,
-        total: instructoras + facilitadoras + staff,
       },
-      resumenEvento:{
+      resumenEvento: {
         participantes,
         colaboradores,
         mentoras,
@@ -64,9 +63,6 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('❌ Error al obtener datos para el gráfico:', error.message, error.stack);
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

@@ -6,10 +6,12 @@ const iconsPath = './public/assets/icons';
 const outputPath = './src/components/icons';
 
 if (fs.existsSync(outputPath)) {
-  fs.readdirSync(outputPath).forEach(file => {
+  fs.readdirSync(outputPath).forEach((file) => {
     fs.unlinkSync(path.join(outputPath, file));
   });
-  console.log('Limpieza completada: Se eliminaron los archivos previos en la carpeta de componentes.');
+  console.log(
+    'Limpieza completada: Se eliminaron los archivos previos en la carpeta de componentes.',
+  );
 } else {
   fs.mkdirSync(outputPath, { recursive: true });
   console.log('Carpeta creada: src/components/icons');
@@ -20,14 +22,29 @@ const generateIconComponent = (iconName, svgContent) => {
     .replace(/stroke-width="[^"]*"/g, '')
     .replace(/stroke="[^"]*"/g, '')
     .replace(/fill="[^"]*"/g, '')
-    .replace(/<path /g, '<path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
-    .replace(/<circle /g, '<circle stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
-    .replace(/<line /g, '<line stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
-    .replace(/<rect /g, '<rect stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ')
+    .replace(
+      /<path /g,
+      '<path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ',
+    )
+    .replace(
+      /<circle /g,
+      '<circle stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ',
+    )
+    .replace(
+      /<line /g,
+      '<line stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ',
+    )
+    .replace(
+      /<rect /g,
+      '<rect stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" ',
+    )
     .replace(/\s+/g, ' ')
     .replace(/width="[^"]*"/g, '')
     .replace(/height="[^"]*"/g, '')
-    .replace('<svg ', `<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" `);
+    .replace(
+      '<svg ',
+      `<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" `,
+    );
 
   return `import React from 'react';
 
@@ -49,7 +66,7 @@ export default ${iconName};`;
 fs.readdir(iconsPath, (err, files) => {
   if (err) throw err;
   let indexContent = '';
-  files.forEach(file => {
+  files.forEach((file) => {
     if (path.extname(file) === '.svg') {
       const iconName = path.basename(file, '.svg');
       const filePath = path.join(iconsPath, file);
