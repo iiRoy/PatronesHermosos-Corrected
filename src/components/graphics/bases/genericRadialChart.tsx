@@ -152,8 +152,8 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
         {legendToShow.map((rol) => {
           const item = data.find((d) => d.rol === rol);
           return (
-            <div key={rol} className='flex flex-col items-center text-primary'>
-              <div className={`w-5 h-5 rounded-full`} style={{ backgroundColor: item?.fill || '#ccc' }} />
+            <div key={rol} className='flex flex-col items-center' style={{color: item?.fill || '#ccc',}} >
+              <div className={`w-5 h-5 rounded-full`} style={{ backgroundColor: item?.fill || '#ccc'}} />
               <h1 className='font-semibold'>{item?.cantidad ?? 0}</h1>
               <h2 className='text-xs text-gray-600'>{rol}</h2>
             </div>

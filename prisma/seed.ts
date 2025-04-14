@@ -1,6 +1,11 @@
-//npx prisma db seed
+// npx prisma db seed
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const { execSync } = require('child_process');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const prisma = new PrismaClient();
 
@@ -25,10 +30,12 @@ async function main() {
   await prisma.collaborators.deleteMany();
   await prisma.tutors.deleteMany();
   await prisma.groups.deleteMany();
+  await prisma.excluded_days.deleteMany();
   await prisma.mentors.deleteMany();
   await prisma.assistant_coordinators.deleteMany();
   await prisma.venue_coordinators.deleteMany();
   await prisma.venues.deleteMany();
+  await prisma.superusers.deleteMany();
 
   console.log('🌱 Insertando datos...');
 
@@ -44,15 +51,21 @@ async function main() {
     });
   }
 
-  // 2. COORDINADORAS DE SEDE
-  const venueCoordinators = JSON.parse(
+  // 2. VENUE COORDINATORS
+  const coordinators = JSON.parse(
     fs.readFileSync('./prisma/seed/venue_coordinators.json', 'utf-8'),
   );
-  for (const coord of venueCoordinators) {
-    await prisma.venue_coordinators.create({ data: coord });
+  for (const coordinator of coordinators) {
+    const hashedPassword = await bcrypt.hash(coordinator.password, 10);
+    await prisma.venue_coordinators.create({
+      data: {
+        ...coordinator,
+        password: hashedPassword,
+      },
+    });
   }
 
-  // 3. COORDINADORAS ASISTENTES
+  // 3. ASSISTANT COORDINATORS
   const assistants = JSON.parse(
     fs.readFileSync('./prisma/seed/assistant_coordinators.json', 'utf-8'),
   );
@@ -65,13 +78,13 @@ async function main() {
     });
   }
 
-  // 4. MENTORAS
+  // 4. MENTORS
   const mentors = JSON.parse(fs.readFileSync('./prisma/seed/mentors.json', 'utf-8'));
   for (const m of mentors) {
     await prisma.mentors.create({ data: m });
   }
 
-  // 5. GRUPOS
+  // 5. GROUPS
   const groups = JSON.parse(fs.readFileSync('./prisma/seed/groups.json', 'utf-8'));
   for (const g of groups) {
     const baseDate = new Date(g.start_date);
@@ -86,13 +99,24 @@ async function main() {
     });
   }
 
-  // 6. TUTORES
+  // 6. EXCLUDED DATES
+  const excluded = JSON.parse(fs.readFileSync('./prisma/seed/excluded_date.json', 'utf-8'));
+  for (const e of excluded) {
+    await prisma.excluded_days.create({
+      data: {
+        ...e,
+        excluded_date: new Date(e.excluded_date),
+      },
+    });
+  }
+
+  // 7. TUTORS
   const tutors = JSON.parse(fs.readFileSync('./prisma/seed/tutors.json', 'utf-8'));
   for (const t of tutors) {
     await prisma.tutors.create({ data: t });
   }
 
-  // 7. PARTICIPANTES
+  // 8. PARTICIPANTS
   const participants = JSON.parse(fs.readFileSync('./prisma/seed/participants.json', 'utf-8'));
   for (const p of participants) {
     await prisma.participants.create({
@@ -103,13 +127,51 @@ async function main() {
     });
   }
 
-  // 8. COLABORADORAS
+  // 9. COLLABORATORS
   const collaborators = JSON.parse(fs.readFileSync('./prisma/seed/collaborators.json', 'utf-8'));
   for (const c of collaborators) {
     await prisma.collaborators.create({ data: c });
   }
 
+  // 10. SUPERUSERS
+  const superusers = JSON.parse(fs.readFileSync('./prisma/seed/superuser.json', 'utf-8'));
+  for (const s of superusers) {
+    const hashedPassword = await bcrypt.hash(s.password, 10);
+    await prisma.superusers.create({
+      data: {
+        ...s,
+        password: hashedPassword,
+      },
+    });
+  }
+
   console.log('✅ ¡Datos insertados exitosamente!');
+
+  const dbUrl = process.env.DATABASE_URL;
+
+  if (!dbUrl) {
+    throw new Error('DATABASE_URL no definida en .env');
+  }
+  
+  console.log("🔍 DATABASE_URL:", dbUrl);
+  
+  // Nuevo regex compatible con o sin contraseña
+  const regex = /^mysql:\/\/([^:@]+)(?::([^@]*))?@([^:\/]+):(\d+)\/([^?]+)/;
+  const match = dbUrl.match(regex);
+  if (!match) {
+    throw new Error('DATABASE_URL no es válida');
+  }
+  
+  const [, user, pass, host, port, db] = match;
+  
+  // Construir comando mysql con o sin contraseña
+  const passwordOption = pass ? `-p${pass}` : '';
+  
+  execSync(
+    `mysql -u${user} ${passwordOption} -h${host} -P${port} ${db} < prisma/after-migrate.sql`,
+    { stdio: 'inherit' }
+  );  
+  console.log('✅ ¡Funciones, procedimientos y triggers insertados exitosamente!');
 }
 
 main()
