@@ -1,8 +1,13 @@
 const { body, validationResult } = require('express-validator');
 
 const validateLogin = [
-  body('email').isEmail().withMessage('Email inválido'),
-  body('password').notEmpty().withMessage('La contraseña es obligatoria'),
+  body('emailOrUsername')
+    .notEmpty()
+    .withMessage('El correo o nombre de usuario es obligatorio'),
+
+  body('password')
+    .notEmpty()
+    .withMessage('La contraseña es obligatoria'),
 
   (req, res, next) => {
     const errors = validationResult(req);

@@ -27,9 +27,12 @@ CREATE TABLE `collaborators` (
     `preferred_role` VARCHAR(255) NULL,
     `preferred_language` VARCHAR(255) NULL,
     `preferred_level` VARCHAR(255) NULL,
+    `preferred_group` INTEGER UNSIGNED NULL,
     `gender` VARCHAR(255) NULL,
     `role` ENUM('Staff', 'Instructora', 'Facilitadora', 'Pendiente') NOT NULL DEFAULT 'Pendiente',
     `status` ENUM('Pendiente', 'Aprobada', 'Rechazada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
+    `level` ENUM('Pendiente', 'Básico', 'Avanzado') NOT NULL DEFAULT 'Pendiente',
+    `language` ENUM('Pendiente', 'Inglés', 'Español') NOT NULL DEFAULT 'Pendiente',
     `id_group` INTEGER UNSIGNED NULL,
 
     INDEX `id_group`(`id_group`),
@@ -41,7 +44,7 @@ CREATE TABLE `groups` (
     `id_group` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NULL,
     `max_places` INTEGER NULL,
-    `occupied_places` INTEGER NULL,
+    `occupied_places` INTEGER NULL DEFAULT 0,
     `language` VARCHAR(255) NULL,
     `location` VARCHAR(255) NULL,
     `level` VARCHAR(255) NULL,
@@ -56,6 +59,16 @@ CREATE TABLE `groups` (
     INDEX `id_mentor`(`id_mentor`),
     INDEX `id_venue`(`id_venue`),
     PRIMARY KEY (`id_group`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `excluded_days` (
+    `id_excluded` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id_group` INTEGER UNSIGNED NOT NULL,
+    `excluded_date` DATE NOT NULL,
+    `reason` VARCHAR(255) NULL DEFAULT 'No especificado',
+
+    PRIMARY KEY (`id_excluded`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -82,7 +95,7 @@ CREATE TABLE `participants` (
     `year` VARCHAR(255) NULL,
     `education` VARCHAR(255) NULL,
     `participation_file` BLOB NOT NULL,
-    `preferred_group` VARCHAR(255) NULL,
+    `preferred_group` INTEGER UNSIGNED NULL,
     `status` ENUM('Pendiente', 'Aprobada', 'Rechazada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
     `id_group` INTEGER UNSIGNED NULL,
     `id_tutor` INTEGER UNSIGNED NULL,
@@ -157,13 +170,22 @@ ALTER TABLE `assistant_coordinators` ADD CONSTRAINT `assistant_coordinators_ibfk
 ALTER TABLE `collaborators` ADD CONSTRAINT `collaborators_ibfk_1` FOREIGN KEY (`id_group`) REFERENCES `groups`(`id_group`) ON DELETE SET NULL ON UPDATE RESTRICT;
 
 -- AddForeignKey
+ALTER TABLE `collaborators` ADD CONSTRAINT `collaborators_preferred_group_fkey` FOREIGN KEY (`preferred_group`) REFERENCES `groups`(`id_group`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `groups` ADD CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`id_mentor`) REFERENCES `mentors`(`id_mentor`) ON DELETE SET NULL ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `groups` ADD CONSTRAINT `groups_ibfk_2` FOREIGN KEY (`id_venue`) REFERENCES `venues`(`id_venue`) ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
+ALTER TABLE `excluded_days` ADD CONSTRAINT `excluded_days_id_group_fkey` FOREIGN KEY (`id_group`) REFERENCES `groups`(`id_group`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `mentors` ADD CONSTRAINT `mentors_ibfk_1` FOREIGN KEY (`id_venue`) REFERENCES `venues`(`id_venue`) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+-- AddForeignKey
+ALTER TABLE `participants` ADD CONSTRAINT `participants_preferred_group_fkey` FOREIGN KEY (`preferred_group`) REFERENCES `groups`(`id_group`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `participants` ADD CONSTRAINT `participants_ibfk_1` FOREIGN KEY (`id_group`) REFERENCES `groups`(`id_group`) ON DELETE SET NULL ON UPDATE RESTRICT;

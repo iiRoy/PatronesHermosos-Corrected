@@ -11,7 +11,7 @@ const menuItems = [
       {
         icon: 'ChartBarHorizontal',
         label: 'Estadísticas',
-        href: '/admin',
+        href: '/estadísticas',
         visible: ['admin', 'coordinador'],
       },
       {

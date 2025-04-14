@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+
+// Middleware para autenticar token JWT
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -7,21 +10,26 @@ const authMiddleware = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
 
-  // Simulación de verificación de token
-  if (token !== 'mi-token-seguro') {
-    return res.status(403).json({ message: 'Token inválido' });
+  try {
+    // Verifica token con tu clave secreta
+    const decoded = jwt.verify(token, 'mi_clave_secreta'); // cambia por process.env.JWT_SECRET
+
+    // Agrega info decodificada al request
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
+
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Token inválido o expirado' });
   }
-
-  req.user = {
-    id: 1,
-    username: 'admin',
-    role: 'admin',
-  };
-
-  next();
 };
 
+
 // Opcional: Middleware para validar roles
+// Middleware para verificar que el usuario tenga un rol permitido
 const roleMiddleware = (roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
