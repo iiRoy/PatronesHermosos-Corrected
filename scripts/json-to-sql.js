@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const folder = '../prisma/seed';
-const output = '../prisma/seed/inserts.sql';
+const output = '../prisma/inserts.sql';
 
 // Tablas y sus claves primarias opcionales
 const tables = [
