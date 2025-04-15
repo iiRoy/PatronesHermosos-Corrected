@@ -20,7 +20,7 @@
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE TRIGGER actualizar_cupo
+CREATE OR REPLACE TRIGGER actualizar_cupo
 AFTER UPDATE ON participants
 FOR EACH ROW
 BEGIN
@@ -45,7 +45,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE TRIGGER actualizar_estado_sede
+CREATE OR REPLACE TRIGGER actualizar_estado_sede
 AFTER UPDATE ON participants
 FOR EACH ROW
 BEGIN
@@ -93,13 +93,69 @@ $$
 -- Funciones de Conteo / Métricas
 -- =====================================================
 
+-- 🔹 Devuelve en JSON el total de SEDES en sus diferentes estados
+-- 🔸 Definición:
+
+DELIMITER $$
+CREATE OR REPLACE FUNCTION fun_total_sedes(
+    tipo_usuario ENUM('superuser')
+)
+RETURNS JSON
+DETERMINISTIC
+BEGIN
+    DECLARE v_id INT DEFAULT NULL;
+    DECLARE total_pendientes INT DEFAULT 0;
+    DECLARE total_sin_part INT DEFAULT 0;
+    DECLARE total_con_part INT DEFAULT 0;
+    DECLARE total_canceladas INT DEFAULT 0;
+    DECLARE total_rechazadas INT DEFAULT 0;
+
+    -- Conteos por estado
+    SELECT COUNT(*) INTO total_pendientes
+    FROM venues
+    WHERE status = 'Pendiente';
+
+    SELECT COUNT(*) INTO total_sin_part
+    FROM venues
+    WHERE status = 'Registrada sin participantes';
+
+    SELECT COUNT(*) INTO total_con_part
+    FROM venues
+    WHERE status = 'Registrada con participantes';
+
+    SELECT COUNT(*) INTO total_canceladas
+    FROM venues
+    WHERE status = 'Cancelada';
+
+    SELECT COUNT(*) INTO total_rechazadas
+    FROM venues
+    WHERE status = 'Rechazada';
+
+    -- Retornar como JSON
+    RETURN JSON_OBJECT(
+        'Pendiente', total_pendientes,
+        'Registrada sin participantes', total_sin_part,
+        'Registrada con participantes', total_con_part,
+        'Cancelada', total_canceladas,
+        'Rechazada', total_rechazadas
+    );
+END;
+$$
+
+-- 🔸 Ejemplo de uso:
+
+-- DELIMITER ;
+-- SELECT fun_total_part('superuser');
+
 -- 🔹 Devuelve en JSON el total de participantes 'Aprobadas' y 'Pendientes' según el tipo de usuario.
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE FUNCTION fun_total_part(
+
+CREATE OR REPLACE FUNCTION fun_total_part(
     email_coordinadora VARCHAR(255),
-    tipo_usuario ENUM('superuser', 'venue_coordinator')
+    tipo_usuario ENUM('superuser', 'venue_coordinator'),
+    id_sede_param INT
 )
 RETURNS JSON
 DETERMINISTIC
@@ -107,33 +163,77 @@ BEGIN
     DECLARE v_id INT;
     DECLARE total_aceptadas INT DEFAULT 0;
     DECLARE total_pendientes INT DEFAULT 0;
+    DECLARE total_rechazadas INT DEFAULT 0;
+    DECLARE total_canceladas INT DEFAULT 0;
 
     IF tipo_usuario = 'venue_coordinator' THEN
         SELECT id_venue INTO v_id
         FROM venue_coordinators
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
-
-        SELECT COUNT(*) INTO total_aceptadas
-        FROM participants p
-        JOIN groups g ON p.id_group = g.id_group
-        WHERE g.id_venue = v_id AND p.status = 'Aprobada';
-
-        SELECT COUNT(*) INTO total_pendientes
-        FROM participants p
-        LEFT JOIN groups g ON p.id_group = g.id_group
-        LEFT JOIN groups pg ON p.preferred_group = pg.id_group
-        WHERE p.status = 'Pendiente'
-        AND (
-            (g.id_group IS NOT NULL AND g.id_venue = v_id)
-            OR (g.id_group IS NULL AND pg.id_venue = v_id)
-        );
-
-    ELSE
-        SELECT COUNT(*) INTO total_aceptadas FROM participants WHERE status = 'Aprobada';
-        SELECT COUNT(*) INTO total_pendientes FROM participants WHERE status = 'Pendiente';
     END IF;
 
-    RETURN JSON_OBJECT('Aprobadas', total_aceptadas, 'Pendientes', total_pendientes);
+    SELECT COUNT(*) INTO total_aceptadas
+    FROM participants p
+    JOIN groups g ON p.id_group = g.id_group
+    WHERE p.status = 'Aprobada'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+      );
+
+    SELECT COUNT(*) INTO total_pendientes
+    FROM participants p
+    LEFT JOIN groups g ON p.id_group = g.id_group
+    LEFT JOIN groups pg ON p.preferred_group = pg.id_group
+    WHERE p.status = 'Pendiente'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      );
+    
+    SELECT COUNT(*) INTO total_rechazadas
+    FROM participants p
+    LEFT JOIN groups g ON p.id_group = g.id_group
+    LEFT JOIN groups pg ON p.preferred_group = pg.id_group
+    WHERE p.status = 'Rechazada'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      );
+    
+    SELECT COUNT(*) INTO total_canceladas
+    FROM participants p
+    LEFT JOIN groups g ON p.id_group = g.id_group
+    LEFT JOIN groups pg ON p.preferred_group = pg.id_group
+    WHERE p.status = 'Cancelada'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      );
+
+    RETURN JSON_OBJECT('Aprobadas', total_aceptadas, 'Pendientes', total_pendientes, 'Rechazadas', total_rechazadas, 'Canceladas', total_canceladas);
 END;
 $$
 
@@ -146,9 +246,11 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE FUNCTION fun_total_colab(
+CREATE OR REPLACE FUNCTION fun_total_colab(
     email_coordinadora VARCHAR(255),
-    tipo_usuario ENUM('superuser', 'venue_coordinator')
+    tipo_usuario ENUM('superuser', 'venue_coordinator'),
+    id_sede_param INT,
+    rol_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
 )
 RETURNS JSON
 DETERMINISTIC
@@ -156,32 +258,96 @@ BEGIN
     DECLARE v_id INT;
     DECLARE total_aceptadas INT DEFAULT 0;
     DECLARE total_pendientes INT DEFAULT 0;
+    DECLARE total_rechazadas INT DEFAULT 0;
+    DECLARE total_canceladas INT DEFAULT 0;
 
     IF tipo_usuario = 'venue_coordinator' THEN
         SELECT id_venue INTO v_id
         FROM venue_coordinators
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
-
-        SELECT COUNT(*) INTO total_aceptadas
-        FROM collaborators c
-        JOIN groups g ON c.id_group = g.id_group
-        WHERE g.id_venue = v_id AND c.status = 'Aprobada';
-
-        SELECT COUNT(*) INTO total_pendientes
-        FROM collaborators c
-        LEFT JOIN groups g ON c.id_group = g.id_group
-        LEFT JOIN groups pg ON c.preferred_group = pg.id_group
-        WHERE c.status = 'Pendiente'
-        AND (
-            (g.id_group IS NOT NULL AND g.id_venue = v_id)
-            OR (g.id_group IS NULL AND pg.id_venue = v_id)
-        );
-    ELSE
-        SELECT COUNT(*) INTO total_aceptadas FROM collaborators WHERE status = 'Aprobada';
-        SELECT COUNT(*) INTO total_pendientes FROM collaborators WHERE status = 'Pendiente';
     END IF;
 
-    RETURN JSON_OBJECT('Aprobadas', total_aceptadas, 'Pendientes', total_pendientes);
+    SELECT COUNT(*) INTO total_aceptadas
+    FROM collaborators c
+    LEFT JOIN groups g ON c.id_group = g.id_group
+    LEFT JOIN groups pg ON c.preferred_group = pg.id_group
+    WHERE c.status = 'Aprobada'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      )
+      AND (
+        rol_param IS NULL
+        OR c.role = rol_param
+      );
+
+    SELECT COUNT(*) INTO total_pendientes
+    FROM collaborators c
+    LEFT JOIN groups g ON c.id_group = g.id_group
+    LEFT JOIN groups pg ON c.preferred_group = pg.id_group
+    WHERE c.status = 'Pendiente'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      )
+      AND (
+        rol_param IS NULL
+        OR c.preferred_role = rol_param
+      );
+
+    SELECT COUNT(*) INTO total_rechazadas
+    FROM collaborators c
+    LEFT JOIN groups g ON c.id_group = g.id_group
+    LEFT JOIN groups pg ON c.preferred_group = pg.id_group
+    WHERE c.status = 'Rechazada'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      )
+      AND (
+        rol_param IS NULL
+        OR c.preferred_role = rol_param
+      );
+
+    SELECT COUNT(*) INTO total_canceladas
+    FROM collaborators c
+    LEFT JOIN groups g ON c.id_group = g.id_group
+    LEFT JOIN groups pg ON c.preferred_group = pg.id_group
+    WHERE c.status = 'Cancelada'
+      AND (
+        tipo_usuario = 'superuser'
+        OR g.id_venue = v_id
+        OR pg.id_venue = v_id
+      )
+      AND (
+        id_sede_param IS NULL
+        OR g.id_venue = id_sede_param
+        OR pg.id_venue = id_sede_param
+      )
+      AND (
+        rol_param IS NULL
+        OR c.preferred_role = rol_param
+      );
+
+    RETURN JSON_OBJECT('Aprobadas', total_aceptadas, 'Pendientes', total_pendientes, 'Rechazadas', total_rechazadas, 'Canceladas', total_canceladas);
 END;
 $$
 
@@ -194,9 +360,10 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE FUNCTION fun_total_ment(
+CREATE OR REPLACE FUNCTION fun_total_ment(
     email_coordinadora VARCHAR(255),
-    tipo_usuario ENUM('superuser', 'venue_coordinator')
+    tipo_usuario ENUM('superuser', 'venue_coordinator'),
+    id_sede_param INT
 )
 RETURNS INT
 DETERMINISTIC
@@ -204,14 +371,24 @@ BEGIN
     DECLARE v_id INT;
 
     IF tipo_usuario = 'venue_coordinator' THEN
-        SELECT id_venue INTO v_id FROM venue_coordinators
+        SELECT id_venue INTO v_id
+        FROM venue_coordinators
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
-        RETURN (SELECT COUNT(*) FROM mentors WHERE id_venue = v_id);
+
+        RETURN (
+            SELECT COUNT(*) FROM mentors
+            WHERE id_venue = v_id
+              AND (id_sede_param IS NULL OR id_venue = id_sede_param)
+        );
     ELSE
-        RETURN (SELECT COUNT(*) FROM mentors);
+        RETURN (
+            SELECT COUNT(*) FROM mentors
+            WHERE id_sede_param IS NULL OR id_venue = id_sede_param
+        );
     END IF;
 END;
 $$
+
 
 -- 🔸 Ejemplo de uso:
 
@@ -222,9 +399,11 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE FUNCTION fun_total_coord(
+CREATE OR REPLACE FUNCTION fun_total_coord(
     email_coordinadora VARCHAR(255),
-    tipo_usuario ENUM('superuser', 'venue_coordinator')
+    tipo_usuario ENUM('superuser', 'venue_coordinator'),
+    id_sede_param INT,
+    rol_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
 )
 RETURNS INT
 DETERMINISTIC
@@ -236,33 +415,34 @@ BEGIN
         SELECT id_venue INTO v_id
         FROM venue_coordinators
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
+    END IF;
 
-        SELECT (
-            SELECT COUNT(*) FROM venue_coordinators vc
-            JOIN venues v ON vc.id_venue = v.id_venue
-            WHERE vc.id_venue = v_id
-              AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-        ) +
-        (
-            SELECT COUNT(*) FROM assistant_coordinators ac
-            JOIN venues v ON ac.id_venue = v.id_venue
-            WHERE ac.id_venue = v_id
-              AND ac.role IN ('Coordinadora Asociada', 'Coordinadora de informes')
-              AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-        ) INTO total;
+    IF rol_param IS NULL OR rol_param = 'Coordinadora General' THEN
+        SELECT total + COUNT(*) INTO total
+        FROM venue_coordinators vc
+        JOIN venues v ON vc.id_venue = v.id_venue
+        WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+          AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+          AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
+    END IF;
 
-    ELSE
-        SELECT (
-            SELECT COUNT(*) FROM venue_coordinators vc
-            JOIN venues v ON vc.id_venue = v.id_venue
-            WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-        ) +
-        (
-            SELECT COUNT(*) FROM assistant_coordinators ac
-            JOIN venues v ON ac.id_venue = v.id_venue
-            WHERE ac.role IN ('Coordinadora Asociada', 'Coordinadora de informes')
-              AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-        ) INTO total;
+    IF rol_param IS NULL OR rol_param IN ('Coordinadora Asociada', 'Coordinadora de informes') THEN
+        SELECT total + COUNT(*) INTO total
+        FROM assistant_coordinators ac
+        JOIN venues v ON ac.id_venue = v.id_venue
+        WHERE ac.role IN (
+                CASE
+                    WHEN rol_param IS NULL THEN 'Coordinadora Asociada'
+                    ELSE rol_param
+                END,
+                CASE
+                    WHEN rol_param IS NULL THEN 'Coordinadora de informes'
+                    ELSE rol_param
+                END
+            )
+          AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+          AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+          AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
     END IF;
 
     RETURN total;
@@ -283,7 +463,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE resumen_sede(
+CREATE OR REPLACE PROCEDURE resumen_sede(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
     IN email_coordinadora VARCHAR(255)
 )
@@ -296,33 +476,39 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
-    SELECT 
-        v.name AS sede,
-
-        (SELECT COUNT(*) FROM participants p
-        JOIN groups g ON p.id_group = g.id_group
-        WHERE g.id_venue = v.id_venue AND p.status = 'Aprobada') AS participantes_aceptadas,
-
-        (SELECT COUNT(*) FROM participants p
-        LEFT JOIN groups g ON p.id_group = g.id_group
-        LEFT JOIN groups pg ON p.preferred_group = pg.id_group
-        WHERE p.status = 'Pendiente' AND (
-            (p.id_group IS NOT NULL AND g.id_venue = v.id_venue)
-            OR (p.id_group IS NULL AND pg.id_venue = v.id_venue)
-        )) AS participantes_pendientes,
-
-        (SELECT COUNT(*) FROM collaborators c
-        JOIN groups g ON c.id_group = g.id_group
-        WHERE g.id_venue = v.id_venue AND c.status = 'Aprobada') AS colaboradores_aceptados,
-
-        (SELECT COUNT(*) FROM collaborators c
-        LEFT JOIN groups g ON c.id_group = g.id_group
-        LEFT JOIN groups pgc ON c.preferred_group = pgc.id_group
-        WHERE c.status = 'Pendiente' AND (
-            (c.id_group IS NOT NULL AND g.id_venue = v.id_venue)
-            OR (c.id_group IS NULL AND pgc.id_venue = v.id_venue)
-        )) AS colaboradores_pendientes
-
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'sede', v.name,
+            'participantes_aceptadas', (
+                SELECT COUNT(*) FROM participants p
+                JOIN groups g ON p.id_group = g.id_group
+                WHERE g.id_venue = v.id_venue AND p.status = 'Aprobada'
+            ),
+            'participantes_pendientes', (
+                SELECT COUNT(*) FROM participants p
+                LEFT JOIN groups g ON p.id_group = g.id_group
+                LEFT JOIN groups pg ON p.preferred_group = pg.id_group
+                WHERE p.status = 'Pendiente' AND (
+                    (p.id_group IS NOT NULL AND g.id_venue = v.id_venue)
+                    OR (p.id_group IS NULL AND pg.id_venue = v.id_venue)
+                )
+            ),
+            'colaboradores_aceptados', (
+                SELECT COUNT(*) FROM collaborators c
+                JOIN groups g ON c.id_group = g.id_group
+                WHERE g.id_venue = v.id_venue AND c.status = 'Aprobada'
+            ),
+            'colaboradores_pendientes', (
+                SELECT COUNT(*) FROM collaborators c
+                LEFT JOIN groups g ON c.id_group = g.id_group
+                LEFT JOIN groups pgc ON c.preferred_group = pgc.id_group
+                WHERE c.status = 'Pendiente' AND (
+                    (c.id_group IS NOT NULL AND g.id_venue = v.id_venue)
+                    OR (c.id_group IS NULL AND pgc.id_venue = v.id_venue)
+                )
+            )
+        )
+    ) AS resumen
     FROM venues v
     WHERE tipo_usuario = 'superuser' OR v.id_venue = v_id;
 END;
@@ -337,9 +523,10 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE resumen_colaboradores(
+CREATE OR REPLACE PROCEDURE resumen_colaboradoras(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
-    IN email_coordinadora VARCHAR(255)
+    IN email_coordinadora VARCHAR(255),
+    IN id_sede_param INT
 )
 BEGIN
     DECLARE v_id INT;
@@ -350,30 +537,53 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
-    SELECT 
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_colab_resumen (
+        rol VARCHAR(255),
+        total INT
+    );
+    DELETE FROM temp_colab_resumen;
+
+    INSERT INTO temp_colab_resumen (rol, total)
+    SELECT
         c.role,
         COUNT(*) AS total
     FROM collaborators c
     LEFT JOIN groups g ON c.id_group = g.id_group
     LEFT JOIN venues v ON g.id_venue = v.id_venue
-    WHERE (tipo_usuario = 'superuser' OR v.id_venue = v_id)
-    GROUP BY c.role
-    ORDER BY c.role;
+    WHERE (
+        tipo_usuario = 'superuser'
+        OR v.id_venue = v_id
+    )
+    AND (
+        id_sede_param IS NULL
+        OR v.id_venue = id_sede_param
+    )
+    GROUP BY c.role;
+
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'rol', rol,
+            'total', total
+        )
+    ) AS resumen
+    FROM temp_colab_resumen;
+
 END;
 $$
 
 -- 🔸 Ejemplo de uso:
 
 -- DELIMITER ;
--- CALL resumen_colaboradores('venue_coordinator', 'corta@tec.mx');
+-- CALL resumen_colaboradores('venue_coordinator', 'corta@tec.mx', 5);
 
 -- 🔹 Agrupa las coordinadoras generales, asociadas e informes por sede.
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE resumen_coordinadores(
+CREATE OR REPLACE PROCEDURE resumen_coordinadoras(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
-    IN email_coordinadora VARCHAR(255)
+    IN email_coordinadora VARCHAR(255),
+    IN id_sede_param INT
 )
 BEGIN
     DECLARE v_id INT;
@@ -384,25 +594,42 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_coordinadoras_resumen (
+        rol VARCHAR(255),
+        total INT
+    );
+    DELETE FROM temp_coordinadoras_resumen;
+
+    INSERT INTO temp_coordinadoras_resumen (rol, total)
     SELECT
-        'Coordinadora General' AS role,
-        COUNT(*) AS total
+        'Coordinadora General',
+        COUNT(*)
     FROM venue_coordinators vc
     JOIN venues v ON vc.id_venue = v.id_venue
     WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
       AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
 
-    UNION ALL
-
+    INSERT INTO temp_coordinadoras_resumen (rol, total)
     SELECT
         ac.role,
-        COUNT(*) AS total
+        COUNT(*)
     FROM assistant_coordinators ac
     JOIN venues v ON ac.id_venue = v.id_venue
-    WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-      AND ac.role IN ('Coordinadora Asociada', 'Coordinadora de informes')
+    WHERE ac.role IN ('Coordinadora Asociada', 'Coordinadora de informes')
+      AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
       AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param)
     GROUP BY ac.role;
+
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'rol', rol,
+            'total', total
+        )
+    ) AS resumen
+    FROM temp_coordinadoras_resumen;
+
 END;
 $$
 
@@ -415,29 +642,51 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE resumen_evento(
+CREATE OR REPLACE PROCEDURE resumen_evento(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
-    IN email_coordinadora VARCHAR(255)
+    IN email_coordinadora VARCHAR(255),
+    IN id_sede_param INT,
+    IN rol_colab_param VARCHAR(255) COLLATE utf8mb4_unicode_ci,
+    IN rol_coord_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
 )
 BEGIN
-    SELECT
-        fun_total_part(email_coordinadora, tipo_usuario) AS total_participantes,
-        fun_total_colab(email_coordinadora, tipo_usuario) AS total_colaboradores,
-        fun_total_ment(email_coordinadora, tipo_usuario) AS total_mentoras,
-        fun_total_coord(email_coordinadora, tipo_usuario) AS total_coordinadoras;
+    DECLARE participantes_json JSON;
+    DECLARE colaboradoras_json JSON;
+    DECLARE total_mentoras INT DEFAULT 0;
+    DECLARE total_coordinadoras INT DEFAULT 0;
+    DECLARE sedes_json JSON;
+
+    SET participantes_json = fun_total_part(email_coordinadora, tipo_usuario, id_sede_param);
+    SET colaboradoras_json = fun_total_colab(email_coordinadora, tipo_usuario, id_sede_param, rol_colab_param);
+    SELECT fun_total_ment(email_coordinadora, tipo_usuario, id_sede_param) INTO total_mentoras;
+    SELECT fun_total_coord(email_coordinadora, tipo_usuario, id_sede_param, rol_coord_param) INTO total_coordinadoras;
+
+    IF tipo_usuario = 'superuser' THEN
+        SET sedes_json = fun_total_sedes(tipo_usuario);
+    ELSE
+        SET sedes_json = NULL;
+    END IF;
+
+    SELECT JSON_OBJECT(
+        'total_participantes', participantes_json,
+        'total_colaboradores', colaboradoras_json,
+        'total_mentoras', total_mentoras,
+        'total_coordinadoras', total_coordinadoras,
+        'total_sedes', sedes_json
+    ) AS resumen;
 END;
 $$
 
 -- 🔸 Ejemplo de uso:
 
 -- DELIMITER ;
--- CALL resumen_evento('superuser', '');
+-- CALL resumen_evento_json('superuser', NULL, 3, 'Staff', 'Coordinadora Asociada');
 
 -- 🔹 Muestra la capacidad usada de los grupos (porcentaje y ocupación).
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE capacidad_grupos(
+CREATE OR REPLACE PROCEDURE capacidad_grupos(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator') COLLATE utf8mb4_general_ci,
     IN email_coordinadora VARCHAR(255) COLLATE utf8mb4_general_ci
 )
@@ -477,7 +726,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE FUNCTION fun_part_aceptadas(grupo_id INT)
+CREATE OR REPLACE FUNCTION fun_part_aceptadas(grupo_id INT)
 RETURNS INT
 DETERMINISTIC
 BEGIN
@@ -498,7 +747,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE FUNCTION fun_part_interesadas(grupo_id INT)
+CREATE OR REPLACE FUNCTION fun_part_interesadas(grupo_id INT)
 RETURNS INT
 DETERMINISTIC
 BEGIN
@@ -530,7 +779,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE validar_capacidad_participante(
+CREATE OR REPLACE PROCEDURE validar_capacidad_participante(
     IN id_grupo INT
 )
 BEGIN
@@ -564,7 +813,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE registrar_part(
+CREATE OR REPLACE PROCEDURE registrar_part(
     -- Datos del Participante
     IN nombre_part VARCHAR(255),
     IN paterno_part VARCHAR(255),
@@ -637,7 +886,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE aprobar_part(
+CREATE OR REPLACE PROCEDURE aprobar_part(
     IN participante_id INT,
     IN grupo_asignado_id INT
 )
@@ -698,7 +947,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE registrar_colab(
+CREATE OR REPLACE PROCEDURE registrar_colab(
     IN nombre VARCHAR(255),
     IN paterno VARCHAR(255),
     IN materno VARCHAR(255),
@@ -750,7 +999,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE aprobar_colab(
+CREATE OR REPLACE PROCEDURE aprobar_colab(
     IN colaboradora_id INT,
     IN nuevo_rol ENUM('Instructora', 'Facilitadora', 'Staff', 'Pendiente'),
     IN nuevo_idioma ENUM('Español', 'Inglés', 'Pendiente'),
@@ -798,7 +1047,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE registrar_grupo(
+CREATE OR REPLACE PROCEDURE registrar_grupo(
     -- Datos del grupo
     IN nombre_grupo VARCHAR(255) COLLATE utf8mb4_unicode_ci,
     IN fecha_inicio DATE,
@@ -917,7 +1166,7 @@ $$
 -- 🔸 Definición:
 
 DELIMITER $$
-CREATE PROCEDURE registrar_sede(
+CREATE OR REPLACE PROCEDURE registrar_sede(
     -- Datos sede
     IN nombre_sede VARCHAR(255),
     IN ubicacion_sede VARCHAR(255),

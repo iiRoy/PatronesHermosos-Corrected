@@ -21,7 +21,7 @@ const login = async (req, res) => {
     });
 
     if (user && await bcrypt.compare(password, user.password)) {
-      role = 'admin';
+      role = 'superuser';
     }
 
     // Buscar en venue coordinators
@@ -36,7 +36,7 @@ const login = async (req, res) => {
       });
 
       if (user && await bcrypt.compare(password, user.password)) {
-        role = 'coordinadora';
+        role = 'venue_coordinator';
       }
     }
 

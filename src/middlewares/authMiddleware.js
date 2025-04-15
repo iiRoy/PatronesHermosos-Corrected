@@ -12,7 +12,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     // Verifica token con tu clave secreta
-    const decoded = jwt.verify(token, 'mi_clave_secreta'); // cambia por process.env.JWT_SECRET
+    const decoded = jwt.verify(token, 'mi_clave_secreta');
 
     // Agrega info decodificada al request
     req.user = {
