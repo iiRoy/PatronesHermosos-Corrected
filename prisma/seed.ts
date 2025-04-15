@@ -4,6 +4,7 @@ const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const { execSync } = require('child_process');
 const dotenv = require('dotenv');
+const path = require ('path');
 
 dotenv.config();
 
@@ -165,12 +166,11 @@ async function main() {
   const [, user, pass, host, port, db] = match;
   
   // Construir comando mysql con o sin contraseña
-  const passwordOption = pass ? `-p${pass}` : '';
+  const sqlFile = path.join(__dirname, "after-migrate.sql");
   
-  execSync(
-    `mysql -u${user} ${passwordOption} -h${host} -P${port} ${db} < prisma/after-migrate.sql`,
-    { stdio: 'inherit' }
-  );  
+  execSync(`mysql -u root -h localhost -P 3306 -D patrones-hermosos < "${sqlFile}"`, {
+    stdio: "inherit",
+  });
   console.log('✅ ¡Funciones, procedimientos y triggers insertados exitosamente!');
 }
 
