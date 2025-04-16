@@ -20,7 +20,7 @@ interface FiltroEventoProps {
   selected?: string[];
   onChange?: (updated: string[]) => void;
   label?: string;
-  labelOptions ?: string;
+  labelOptions?: string;
   iconName?: keyof typeof Icons;
   showSecciones?: boolean;
   labelSecciones?: string;
@@ -29,12 +29,12 @@ interface FiltroEventoProps {
   onChangeSeccion?: (s: string) => void;
   extraFilters?: (ExtraFilter | null)[];
   onExtraFilterChange?: (key: string, value: string) => void;
-  fade ?: boolean;
+  fade?: boolean;
 }
 
 const FiltroEvento: React.FC<FiltroEventoProps> = ({
-  options=[],
-  selected=[],
+  options = [],
+  selected = [],
   onChange = () => {},
   label = 'Filtros',
   labelOptions = 'Opciones',
@@ -60,9 +60,9 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
 
   const toggleDropdown = () => {
     if (!show) {
-      setShow(true)
+      setShow(true);
     } else {
-      setShow(false)
+      setShow(false);
     }
   };
 
@@ -89,13 +89,12 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
       });
     }
   }, [extraFilters, fade]);
-  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if ((event.target as HTMLElement).closest('#filter-bar')) return;
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShow(false)
+        setShow(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -105,7 +104,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   }, []);
 
   const IconComponent = withIconDecorator(
-    iconName && Icons[iconName] ? Icons[iconName] : Icons.CaretDoubleDown
+    iconName && Icons[iconName] ? Icons[iconName] : Icons.CaretDoubleDown,
   );
 
   return (
@@ -125,16 +124,18 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
         <span className='font-bold text-lg'>{label}</span>
       </div>
 
-  <div
-    ref={dropdownRef}
-    id='filter-bar'
-    className={`absolute top-full right-0 mt-2 w-full md:max-w-xs bg-white rounded-lg shadow-custom-dark z-10 transform transition-all duration-300 ease-in-out
-      ${show ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95'}
+      <div
+        ref={dropdownRef}
+        id='filter-bar'
+        className={`absolute top-full right-0 mt-2 w-full md:max-w-xs bg-white rounded-lg shadow-custom-dark z-10 transform transition-all duration-300 ease-in-out
+      ${show ? 'opacity-100 scale-100 visible pointer-events-auto' : 'opacity-0 scale-95 invisible pointer-events-none'}
     `}
-  >
+      >
         {showSecciones && secciones.length > 0 && (
-          <div className={`px-4 py-2 transform transition-all duration-300 ease-in-out
-            ${show && !fade ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95'} ${fade ? 'pointer-events-none' : ''}`}>
+          <div
+            className={`px-4 py-2 transform transition-all duration-300 ease-in-out
+            ${show && !fade ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95'} ${fade ? 'pointer-events-none' : ''}`}
+          >
             <label className='text-sm font-semibold text-gray-700'>{labelSecciones}</label>
             <select
               className='w-full bg-text font-semibold mt-1 p-2 rounded-lg'
@@ -154,34 +155,36 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
           </div>
         )}
 
-{extraFilters.map((filter) =>
-  filter ? (
-    <div
-      key={filter.key}
-      className={`px-4 py-2 transform transition-all duration-300 ease-in-out ${
-        filterVisibility[filter.key] ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95'
-      }`}
-    >
-      <label className='text-sm font-semibold text-gray-700'>{filter.label}</label>
-      <select
-        className='w-full bg-text mt-1 p-2 rounded-lg'
-        onChange={(e) => onExtraFilterChange(filter.key, e.target.value)}
-      >
-        {filter.options.map((opt, index) => (
-          <option
-            key={opt.value}
-            value={opt.value}
-            className={`bg-text ${
-              index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
-            }`}
-          >
-            {opt.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  ) : null
-)}
+        {extraFilters.map((filter) =>
+          filter ? (
+            <div
+              key={filter.key}
+              className={`px-4 py-2 transform transition-all duration-300 ease-in-out ${
+                filterVisibility[filter.key]
+                  ? 'opacity-100 scale-100 visible'
+                  : 'opacity-0 scale-95'
+              }`}
+            >
+              <label className='text-sm font-semibold text-gray-700'>{filter.label}</label>
+              <select
+                className='w-full bg-text mt-1 p-2 rounded-lg'
+                onChange={(e) => onExtraFilterChange(filter.key, e.target.value)}
+              >
+                {filter.options.map((opt, index) => (
+                  <option
+                    key={opt.value}
+                    value={opt.value}
+                    className={`bg-text ${
+                      index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
+                    }`}
+                  >
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null,
+        )}
 
         {!disableCheckboxes && options.length > 0 && (
           <div className='px-4 py-2'>

@@ -111,10 +111,15 @@ const CardSection = () => {
           <>
             <UserCard type='activas' count={toValidNumber(p.Aprobadas)} />
             <UserCard type='pendientes' count={toValidNumber(p.Pendientes)} />
-            <UserCard type='desactivadas' count={toValidNumber(p.Rechazadas) + toValidNumber(p.Canceladas)} />
+            <UserCard
+              type='desactivadas'
+              count={toValidNumber(p.Rechazadas) + toValidNumber(p.Canceladas)}
+            />
             <UserCard
               type='totales'
-              count={toValidNumber(Object.values(p).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0))}
+              count={toValidNumber(
+                Object.values(p).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0),
+              )}
             />
           </>
         );
@@ -125,10 +130,15 @@ const CardSection = () => {
           <>
             <UserCard type='aprobadas' count={toValidNumber(c.Aprobadas)} />
             <UserCard type='pendientes' count={toValidNumber(c.Pendientes)} />
-            <UserCard type='desactivadas' count={toValidNumber(c.Rechazadas) + toValidNumber(c.Canceladas)} />
+            <UserCard
+              type='desactivadas'
+              count={toValidNumber(c.Rechazadas) + toValidNumber(c.Canceladas)}
+            />
             <UserCard
               type='totales'
-              count={toValidNumber(Object.values(c).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0))}
+              count={toValidNumber(
+                Object.values(c).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0),
+              )}
             />
           </>
         );
@@ -137,7 +147,10 @@ const CardSection = () => {
         return (
           <>
             <UserCard type='mentoras' count={toValidNumber(resumenEvento.total_mentoras)} />
-            <UserCard type='coordinadoras' count={toValidNumber(resumenEvento.total_coordinadoras)} />
+            <UserCard
+              type='coordinadoras'
+              count={toValidNumber(resumenEvento.total_coordinadoras)}
+            />
           </>
         );
       case 'SEDES': {
@@ -147,14 +160,20 @@ const CardSection = () => {
             <UserCard
               type='activas'
               count={
-                toValidNumber(s['Registrada sin participantes']) + toValidNumber(s['Registrada con participantes'])
+                toValidNumber(s['Registrada sin participantes']) +
+                toValidNumber(s['Registrada con participantes'])
               }
             />
             <UserCard type='pendientes' count={toValidNumber(s.Pendiente)} />
-            <UserCard type='desactivadas' count={toValidNumber(s.Rechazada) + toValidNumber(s.Cancelada)} />
+            <UserCard
+              type='desactivadas'
+              count={toValidNumber(s.Rechazada) + toValidNumber(s.Cancelada)}
+            />
             <UserCard
               type='totales'
-              count={toValidNumber(Object.values(s).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0))}
+              count={toValidNumber(
+                Object.values(s).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0),
+              )}
             />
           </>
         );
@@ -188,7 +207,9 @@ const CardSection = () => {
     <div className='flex flex-col gap-3 items-center justify-center'>
       <div className='flex justify-between w-full items-center'>
         <div className='flex flex-col md:flex-row items-center justify-center w-full relative'>
-          <div className={`flex items-center gap-3 transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}>
+          <div
+            className={`flex items-center gap-3 transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}
+          >
             <IconComponent
               fillColor='var(--text-color)'
               strokeColor='var(--background)'
@@ -224,17 +245,17 @@ const CardSection = () => {
                     ],
                   }
                 : section === 'Administración'
-                ? {
-                    label: 'Tipo de coordinadora',
-                    key: 'coord',
-                    options: [
-                      { label: 'Todas', value: '' },
-                      { label: 'General', value: 'cg' },
-                      { label: 'Asociada', value: 'ca' },
-                      { label: 'Informes', value: 'ci' },
-                    ],
-                  }
-                : null,
+                  ? {
+                      label: 'Tipo de coordinadora',
+                      key: 'coord',
+                      options: [
+                        { label: 'Todas', value: '' },
+                        { label: 'General', value: 'cg' },
+                        { label: 'Asociada', value: 'ca' },
+                        { label: 'Informes', value: 'ci' },
+                      ],
+                    }
+                  : null,
               section !== 'SEDES'
                 ? {
                     label: 'SEDE',
@@ -249,7 +270,9 @@ const CardSection = () => {
         </div>
       </div>
       <div className='w-full lg:w-4/7 flex flex-col'>
-        <div className={`flex gap-4 justify-between flex-wrap transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'}`}>
+        <div
+          className={`flex gap-4 justify-between flex-wrap transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'}`}
+        >
           {renderCards()}
         </div>
       </div>

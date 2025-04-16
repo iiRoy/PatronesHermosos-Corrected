@@ -4,7 +4,7 @@ const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const { execSync } = require('child_process');
 const dotenv = require('dotenv');
-const path = require ('path');
+const path = require('path');
 
 dotenv.config();
 
@@ -153,23 +153,23 @@ async function main() {
   if (!dbUrl) {
     throw new Error('DATABASE_URL no definida en .env');
   }
-  
-  console.log("🔍 DATABASE_URL:", dbUrl);
-  
+
+  console.log('🔍 DATABASE_URL:', dbUrl);
+
   // Nuevo regex compatible con o sin contraseña
   const regex = /^mysql:\/\/([^:@]+)(?::([^@]*))?@([^:\/]+):(\d+)\/([^?]+)/;
   const match = dbUrl.match(regex);
   if (!match) {
     throw new Error('DATABASE_URL no es válida');
   }
-  
+
   const [, user, pass, host, port, db] = match;
-  
+
   // Construir comando mysql con o sin contraseña
-  const sqlFile = path.join(__dirname, "after-migrate.sql");
-  
+  const sqlFile = path.join(__dirname, 'after-migrate.sql');
+
   execSync(`mysql -u root -h localhost -P 3306 -D patrones-hermosos < "${sqlFile}"`, {
-    stdio: "inherit",
+    stdio: 'inherit',
   });
   console.log('✅ ¡Funciones, procedimientos y triggers insertados exitosamente!');
 }

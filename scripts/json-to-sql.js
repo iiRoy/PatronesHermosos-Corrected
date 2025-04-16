@@ -15,7 +15,7 @@ const tables = [
   'participants',
   'collaborators',
   'excluded_date',
-  'superuser'
+  'superuser',
 ];
 
 // 🔧 Limpia y escapa valores para SQL
@@ -44,7 +44,9 @@ for (const table of tables) {
   allSQL += `-- Insertando datos en tabla: ${table}\n`;
 
   for (const row of data) {
-    const columns = Object.keys(row).map((col) => `\`${col}\``).join(', ');
+    const columns = Object.keys(row)
+      .map((col) => `\`${col}\``)
+      .join(', ');
     const values = Object.values(row).map(escapeValue).join(', ');
     allSQL += `INSERT INTO \`${table}\` (${columns}) VALUES (${values});\n`;
   }
