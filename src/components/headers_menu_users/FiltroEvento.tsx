@@ -52,6 +52,11 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   const [show, setShow] = useState(false);
   const [filterVisibility, setFilterVisibility] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const filterVisibilityRef = useRef(filterVisibility);
+
+  useEffect(() => {
+    filterVisibilityRef.current = filterVisibility;
+  }, [filterVisibility]);
 
   const toggleDropdown = () => {
     if (!show) {
@@ -73,7 +78,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
       setFilterVisibility({});
     } else {
       extraFilters.forEach((filter, index) => {
-        if (filter && !filterVisibility[filter.key]) {
+        if (filter && !filterVisibilityRef.current[filter.key]) {
           setTimeout(() => {
             setFilterVisibility((prev) => ({
               ...prev,
@@ -83,7 +88,8 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
         }
       });
     }
-  }, [extraFilters, fade]);  
+  }, [extraFilters, fade]);
+  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

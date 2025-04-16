@@ -39,29 +39,28 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
       try {
         const res = await fetch(apiEndpoint, {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}` || '',
           },
         });
-
+  
         const json = await res.json();
         const source = dataPath ? json[dataPath] : json;
-
+  
         if (!source || typeof source !== 'object') {
           console.warn(`⚠️ No se encontró ${dataPath} en la respuesta.`);
           return;
         }
-
+  
         const defaultPalette = [
           { fill: '#683756' },
           { fill: '#97639c' },
           { fill: '#B77690' },
         ];
-        // Si el usuario pasó su propia paleta (como lista de hex o clases), la convertimos
+  
         const parsedPalette = (colorPalette ?? defaultPalette).map((color) =>
           typeof color === 'string' ? { fill: color } : color,
         );
-
-        // 🧠 Procesamiento dinámico de claves
+  
         const keys = Object.keys(source);
         const processed = keys.map((key, index) => {
           const palette = parsedPalette[index % parsedPalette.length];
@@ -71,12 +70,12 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
             fill: palette.fill,
           };
         });
-
+  
         const totalCantidad = processed.reduce((sum, d) => sum + d.total, 0);
-
+  
         setFade(true);
         setTimeout(() => {
-          setData([{ rol: 'Total', total: totalCantidad, fill: 'white'}, ...processed]);
+          setData([{ rol: 'Total', total: totalCantidad, fill: 'white' }, ...processed]);
           setTotal(totalCantidad);
           setFade(false);
           isFirstRender.current = false;
@@ -85,9 +84,9 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
         console.error('❌ Error al cargar datos:', err);
       }
     };
-
+  
     fetchData();
-  }, [apiEndpoint, dataPath]);
+  }, [apiEndpoint, dataPath, colorPalette]);  
 
   const legendToShow = legendKeys ?? data.filter((d) => d.rol !== 'Total').map((d) => d.rol);
 

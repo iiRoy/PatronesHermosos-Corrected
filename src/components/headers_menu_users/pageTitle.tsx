@@ -1,3 +1,4 @@
+'use client';
 interface PageTitleProps {
   children: React.ReactNode;
 }
