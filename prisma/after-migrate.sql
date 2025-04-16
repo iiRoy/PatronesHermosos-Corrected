@@ -479,33 +479,30 @@ BEGIN
     SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
             'sede', v.name,
-            'participantes_aceptadas', (
+            'participantes', (
                 SELECT COUNT(*) FROM participants p
                 JOIN groups g ON p.id_group = g.id_group
-                WHERE g.id_venue = v.id_venue AND p.status = 'Aprobada'
+                WHERE g.id_venue = v.id_venue AND (p.status = 'Aprobada')
             ),
-            'participantes_pendientes', (
-                SELECT COUNT(*) FROM participants p
-                LEFT JOIN groups g ON p.id_group = g.id_group
-                LEFT JOIN groups pg ON p.preferred_group = pg.id_group
-                WHERE p.status = 'Pendiente' AND (
-                    (p.id_group IS NOT NULL AND g.id_venue = v.id_venue)
-                    OR (p.id_group IS NULL AND pg.id_venue = v.id_venue)
-                )
-            ),
-            'colaboradores_aceptados', (
+            'colaboradores', (
                 SELECT COUNT(*) FROM collaborators c
                 JOIN groups g ON c.id_group = g.id_group
-                WHERE g.id_venue = v.id_venue AND c.status = 'Aprobada'
+                WHERE g.id_venue = v.id_venue AND (c.status = 'Aprobada')
             ),
-            'colaboradores_pendientes', (
-                SELECT COUNT(*) FROM collaborators c
-                LEFT JOIN groups g ON c.id_group = g.id_group
-                LEFT JOIN groups pgc ON c.preferred_group = pgc.id_group
-                WHERE c.status = 'Pendiente' AND (
-                    (c.id_group IS NOT NULL AND g.id_venue = v.id_venue)
-                    OR (c.id_group IS NULL AND pgc.id_venue = v.id_venue)
-                )
+            'mentoras', (
+                SELECT COUNT(*) FROM mentors m
+                WHERE m.id_venue = v.id_venue AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+            ),
+            'coordinadoras', (
+              (
+                SELECT COUNT(*) FROM venue_coordinators vc
+                WHERE vc.id_venue = v.id_venue AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+              )
+              +
+              (
+                SELECT COUNT(*) FROM assistant_coordinators ac
+                WHERE ac.id_venue = v.id_venue AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+              )
             )
         )
     ) AS resumen
