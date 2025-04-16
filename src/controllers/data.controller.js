@@ -18,7 +18,6 @@ const data = async (req, res) => {
 
     switch (page) {
       case 'evento': {
-
         const rolMap = {
           cg: 'Coordinadora General',
           ca: 'Coordinadora Asociada',
@@ -27,7 +26,7 @@ const data = async (req, res) => {
           in: 'Instructora',
           fa: 'Facilitadora',
         };
-        
+
         const idSede = req.query.id ? Number(req.query.id) : null;
         const rolColab = rolMap[req.query.colab] || null;
         const rolCoord = rolMap[req.query.coord] || null;
@@ -92,22 +91,18 @@ const data = async (req, res) => {
 
       case 'venues': {
         const sedeId = req.query.id ? Number(req.query.id) : null;
-      
+
         const query = `SELECT id_venue, name FROM venues ${sedeId !== null ? 'WHERE id_venue = ?' : ''};`;
-      
-        const venues = await prisma.$queryRawUnsafe(
-          query,
-          ...(sedeId !== null ? [sedeId] : [])
-        );
-      
+
+        const venues = await prisma.$queryRawUnsafe(query, ...(sedeId !== null ? [sedeId] : []));
+
         const formatted = venues.map((sede) => ({
           id: Number(sede.id_venue.toString()),
           name: sede.name,
         }));
-      
+
         return res.json({ venues: formatted });
       }
-      
 
       default:
         return res.status(400).json({ message: 'Parámetro ?page= desconocido' });
@@ -116,8 +111,8 @@ const data = async (req, res) => {
     console.error('❌ Error en /api/data:', error);
     return res.status(500).json({ message: 'Error al recuperar datos.' });
   }
-}
+};
 
 module.exports = {
-  data
+  data,
 };

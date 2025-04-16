@@ -19,7 +19,7 @@ const authMiddleware = (req, res, next) => {
       id: decoded.userId,
       email: decoded.email,
       username: decoded.username,
-      role: decoded.role
+      role: decoded.role,
     };
 
     next();
@@ -27,7 +27,6 @@ const authMiddleware = (req, res, next) => {
     return res.status(403).json({ message: 'Token inválido o expirado' });
   }
 };
-
 
 // Opcional: Middleware para validar roles
 // Middleware para verificar que el usuario tenga un rol permitido

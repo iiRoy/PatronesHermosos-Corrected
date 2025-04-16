@@ -13,14 +13,11 @@ const login = async (req, res) => {
     // Buscar en Superusers por email o username
     user = await prisma.superusers.findFirst({
       where: {
-        OR: [
-          { email: emailOrUsername },
-          { username: emailOrUsername }
-        ]
-      }
+        OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
+      },
     });
 
-    if (user && await bcrypt.compare(password, user.password)) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       role = 'superuser';
       username = user.username;
     }
@@ -29,14 +26,11 @@ const login = async (req, res) => {
     if (!role) {
       user = await prisma.venue_coordinators.findFirst({
         where: {
-          OR: [
-            { email: emailOrUsername },
-            { username: emailOrUsername }
-          ]
-        }
+          OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
+        },
       });
 
-      if (user && await bcrypt.compare(password, user.password)) {
+      if (user && (await bcrypt.compare(password, user.password))) {
         role = 'venue_coordinator';
       }
     }
@@ -48,7 +42,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, email: user.email, username: user.username, role },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' }
+      { expiresIn: '1d' },
     );
 
     return res.json({ message: 'Login exitoso', token, role });
