@@ -90,6 +90,25 @@ const data = async (req, res) => {
         return res.json({ resumenColaboradoras: resumenParsed });
       }
 
+      case 'venues': {
+        const sedeId = req.query.id ? Number(req.query.id) : null;
+      
+        const query = `SELECT id_venue, name FROM venues ${sedeId !== null ? 'WHERE id_venue = ?' : ''};`;
+      
+        const venues = await prisma.$queryRawUnsafe(
+          query,
+          ...(sedeId !== null ? [sedeId] : [])
+        );
+      
+        const formatted = venues.map((sede) => ({
+          id: Number(sede.id_venue.toString()),
+          name: sede.name,
+        }));
+      
+        return res.json({ venues: formatted });
+      }
+      
+
       default:
         return res.status(400).json({ message: 'Parámetro ?page= desconocido' });
     }
