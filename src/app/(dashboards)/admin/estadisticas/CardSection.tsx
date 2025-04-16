@@ -193,10 +193,10 @@ const CardSection = () => {
               fillColor='var(--text-color)'
               strokeColor='var(--background)'
               strokeWidth={0.7}
-              width={'3.5vw'}
-              height={'3.5vw'}
+              width={'3vmax'}
+              height={'3vmax'}
             />
-            <h1 className='text-text text-[3.5vw]'>{section}</h1>
+            <h1 className='text-text text-[3vmax]'>{section}</h1>
           </div>
           <FiltroEvento
             disableCheckboxes
