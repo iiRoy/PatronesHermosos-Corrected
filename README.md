@@ -1,6 +1,15 @@
-# 🛠️ Guía de Contribución
+# 🎓 Patrones Hermosos
 
-¡Gracias por contribuir a este proyecto! Este repositorio sigue un flujo estructurado de ramas para facilitar el trabajo en equipo y mantener el código limpio y organizado.
+Este proyecto está diseñado para gestionar datos del evento de Patrones Hermosos.
+
+---
+
+## 🚀 Tecnologías utilizadas
+
+- **Frontend**: React.js + Tailwind
+- **Backend/API**: Node.js + Express
+- **Base de datos**: MySQL (Prisma ORM)
+- **Control de versiones**: Git + GitHub
 
 ---
 
@@ -21,76 +30,72 @@ main
     └── superuser
 ```
 
-> 🎯 **`main` debe mantenerse siempre estable y listo para producción.**  
-> Todos los cambios se integran mediante **pull requests**.
+---
+
+## 📦 Instalación
+
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/usuario/proyecto.git
+cd proyecto
+```
+
+2. Instala dependencias:
+
+```bash
+npm install
+```
+
+3. Configura el archivo `.env`:
+
+```env
+DATABASE_URL=mysql://usuario:contraseña@localhost:3306/nombre_db
+PORT=3000
+```
+
+4. Corre migraciones:
+
+```bash
+npx prisma migrate dev
+```
+
+5. Inicia el servidor:
+
+```bash
+npm install
+npm run build
+npm run dev
+```
 
 ---
 
-## 📛 Convenciones para nombrar ramas
+## 🧑‍💻 Contribución
 
-Usa prefijos según el tipo de trabajo:
+1. Crea una rama:
 
-| Tipo de rama          | Prefijo          | Ejemplo                       |
-|-----------------------|------------------|-------------------------------|
-| Nueva funcionalidad   | `feature/`       | `feature/rutasAPI`           |
-| Página o componente UI| `pages/`         | `pages/superuser`            |
-| Refactorización       | `refactor/`      | `refactor/sql-depuracion`    |
-| Corrección de bugs    | `fix/` o `bugfix/`| `fix/login-error`            |
-| Pruebas o experimentos| `experiment/`    | `experiment/nueva-api`       |
+```bash
+git checkout -b feature/nombre-de-la-rama
+```
 
----
+2. Haz tus cambios, súbelos y crea un Pull Request hacia `main`.
 
-## 🔁 Flujo de trabajo
-
-1. **Crea una rama nueva:**
-
-   ```bash
-   git checkout -b feature/nombre-de-la-rama
-   ```
-
-2. **Haz tus cambios y commitea:**
-
-   ```bash
-   git add .
-   git commit -m "feat: descripción clara del cambio"
-   ```
-
-3. **Sube tu rama a GitHub:**
-
-   ```bash
-   git push origin feature/nombre-de-la-rama
-   ```
-
-4. **Abre un Pull Request (PR)** hacia `main`.
-
----
-
-## ✅ Reglas para Pull Requests
-
-- Un PR **debe tener título y descripción claros**.
-- Si el PR cambia estructura o lógica clave, **solicita revisión a otra persona**.
-- Asegúrate de que el código **compila y pasa las pruebas** antes de hacer merge.
-- Idealmente, incluye capturas o demos si el cambio es visual.
-
----
-
-## 🧼 Limpieza de ramas
-
-- Una vez hecho el merge, **elimina la rama si ya no se usará**:
-
-  ```bash
-  git push origin --delete feature/nombre-de-la-rama
-  ```
+Consulta la [Guía de Contribución](./COLABORACIÓN.md) para más detalles.
 
 ---
 
 ## 🧠 Buenas prácticas
 
-- **No trabajes directamente en `main`**.
-- **Commits pequeños y frecuentes**, con mensajes descriptivos.
-- Prefiere PRs enfocados: un cambio por PR.
-- Usa [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) si es posible (`feat:`, `fix:`, `refactor:`...).
+- No trabajes directamente sobre `main`.
+- Usa mensajes de commit claros con formato `feat:`, `fix:`, etc.
+- Mantén ramas pequeñas y con enfoque único.
+- Siempre prueba antes de subir tus cambios.
 
 ---
 
-Gracias por seguir estas reglas. ¡Construyamos algo genial juntos! 🚀
+## 📬 Contacto
+
+Para dudas o sugerencias, contacta a los responsables del repositorio o abre un [issue](https://github.com/iiRoy/Patrones-Hermosos/issues).
+
+---
+🚀 ¡Gracias por contribuir y ser parte de este proyecto! 
