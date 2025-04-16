@@ -1,3 +1,4 @@
+'use client';
 const Homepage = () => {
   return <div className=''>Homepage</div>;
 };

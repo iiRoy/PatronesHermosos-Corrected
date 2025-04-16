@@ -1,11 +1,19 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import UserCard from '@/components/headers_menu_users/UserCard';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import * as Icons from '@/components/icons';
 import withIconDecorator from '@/components/decorators/IconDecorator';
 
+const iconMap: Record<string, keyof typeof Icons> = {
+  Participantes: 'User',
+  Colaboradoras: 'Users',
+  Administración: 'IdentificationBadge',
+  SEDES: 'Bank',
+};
+
 const CardSection = () => {
+  const [mounted, setMounted] = useState(false);
   const [resumenEvento, setResumenEvento] = useState<any>({});
   const [fade, setFade] = useState(false);
   const [fadeSec, setFadeSec] = useState(false);
@@ -17,6 +25,10 @@ const CardSection = () => {
   });
   const [section, setSection] = useState('Participantes');
   const [sedes, setSedes] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchDashboardData = async (filters: {
     page: string;
@@ -48,12 +60,12 @@ const CardSection = () => {
     return isNaN(num) ? 0 : num;
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const data = await fetchDashboardData(filters);
     if (data?.resumenEvento) setResumenEvento(data.resumenEvento);
-  };
+  }, [filters]);
 
-  const loadSedes = async () => {
+  const loadSedes = useCallback(async () => {
     const response = await fetchDashboardData({ page: 'venues' });
     if (response?.venues) {
       const opciones = response.venues.map((sede: any) => ({
@@ -63,47 +75,30 @@ const CardSection = () => {
 
       setSedes([{ value: '', label: 'Todas las sedes' }, ...opciones]);
     }
-  };
+  }, []);
 
-  const iconMap: Record<string, keyof typeof Icons> = {
-    Participantes: 'User',
-    Colaboradoras: 'Users',
-    Administración: 'IdentificationBadge',
-    SEDES: 'Bank',
-  };
-
-  const dynamicIconName: keyof typeof Icons = iconMap[section] || 'CaretDoubleDown';
-
-  const IconComponent = withIconDecorator(Icons[dynamicIconName]);
+  const IconComponent = useMemo(() => {
+    const iconKey = iconMap[section] || 'CaretDoubleDown';
+    return withIconDecorator(Icons[iconKey]);
+  }, [section]);
 
   useEffect(() => {
     loadData();
-  }, [filters]);
+  }, [loadData]);
 
   useEffect(() => {
     loadSedes();
-  }, []);
+  }, [loadSedes]);
 
   useEffect(() => {
     setFilters((prev) => {
       const newFilters = { ...prev };
 
-      if (section !== 'Colaboradoras' && prev.colab !== '') {
-        newFilters.colab = '';
-      }
+      if (section !== 'Colaboradoras' && prev.colab !== '') newFilters.colab = '';
+      if (section !== 'Administración' && prev.coord !== '') newFilters.coord = '';
+      if (section === 'SEDES' && prev.sede !== '') newFilters.sede = '';
 
-      if (section !== 'Administración' && prev.coord !== '') {
-        newFilters.coord = '';
-      }
-
-      if (section === 'SEDES' && prev.sede !== '') {
-        newFilters.sede = '';
-      }
-
-      if (JSON.stringify(prev) !== JSON.stringify(newFilters)) {
-        return newFilters;
-      }
-
+      if (JSON.stringify(prev) !== JSON.stringify(newFilters)) return newFilters;
       return prev;
     });
   }, [section]);
@@ -116,15 +111,10 @@ const CardSection = () => {
           <>
             <UserCard type='activas' count={toValidNumber(p.Aprobadas)} />
             <UserCard type='pendientes' count={toValidNumber(p.Pendientes)} />
-            <UserCard
-              type='desactivadas'
-              count={toValidNumber(p.Rechazadas) + toValidNumber(p.Canceladas)}
-            />
+            <UserCard type='desactivadas' count={toValidNumber(p.Rechazadas) + toValidNumber(p.Canceladas)} />
             <UserCard
               type='totales'
-              count={toValidNumber(
-                Object.values(p).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0),
-              )}
+              count={toValidNumber(Object.values(p).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0))}
             />
           </>
         );
@@ -135,15 +125,10 @@ const CardSection = () => {
           <>
             <UserCard type='aprobadas' count={toValidNumber(c.Aprobadas)} />
             <UserCard type='pendientes' count={toValidNumber(c.Pendientes)} />
-            <UserCard
-              type='desactivadas'
-              count={toValidNumber(c.Rechazadas) + toValidNumber(c.Canceladas)}
-            />
+            <UserCard type='desactivadas' count={toValidNumber(c.Rechazadas) + toValidNumber(c.Canceladas)} />
             <UserCard
               type='totales'
-              count={toValidNumber(
-                Object.values(c).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0),
-              )}
+              count={toValidNumber(Object.values(c).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0))}
             />
           </>
         );
@@ -152,10 +137,7 @@ const CardSection = () => {
         return (
           <>
             <UserCard type='mentoras' count={toValidNumber(resumenEvento.total_mentoras)} />
-            <UserCard
-              type='coordinadoras'
-              count={toValidNumber(resumenEvento.total_coordinadoras)}
-            />
+            <UserCard type='coordinadoras' count={toValidNumber(resumenEvento.total_coordinadoras)} />
           </>
         );
       case 'SEDES': {
@@ -165,20 +147,14 @@ const CardSection = () => {
             <UserCard
               type='activas'
               count={
-                toValidNumber(s['Registrada sin participantes']) +
-                toValidNumber(s['Registrada con participantes'])
+                toValidNumber(s['Registrada sin participantes']) + toValidNumber(s['Registrada con participantes'])
               }
             />
             <UserCard type='pendientes' count={toValidNumber(s.Pendiente)} />
-            <UserCard
-              type='desactivadas'
-              count={toValidNumber(s.Rechazada) + toValidNumber(s.Cancelada)}
-            />
+            <UserCard type='desactivadas' count={toValidNumber(s.Rechazada) + toValidNumber(s.Cancelada)} />
             <UserCard
               type='totales'
-              count={toValidNumber(
-                Object.values(s).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0),
-              )}
+              count={toValidNumber(Object.values(s).reduce((a, b) => toValidNumber(a) + toValidNumber(b), 0))}
             />
           </>
         );
@@ -206,15 +182,13 @@ const CardSection = () => {
     }, 300);
   };
 
+  if (!mounted) return null;
+
   return (
     <div className='flex flex-col gap-3 items-center justify-center'>
       <div className='flex justify-between w-full items-center'>
         <div className='flex flex-col md:flex-row items-center justify-center w-full relative'>
-          <div
-            className={`flex items-center gap-3 transition-opacity duration-300 ${
-              fadeSec ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
+          <div className={`flex items-center gap-3 transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}>
             <IconComponent
               fillColor='var(--text-color)'
               strokeColor='var(--background)'
@@ -261,7 +235,7 @@ const CardSection = () => {
                     ],
                   }
                 : null,
-              section != 'SEDES'
+              section !== 'SEDES'
                 ? {
                     label: 'SEDE',
                     key: 'sede',
@@ -275,11 +249,7 @@ const CardSection = () => {
         </div>
       </div>
       <div className='w-full lg:w-4/7 flex flex-col'>
-        <div
-          className={`flex gap-4 justify-between flex-wrap transition-opacity duration-300 ${
-            fade ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
+        <div className={`flex gap-4 justify-between flex-wrap transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'}`}>
           {renderCards()}
         </div>
       </div>

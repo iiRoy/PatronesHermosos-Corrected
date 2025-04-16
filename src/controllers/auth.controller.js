@@ -22,6 +22,7 @@ const login = async (req, res) => {
 
     if (user && await bcrypt.compare(password, user.password)) {
       role = 'superuser';
+      username = user.username;
     }
 
     // Buscar en venue coordinators
@@ -40,13 +41,12 @@ const login = async (req, res) => {
       }
     }
 
-    // Otros roles...
     if (!role) {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role },
+      { userId: user.id, email: user.email, username: user.username, role },
       process.env.JWT_SECRET || 'mi_clave_secreta',
       { expiresIn: '1d' }
     );

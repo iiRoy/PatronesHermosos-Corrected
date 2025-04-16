@@ -1,10 +1,9 @@
-const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
 const data = async (req, res) => {
-  const { email, role } = req.user;
+  const { email, role, username } = req.user;
   const page = req.query.page;
 
   try {
@@ -14,6 +13,7 @@ const data = async (req, res) => {
 
     console.log('🔎 ROLE:', role);
     console.log('🔎 EMAIL:', email);
+    console.log('🔎 USERNAME:', username);
     console.log('🔎 PAGE:', page);
 
     switch (page) {
