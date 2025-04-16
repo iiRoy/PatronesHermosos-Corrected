@@ -28,7 +28,7 @@ const EstadisticasAdmin = () => {
             dataPath='resumenSedes'
             xKey='sede'
             title='Personas por SEDE'
-            labelFormatterPrefix='SEDE:'
+            labelFormatterPrefix='SEDE: '
           />
         </div>
       </div>

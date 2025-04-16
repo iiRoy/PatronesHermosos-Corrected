@@ -15,7 +15,6 @@ import withIconDecorator from '../../decorators/IconDecorator';
 import Filtro from '../../headers_menu_users/FiltroEvento';
 import * as Icons from '../../icons';
 export const Options = withIconDecorator(Icons.DotsThree);
-export const Filtros = withIconDecorator(Icons.CaretDoubleDown);
 
 import CustomTick from '../structure/customTick';
 import CustomLegend from '../structure/customLegend';
@@ -26,6 +25,7 @@ interface GenericBarChartProps {
   dataPath?: string;
   xKey?: string;
   labelFormatterPrefix?: string;
+  filters?: Record<string, string | undefined>;
 }
 
 type GenericChartData = {
@@ -38,6 +38,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   dataPath,
   xKey = 'name',
   labelFormatterPrefix = '',
+  filters = {},
 }) => {
   const [data, setData] = useState<GenericChartData[]>([]);
   const [filteredData, setFilteredData] = useState<GenericChartData[]>([]);
@@ -48,8 +49,11 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
 
   useEffect(() => {
     const fetchData = async () => {
+      const params = new URLSearchParams(filters as Record<string, string>);
+      const fullUrl = `${apiEndpoint}${params.toString() ? `?${params.toString()}` : ''}`;
+
       try {
-        const res = await fetch(apiEndpoint, {
+        const res = await fetch(fullUrl, {
           headers: {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
           },
@@ -58,7 +62,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
         const json = await res.json();
         console.log('📦 Respuesta JSON completa:', json);
 
-        const rawData = dataPath ? json[dataPath] : json;
+        const rawData: GenericChartData[] = dataPath ? json[dataPath] : json;
 
         if (!rawData) {
           setError(`No se encontró la propiedad "${dataPath}" en la respuesta.`);
@@ -75,11 +79,22 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           return;
         }
 
-        console.log('✅ Datos listos para graficar:', rawData);
+        // Conversión genérica: convierte valores numéricos en strings a números
+        const parsedData = rawData.map((item) => {
+          const newItem: GenericChartData = {};
+          for (const key in item) {
+            const val = item[key];
+            newItem[key] =
+              typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
+          }
+          return newItem;
+        });
+
+        setData(parsedData);
+        setFilteredData(parsedData);
+        setSelectedKeys(parsedData.map((d) => d[xKey] as string));
         setError(null);
-        setData(rawData);
-        setFilteredData(rawData);
-        setSelectedKeys(rawData.map((d) => d[xKey] as string));
+
         setTimeout(() => {
           isFirstRender.current = false;
         }, 10);
@@ -103,7 +118,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [apiEndpoint, dataPath, xKey]);
+  }, [apiEndpoint, dataPath, xKey, JSON.stringify(filters)]);
 
   const handleFilterChange = (updated: string[]) => {
     setFade(true);
@@ -141,14 +156,14 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
         <CustomLegend legendKeys={seriesKeys} />
         <div className='flex justify-between w-full items-center'>
           <div className='flex items-center w-full justify-end'>
-              <Filtro
-                options={options}
-                selected={selectedKeys}
-                onChange={handleFilterChange}
-                iconName= {undefined}
-                label='Filtros'
-                labelOptions='SEDEs'
-              />
+            <Filtro
+              options={options}
+              selected={selectedKeys}
+              onChange={handleFilterChange}
+              iconName={undefined}
+              label='Filtros'
+              labelOptions={xKey.toUpperCase()}
+            />
           </div>
         </div>
       </div>
@@ -158,7 +173,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           fade ? 'opacity-0' : 'opacity-100'
         }`}
       >
-        {filteredData.length === 0 || seriesKeys.length === 0 ? (
+        {filteredData.length === 0 ? (
           <div className='flex justify-center items-center h-full'>
             <p className='text-textDim text-lg'>No hay datos para mostrar</p>
           </div>
@@ -177,11 +192,13 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               <YAxis axisLine={false} tick={{ fill: '#8E76A3FF' }} tickLine={false} />
               <Tooltip
                 labelFormatter={(label) => (
-                  <span style={{ fontWeight: 'bold' }}>{`${labelFormatterPrefix} ${label}`}</span>
+                  <span style={{ fontWeight: 'bold' }}>{`${labelFormatterPrefix}${label}`}</span>
                 )}
                 formatter={(value, name) => {
                   const upperName =
-                    typeof name === 'string' ? name.charAt(0).toUpperCase() + name.slice(1) : name;
+                    typeof name === 'string'
+                      ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
+                      : name;
                   return [`${value}`, upperName];
                 }}
                 contentStyle={{
@@ -194,11 +211,9 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 <Bar
                   key={key}
                   dataKey={key}
-                  fill={index === 0 ? '#97639c' : '#C57FAB'}
+                  fill={['#97639c', '#C57FAB', '#6E2D75', '#683756'][index % 4]}
                   radius={[10, 10, 0, 0]}
-                  activeBar={
-                    index === 0 ? <Rectangle fill='#6E2D75' /> : <Rectangle fill='#683756' />
-                  }
+                  activeBar={<Rectangle />}
                   isAnimationActive={isFirstRender.current}
                 />
               ))}
