@@ -1,6 +1,6 @@
 {
     "name": "patrones-hermosos",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "private": true,
     "scripts": {
         "dev": "nodemon src/server.js",
@@ -13,7 +13,9 @@
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
         "express-validator": "^7.2.1",
+        "framer-motion": "^12.7.3",
         "jsonwebtoken": "^9.0.2",
+        "lucide-react": "^0.488.0",
         "morgan": "^1.10.0",
         "next": "^15.2.4",
         "react": "^18.3.1",

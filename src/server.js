@@ -1,5 +1,4 @@
 // src/server.js
-
 const express = require('express');
 const morgan = require('morgan');
 const next = require('next');
@@ -15,7 +14,7 @@ const collaboratorRoutes = require('./routes/collaborator.routes');
 const dataRoutes = require('./routes/data.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
-const appNext = next({ dev, dir: path.join(__dirname, '..') }); // Asume que src está dentro del root
+const appNext = next({ dev, dir: path.join(__dirname, '..') });
 const handle = appNext.getRequestHandler();
 
 const app = express();

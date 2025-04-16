@@ -46,7 +46,8 @@ const generateIconComponent = (iconName, svgContent) => {
       `<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" `,
     );
 
-  return `import React from 'react';
+  return `'use client';
+import React from 'react';
 
 interface IconProps {
   width?: number | string;

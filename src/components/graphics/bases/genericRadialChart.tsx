@@ -17,7 +17,7 @@ interface GenericRadialChartProps {
 
 interface DataItem {
   rol: string;
-  cantidad: number;
+  total: number;
   fill: string;
 }
 
@@ -33,6 +33,7 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
   const [fade, setFade] = useState(false);
   const isFirstRender = useRef(true);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -66,16 +67,16 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
           const palette = parsedPalette[index % parsedPalette.length];
           return {
             rol: key.charAt(0).toUpperCase() + key.slice(1),
-            cantidad: source[key],
+            total: Number(source[key]) || 0,
             fill: palette.fill,
           };
         });
 
-        const totalCantidad = processed.reduce((sum, d) => sum + d.cantidad, 0);
+        const totalCantidad = processed.reduce((sum, d) => sum + d.total, 0);
 
         setFade(true);
         setTimeout(() => {
-          setData([{ rol: 'Total', cantidad: totalCantidad, fill: 'white'}, ...processed]);
+          setData([{ rol: 'Total', total: totalCantidad, fill: 'white'}, ...processed]);
           setTotal(totalCantidad);
           setFade(false);
           isFirstRender.current = false;
@@ -129,7 +130,7 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
                 >
                   <RadialBar
                     background={{ fill: '#E6E1ECFF' }}
-                    dataKey='cantidad'
+                    dataKey='total'
                     fill='#000'
                     cornerRadius={10}
                   />
@@ -154,7 +155,7 @@ const GenericRadialChart: React.FC<GenericRadialChartProps> = ({
           return (
             <div key={rol} className='flex flex-col items-center' style={{color: item?.fill || '#ccc',}} >
               <div className={`w-5 h-5 rounded-full`} style={{ backgroundColor: item?.fill || '#ccc'}} />
-              <h1 className='font-semibold'>{item?.cantidad ?? 0}</h1>
+              <h1 className='font-semibold'>{item?.total ?? 0}</h1>
               <h2 className='text-xs text-gray-600'>{rol}</h2>
             </div>
           );
