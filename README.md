@@ -6,10 +6,10 @@ Este proyecto está diseñado para gestionar datos del evento de Patrones Hermos
 
 ## 🚀 Tecnologías utilizadas
 
-- **Frontend**: React.js + Tailwind.
-- **Backend/API**: Node.js + Express.
-- **Base de datos**: MySQL (Prisma ORM).
-- **Control de versiones**: Git + GitHub.
+- **Frontend**: React.js + Tailwind
+- **Backend/API**: Node.js + Express
+- **Base de datos**: MySQL (Prisma ORM)
+- **Control de versiones**: Git + GitHub
 
 ---
 
