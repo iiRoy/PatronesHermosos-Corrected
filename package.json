@@ -8,7 +8,8 @@
     "start": "cross-env NODE_ENV=production node src/server.js",
     "release": "node scripts/release-all.js",
     "icons": "node node scripts/generate-icons.js",
-    "sql": "node node scripts/json-to-sql.js"
+    "sql": "node node scripts/json-to-sql.js",
+    "merge": "node scripts/merge-release.js"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
