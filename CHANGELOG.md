@@ -1,3 +1,7 @@
+## <small>1.0.1 (2025-04-17)</small>
+
+* fix(versions): Minor scripts corrections. ([c83905e](https://github.com/iiRoy/Patrones-Hermosos/commit/c83905e))
+
 ## 1.0.0 (2025-04-17)
 
 * chore: add empty changelog for semantic-release ([2316108](https://github.com/iiRoy/Patrones-Hermosos/commit/2316108))
