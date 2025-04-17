@@ -66,9 +66,5 @@ if (!run("npx semantic-release --no-ci")) {
 console.log("\x1b[36m%s\x1b[0m", "Instalando recursos necesarios...");
 run("npm install");
 
-console.log("\x1b[36m%s\x1b[0m", "Cambiando de versión...");
-run("git add package-lock.json package.json CHANGELOG.md");
-run(`git commit -m "chore(release): update version and changelog"`);
-
 console.log("\x1b[36m%s\x1b[0m", `Haciendo push de commits y tags a la rama '${branch}'...`);
 run(`git push origin ${branch} --tags`);
