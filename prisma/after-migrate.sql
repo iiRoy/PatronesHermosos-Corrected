@@ -405,11 +405,13 @@ CREATE OR REPLACE FUNCTION fun_total_coord(
     id_sede_param INT,
     rol_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
 )
-RETURNS INT
+RETURNS JSON
 DETERMINISTIC
 BEGIN
     DECLARE v_id INT;
-    DECLARE total INT DEFAULT 0;
+    DECLARE cg INT DEFAULT 0;
+    DECLARE ca INT DEFAULT 0;
+    DECLARE ci INT DEFAULT 0;
 
     IF tipo_usuario = 'venue_coordinator' THEN
         SELECT id_venue INTO v_id
@@ -417,35 +419,30 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
-    IF rol_param IS NULL OR rol_param = 'Coordinadora General' THEN
-        SELECT total + COUNT(*) INTO total
-        FROM venue_coordinators vc
-        JOIN venues v ON vc.id_venue = v.id_venue
-        WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-          AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
-          AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
-    END IF;
+    SELECT COUNT(*) INTO cg
+    FROM venue_coordinators vc
+    JOIN venues v ON vc.id_venue = v.id_venue
+    WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+      AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
 
-    IF rol_param IS NULL OR rol_param IN ('Coordinadora Asociada', 'Coordinadora de informes') THEN
-        SELECT total + COUNT(*) INTO total
-        FROM assistant_coordinators ac
-        JOIN venues v ON ac.id_venue = v.id_venue
-        WHERE ac.role IN (
-                CASE
-                    WHEN rol_param IS NULL THEN 'Coordinadora Asociada'
-                    ELSE rol_param
-                END,
-                CASE
-                    WHEN rol_param IS NULL THEN 'Coordinadora de informes'
-                    ELSE rol_param
-                END
-            )
-          AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-          AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
-          AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
-    END IF;
+    SELECT COUNT(*) INTO ca
+    FROM assistant_coordinators ac
+    JOIN venues v ON ac.id_venue = v.id_venue
+    WHERE ac.role = 'Coordinadora Asociada'
+      AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+      AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
 
-    RETURN total;
+    SELECT COUNT(*) INTO ci
+    FROM assistant_coordinators ac
+    JOIN venues v ON ac.id_venue = v.id_venue
+    WHERE ac.role = 'Coordinadora de informes'
+      AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+      AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
+
+    RETURN JSON_OBJECT('coord_gen', cg, 'coord_aso', ca, 'coord_info', ci);
 END;
 $$
 
@@ -650,13 +647,13 @@ BEGIN
     DECLARE participantes_json JSON;
     DECLARE colaboradoras_json JSON;
     DECLARE total_mentoras INT DEFAULT 0;
-    DECLARE total_coordinadoras INT DEFAULT 0;
+    DECLARE coordinadoras_json JSON;
     DECLARE sedes_json JSON;
 
     SET participantes_json = fun_total_part(email_coordinadora, tipo_usuario, id_sede_param);
     SET colaboradoras_json = fun_total_colab(email_coordinadora, tipo_usuario, id_sede_param, rol_colab_param);
     SELECT fun_total_ment(email_coordinadora, tipo_usuario, id_sede_param) INTO total_mentoras;
-    SELECT fun_total_coord(email_coordinadora, tipo_usuario, id_sede_param, rol_coord_param) INTO total_coordinadoras;
+    SET coordinadoras_json = fun_total_coord(email_coordinadora, tipo_usuario, id_sede_param);
 
     IF tipo_usuario = 'superuser' THEN
         SET sedes_json = fun_total_sedes(tipo_usuario);
@@ -668,7 +665,7 @@ BEGIN
         'total_participantes', participantes_json,
         'total_colaboradores', colaboradoras_json,
         'total_mentoras', total_mentoras,
-        'total_coordinadoras', total_coordinadoras,
+        'total_coordinadoras', coordinadoras_json,
         'total_sedes', sedes_json
     ) AS resumen;
 END;

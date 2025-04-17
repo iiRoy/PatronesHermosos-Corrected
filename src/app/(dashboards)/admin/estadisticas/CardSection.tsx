@@ -34,13 +34,11 @@ const CardSection = () => {
     page: string;
     sede?: string;
     colab?: string;
-    coord?: string;
   }): Promise<any> => {
-    const { page, sede, colab, coord } = filters;
+    const { page, sede, colab } = filters;
     const params = new URLSearchParams();
     if (sede) params.append('id', sede);
     if (colab) params.append('colab', colab);
-    if (coord) params.append('coord', coord);
 
     try {
       const res = await fetch(`/api/data?page=${page}&${params.toString()}`, {
@@ -95,7 +93,6 @@ const CardSection = () => {
       const newFilters = { ...prev };
 
       if (section !== 'Colaboradoras' && prev.colab !== '') newFilters.colab = '';
-      if (section !== 'Administración' && prev.coord !== '') newFilters.coord = '';
       if (section === 'SEDES' && prev.sede !== '') newFilters.sede = '';
 
       if (JSON.stringify(prev) !== JSON.stringify(newFilters)) return newFilters;
@@ -144,13 +141,13 @@ const CardSection = () => {
         );
       }
       case 'Administración':
+        const cd = resumenEvento.total_coordinadoras || {};
         return (
           <>
             <UserCard type='mentoras' count={toValidNumber(resumenEvento.total_mentoras)} />
-            <UserCard
-              type='coordinadoras'
-              count={toValidNumber(resumenEvento.total_coordinadoras)}
-            />
+            <UserCard type='coord. General' count={toValidNumber(cd.coord_gen)} />
+            <UserCard type='coord. Asociada' count={toValidNumber(cd.coord_aso)} />
+            <UserCard type='coord. de Informes' count={toValidNumber(cd.coord_info)} />
           </>
         );
       case 'SEDES': {
@@ -244,18 +241,7 @@ const CardSection = () => {
                       { label: 'Staff', value: 'st' },
                     ],
                   }
-                : section === 'Administración'
-                  ? {
-                      label: 'Tipo de coordinadora',
-                      key: 'coord',
-                      options: [
-                        { label: 'Todas', value: '' },
-                        { label: 'General', value: 'cg' },
-                        { label: 'Asociada', value: 'ca' },
-                        { label: 'Informes', value: 'ci' },
-                      ],
-                    }
-                  : null,
+                : null,
               section !== 'SEDES'
                 ? {
                     label: 'SEDE',
