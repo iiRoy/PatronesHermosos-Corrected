@@ -1,3 +1,7 @@
+## 1.0.0-sql.2 (2025-04-17)
+
+* feat(versions): New merge option. ([0f3ba04](https://github.com/iiRoy/Patrones-Hermosos/commit/0f3ba04))
+
 ## 1.0.0-sql.1 (2025-04-17)
 
 * fix: Changes in README.md. ([8fd9df6](https://github.com/iiRoy/Patrones-Hermosos/commit/8fd9df6))
