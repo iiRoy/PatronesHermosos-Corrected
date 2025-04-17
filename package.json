@@ -1,12 +1,14 @@
 {
   "name": "patrones-hermosos",
-  "version": "0.6.4",
+  "version": "1.0.0-sql.1",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",
     "build": "next build",
     "start": "cross-env NODE_ENV=production node src/server.js",
-    "release": "npx semantic-release --no-ci"
+    "release": "node scripts/release-all.js",
+    "icons": "node node scripts/generate-icons.js",
+    "sql": "node node scripts/json-to-sql.js"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
