@@ -6,7 +6,7 @@ interface CustomLegendProps {
 }
 
 const CustomLegend: React.FC<CustomLegendProps> = ({ legendKeys }) => (
-  <div className='flex items-center gap-4 flex-wrap justify-between'>
+  <div className='flex text-[1.5vmax] items-center gap-4 flex-wrap justify-center w-full'>
     {legendKeys.map((key, index) => (
       <div key={key} className='flex items-center gap-1'>
         <span

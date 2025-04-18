@@ -21,7 +21,6 @@ const CardSection = () => {
     page: 'evento',
     sede: '',
     colab: '',
-    coord: '',
   });
   const [section, setSection] = useState('Participantes');
   const [sedes, setSedes] = useState<{ value: string; label: string }[]>([]);
@@ -181,11 +180,19 @@ const CardSection = () => {
   };
 
   const extraHandleFilterChange = (key: string, value: string) => {
-    setFade(true);
-    setTimeout(() => {
-      setFade(false);
-      setFilters({ ...filters, [key]: value });
-    }, 300);
+    if (key === 'sede') {
+      setFadeSec(true);
+      setTimeout(() => {
+        setFadeSec(false);
+        setFilters({ ...filters, [key]: value });
+      }, 300);
+    } else {
+      setFade(true);
+      setTimeout(() => {
+        setFade(false);
+        setFilters({ ...filters, [key]: value });
+      }, 300);
+    }
   };
 
   const sectionFilterChange = (value: string) => {
@@ -201,20 +208,44 @@ const CardSection = () => {
   if (!mounted) return null;
 
   return (
-    <div className='flex flex-col gap-3 items-center justify-center'>
+    <div className='flex gap-3 flex-col items-center justify-center'>
       <div className='flex justify-between w-full items-center'>
-        <div className='flex flex-col md:flex-row items-center justify-center w-full relative'>
-          <div
-            className={`flex items-center gap-3 transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}
-          >
-            <IconComponent
-              fillColor='var(--text-color)'
-              strokeColor='var(--background)'
-              strokeWidth={0.7}
-              width={'3vmax'}
-              height={'3vmax'}
-            />
-            <h1 className='text-text text-[3vmax]'>{section}</h1>
+        <div className='flex flex-col md:flex-row items-center justify-center w-full relative gap-2 md:gap-9'>
+          <div>
+            <div className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'}`}>
+              <IconComponent
+                fillColor='var(--text-color)'
+                strokeColor='var(--background)'
+                strokeWidth={0.7}
+                width={'3vmax'}
+                height={'3vmax'}
+              />
+              <h1 className='flex flex-row text-text text-[3vmax] items-baseline gap-2'>
+                {section}
+                {section === 'Colaboradoras' && filters.colab && (
+                  <span className='text-[2vmax] font-light'>
+                    (
+                    {
+                      {
+                        in: 'Instructoras',
+                        fa: 'Facilitadoras',
+                        st: 'Staff',
+                      }[filters.colab]
+                    }
+                    )
+                  </span>
+                )}
+              </h1>
+            </div>
+            <div
+              className={`md:ml-[4.4vw] flex items-center justify-center md:justify-start md:items-start text-[1.5vmax] text-text transition-opacity duration-300 ${
+                fadeSec ? 'opacity-0' : fade ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
+              {filters.sede !== '' && (
+                <span>{filters.sede && sedes.find((s) => s.value === filters.sede)?.label}</span>
+              )}
+            </div>
           </div>
           <FiltroEvento
             disableCheckboxes
@@ -257,7 +288,9 @@ const CardSection = () => {
       </div>
       <div className='w-full lg:w-4/7 flex flex-col'>
         <div
-          className={`flex gap-4 justify-between flex-wrap transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'}`}
+          className={`flex gap-4 justify-between transition-opacity duration-300 ${
+            fadeSec ? 'opacity-0' : fade ? 'opacity-0' : 'opacity-100'
+          }`}
         >
           {renderCards()}
         </div>
