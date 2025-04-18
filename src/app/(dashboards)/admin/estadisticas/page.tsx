@@ -8,8 +8,8 @@ const EstadisticasAdmin = () => {
   return (
     <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade'>
       <PageTitle>Estadísticas</PageTitle>
+      <CardSection />
       <div className='flex flex-col gap-7'>
-        <CardSection />
         {/* GRÁFICAS */}
         <div className='flex gap-7 flex-col md:flex-row'>
           <div className='w-full lg:w-2/5 h-[35vmax] min-h-[400px] text-secondary'>
