@@ -16,6 +16,7 @@ const EstadisticasAdmin = () => {
             <GenericRadialChart
               apiEndpoint='/api/data?page=colaboradoras'
               dataPath='resumenColaboradoras'
+              areaInner='rol'
               title='Colaboradoras'
             />
           </div>
