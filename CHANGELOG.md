@@ -1,3 +1,10 @@
+## 1.1.0 (2025-04-18)
+
+* chore(release): 1.1.0-admin.1 [skip ci] ([e3c7e1c](https://github.com/iiRoy/Patrones-Hermosos/commit/e3c7e1c))
+* chore(release): 1.1.0-com.1 [skip ci] ([e6a996d](https://github.com/iiRoy/Patrones-Hermosos/commit/e6a996d))
+* feat(Superuser): Pie Chart function added . ([8b83005](https://github.com/iiRoy/Patrones-Hermosos/commit/8b83005))
+* improvement(estadisticas): New way to identify filter's changes in user cards. ([9e7cfca](https://github.com/iiRoy/Patrones-Hermosos/commit/9e7cfca))
+
 ## 1.1.0-admin.1 (2025-04-18)
 
 * chore(release): 1.1.0-com.1 [skip ci] ([e6a996d](https://github.com/iiRoy/Patrones-Hermosos/commit/e6a996d))
