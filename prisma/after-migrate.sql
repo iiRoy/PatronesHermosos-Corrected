@@ -540,7 +540,10 @@ BEGIN
 
     INSERT INTO temp_colab_resumen (status, rol, total)
     SELECT
-        c.status,
+        CASE
+          WHEN c.status = 'Cancelada' THEN 'Rechazada'
+          ELSE c.status
+        END AS status,
         CASE
             WHEN c.status = 'Aprobada' THEN c.role
             ELSE c.preferred_role
