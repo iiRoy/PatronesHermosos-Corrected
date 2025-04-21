@@ -1,5 +1,5 @@
 'use client';
-import GenericRadialChart from '@/components/graphics/bases/genericRadialChart';
+import GenericRadialChart from '@/components/graphics/bases/genericPieChart';
 import GenericBarChart from '@/components/graphics/bases/genericBarChart';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import CardSection from './CardSection';
@@ -8,14 +8,15 @@ const EstadisticasAdmin = () => {
   return (
     <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade'>
       <PageTitle>Estadísticas</PageTitle>
+      <CardSection />
       <div className='flex flex-col gap-7'>
-        <CardSection />
         {/* GRÁFICAS */}
         <div className='flex gap-7 flex-col md:flex-row'>
           <div className='w-full lg:w-2/5 h-[35vmax] min-h-[400px] text-secondary'>
             <GenericRadialChart
               apiEndpoint='/api/data?page=colaboradoras'
               dataPath='resumenColaboradoras'
+              areaInner='rol'
               title='Colaboradoras'
             />
           </div>
