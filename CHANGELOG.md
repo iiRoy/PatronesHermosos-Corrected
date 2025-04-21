@@ -1,3 +1,7 @@
+## <small>1.1.1 (2025-04-21)</small>
+
+* fix(Superuser): Filter animations and selects, Pie Chart Status ([cf5350e](https://github.com/iiRoy/Patrones-Hermosos/commit/cf5350e))
+
 ## 1.1.0 (2025-04-18)
 
 * chore(release): 1.1.0-admin.1 [skip ci] ([e3c7e1c](https://github.com/iiRoy/Patrones-Hermosos/commit/e3c7e1c))
