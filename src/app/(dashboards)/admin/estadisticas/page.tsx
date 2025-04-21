@@ -1,5 +1,5 @@
 'use client';
-import GenericRadialChart from '@/components/graphics/bases/genericRadialChart';
+import GenericRadialChart from '@/components/graphics/bases/genericPieChart';
 import GenericBarChart from '@/components/graphics/bases/genericBarChart';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import CardSection from './CardSection';

@@ -15,12 +15,15 @@ const iconMap: Record<string, keyof typeof Icons> = {
 const CardSection = () => {
   const [mounted, setMounted] = useState(false);
   const [resumenEvento, setResumenEvento] = useState<any>({});
-  const [fade, setFade] = useState(false);
   const [fadeSec, setFadeSec] = useState(false);
   const [filters, setFilters] = useState({
     page: 'evento',
-    sede: '',
-    colab: '',
+    sede: '__all__',
+    colab: '__all__',
+  });
+  const [filterActivaExtra, setFilterActivaExtra] = useState<Record<string, string>>({
+    sede: filters.sede,
+    colab: filters.colab,
   });
   const [section, setSection] = useState('Participantes');
   const [sedes, setSedes] = useState<{ value: string; label: string }[]>([]);
@@ -70,7 +73,7 @@ const CardSection = () => {
         label: sede.name,
       }));
 
-      setSedes([{ value: '', label: 'Todas las sedes' }, ...opciones]);
+      setSedes([{ value: '__all__', label: 'Todas las sedes' }, ...opciones]);
     }
   }, []);
 
@@ -86,18 +89,6 @@ const CardSection = () => {
   useEffect(() => {
     loadSedes();
   }, [loadSedes]);
-
-  useEffect(() => {
-    setFilters((prev) => {
-      const newFilters = { ...prev };
-
-      if (section !== 'Colaboradoras' && prev.colab !== '') newFilters.colab = '';
-      if (section === 'SEDES' && prev.sede !== '') newFilters.sede = '';
-
-      if (JSON.stringify(prev) !== JSON.stringify(newFilters)) return newFilters;
-      return prev;
-    });
-  }, [section]);
 
   const renderCards = () => {
     switch (section) {
@@ -179,27 +170,28 @@ const CardSection = () => {
     }
   };
 
-  const extraHandleFilterChange = (key: string, value: string) => {
-    if (key === 'sede') {
-      setFadeSec(true);
-      setTimeout(() => {
-        setFadeSec(false);
-        setFilters({ ...filters, [key]: value });
-      }, 300);
-    } else {
-      setFade(true);
-      setTimeout(() => {
-        setFade(false);
-        setFilters({ ...filters, [key]: value });
-      }, 300);
-    }
+  const normalizeFilterValue = (key: string, value: string): string => {
+    if (value === '__all__') return '';
+    return value;
   };
 
+  const extraHandleFilterChange = (key: string, value: string) => {
+    const normalizedValue = normalizeFilterValue(key, value);
+    const animateSetter = setFadeSec;
+  
+    animateSetter(true);
+    setTimeout(() => {
+      setFilters((prev) => ({ ...prev, [key]: normalizedValue }));
+      setFilterActivaExtra((prev) => ({ ...prev, [key]: normalizedValue }));
+    }, 250)
+    setTimeout(() => {
+      animateSetter(false);
+    }, 300);
+  };  
+
   const sectionFilterChange = (value: string) => {
-    setFade(true);
     setFadeSec(true);
     setTimeout(() => {
-      setFade(false);
       setFadeSec(false);
       setSection(value);
     }, 300);
@@ -212,7 +204,7 @@ const CardSection = () => {
       <div className='flex justify-between w-full items-center'>
         <div className='flex flex-col md:flex-row items-center justify-center w-full relative gap-2 md:gap-9'>
           <div>
-            <div className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}>
               <IconComponent
                 fillColor='var(--text-color)'
                 strokeColor='var(--background)'
@@ -224,25 +216,23 @@ const CardSection = () => {
                 {section}
                 {section === 'Colaboradoras' && filters.colab && (
                   <span className='text-[2vmax] font-light'>
-                    (
                     {
                       {
-                        in: 'Instructoras',
-                        fa: 'Facilitadoras',
-                        st: 'Staff',
+                        in: '(Instructoras)',
+                        fa: '(Facilitadoras)',
+                        st: '(Staff)',
                       }[filters.colab]
                     }
-                    )
                   </span>
                 )}
               </h1>
             </div>
             <div
               className={`md:ml-[4.4vw] flex items-center justify-center md:justify-start md:items-start text-[1.5vmax] text-text transition-opacity duration-300 ${
-                fadeSec ? 'opacity-0' : fade ? 'opacity-0' : 'opacity-100'
+                fadeSec ? 'opacity-0' : 'opacity-100'
               }`}
             >
-              {filters.sede !== '' && (
+              {filters.sede !== '__all__' && section !== 'SEDES' && (
                 <span>{filters.sede && sedes.find((s) => s.value === filters.sede)?.label}</span>
               )}
             </div>
@@ -266,7 +256,7 @@ const CardSection = () => {
                     label: 'Tipo de colaboradora',
                     key: 'colab',
                     options: [
-                      { label: 'Todas', value: '' },
+                      { label: 'Todas', value: '__all__' },
                       { label: 'Instructora', value: 'in' },
                       { label: 'Facilitadora', value: 'fa' },
                       { label: 'Staff', value: 'st' },
@@ -281,6 +271,7 @@ const CardSection = () => {
                   }
                 : null,
             ].filter(Boolean)}
+            filterActiva={filterActivaExtra}
             onExtraFilterChange={extraHandleFilterChange}
             fade={fadeSec}
           />
@@ -289,7 +280,7 @@ const CardSection = () => {
       <div className='w-full lg:w-4/7 flex flex-col'>
         <div
           className={`flex gap-4 justify-between transition-opacity duration-300 ${
-            fadeSec ? 'opacity-0' : fade ? 'opacity-0' : 'opacity-100'
+            fadeSec ? 'opacity-0' : 'opacity-100'
           }`}
         >
           {renderCards()}

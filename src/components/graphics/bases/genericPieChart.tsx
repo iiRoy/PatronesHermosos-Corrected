@@ -17,7 +17,7 @@ interface ConcentricDonutChartProps {
   areaOuter?: string;
   outerFilterValues?: string[];
   colorPalette?: string[];
-  statusColors?: Record<string, string>;
+  statusColors?: string[];
   imageSrc?: string;
 }
 
@@ -43,12 +43,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
   areaOuter = 'status',
   outerFilterValues = [],
   colorPalette,
-  statusColors = {
-    Aprobada: '#488262FF',
-    Pendiente: '#BBA44BFF',
-    Rechazada: '#BB4B4BFF',
-    Desconocido: '#aaa',
-  },
+  statusColors,
   imageSrc = '/assets/logo.png',
 }) => {
   const [innerData, setInnerData] = useState<any[]>([]);
@@ -114,7 +109,9 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
         }
 
         const defaultPalette = ['#683756', '#97639c', '#B77690', '#A0D2DB', '#FFB86F'];
+        const defaultSecondPalette = ['#488262FF', '#BBA44BFF', '#BB4B4BFF', '#aaa',]
         const parsedPalette = colorPalette ?? defaultPalette;
+        const parsedSecondPalette = statusColors ?? defaultSecondPalette
 
         const innerMap = new Map<string, number>();
 
@@ -142,13 +139,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
         innerArray.forEach((segment) => {
           const outer = outerCounts[segment.name];
 
-          Object.entries(outer).forEach(([status, value]) => {
+          Object.entries(outer).forEach(([status, value], index) => {
             if (outerFilterValues.length === 0 || outerFilterValues.includes(status)) {
               outerArray.push({
                 name: status,
                 rol: segment.name,
                 total: value,
-                fill: statusColors[status] ?? '#ccc',
+                fill: parsedSecondPalette[index % parsedSecondPalette.length],
               });
             }
           });
