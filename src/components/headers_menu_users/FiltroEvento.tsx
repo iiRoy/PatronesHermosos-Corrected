@@ -2,6 +2,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Option {
   label: string;
@@ -28,6 +35,7 @@ interface FiltroEventoProps {
   seccionActiva?: string;
   onChangeSeccion?: (s: string) => void;
   extraFilters?: (ExtraFilter | null)[];
+  filterActiva?: Record<string, string>;
   onExtraFilterChange?: (key: string, value: string) => void;
   fade?: boolean;
 }
@@ -45,12 +53,14 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   seccionActiva = '',
   onChangeSeccion = () => {},
   extraFilters = [],
+  filterActiva = {},
   onExtraFilterChange = () => {},
   disableCheckboxes = false,
   fade = false,
 }) => {
   const [show, setShow] = useState(false);
   const [filterVisibility, setFilterVisibility] = useState<Record<string, boolean>>({});
+  const [visibleSeccion, setVisibleSeccion] = useState(seccionActiva);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const filterVisibilityRef = useRef(filterVisibility);
 
@@ -58,12 +68,14 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
     filterVisibilityRef.current = filterVisibility;
   }, [filterVisibility]);
 
-  const toggleDropdown = () => {
-    if (!show) {
-      setShow(true);
-    } else {
-      setShow(false);
+  useEffect(() => {
+    if (!fade) {
+      setVisibleSeccion(seccionActiva);
     }
+  }, [fade, seccionActiva]);
+
+  const toggleDropdown = () => {
+    setShow(!show);
   };
 
   const handleToggle = (value: string) => {
@@ -128,30 +140,47 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
         ref={dropdownRef}
         id='filter-bar'
         className={`absolute top-full right-0 mt-2 w-full md:max-w-xs bg-white rounded-lg shadow-custom-dark z-10 transform transition-all duration-300 ease-in-out
-      ${show ? 'opacity-100 scale-100 visible pointer-events-auto' : 'opacity-0 scale-95 invisible pointer-events-none'}
+      ${
+        show
+          ? 'opacity-100 scale-100 visible pointer-events-auto'
+          : 'opacity-0 scale-95 invisible pointer-events-none'
+      }
     `}
       >
         {showSecciones && secciones.length > 0 && (
           <div
             className={`px-4 py-2 transform transition-all duration-300 ease-in-out
-            ${show && !fade ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95'} ${fade ? 'pointer-events-none' : ''}`}
+            ${show && !fade ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95'} ${
+              fade ? 'pointer-events-none' : ''
+            }`}
           >
             <label className='text-sm font-semibold text-gray-700'>{labelSecciones}</label>
-            <select
-              className='w-full bg-text font-semibold mt-1 p-2 rounded-lg'
-              value={seccionActiva}
-              onChange={(e) => onChangeSeccion(e.target.value)}
-            >
-              {secciones.map((sec, index) => (
-                <option
-                  key={sec.value}
-                  value={sec.value}
-                  className={`bg-text ${index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'}`}
-                >
-                  {sec.label}
-                </option>
-              ))}
-            </select>
+            <Select value={visibleSeccion} onValueChange={(val) => onChangeSeccion?.(val)}>
+              <SelectTrigger
+                id='filter-bar'
+                className='w-full text-md rounded-lg bg-[#f3eaf1] text-[#822f87] font-semibold shadow-sm'
+              >
+                <SelectValue placeholder='Selecciona una sección' />
+              </SelectTrigger>
+              <SelectContent
+                id='filter-bar'
+                className='bg-[#f4edf4] text-[#822f87] transition-all duration-300 ease-in-out'
+              >
+                {secciones.map((sec, index) => (
+                  <SelectItem
+                    key={sec.value}
+                    value={sec.value}
+                    className={`font-medium ${
+                      index % 2 === 0
+                        ? 'text-secondaryCol focus:bg-secondaryCol focus:text-text'
+                        : 'text-primaryCol focus:bg-primaryCol focus:text-text'
+                    }`}
+                  >
+                    {sec.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
@@ -166,22 +195,34 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
               }`}
             >
               <label className='text-sm font-semibold text-gray-700'>{filter.label}</label>
-              <select
-                className='w-full bg-text mt-1 p-2 rounded-lg'
-                onChange={(e) => onExtraFilterChange(filter.key, e.target.value)}
+              <Select
+                value={filterActiva?.[filter.key] != '' ? filterActiva?.[filter.key] : '__all__'}
+                onValueChange={(val) => {
+                  onExtraFilterChange(filter.key, val);
+                }}
               >
-                {filter.options.map((opt, index) => (
-                  <option
-                    key={opt.value}
-                    value={opt.value}
-                    className={`bg-text ${
-                      index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
-                    }`}
-                  >
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className='w-full text-md rounded-lg bg-[#f3eaf1] text-[#822f87] font-semibold shadow-sm'>
+                  <SelectValue placeholder='Selecciona una opción' />
+                </SelectTrigger>
+                <SelectContent
+                  id='filter-bar'
+                  className='bg-[#f4edf4] text-[#822f87] transition-all duration-300 ease-in-out'
+                >
+                  {filter.options.map((opt, index) => (
+                    <SelectItem
+                      key={opt.value}
+                      value={opt.value}
+                      className={`font-medium ${
+                        index % 2 === 0
+                          ? 'text-secondaryCol focus:bg-secondaryCol focus:text-text'
+                          : 'text-primaryCol focus:bg-primaryCol focus:text-text'
+                      }`}
+                    >
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           ) : null,
         )}
@@ -192,7 +233,9 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
             {options.map((option, index) => (
               <label
                 key={option.value}
-                className={`flex items-center px-2 py-1 hover:bg-purple-100 cursor-pointer rounded-md ${index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'}`}
+                className={`flex items-center px-2 py-1 hover:bg-purple-100 cursor-pointer rounded-md ${
+                  index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
+                }`}
               >
                 <input
                   type='checkbox'
