@@ -28,8 +28,11 @@ const EstadisticasAdmin = () => {
             apiEndpoint='/api/data?page=sedes'
             dataPath='resumenSedes'
             xKey='sede'
-            title='Personas por SEDE'
+            title='Personas Aceptadas por SEDE'
             labelFormatterPrefix='SEDE: '
+            selectAll = {false}
+            deselectAll = {true}
+            maxItemsSelected={5}
           />
         </div>
       </div>

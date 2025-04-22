@@ -29,6 +29,9 @@ interface FiltroEventoProps {
   label?: string;
   labelOptions?: string;
   iconName?: keyof typeof Icons;
+  maxSelectableOptions?: number;
+  selectAll?: boolean,
+  deselectAll?: boolean,
   showSecciones?: boolean;
   labelSecciones?: string;
   secciones?: Option[];
@@ -47,6 +50,9 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   label = 'Filtros',
   labelOptions = 'Opciones',
   iconName,
+  maxSelectableOptions = options.length,
+  selectAll = false,
+  deselectAll = false,
   showSecciones = false,
   labelSecciones = 'Sección',
   secciones = [],
@@ -61,6 +67,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   const [show, setShow] = useState(false);
   const [filterVisibility, setFilterVisibility] = useState<Record<string, boolean>>({});
   const [visibleSeccion, setVisibleSeccion] = useState(seccionActiva);
+  const [wasManuallyCleared, setWasManuallyCleared] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const filterVisibilityRef = useRef(filterVisibility);
 
@@ -79,11 +86,23 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   };
 
   const handleToggle = (value: string) => {
-    const updated = selected.includes(value)
-      ? selected.filter((v) => v !== value)
-      : [...selected, value];
-    onChange(updated);
+    if (selected.includes(value)) {
+      onChange(selected.filter((v) => v !== value));
+    } else if (selected.length < maxSelectableOptions) {
+      onChange([...selected, value]);
+    }
   };
+
+  const handleSelectAll = () => {
+    const remaining = options.filter((opt) => !selected.includes(opt.value));
+    const canAdd = maxSelectableOptions - selected.length;
+    const toAdd = remaining.slice(0, canAdd);
+    onChange([...selected, ...toAdd.map((o) => o.value)]);
+  };
+
+  const handleDeselectAll = () => {
+    onChange([]);
+  };  
 
   useEffect(() => {
     if (fade) {
@@ -114,6 +133,21 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (!wasManuallyCleared && selected.length === 0 && options.length > 0 && maxSelectableOptions > 0) {
+      const initialSelected = options
+        .slice(0, maxSelectableOptions)
+        .map((opt) => opt.value);
+      onChange(initialSelected);
+    }
+  
+    if (selected.length > maxSelectableOptions) {
+      onChange(selected.slice(0, maxSelectableOptions));
+    }
+    setWasManuallyCleared(true);
+  }, [options, maxSelectableOptions, selected.length, wasManuallyCleared]);
+  
 
   const IconComponent = withIconDecorator(
     iconName && Icons[iconName] ? Icons[iconName] : Icons.CaretDoubleDown,
@@ -230,24 +264,41 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
         {!disableCheckboxes && options.length > 0 && (
           <div className='px-4 py-2'>
             <label className='text-sm font-semibold text-gray-700'>{labelOptions}</label>
-            {options.map((option, index) => (
-              <label
-                key={option.value}
-                className={`flex items-center px-2 py-1 hover:bg-purple-100 cursor-pointer rounded-md ${
-                  index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
-                }`}
-              >
-                <input
-                  type='checkbox'
-                  checked={selected.includes(option.value)}
-                  onChange={() => handleToggle(option.value)}
-                  className={`checkbox-circle mr-2 ${
-                    index % 2 === 0 ? 'checkbox-odd' : 'checkbox-even'
+
+            <div className='max-h-40 overflow-y-auto border border-gray-200 rounded-md p-2 my-2'>
+              {options.map((option, index) => (
+                <label
+                  key={option.value}
+                  className={`flex items-center px-2 py-1 hover:bg-purple-100 cursor-pointer rounded-md ${
+                    index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
                   }`}
-                />
-                <span className='text-sm'>{option.label}</span>
-              </label>
-            ))}
+                >
+                  <input
+                    type='checkbox'
+                    checked={selected.includes(option.value)}
+                    onChange={() => handleToggle(option.value)}
+                    className={`checkbox-circle mr-2 ${
+                      index % 2 === 0 ? 'checkbox-odd' : 'checkbox-even'
+                    }`}
+                  />
+                  <span className='text-sm'>{option.label}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className='flex justify-between text-sm mt-2'>
+              <button
+                onClick={handleSelectAll}
+                className='text-purple-600 hover:underline disabled:opacity-50'
+                disabled={selected.length >= maxSelectableOptions}
+                hidden={!selectAll}
+              >
+                Seleccionar todo
+              </button>
+              <button onClick={handleDeselectAll} className='text-purple-600 hover:underline' hidden={!deselectAll}>
+                Deseleccionar todo
+              </button>
+            </div>
           </div>
         )}
       </div>
