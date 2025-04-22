@@ -26,6 +26,9 @@ interface GenericBarChartProps {
   xKey?: string;
   labelFormatterPrefix?: string;
   filters?: Record<string, string | undefined>;
+  selectAll?: boolean;
+  deselectAll?: boolean;
+  maxItemsSelected?: number;
 }
 
 type GenericChartData = {
@@ -39,6 +42,9 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   xKey = 'name',
   labelFormatterPrefix = '',
   filters = {},
+  selectAll = false,
+  deselectAll = false,
+  maxItemsSelected,
 }) => {
   const [data, setData] = useState<GenericChartData[]>([]);
   const [filteredData, setFilteredData] = useState<GenericChartData[]>([]);
@@ -48,6 +54,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setFade(true)
     const fetchData = async () => {
       const params = new URLSearchParams(filters as Record<string, string>);
       const fullUrl = `${apiEndpoint}${params.toString() ? `?${params.toString()}` : ''}`;
@@ -79,25 +86,29 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           return;
         }
 
-        // Conversión genérica: convierte valores numéricos en strings a números
-        const parsedData = rawData.map((item) => {
+        const ItemsData = rawData.map((item) => {
           const newItem: GenericChartData = {};
           for (const key in item) {
             const val = item[key];
-            newItem[key] =
-              typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
+            newItem[key] = typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
           }
           return newItem;
         });
 
-        setData(parsedData);
+        const parsedData = rawData.slice(0, maxItemsSelected).map((item) => {
+          const newItem: GenericChartData = {};
+          for (const key in item) {
+            const val = item[key];
+            newItem[key] = typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
+          }
+          return newItem;
+        });
+
+        setData(ItemsData);
         setFilteredData(parsedData);
         setSelectedKeys(parsedData.map((d) => d[xKey] as string));
         setError(null);
 
-        setTimeout(() => {
-          isFirstRender.current = false;
-        }, 10);
       } catch (err) {
         console.error('❌ Error cargando datos:', err);
         setError('Error al cargar los datos del servidor.');
@@ -105,6 +116,14 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
     };
 
     fetchData();
+    setTimeout(() => {
+      isFirstRender.current = false;
+    }, 700);
+    if(isFirstRender){
+      setTimeout(() => {
+        setFade(false)
+      }, 300)
+    }
 
     const handleClickOutside = (event: MouseEvent) => {
       if ((event.target as HTMLElement).closest('#filter-bar')) return;
@@ -126,7 +145,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
       setSelectedKeys(updated);
       setFilteredData(data.filter((d) => updated.includes(d[xKey] as string)));
       setFade(false);
-    }, 200);
+    }, 250);
   };
 
   const options = data.map((d) => ({
@@ -152,8 +171,12 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
         />
       </div>
 
-      <div className='flex flex-col md:flex-row gap-3 md:gap-6 justify-between items-center mt-4 mb-4 ml-7 mr-7'>
-        <CustomLegend legendKeys={seriesKeys} />
+      <div className='flex flex-col md:flex-row gap-3 md:gap-0 justify-between items-center mt-4 mb-4 ml-7 mr-7'>
+        <div className={`flex w-full transition duration-300 ease-in-out ${
+          ((fade && (isFirstRender.current)) || selectedKeys.length < 1) ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <CustomLegend legendKeys={seriesKeys} />
+        </div>
         <div className='flex justify-between w-full items-center'>
           <div className='flex items-center w-full justify-end'>
             <Filtro
@@ -163,13 +186,16 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               iconName={undefined}
               label='Filtros'
               labelOptions={xKey.toUpperCase()}
+              selectAll={selectAll}
+              deselectAll={deselectAll}
+              maxSelectableOptions={maxItemsSelected}
             />
           </div>
         </div>
       </div>
 
       <div
-        className={`w-full h-full transition-opacity duration-300 ${
+        className={`w-full h-full transform transition-all duration-300 ease-in-out ${
           fade ? 'opacity-0' : 'opacity-100'
         }`}
       >
