@@ -1,6 +1,22 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
+import InputField from '@components/buttons_inputs/InputField';
+import Dropdown from '@components/buttons_inputs/Dropdown';
+import Button from '@components/buttons_inputs/Button';
+import Checkbox from '@components/buttons_inputs/Checkbox';
+// Import icons using the specified path (placeholders)
+import User from '@components/icons/User'; // For name fields
+import Email from '@components/icons/Envelope'; // For email fields
+import Phone from '@components/icons/Phone'; // For phone fields
+import Grade from '@components/icons/BookOpen'; // For grade field
+import School from '@components/icons/GraduationCap'; // For escolaridad field
+import Send from '@components/icons/ArrowFatRight'; // For submit button
+
 const RegistrationParticipant: React.FC = () => {
+  const [grado, setGrado] = useState('1°');
+  const [escolaridad, setEscolaridad] = useState('Secundaria');
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
       <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
@@ -10,9 +26,14 @@ const RegistrationParticipant: React.FC = () => {
             <div className="w-2 h-12 bg-purple-600 mr-4"></div>
             <h1 className="text-2xl md:text-3xl font-bold">Formulario de Registro<br />Participantes</h1>
           </div>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center hover:bg-red-600 transition">
-            Regresar <span className="ml-2">✕</span>
-          </button>
+          <Button
+            label="Regresar"
+            variant="error"
+            showRightIcon
+            IconRight={() => <span className="text-white">✕</span>}
+            onClick={() => console.log('Regresar clicked')}
+            className="px-4 py-2 rounded-full flex items-center"
+          />
         </div>
 
         {/* Section: Datos del Participante */}
@@ -32,83 +53,56 @@ const RegistrationParticipant: React.FC = () => {
         {/* Form Fields: Datos del Participante */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre(s)*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="María José de la Rosa"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre(s)*"
+            placeholder="María José de la Rosa"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Paterno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Paterno*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Hernández"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Paterno*"
+            placeholder="Hernández"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Materno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Materno</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Sánchez"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Materno"
+            placeholder="Sánchez"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Correo Electrónico */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo Electrónico*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">@</span>
-              <input
-                type="email"
-                placeholder="mariajhrndzsan@gmail.com"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Correo Electrónico*"
+            placeholder="mariajhrndzsan@gmail.com"
+            variant="accent"
+            Icon={Email}
+          />
 
           {/* Grado */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Grado*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📅</span>
-              <select className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none">
-                <option>3°</option>
-                <option>1°</option>
-                <option>2°</option>
-              </select>
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">▼</span>
-            </div>
-          </div>
+          <Dropdown
+            label="Grado*"
+            options={['1°', '2°', '3°']}
+            value={grado}
+            onChange={setGrado}
+            variant="accent"
+            Icon={Grade}
+          />
 
           {/* Escolaridad */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Escolaridad*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">🏫</span>
-              <select className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none">
-                <option>Secundaria</option>
-                <option>Preparatoria / Bachillerato</option>
-              </select>
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">▼</span>
-            </div>
-          </div>
+          <Dropdown
+            label="Escolaridad*"
+            options={['Secundaria', 'Preparatoria / Bachillerato']}
+            value={escolaridad}
+            onChange={setEscolaridad}
+            variant="accent"
+            Icon={School}
+          />
         </div>
 
         {/* Section: Datos del Tutor */}
@@ -125,81 +119,77 @@ const RegistrationParticipant: React.FC = () => {
         {/* Form Fields: Datos del Tutor */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre(s)*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="María de la Rosa"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre(s)*"
+            placeholder="María de la Rosa"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Paterno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Paterno*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Sánchez"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Paterno*"
+            placeholder="Sánchez"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Materno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Materno</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Mendoza"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Materno"
+            placeholder="Mendoza"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Correo Electrónico */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo Electrónico*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">@</span>
-              <input
-                type="email"
-                placeholder="mariajhrndzsan@gmail.com"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Correo Electrónico*"
+            placeholder="mariajhrndzsan@gmail.com"
+            variant="accent"
+            Icon={Email}
+          />
 
           {/* Celular */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Celular*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📞</span>
-              <input
-                type="tel"
-                placeholder="+52 222 123 4567"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+          <InputField
+            label="Celular*"
+            placeholder="+52 222 123 4567"
+            variant="accent"
+            Icon={Phone}
+          />
+        </div>
+
+        {/* Aviso de Privacidad */}
+        <div className="mt-8">
+          <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+            <span className="text-purple-400 mr-2">🔒</span> Aviso de Privacidad
+          </h2>
+          <p className="text-gray-400 text-sm">
+            Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
+            <a href="https://tec.mx/es/aviso-privacidad-campamentos-clubs-tec" className="text-purple-400 hover:underline">
+            https://tec.mx/es/aviso-privacidad-campamentos-clubs-tec
+            </a>
+          </p>
+          <div className="mt-2">
+            <Checkbox
+              label=""
+              color="purple"
+              checked={privacyAccepted}
+              onChange={setPrivacyAccepted}
+            />
           </div>
-          {/* Aviso de Privacidad */}
-          <div className="mt-8">
-            <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">🔒</span> Aviso de Privacidad
-            </h2>
-            <p className="text-gray-400 text-sm">
-              Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
-              <a href="https://tec.mx/es/aviso-privacidad-campamentos-clubs-tec" className="text-purple-400 hover:underline">
-              https://tec.mx/es/aviso-privacidad-campamentos-clubs-tec
-              </a>
-            </p>
-          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="mt-6 flex justify-end">
+          <Button
+            label="Enviar Registro"
+            variant="success"
+            showRightIcon
+            IconRight={Send}
+            onClick={() => console.log('Enviar Registro clicked')}
+            className="px-6 py-2 rounded-full flex items-center"
+          />
         </div>
       </div>
     </div>

@@ -1,6 +1,28 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
+import InputField from '@components/buttons_inputs/InputField';
+import Dropdown from '@components/buttons_inputs/Dropdown';
+import Button from '@components/buttons_inputs/Button';
+import Checkbox from '@components/buttons_inputs/Checkbox';
+
+// Import icons using the specified path (placeholders)
+import User from '@components/icons/User'; // For name fields
+import Phone from '@components/icons/Phone'; // For phone fields
+import Location from '@components/icons/Gps'; // For localización field
+import Lock from '@components/icons/Lock'; // For contraseña fields
+import School from '@components/icons/GraduationCap'; // For escolaridad field
+import Send from '@components/icons/ArrowFatRight'; // For submit button
+import Email from '@components/icons/Envelope';
+import Image from '@components/icons/Image'; // For image upload buttons
+import Document from '@components/icons/File'; // For document upload button
+
 const RegistrationVenue: React.FC = () => {
+  const [sexo, setSexo] = useState('Mujer');
+  const [localizacion, setLocalizacion] = useState('Puebla');
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
       <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
@@ -10,9 +32,14 @@ const RegistrationVenue: React.FC = () => {
             <div className="w-2 h-12 bg-purple-600 mr-4"></div>
             <h1 className="text-2xl md:text-3xl font-bold">Formulario de Registro<br />SEDE</h1>
           </div>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center hover:bg-red-600 transition">
-            Regresar <span className="ml-2">✕</span>
-          </button>
+          <Button
+            label="Regresar"
+            variant="error"
+            showRightIcon
+            IconRight={() => <span className="text-white">✕</span>}
+            onClick={() => console.log('Regresar clicked')}
+            className="px-4 py-2 rounded-full flex items-center"
+          />
         </div>
 
         {/* Section: Datos Coordinadora General */}
@@ -32,130 +59,98 @@ const RegistrationVenue: React.FC = () => {
         {/* Form Fields: Datos Coordinadora General */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre(s)*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Edna"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre(s)*"
+            placeholder="Edna"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Paterno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Paterno*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Moda"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Paterno*"
+            placeholder="Moda"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Materno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Materno</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Apellido Materno"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Materno"
+            placeholder="Apellido Materno"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Correo Electrónico */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo Electrónico*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">@</span>
-              <input
-                type="email"
-                placeholder="ednamoda@disney.com"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Correo Electrónico*"
+            placeholder="ednamoda@disney.com"
+            variant="accent"
+            Icon={Email}
+          />
 
           {/* Celular */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Celular*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📞</span>
-              <input
-                type="tel"
-                placeholder="+52 222 123 4567"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Celular*"
+            placeholder="+52 222 123 4567"
+            variant="accent"
+            Icon={Phone}
+          />
 
           {/* Sexo */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Sexo*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">⚥</span>
-              <select className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none">
-                <option>Mujer</option>
-                <option>Hombre</option>
-                <option>Otro</option>
-              </select>
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">▼</span>
-            </div>
-          </div>
+          <Dropdown
+            label="Sexo*"
+            options={['Mujer', 'Hombre', 'Otro']}
+            value={sexo}
+            onChange={setSexo}
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Nombre de Usuario */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre de Usuario*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">👤</span>
-              <input
-                type="text"
-                placeholder="edna_moda"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-            <p className="text-gray-400 text-xs mt-1">El nombre de usuario solo puede contener letras, números y guiones bajos.</p>
-          </div>
+          <InputField
+            label="Nombre de Usuario*"
+            description="El nombre de usuario solo puede contener letras, números y guiones bajos."
+            placeholder="edna_moda"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Contraseña */}
           <div>
-            <label className="block text-sm font-medium mb-1">Contraseña*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">🔒</span>
-              <input
-                type="password"
-                placeholder="********"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-            <p className="text-gray-400 text-xs mt-1">Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial.</p>
+            <InputField
+              label="Contraseña*"
+              description="Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial."
+              placeholder="********"
+              variant="accent"
+              Icon={Lock}
+            />
             <div className="flex items-center mt-2">
-              <input type="checkbox" className="mr-2" />
-              <label className="text-gray-400 text-xs">Mostrar Contraseña</label>
+              <Checkbox
+                label="Mostrar Contraseña"
+                color="purple"
+                checked={showPassword}
+                onChange={setShowPassword}
+              />
             </div>
           </div>
 
           {/* Confirmar Contraseña */}
           <div>
-            <label className="block text-sm font-medium mb-1">Confirmar Contraseña*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">🔒</span>
-              <input
-                type="password"
-                placeholder="********"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+            <InputField
+              label="Confirmar Contraseña*"
+              placeholder="********"
+              variant="accent"
+              Icon={Lock}
+            />
             <div className="flex items-center mt-2">
-              <input type="checkbox" className="mr-2" />
-              <label className="text-gray-400 text-xs">Mostrar Contraseña</label>
+              <Checkbox
+                label="Mostrar Contraseña"
+                color="purple"
+                checked={showConfirmPassword}
+                onChange={setShowConfirmPassword}
+              />
             </div>
           </div>
         </div>
@@ -169,9 +164,12 @@ const RegistrationVenue: React.FC = () => {
           <p className="text-gray-600 text-sm mt-2">
             Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte dentro del sistema. No es obligatorio subir una imagen, sin embargo lo recomendamos.
           </p>
-          <button className="mt-4 bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-600 transition">
-            Subir mi imagen
-          </button>
+          <Button
+            label="Subir mi imagen"
+            variant="primary"
+            onClick={() => console.log('Subir imagen clicked')}
+            className="mt-4 px-4 py-2 rounded-lg flex items-center"
+          />
         </div>
 
         {/* Section: Datos Coordinadora Asociada */}
@@ -188,69 +186,44 @@ const RegistrationVenue: React.FC = () => {
         {/* Form Fields: Datos Coordinadora Asociada */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre(s)*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Juana"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre(s)*"
+            placeholder="Juana"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Paterno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Paterno*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="De Arco"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Paterno*"
+            placeholder="De Arco"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Materno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Materno</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Ramírez"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Materno"
+            placeholder="Ramírez"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Correo Electrónico */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo Electrónico*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">@</span>
-              <input
-                type="email"
-                placeholder="juanadearco@disney.com"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Correo Electrónico*"
+            placeholder="juanadearco@disney.com"
+            variant="accent"
+            Icon={Email}
+          />
 
           {/* Celular */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Celular*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📞</span>
-              <input
-                type="tel"
-                placeholder="+52 222 123 4567"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Celular*"
+            placeholder="+52 222 123 4567"
+            variant="accent"
+            Icon={Phone}
+          />
         </div>
 
         {/* Section: Datos Coordinadora de Informes (Staff) */}
@@ -267,69 +240,44 @@ const RegistrationVenue: React.FC = () => {
         {/* Form Fields: Datos Coordinadora de Informes (Staff) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre(s)*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Juana"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre(s)*"
+            placeholder="Juana"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Paterno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Paterno*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="De Arco"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Paterno*"
+            placeholder="De Arco"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Materno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Materno</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Ramírez"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Materno"
+            placeholder="Ramírez"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Correo Electrónico */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo Electrónico*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">@</span>
-              <input
-                type="email"
-                placeholder="juanadearco@disney.com"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Correo Electrónico*"
+            placeholder="juanadearco@disney.com"
+            variant="accent"
+            Icon={Email}
+          />
 
           {/* Celular */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Celular*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📞</span>
-              <input
-                type="tel"
-                placeholder="+52 222 123 4567"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Celular*"
+            placeholder="+52 222 123 4567"
+            variant="accent"
+            Icon={Phone}
+          />
         </div>
 
         {/* Section: Datos Coordinadora de Informes (Participantes) */}
@@ -346,69 +294,44 @@ const RegistrationVenue: React.FC = () => {
         {/* Form Fields: Datos Coordinadora de Informes (Participantes) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre(s)*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Juana"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre(s)*"
+            placeholder="Juana"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Paterno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Paterno*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="De Arco"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Paterno*"
+            placeholder="De Arco"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Apellido Materno */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Apellido Materno</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">✎</span>
-              <input
-                type="text"
-                placeholder="Ramírez"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Apellido Materno"
+            placeholder="Ramírez"
+            variant="accent"
+            Icon={User}
+          />
 
           {/* Correo Electrónico */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Correo Electrónico*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">@</span>
-              <input
-                type="email"
-                placeholder="juanadearco@disney.com"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Correo Electrónico*"
+            placeholder="juanadearco@disney.com"
+            variant="accent"
+            Icon={Email}
+          />
 
           {/* Celular */}
-          <div>
-            <label className="blockÜber das Team text-sm font-medium mb-1">Celular*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📞</span>
-              <input
-                type="tel"
-                placeholder="+52 222 123 4567"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Celular*"
+            placeholder="+52 222 123 4567"
+            variant="accent"
+            Icon={Phone}
+          />
         </div>
 
         {/* Section: Datos SEDE */}
@@ -425,43 +348,31 @@ const RegistrationVenue: React.FC = () => {
         {/* Form Fields: Datos SEDE */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre de la SEDE */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Nombre de la SEDE*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">🏫</span>
-              <input
-                type="text"
-                placeholder="Instituto Oriente"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-          </div>
+          <InputField
+            label="Nombre de la SEDE*"
+            placeholder="Instituto Oriente"
+            variant="accent"
+            Icon={School}
+          />
 
           {/* Localización */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Localización*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📍</span>
-              <select className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none">
-                <option>Puebla</option>
-                <option>Ciudad de México</option>
-                <option>Guadalajara</option>
-              </select>
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">▼</span>
-            </div>
-          </div>
+          <Dropdown
+            label="Localización*"
+            options={['Puebla', 'Ciudad de México', 'Guadalajara']}
+            value={localizacion}
+            onChange={setLocalizacion}
+            variant="accent"
+            Icon={Location}
+          />
 
           {/* Dirección */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">Dirección*</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400">📍</span>
-              <input
-                type="text"
-                placeholder="P. Sherman Calle Wallaby 42 Sidney"
-                className="w-full pl-10 pr-4 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+            <InputField
+              label="Dirección*"
+              placeholder="P. Sherman Calle Wallaby 42 Sidney"
+              variant="accent"
+              Icon={Location}
+            />
           </div>
         </div>
 
@@ -474,9 +385,12 @@ const RegistrationVenue: React.FC = () => {
           <p className="text-gray-600 text-sm mt-2">
             Selecciona una imagen que represente a tu SEDE, la cual se presentará a los usuarios para su fácil reconocimiento. No es obligatorio subir una imagen, sin embargo lo recomendamos.
           </p>
-          <button className="mt-4 bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-600 transition">
-            Subir mi imagen
-          </button>
+          <Button
+            label="Subir mi imagen"
+            variant="primary"
+            onClick={() => console.log('Subir imagen clicked')}
+            className="mt-4 px-4 py-2 rounded-lg flex items-center"
+          />
         </div>
 
         {/* Convocatoria SEDE */}
@@ -489,9 +403,12 @@ const RegistrationVenue: React.FC = () => {
             Dentro de esta sección tendrás que subir el permiso de participación, la cual deberá de estar firmado por un representante legal de la institución.<br />
             Esta sección es obligatoria.
           </p>
-          <button className="mt-4 bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-600 transition">
-            Subir mi documento
-          </button>
+          <Button
+            label="Subir mi documento"
+            variant="primary"
+            onClick={() => console.log('Subir documento clicked')}
+            className="mt-4 px-4 py-2 rounded-lg flex items-center"
+          />
         </div>
 
         {/* Aviso de Privacidad */}
@@ -505,13 +422,26 @@ const RegistrationVenue: React.FC = () => {
               https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
             </a>
           </p>
+          <div className="mt-2">
+            <Checkbox
+              label=""
+              color="purple"
+              checked={privacyAccepted}
+              onChange={setPrivacyAccepted}
+            />
+          </div>
         </div>
 
         {/* Submit Button */}
         <div className="mt-6 flex justify-end">
-          <button className="bg-green-500 text-white px-6 py-2 rounded-full flex items-center hover:bg-green-600 transition">
-            Enviar Registro <span className="ml-2">📨</span>
-          </button>
+          <Button
+            label="Enviar Registro"
+            variant="success"
+            showRightIcon
+            IconRight={Send}
+            onClick={() => console.log('Enviar Registro clicked')}
+            className="px-6 py-2 rounded-full flex items-center"
+          />
         </div>
       </div>
     </div>
