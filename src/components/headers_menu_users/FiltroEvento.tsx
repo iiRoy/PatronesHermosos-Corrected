@@ -161,8 +161,8 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
         onClick={toggleDropdown}
       >
         <IconComponent
-          fillColor='var(--primary)'
-          strokeColor='var(--primary)'
+          fillColor='var(--primaryColor)'
+          strokeColor='var(--primaryColor)'
           strokeWidth={1}
           width={25}
           height={25}

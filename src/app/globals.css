@@ -54,10 +54,10 @@
 }
 
 :root {
-  --primary: #97639c;
+  --primaryColor: #97639c;
   --primary-shade: #6e2d75;
   --primary-disabled: #301e31;
-  --secondary: #683756;
+  --secondaryColor: #683756;
   --secondary-shade: #c57fab;
   --secondary-disabled: #402436;
   --success: #4b914e;
@@ -188,7 +188,7 @@
 
 /*Colores botones*/
 .button-primary {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .button-primary:hover {
@@ -201,7 +201,7 @@
 }
 
 .button-secondary {
-  background-color: var(--secondary);
+  background-color: var(--secondaryColor);
 }
 
 .button-secondary-shade {
@@ -266,7 +266,7 @@
 }
 
 .input-primary {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .input-primary-disabled {
@@ -274,7 +274,7 @@
 }
 
 .input-secondary {
-  background-color: var(--secondary);
+  background-color: var(--secondaryColor);
 }
 
 .input-secondary-disabled {
@@ -342,7 +342,7 @@
 
 .notification-purple-two {
   color: var(--text-color);
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .notification-icon {
@@ -378,7 +378,7 @@
 }
 
 .notification-icon-purple {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .notification-icon-purple-two {
@@ -413,7 +413,7 @@
 }
 
 .notification-title-purple {
-  color: var(--primary);
+  color: var(--primaryColor);
 }
 
 .notification-text {
@@ -460,7 +460,7 @@
 }
 
 .notification-close-purple {
-  color: var(--primary);
+  color: var(--primaryColor);
 }
 
 .notification-close-yellow:hover {
@@ -506,7 +506,7 @@
 }
 
 .pagination .double-arrow-primary {
-  color: var(--primary);
+  color: var(--primaryColor);
 }
 
 .pagination .double-arrow-secondary-shade {
@@ -528,13 +528,13 @@
 }
 
 .pagination .active {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
   color: white;
   font-weight: bold;
 }
 
 .pagination .active-primary {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .pagination .active-secondary-shade {
@@ -565,7 +565,7 @@
 }
 
 .option-link:hover {
-  color: var(--primary);
+  color: var(--primaryColor);
 }
 
 .option-icon {
@@ -675,7 +675,7 @@
 
 /* Colored styles */
 .purple-checkbox {
-  color: var(--primary);
+  color: var(--primaryColor);
 }
 
 .green-checkbox {
@@ -699,7 +699,7 @@
 }
 
 .purple-checkbox input[type='checkbox'] {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .red-checkbox input[type='checkbox'] {
@@ -722,7 +722,7 @@
 
 .with-border.purple-checkbox input[type='checkbox'] {
   background-color: transparent;
-  border-color: var(--primary);
+  border-color: var(--primaryColor);
 }
 
 .with-border.red-checkbox input[type='checkbox'] {
@@ -746,7 +746,7 @@
 }
 
 .with-border.purple-checkbox input[type='checkbox']:checked {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .with-border.red-checkbox input[type='checkbox']:checked {
@@ -772,7 +772,7 @@
 }
 
 .border-purple {
-  border-left: 15px solid var(--primary);
+  border-left: 15px solid var(--primaryColor);
 }
 
 .border-green {
@@ -806,7 +806,7 @@
 }
 
 .icon-purple {
-  background-color: var(--primary);
+  background-color: var(--primaryColor);
 }
 
 .icon-green {
@@ -827,7 +827,7 @@
 }
 
 .title-purple {
-  color: var(--primary);
+  color: var(--primaryColor);
 }
 
 .title-green {
