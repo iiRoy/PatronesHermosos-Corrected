@@ -177,8 +177,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       <div className='flex justify-between items-center'>
         <h1 className='font-bold text-2xl'>{title}</h1>
         <Options
-          fillColor='var(--secondary)'
-          strokeColor='var(--secondary)'
+          fillColor='var(--secondaryColor)'
+          strokeColor='var(--secondaryColor)'
           strokeWidth={2.5}
           width={'3vmax'}
           height={'3vmax'}
@@ -292,8 +292,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
                 className='hover:opacity-80 hover:scale-125 transition-all absolute'
               >
                 <Back
-                  fillColor='var(--secondary)'
-                  strokeColor='var(--secondary)'
+                  fillColor='var(--secondaryColor)'
+                  strokeColor='var(--secondaryColor)'
                   strokeWidth={1}
                   width={20}
                   height={20}
