@@ -1,3 +1,9 @@
+## 1.2.0 (2025-04-24)
+
+* chore(release): 1.2.0-admin.1 [skip ci] ([223e80c](https://github.com/iiRoy/Patrones-Hermosos/commit/223e80c))
+* feat(estadisticas): Option Menu + Notifications implementation ([3cfffc6](https://github.com/iiRoy/Patrones-Hermosos/commit/3cfffc6))
+* improvement(estadisticas): Bar charts and information organization. ([9843cbc](https://github.com/iiRoy/Patrones-Hermosos/commit/9843cbc))
+
 ## 1.2.0-admin.1 (2025-04-24)
 
 * feat(estadisticas): Option Menu + Notifications implementation ([3cfffc6](https://github.com/iiRoy/Patrones-Hermosos/commit/3cfffc6))
