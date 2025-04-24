@@ -1,3 +1,8 @@
+## 1.2.0-admin.1 (2025-04-24)
+
+* feat(estadisticas): Option Menu + Notifications implementation ([3cfffc6](https://github.com/iiRoy/Patrones-Hermosos/commit/3cfffc6))
+* improvement(estadisticas): Bar charts and information organization. ([9843cbc](https://github.com/iiRoy/Patrones-Hermosos/commit/9843cbc))
+
 ## <small>1.1.1 (2025-04-21)</small>
 
 * fix(Superuser): Filter animations and selects, Pie Chart Status ([cf5350e](https://github.com/iiRoy/Patrones-Hermosos/commit/cf5350e))
