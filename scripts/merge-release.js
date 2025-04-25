@@ -16,8 +16,8 @@ function run(command, options = {}) {
     execSync(command, { stdio: "inherit", ...options });
     return true;
   } catch (error) {
-    console.error(`❌ Error al ejecutar: ${command}`);
-    process.exit(1);
+    // Propaga el error para que lo maneje el catch externo
+    throw error;
   }
 }
 
@@ -51,7 +51,16 @@ run(`git pull origin ${branchTo}`);
 // Merge desde la rama origen
 console.log(`\x1b[36m%s\x1b[0m`, `Haciendo merge de '${branchFrom}' en '${branchTo}'...`);
 const mergeMessage = `feat(merge): Merge from ${branchFrom} to ${branchTo}`;
-run(`git merge ${branchFrom} -m "${mergeMessage}"`);
+
+try {
+  run(`git merge ${branchFrom} -m "${mergeMessage}"`);
+} catch (error) {
+  // Si hay conflicto en package.json o package-lock.json, resuelve tomando "theirs"
+  console.log('\x1b[33m%s\x1b[0m', 'Conflicto detectado en package.json/package-lock.json/CHANGELOG.md. Manteniendo la versión de la rama origen (theirs)...');
+  run('git checkout --theirs package.json package-lock.json CHANGELOG.md');
+  run('git add package.json package-lock.json CHANGELOG.md');
+  run('git commit -m "chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md"');
+}
 
 // Correr semantic-release
 console.log("\x1b[36m%s\x1b[0m", "Ejecutando semantic-release...");
