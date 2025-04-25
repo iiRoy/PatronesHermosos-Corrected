@@ -1,3 +1,8 @@
+## 1.2.0-com.2 (2025-04-25)
+
+* fix(general): Notification system fixed. ([74e0957](https://github.com/iiRoy/Patrones-Hermosos/commit/74e0957))
+* improvement(estadisticas): Mejores notificaciones. ([cd4e1b7](https://github.com/iiRoy/Patrones-Hermosos/commit/cd4e1b7))
+
 ## 1.2.0-com.1 (2025-04-24)
 
 * chore(release): 1.2.0-admin.1 [skip ci] ([223e80c](https://github.com/iiRoy/Patrones-Hermosos/commit/223e80c))
