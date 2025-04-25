@@ -1,6 +1,6 @@
 {
   "name": "patrones-hermosos",
-  "version": "1.2.0-com.3",
+  "version": "1.2.0-login.1",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",
