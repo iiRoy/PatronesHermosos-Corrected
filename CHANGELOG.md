@@ -1,3 +1,10 @@
+## 1.2.0-com.3 (2025-04-25)
+
+* feat(login): Login area released. Local notifications saved. ([5c96bb3](https://github.com/iiRoy/Patrones-Hermosos/commit/5c96bb3))
+* improve(components): componente checkbox corregido ([cb19161](https://github.com/iiRoy/Patrones-Hermosos/commit/cb19161))
+* improve(components): funcionalidad del InputField agregada ([6dfff3c](https://github.com/iiRoy/Patrones-Hermosos/commit/6dfff3c))
+* improve(components): Se agrego funcionalidad a los componentes ([a8faf93](https://github.com/iiRoy/Patrones-Hermosos/commit/a8faf93))
+
 ## 1.2.0-com.2 (2025-04-25)
 
 * fix(general): Notification system fixed. ([74e0957](https://github.com/iiRoy/Patrones-Hermosos/commit/74e0957))
