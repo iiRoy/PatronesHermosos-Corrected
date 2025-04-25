@@ -14,6 +14,9 @@ import { Cross } from 'recharts';
 
 const EstadisticasAdmin = () => {
   const [inputValue, setInputValue] = useState('');
+  const [value1, setValue1] = useState('');
+  const [value2, setValue2] = useState('');
+  const [value3, setValue3] = useState('');
 
   return (
     <div className='p-4 flex gap-4 flex-col md:flex-row'>
@@ -63,37 +66,47 @@ const EstadisticasAdmin = () => {
 
         <InputField
           label='Label'
-          description='Description'
-          placeholder='Placeholder'
+          showDescription={false}
+          placeholder='Escribe algo...'
+          showError={true}
           error='Error'
           variant='warning'
           Icon={User}
+          value={value1}
+          onChangeText={(val) => {
+            console.log('Valor 1:', val);
+            setValue1(val);
+          }}
         />
+
         <InputField
-          label='Sign In'
+          label='Sign in'
           showDescription={false}
           placeholder='Username'
           showError={false}
           variant='primary'
           Icon={User}
+          value={value2}
+          onChangeText={(val) => {
+            console.log('Valor 2:', val);
+            setValue2(val);
+          }}
         />
+
         <InputField
-          label='Sign In'
-          description='This input is disabled'
-          placeholder='Username'
-          showError={false}
-          error='Error'
-          variant='primary-disabled'
-          Icon={User}
-        />
-        <InputField
-          label='Sign In'
+          label='Sign in'
           showDescription={false}
           placeholder='Username'
-          error="Error: That user doesn't exist"
-          variant='warning'
+          showError={false}
+          variant='primary-disabled'
           Icon={User}
+          value={value3}
+          onChangeText={(val) => {
+            console.log('Valor 3:', val);
+            setValue3(val);
+          }}
         />
+
 
         <Button
           label='Perfil'
