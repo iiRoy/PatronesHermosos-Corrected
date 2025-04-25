@@ -661,17 +661,21 @@
   transition: all 0.2s ease;
 }
 
-.checkbox-container input[type='checkbox']:checked::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 6px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.checkbox-container input[type='checkbox'] {
+  position: relative;
+  /* Necesario para el ::before */
 }
+
+.checkbox-container input[type='checkbox']:checked::before {
+  content: 'x';
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 
 /* Colored styles */
 .purple-checkbox {
@@ -890,6 +894,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -924,6 +929,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
