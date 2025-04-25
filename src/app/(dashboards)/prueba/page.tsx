@@ -13,7 +13,7 @@ import { Cross } from 'recharts';
 
 
 const EstadisticasAdmin = () => {
-  const [showNotification, setShowNotification] = useState(true);
+  const [inputValue, setInputValue] = useState('');
 
   return (
     <div className='p-4 flex gap-4 flex-col md:flex-row'>
@@ -39,6 +39,26 @@ const EstadisticasAdmin = () => {
           totalPages={5}
           variant='secondary-shade'
           pageLinks={['/prueba', '/prueba', '/prueba', '/prueba', '/prueba']}
+        />
+
+        <InputField
+          label='Buscar usuario'
+          showDescription={false}
+          placeholder='Escribe un nombre'
+          showError={true}
+          variant='primary'
+          Icon={User}
+          value={inputValue}
+          onChangeText={(val) => {
+            console.log('Valor actual del input:', val);
+            setInputValue(val);
+          }}
+        />
+
+        <Button
+          label="Mostrar valor"
+          variant="success"
+          onClick={() => alert(`Valor: ${inputValue}`)}
         />
 
         <InputField
@@ -102,12 +122,6 @@ const EstadisticasAdmin = () => {
 
         <Button label='Add' variant='primary' round showLeftIcon IconLeft={Star} />
         <Button label='Enviar' variant='success' />
-
-        <Button
-          label='Mostrar notificación'
-          variant='error'
-          onClick={() => setShowNotification(true)}
-        />
 
 
         <Checkbox
