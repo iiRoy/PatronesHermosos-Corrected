@@ -18,7 +18,8 @@ interface NotificationMenuProps {
 }
 
 const NotificationMenu: React.FC<NotificationMenuProps> = ({ open, onClose }) => {
-  const { notifications, dismiss } = useNotification();
+  // Corrección aquí: 
+  const { notifications, dismissFromHistory } = useNotification();
 
   if (!open) return null;
 
@@ -77,7 +78,7 @@ const NotificationMenu: React.FC<NotificationMenuProps> = ({ open, onClose }) =>
               <button
                 className="ml-1 p-0.5 rounded-full transition flex-shrink-0"
                 style={{ lineHeight: 0, alignSelf: "flex-start" }}
-                onClick={() => dismiss(n.id)}
+                onClick={() => dismissFromHistory(n.id)}
                 title="Cerrar"
                 tabIndex={0}
               >

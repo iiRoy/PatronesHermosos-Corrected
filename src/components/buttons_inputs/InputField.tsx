@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import withIconDecorator from '../decorators/IconDecorator';
+import * as Icons from '../icons';
 
 interface InputFieldProps {
   label: string;
@@ -21,9 +22,7 @@ interface InputFieldProps {
   | 'secondary-shade-disabled'
   | 'text-color-disabled';
   dim?: boolean;
-  Icon: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
-  iconAlt?: string;
-  iconSize?: number;
+  icon?: keyof typeof Icons;
   value?: string;
   onChangeText?: (value: string) => void;
 }
@@ -37,7 +36,7 @@ const InputField: React.FC<InputFieldProps> = ({
   showError = true,
   variant = 'accent',
   dim = false,
-  Icon,
+  icon,
   value,
   onChangeText,
 }) => {
@@ -61,14 +60,19 @@ const InputField: React.FC<InputFieldProps> = ({
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 
+  const IconComponent =
+    icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
+
   return (
     <div className='container-input'>
       <div className='label-input'>{label}</div>
-      {showDescription && description && <div className='description-input'>{description}</div>}
+      {showDescription && description && (
+        <div className='description-input'>{description}</div>
+      )}
       <div className={inputClass}>
-        {Icon && (
+        {IconComponent && (
           <div className='icon-input'>
-            <Icon width={25} height={25} />
+            <IconComponent width={25} height={25} />
           </div>
         )}
         <input
