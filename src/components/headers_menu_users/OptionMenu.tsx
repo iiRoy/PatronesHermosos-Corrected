@@ -39,11 +39,12 @@ const PALETTE = [
   { name: 'Verde', hex: '#4CAF50' },
   { name: 'Cyan', hex: '#00BCD4' },
   { name: 'Azul', hex: '#2196F3' },
-  { name: 'Violeta', hex: '#9C27B0' },
-  { name: 'Rosa', hex: '#E91E63' },
-  { name: 'Blanco', hex: '#FFFFFF' },
-  { name: 'Negro', hex: '#000000' },
+  { name: 'Violeta', hex: '#6E27B0FF' },
+  { name: 'Rosa', hex: '#F87DCDFF' },
   { name: 'Café', hex: '#795548' },
+  { name: 'Negro', hex: '#000000' },
+  { name: 'Gris', hex: '#7B7B7BFF' },
+  { name: 'Blanco', hex: '#FFFFFF' },
 ];
 
 const OptionsMenu: React.FC<OptionsMenuProps> = ({
