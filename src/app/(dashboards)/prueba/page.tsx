@@ -1,10 +1,8 @@
 'use client';
 
-import UserCard from '@/components/headers_menu_users/UserCard';
 import Navbar from '@/components/headers_menu_users/navbar';
 import Pagination from '@/components/buttons_inputs/Pagination';
 import InputField from '@/components/buttons_inputs/InputField';
-import Notification from '@/components/buttons_inputs/Notification';
 import Button from '@/components/buttons_inputs/Button';
 import Checkbox from '@/components/buttons_inputs/Checkbox';
 import MessageCard from '@/components/buttons_inputs/MessageCard';
@@ -67,34 +65,6 @@ const EstadisticasAdmin = () => {
           error="Error: That user doesn't exist"
           variant='warning'
           Icon={User}
-        />
-        <Notification
-          color='green'
-          variant='one'
-          title='¡Éxito!'
-          message='Tu acción se completó correctamente.'
-          Icon={ChatCircleText}
-        />
-        <Notification
-          color='purple'
-          variant='one'
-          title='Notificación'
-          message='Has recibido una notificación'
-          Icon={ChatCircleText}
-        />
-        <Notification
-          color='red'
-          variant='two'
-          title='Error'
-          message='Hubo un problema al guardar los datos.'
-          Icon={ChatCircleText}
-        />
-        <Notification
-          color='yellow'
-          variant='two'
-          title='Advertencia'
-          message='Uno de los datos introducidos es incorrecto'
-          Icon={ChatCircleText}
         />
         <Button
           label='Perfil'

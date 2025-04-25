@@ -1,23 +1,10 @@
 'use client';
-
 import React, { createContext, useCallback, useContext, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-// import tus iconos y decoradores aquí si quieres, o pon tu lógica de íconos dentro
-
-// Ajusta según tus iconos reales:
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
 
-// ===== COMPONENTE Notification =====
-const COLORS: Record<string, string> = {
-  green: '#2ecc40',
-  yellow: '#f6c000',
-  red: '#e4572e',
-  purple: '#9763ac',
-};
-
 interface NotificationProps {
-  show: boolean;
   color: 'green' | 'yellow' | 'red' | 'purple';
   variant?: 'one' | 'two';
   title: string;
@@ -25,10 +12,11 @@ interface NotificationProps {
   iconName?: keyof typeof Icons;
   className?: string;
   onClose?: () => void;
+  onManualClose?: () => void;
   duration?: number;
 }
 
-const Notification: React.FC<Omit<NotificationProps, 'show'>> = ({
+const Notification: React.FC<NotificationProps & { show?: boolean }> = ({
   color,
   variant = 'one',
   title,
@@ -36,11 +24,15 @@ const Notification: React.FC<Omit<NotificationProps, 'show'>> = ({
   iconName,
   className = '',
   onClose,
-  duration = 1800,
+  onManualClose,
+  duration = 5000,
+  show = true,
 }) => {
-  const notificationClass = `notification ${variant === 'two' ? `notification-${color}-two` : ''} ${className}`;
-  const iconClass = `notification-icon ${variant === 'two' ? `notification-icon-${color}-two` : `notification-icon-${color}`}`;
+  const iconClass = `notification-icon ${
+    variant === 'two' ? `notification-icon-${color}-two` : `notification-icon-${color}`
+  }`;
   const titleClass = `notification-title${variant === 'one' ? ` notification-title-${color}` : ''}`;
+  const [visible, setVisible] = useState(false);
   const textClass =
     variant === 'one' ? 'notification-text notification-text-black' : 'notification-text';
   const closeClass =
@@ -48,17 +40,35 @@ const Notification: React.FC<Omit<NotificationProps, 'show'>> = ({
       ? 'notification-close notification-close-white'
       : `notification-close notification-close-${color}`;
 
-  // Usa el decorador de iconos si tienes, si no, pon tu lógica aquí
   const IconComponent = withIconDecorator(
-    iconName && Icons[iconName] ? Icons[iconName] : Icons.Check
+    iconName && Icons[iconName] ? Icons[iconName] : Icons.Check,
   );
 
-  // Autocierre
+  useEffect(() => {
+    if (show) setVisible(true);
+    return () => setVisible(false);
+  }, [show]);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(() => {
+      onManualClose?.();
+    }, 200);
+  };
+
+  // Cierre automático (timeout)
   useEffect(() => {
     if (!onClose) return;
-    const timeout = setTimeout(onClose, duration);
+    const timeout = setTimeout(() => {
+      setVisible(false);
+      setTimeout(() => {
+        onClose();
+      }, 200);
+    }, duration);
     return () => clearTimeout(timeout);
   }, [onClose, duration]);
+
+  if (!show) return null;
 
   return (
     <div
@@ -69,27 +79,27 @@ const Notification: React.FC<Omit<NotificationProps, 'show'>> = ({
         padding: '20px 30px 20px 18px',
         zIndex: 9999,
       }}
-      className={notificationClass}
+      className={`
+        notification
+        transition-all duration-200 ease-out
+        ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+        ${variant === 'two' ? `notification-${color}-two` : ''} ${className}
+      `}
     >
       <div className={iconClass}>
-        <IconComponent
-          fillColor={'var(--text-color)'}
-          width={40}
-          height={40}
-        />
+        <IconComponent fillColor={'var(--text-color)'} width={40} height={40} />
       </div>
-      <div className="notification-content">
+      <div className='notification-content'>
         <h3 className={titleClass}>{title}</h3>
         <p className={textClass}>{message}</p>
       </div>
-      <button className={closeClass} onClick={onClose}>
+      <button className={closeClass} onClick={handleClose}>
         &times;
       </button>
     </div>
   );
 };
 
-// ===== CONTEXTO y PROVIDER (incluye portal) =====
 type Color = 'green' | 'yellow' | 'red' | 'purple';
 
 interface NotificationOptions {
@@ -101,12 +111,20 @@ interface NotificationOptions {
   duration?: number;
 }
 
+export interface NotificationWithId extends NotificationOptions {
+  id: number;
+}
+
 interface NotificationContextType {
+  notifications: NotificationWithId[];
   notify: (options: NotificationOptions) => void;
+  dismiss: (id: number) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType>({
+  notifications: [],
   notify: () => {},
+  dismiss: () => {},
 });
 
 export function useNotification() {
@@ -114,37 +132,43 @@ export function useNotification() {
 }
 
 export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [notif, setNotif] = useState<NotificationOptions & { show: boolean }>({
-    show: false,
-    color: 'green',
-    title: '',
-    message: '',
-    iconName: undefined,
-    variant: 'one',
-    duration: 1800,
-  });
+  const [notifications, setNotifications] = useState<NotificationWithId[]>([]);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastId, setToastId] = useState<number | null>(null);
 
   const notify = useCallback((options: NotificationOptions) => {
-    setNotif({
-      ...options,
-      show: true,
-      duration: options.duration || 1800,
-    });
+    const id = Date.now() + Math.random();
+    setNotifications((prev) => [...prev, { ...options, id }]);
+    setToastId(id);
+    setToastVisible(false);
+    setTimeout(() => setToastVisible(true), 10);
   }, []);
 
-  const handleClose = () => setNotif((n) => ({ ...n, show: false }));
+  const dismiss = useCallback(
+    (id: number) => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      if (id === toastId) setToastVisible(false);
+    },
+    [toastId],
+  );
 
-  // El portal
+  const currentToast = notifications.find((n) => n.id === toastId);
+
   const portal =
-    typeof window !== 'undefined' && notif.show
+    typeof window !== 'undefined' && currentToast && toastVisible
       ? ReactDOM.createPortal(
-          <Notification {...notif} onClose={handleClose} />,
-          document.body
+          <Notification
+            {...currentToast}
+            show={true}
+            onClose={() => setToastVisible(false)}
+            onManualClose={() => dismiss(currentToast.id)}
+          />,
+          document.body,
         )
       : null;
 
   return (
-    <NotificationContext.Provider value={{ notify }}>
+    <NotificationContext.Provider value={{ notifications, notify, dismiss }}>
       {children}
       {portal}
     </NotificationContext.Provider>
