@@ -16,8 +16,8 @@ function run(command, options = {}) {
     execSync(command, { stdio: "inherit", ...options });
     return true;
   } catch (error) {
-    console.error(`❌ Error al ejecutar: ${command}`);
-    process.exit(1);
+    // Propaga el error para que lo maneje el catch externo
+    throw error;
   }
 }
 
@@ -55,7 +55,7 @@ const mergeMessage = `feat(merge): Merge from ${branchFrom} to ${branchTo}`;
 try {
   run(`git merge ${branchFrom} -m "${mergeMessage}"`);
 } catch (error) {
-  // If conflict in package.json or package-lock.json, resolve by taking theirs
+  // Si hay conflicto en package.json o package-lock.json, resuelve tomando "theirs"
   console.log('\x1b[33m%s\x1b[0m', 'Conflicto detectado en package.json/package-lock.json. Manteniendo la versión de la rama origen (theirs)...');
   run('git checkout --theirs package.json package-lock.json');
   run('git add package.json package-lock.json');
