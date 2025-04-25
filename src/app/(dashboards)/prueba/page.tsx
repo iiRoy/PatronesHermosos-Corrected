@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useState } from 'react';
+import UserCard from '@/components/headers_menu_users/UserCard';
 import Navbar from '@/components/headers_menu_users/navbar';
 import Pagination from '@/components/buttons_inputs/Pagination';
 import InputField from '@/components/buttons_inputs/InputField';
@@ -9,30 +11,36 @@ import MessageCard from '@/components/buttons_inputs/MessageCard';
 import { Acorn, ChatCircleText, Check, Plus, Star, User, X } from '@/components/icons';
 import { Cross } from 'recharts';
 
+
 const EstadisticasAdmin = () => {
+  const [showNotification, setShowNotification] = useState(true);
+
   return (
     <div className='p-4 flex gap-4 flex-col md:flex-row'>
       <div className='w-full flex flex-col gap-8'>
         {/*USER CARD*/}
         <Navbar />
         <Pagination
-          currentPage={7}
-          totalPages={11}
-          variant='accent' //"accent" o "primary", "secondary-shade"
-          onPageChange={(page) => console.log('Página cambiada:', page)}
+          currentPage={0}
+          totalPages={6}
+          variant='accent'
+          pageLinks={['/prueba', '/prueba', '/prueba', '/prueba', '/prueba', '/']}
         />
+
         <Pagination
           currentPage={2}
-          totalPages={11}
-          variant='primary' //"accent" o "primary", "secondary-shade"
-          onPageChange={(page) => console.log('Página cambiada:', page)}
+          totalPages={4}
+          variant='primary'
+          pageLinks={['/prueba', '/prueba', '/prueba', '/prueba']}
         />
+
         <Pagination
-          currentPage={3}
-          totalPages={11}
-          variant='secondary-shade' //"accent" o "primary", "secondary-shade"
-          onPageChange={(page) => console.log('Página cambiada:', page)}
+          currentPage={1}
+          totalPages={5}
+          variant='secondary-shade'
+          pageLinks={['/prueba', '/prueba', '/prueba', '/prueba', '/prueba']}
         />
+
         <InputField
           label='Label'
           description='Description'
@@ -66,6 +74,7 @@ const EstadisticasAdmin = () => {
           variant='warning'
           Icon={User}
         />
+
         <Button
           label='Perfil'
           variant='secondary'
@@ -74,8 +83,32 @@ const EstadisticasAdmin = () => {
           showRightIcon
           IconRight={Plus}
         />
+        <Button
+          label="Iniciar sesión"
+          variant="success"
+          onClick={() => console.log('Iniciar sesión')}
+          showLeftIcon
+          IconLeft={User}
+        />
+
+        <Button
+          label="Ir a Home"
+          variant="primary"
+          href="/"
+          IconLeft={User}
+          showLeftIcon
+        />
+
+
         <Button label='Add' variant='primary' round showLeftIcon IconLeft={Star} />
         <Button label='Enviar' variant='success' />
+
+        <Button
+          label='Mostrar notificación'
+          variant='error'
+          onClick={() => setShowNotification(true)}
+        />
+
 
         <Checkbox
           label='Label'
@@ -115,6 +148,7 @@ const EstadisticasAdmin = () => {
           bordered={false}
           onChange={(val) => console.log('New state:', val)}
         />
+
 
         <MessageCard
           color='purple'
