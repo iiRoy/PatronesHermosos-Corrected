@@ -16,6 +16,9 @@ interface NotificationProps {
   duration?: number;
 }
 
+
+const STORAGE_KEY = (userId: string) => `notifications_${userId}`;
+
 const Notification: React.FC<NotificationProps & { show?: boolean }> = ({
   color,
   variant = 'one',
@@ -118,23 +121,45 @@ export interface NotificationWithId extends NotificationOptions {
 interface NotificationContextType {
   notifications: NotificationWithId[];
   notify: (options: NotificationOptions) => void;
-  dismiss: (id: number) => void;
+  dismissToast: () => void;
+  dismissFromHistory: (id: number) => void; // Asegúrate de exponer este método
 }
 
 const NotificationContext = createContext<NotificationContextType>({
   notifications: [],
   notify: () => {},
-  dismiss: () => {},
+  dismissToast: () => {},
+  dismissFromHistory: () => {},
 });
 
 export function useNotification() {
   return useContext(NotificationContext);
 }
 
-export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
+export const NotificationProvider = ({
+  children,
+  userId,
+}: {
+  children: React.ReactNode;
+  userId: string;
+}) => {
   const [notifications, setNotifications] = useState<NotificationWithId[]>([]);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastId, setToastId] = useState<number | null>(null);
+
+
+  // Cargar notificaciones sólo si userId es válido y no "undefined"
+  useEffect(() => {
+    if (!userId || userId === 'undefined') return;
+    const saved = localStorage.getItem(STORAGE_KEY(userId));
+    setNotifications(saved ? JSON.parse(saved) : []);
+  }, [userId]);
+
+  // Guardar notificaciones sólo si userId es válido
+  useEffect(() => {
+    if (!userId || userId === 'undefined') return;
+    localStorage.setItem(STORAGE_KEY(userId), JSON.stringify(notifications));
+  }, [notifications, userId]);
 
   const notify = useCallback((options: NotificationOptions) => {
     const id = Date.now() + Math.random();
@@ -144,13 +169,14 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
     setTimeout(() => setToastVisible(true), 10);
   }, []);
 
-  const dismiss = useCallback(
-    (id: number) => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-      if (id === toastId) setToastVisible(false);
-    },
-    [toastId],
-  );
+  const dismissToast = useCallback(() => {
+    setToastVisible(false);
+    // El historial persiste, no eliminamos del array aquí
+  }, []);
+
+  const dismissFromHistory = useCallback((id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
 
   const currentToast = notifications.find((n) => n.id === toastId);
 
@@ -160,17 +186,41 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
           <Notification
             {...currentToast}
             show={true}
-            onClose={() => setToastVisible(false)}
-            onManualClose={() => dismiss(currentToast.id)}
+
+            onClose={dismissToast}
+            onManualClose={dismissToast}
           />,
           document.body,
         )
       : null;
 
   return (
-    <NotificationContext.Provider value={{ notifications, notify, dismiss }}>
+    <NotificationContext.Provider
+      value={{ notifications, notify, dismissToast, dismissFromHistory }}
+    >
       {children}
       {portal}
     </NotificationContext.Provider>
   );
 };
+// Componente de historial de notificaciones persistentes
+export function NotificationsHistory() {
+  const { notifications, dismissFromHistory } = useNotification();
+  return (
+    <div>
+      <h3>Historial de Notificaciones</h3>
+      {notifications.length === 0 && <div>No hay notificaciones.</div>}
+      {notifications.map((n) => (
+        <div
+          key={n.id}
+          style={{ marginBottom: 12, border: '1px solid #eee', borderRadius: 6, padding: 8 }}
+        >
+          <b>{n.title}</b>: {n.message}
+          <button style={{ marginLeft: 8 }} onClick={() => dismissFromHistory(n.id)}>
+            Eliminar
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
