@@ -402,8 +402,7 @@ DELIMITER $$
 CREATE OR REPLACE FUNCTION fun_total_coord(
     email_coordinadora VARCHAR(255),
     tipo_usuario ENUM('superuser', 'venue_coordinator'),
-    id_sede_param INT,
-    rol_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
+    id_sede_param INT
 )
 RETURNS JSON
 DETERMINISTIC
@@ -531,15 +530,24 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
-    CREATE TEMPORARY TABLE IF NOT EXISTS temp_colab_resumen (
+    DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
+    CREATE TEMPORARY TABLE temp_colab_resumen (
+        status VARCHAR(255),
         rol VARCHAR(255),
         total INT
     );
     DELETE FROM temp_colab_resumen;
 
-    INSERT INTO temp_colab_resumen (rol, total)
+    INSERT INTO temp_colab_resumen (status, rol, total)
     SELECT
-        c.role,
+        CASE
+          WHEN c.status = 'Cancelada' THEN 'Rechazada'
+          ELSE c.status
+        END AS status,
+        CASE
+            WHEN c.status = 'Aprobada' THEN c.role
+            ELSE c.preferred_role
+        END AS rol,
         COUNT(*) AS total
     FROM collaborators c
     LEFT JOIN groups g ON c.id_group = g.id_group
@@ -552,15 +560,21 @@ BEGIN
         id_sede_param IS NULL
         OR v.id_venue = id_sede_param
     )
-    GROUP BY c.role;
+    GROUP BY c.status,
+        CASE
+            WHEN c.status = 'Aprobada' THEN c.role
+            ELSE c.preferred_role
+        END;
 
     SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
+            'status', status,
             'rol', rol,
             'total', total
         )
     ) AS resumen
     FROM temp_colab_resumen;
+    DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
 
 END;
 $$
@@ -640,8 +654,7 @@ CREATE OR REPLACE PROCEDURE resumen_evento(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
     IN email_coordinadora VARCHAR(255),
     IN id_sede_param INT,
-    IN rol_colab_param VARCHAR(255) COLLATE utf8mb4_unicode_ci,
-    IN rol_coord_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
+    IN rol_colab_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
 )
 BEGIN
     DECLARE participantes_json JSON;

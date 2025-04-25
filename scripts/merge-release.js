@@ -57,13 +57,6 @@ run(`git merge ${branchFrom} -m "${mergeMessage}"`);
 console.log("\x1b[36m%s\x1b[0m", "Ejecutando semantic-release...");
 run("npx semantic-release --no-ci");
 
-// Agregar cambios de versión si se generaron
-console.log("\x1b[36m%s\x1b[0m", "Agregando archivos de versión...");
-run("git add package.json package-lock.json CHANGELOG.md");
-
-// Commit por si semantic-release cambió algo
-run(`git commit -m "chore(release): update version and changelog"`);
-
 // Hacer push final
 console.log(`\x1b[36m%s\x1b[0m`, `Haciendo push de '${branchTo}' con tags...`);
 run(`git push origin ${branchTo} --tags`);
