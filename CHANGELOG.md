@@ -1,3 +1,13 @@
+## 1.4.0-admin.1 (2025-04-28)
+
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([92fca19](https://github.com/iiRoy/Patrones-Hermosos/commit/92fca19))
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
+* chore(release): 1.2.0-admin.2 [skip ci] ([c08456c](https://github.com/iiRoy/Patrones-Hermosos/commit/c08456c))
+* chore(release): 1.2.0-login.1 [skip ci] ([6fb90fd](https://github.com/iiRoy/Patrones-Hermosos/commit/6fb90fd))
+* chore(release): 1.4.0-com.1 [skip ci] ([d95efa0](https://github.com/iiRoy/Patrones-Hermosos/commit/d95efa0))
+* chore(release): 1.4.0-login.1 [skip ci] ([37619c5](https://github.com/iiRoy/Patrones-Hermosos/commit/37619c5))
+* feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
+
 ## 1.4.0-login.1 (2025-04-28)
 
 * chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
