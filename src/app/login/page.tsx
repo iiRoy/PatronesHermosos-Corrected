@@ -12,13 +12,14 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Función para elegir el dashboard según rol
   function getDashboardRouteByRole(role: string) {
     switch (role) {
       case 'superuser':
         return '/admin/estadisticas';
       case 'venue_coordinator':
         return '/coordinador/estadisticas';
-      // Puedes agregar más roles aquí
+      // Agrega aquí rutas para otros roles si tienes
       default:
         return '/'; // O una ruta genérica
     }
@@ -43,15 +44,16 @@ export default function LoginForm() {
         return;
       }
 
-      // Guarda en localStorage
+      // Guarda en localStorage los datos del usuario
       localStorage.setItem('api_token', data.token);
-      localStorage.setItem('user_id', data.user.id);
+      localStorage.setItem('user_id', data.user.id); // <-- SIEMPRE viene como .id
       localStorage.setItem('user_role', data.role);
-      
-      // Redirige al dashboard (ajusta el path según tu app)
+
+      // Redirige según el rol
       router.push(getDashboardRouteByRole(data.role));
     } catch (err) {
       setError('Error de conexión');
+    } finally {
       setLoading(false);
     }
   };
@@ -68,14 +70,15 @@ export default function LoginForm() {
           placeholder="Ingresa tu correo o usuario"
           value={emailOrUsername}
           onChangeText={setEmailOrUsername}
-          icon='Envelope'
+          icon="Envelope"
         />
         <InputField
           label="Contraseña"
           placeholder="Ingresa tu contraseña"
           value={password}
           onChangeText={setPassword}
-          icon='Lock'
+          icon="Lock"
+          type="password"
         />
         {error && <div className="text-center text-red-400">{error}</div>}
         <Button
