@@ -1,11 +1,33 @@
 const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+//obtener todos los datos
 const getAll = async (req, res) => {
   const venues = await prisma.venues.findMany();
   res.json(venues);
 };
 
+//obtener los datos para presentarlos en una tabla 
+const getSpecificData = async (req, res) => {
+  try {
+    const venues = await prisma.venues.findMany({
+      select: {
+        id_venue: true,
+        universidad: true,
+        campus: true,
+        coordinador: true,
+        no_grupos: true,
+        no_estudiantes: true
+      }
+    });
+    res.status(200).json(venues);
+  } catch (error) {
+    console.error('Error al obtener los datos específicos de las sedes:', error);
+    res.status(500).json({ message: 'Error interno al obtener los datos específicos de las sedes' });
+  }
+};
+
+//obtener una sede por id
 const getById = async (req, res) => {
   const { id } = req.params;
   const venue = await prisma.venues.findUnique({
@@ -19,6 +41,7 @@ const getById = async (req, res) => {
   res.json(venue);
 };
 
+//crear nueva sede
 const create = async (req, res) => {
   const { name, location, address, logo, participation_file, status } = req.body;
 
@@ -43,6 +66,7 @@ const create = async (req, res) => {
   }
 };
 
+//actualizar una sede
 const update = async (req, res) => {
   const { id } = req.params;
   const { name, location, address, logo, participation_file, status } = req.body;
@@ -69,6 +93,7 @@ const update = async (req, res) => {
   }
 };
 
+//eliminar una sede por id
 const remove = async (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -87,6 +112,7 @@ const remove = async (req, res) => {
 
 module.exports = {
   getAll,
+  getSpecificData,
   getById,
   create,
   update,
