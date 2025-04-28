@@ -1,18 +1,21 @@
-## 1.2.0-login.1 (2025-04-25)
+## 1.4.0-com.1 (2025-04-28)
 
+* feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
+
+## 1.3.0 (2025-04-25)
+
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([d0e74df](https://github.com/iiRoy/Patrones-Hermosos/commit/d0e74df))
 * chore: Solved minor problems with Merge method Part 2. ([8e0707d](https://github.com/iiRoy/Patrones-Hermosos/commit/8e0707d))
+* chore: Solved minor problems with Merge method Part 3. ([d5aeea0](https://github.com/iiRoy/Patrones-Hermosos/commit/d5aeea0))
 * chore: Solved minor problems with Merge method. ([07b5c92](https://github.com/iiRoy/Patrones-Hermosos/commit/07b5c92))
-* chore(release): 1.2.0-admin.1 [skip ci] ([223e80c](https://github.com/iiRoy/Patrones-Hermosos/commit/223e80c))
 * chore(release): 1.2.0-com.1 [skip ci] ([0de1a46](https://github.com/iiRoy/Patrones-Hermosos/commit/0de1a46))
 * chore(release): 1.2.0-com.2 [skip ci] ([ee22f51](https://github.com/iiRoy/Patrones-Hermosos/commit/ee22f51))
 * chore(release): 1.2.0-com.3 [skip ci] ([8ed74cf](https://github.com/iiRoy/Patrones-Hermosos/commit/8ed74cf))
-* feat(estadisticas): Option Menu + Notifications implementation ([3cfffc6](https://github.com/iiRoy/Patrones-Hermosos/commit/3cfffc6))
 * feat(login): Login area released. Local notifications saved. ([5c96bb3](https://github.com/iiRoy/Patrones-Hermosos/commit/5c96bb3))
 * improve(components): componente checkbox corregido ([cb19161](https://github.com/iiRoy/Patrones-Hermosos/commit/cb19161))
 * improve(components): funcionalidad del InputField agregada ([6dfff3c](https://github.com/iiRoy/Patrones-Hermosos/commit/6dfff3c))
 * improve(components): Se agrego funcionalidad a los componentes ([a8faf93](https://github.com/iiRoy/Patrones-Hermosos/commit/a8faf93))
 * fix(general): Notification system fixed. ([74e0957](https://github.com/iiRoy/Patrones-Hermosos/commit/74e0957))
-* improvement(estadisticas): Bar charts and information organization. ([9843cbc](https://github.com/iiRoy/Patrones-Hermosos/commit/9843cbc))
 * improvement(estadisticas): Mejores notificaciones. ([cd4e1b7](https://github.com/iiRoy/Patrones-Hermosos/commit/cd4e1b7))
 
 ## 1.2.0-com.3 (2025-04-25)

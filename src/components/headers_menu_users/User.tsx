@@ -6,6 +6,7 @@ import Link from 'next/link';
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
 import { useNotification } from '../buttons_inputs/Notification';
+import { useRouter } from 'next/navigation';
 
 export const Notification = withIconDecorator(Icons.Megaphone);
 export const Info = withIconDecorator(Icons.Info);
@@ -18,6 +19,17 @@ const User = ({
   onToggleNotifications: () => void;
 }) => {
   const { notifications } = useNotification();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    if (confirm('¿Seguro que quieres cerrar sesión?')) {
+      localStorage.removeItem('api_token');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('user_role');
+
+      router.push('/login');
+    }
+  };
 
   return (
     <div className='flex flex-col w-full gap-2 relative'>
@@ -44,7 +56,7 @@ const User = ({
           className={`hidden lg:block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative
           `}
           onClick={onToggleNotifications}
-          aria-label="Abrir notificaciones"
+          aria-label='Abrir notificaciones'
         >
           <Notification width={'1.5rem'} height={'1.5rem'} strokeColor='#2E1C31' strokeWidth={1} />
           {notifications.length > 0 && (
@@ -57,9 +69,13 @@ const User = ({
         <Link href={'/'} className='option-link flex items-center justify-center p-2'>
           <Info width={'1.5rem'} height={'1.5rem'} strokeColor='#2E1C31' strokeWidth={1} />
         </Link>
-        <Link href={'/'} className='option-link flex items-center justify-center p-2'>
+        <button
+          className={`hidden lg:block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative`}
+          onClick={handleLogout}
+          aria-label='Cerrar Sesión'
+        >
           <Arrow width={'1.5rem'} height={'1.5rem'} strokeColor='#2E1C31' strokeWidth={1} />
-        </Link>
+        </button>
       </div>
     </div>
   );

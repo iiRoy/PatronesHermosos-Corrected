@@ -45,8 +45,8 @@ const CardSection = () => {
     try {
       const res = await fetch(`/api/data?page=${page}&${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-        },
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("api_token") : ""}`,
+        }        
       });
       return await res.json();
     } catch (error) {
