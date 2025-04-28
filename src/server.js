@@ -19,7 +19,6 @@ const handle = appNext.getRequestHandler();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const prisma = new PrismaClient();
 
 appNext.prepare().then(() => {
   // Middlewares globales

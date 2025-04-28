@@ -1,6 +1,19 @@
-## 1.2.0-admin.2 (2025-04-25)
+## 1.4.0-login.1 (2025-04-28)
 
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
+* chore(release): 1.2.0-login.1 [skip ci] ([6fb90fd](https://github.com/iiRoy/Patrones-Hermosos/commit/6fb90fd))
+* chore(release): 1.4.0-com.1 [skip ci] ([d95efa0](https://github.com/iiRoy/Patrones-Hermosos/commit/d95efa0))
+* feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
+
+## 1.4.0-com.1 (2025-04-28)
+
+* feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
+
+## 1.3.0 (2025-04-25)
+
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([d0e74df](https://github.com/iiRoy/Patrones-Hermosos/commit/d0e74df))
 * chore: Solved minor problems with Merge method Part 2. ([8e0707d](https://github.com/iiRoy/Patrones-Hermosos/commit/8e0707d))
+* chore: Solved minor problems with Merge method Part 3. ([d5aeea0](https://github.com/iiRoy/Patrones-Hermosos/commit/d5aeea0))
 * chore: Solved minor problems with Merge method. ([07b5c92](https://github.com/iiRoy/Patrones-Hermosos/commit/07b5c92))
 * chore(release): 1.2.0-com.1 [skip ci] ([0de1a46](https://github.com/iiRoy/Patrones-Hermosos/commit/0de1a46))
 * chore(release): 1.2.0-com.2 [skip ci] ([ee22f51](https://github.com/iiRoy/Patrones-Hermosos/commit/ee22f51))

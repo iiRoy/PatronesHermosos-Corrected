@@ -25,6 +25,7 @@ interface InputFieldProps {
   icon?: keyof typeof Icons;
   value?: string;
   onChangeText?: (value: string) => void;
+  type?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
