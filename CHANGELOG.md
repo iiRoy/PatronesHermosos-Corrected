@@ -1,3 +1,7 @@
+## 1.4.0-com.1 (2025-04-28)
+
+* feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
+
 ## 1.3.0 (2025-04-25)
 
 * chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([d0e74df](https://github.com/iiRoy/Patrones-Hermosos/commit/d0e74df))
