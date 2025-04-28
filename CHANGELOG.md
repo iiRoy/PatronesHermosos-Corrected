@@ -1,3 +1,10 @@
+## 1.4.0-login.1 (2025-04-28)
+
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
+* chore(release): 1.2.0-login.1 [skip ci] ([6fb90fd](https://github.com/iiRoy/Patrones-Hermosos/commit/6fb90fd))
+* chore(release): 1.4.0-com.1 [skip ci] ([d95efa0](https://github.com/iiRoy/Patrones-Hermosos/commit/d95efa0))
+* feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
+
 ## 1.4.0-com.1 (2025-04-28)
 
 * feat(login): New logout and login method. ([ce68e1a](https://github.com/iiRoy/Patrones-Hermosos/commit/ce68e1a))
