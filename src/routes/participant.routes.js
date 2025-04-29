@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { validateParticipant } = require('../validators/participantsValidator');
 const participantsController = require('../controllers/participants.controller');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
-router.get('/', authMiddleware, participantsController.getAll);
-router.post('/', authMiddleware, validateParticipant, participantsController.create);
-router.get('/:id', authMiddleware, participantsController.getById);
-router.put(
-  '/:id',
-  authMiddleware,
-  roleMiddleware(['admin']),
-  validateParticipant,
-  participantsController.update,
-);
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), participantsController.remove);
+router.get('/', authMiddleware, participantsController.getAllParticipants);
+router.post('/', authMiddleware, participantsController.createParticipant);
+router.get('/:id', authMiddleware, participantsController.getParticipantById);
+router.get('/table', authMiddleware, participantsController.getParticipantsTable);
+router.put('/:id', authMiddleware, roleMiddleware(['superuser']), participantsController.updateParticipant);
+router.put('/:id/basic-info', authMiddleware, roleMiddleware(['superuser']), participantsController.updateParticipantBasicInfo);
+router.delete('/:id', authMiddleware, roleMiddleware(['superuser']), participantsController.deleteParticipant);
 
 module.exports = router;
