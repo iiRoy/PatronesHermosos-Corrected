@@ -8,7 +8,7 @@ const { PrismaClient } = require('@prisma/client');
 const logRequestMiddleware = require('./middlewares/logRequestMiddleware');
 const authRoutes = require('./routes/auth.routes');
 const venueRoutes = require('./routes/venue.routes');
-const participantRoutes = require('./routes/participant.routes');
+const participantsRoutes = require('./routes/participants.routes');
 const superuserRoutes = require('./routes/superuser.routes');
 const collaboratorRoutes = require('./routes/collaborator.routes');
 const dataRoutes = require('./routes/data.routes');
@@ -34,7 +34,7 @@ appNext.prepare().then(() => {
   // Rutas backend
   app.use('/api/auth', authRoutes);
   app.use('/api/venues', venueRoutes);
-  app.use('/api/participants', participantRoutes);
+  app.use('/api/participants', participantsRoutes);
   app.use('/api/superusers', superuserRoutes);
   app.use('/api/data', dataRoutes);
   app.use('/api/collaborators', collaboratorRoutes);
