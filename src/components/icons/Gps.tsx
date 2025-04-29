@@ -27,7 +27,7 @@ const Gps: React.FC<IconProps> = ({
     viewBox='0 0 24 24'
   >
     {' '}
-    <g clip-path='url(#a)'>
+    <g clipPath='url(#a)'>
       {' '}
       <path
         stroke={strokeColor}
