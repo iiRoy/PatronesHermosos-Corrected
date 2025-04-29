@@ -17,14 +17,12 @@ export default function LoginLayout({
     const storedRole = typeof window !== 'undefined' ? localStorage.getItem('user_role') : null;
 
     if (token && storedRole) {
-      // Redirigir automáticamente
       if (storedRole === 'superuser') {
         router.push('/admin/estadisticas');
       } else if (storedRole === 'venue_coordinator') {
         router.push('/coordinador/estadisticas');
       }
     } else {
-      // Si no hay sesión, permitimos renderizar el login
       setRole(null);
       setLoading(false);
     }
@@ -33,7 +31,7 @@ export default function LoginLayout({
   if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-[#160D17]">
-        {/* Un pequeño loader visual */}
+        {/* Loader visual */}
         <div className="text-white text-lg animate-pulse">Cargando...</div>
       </div>
     );
@@ -44,7 +42,6 @@ export default function LoginLayout({
       <div className="h-[13%] min-h-[70px] shadow-custom-dark w-full flex items-center justify-between bg-[var(--background)] rounded-br-[1.5vmax] rounded-bl-[1.5vmax]">
         <Navbar />
       </div>
-
       <div className="h-[87%] w-full flex items-center justify-center relative z-0 overflow-hidden">
         <div className="flex flex-col justify-center items-center w-full h-full">
           {children}
