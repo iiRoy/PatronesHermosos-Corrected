@@ -1,3 +1,8 @@
+## 1.7.0 (2025-04-30)
+
+* feat(merge): Merge from feature/components to main ([d91ca77](https://github.com/iiRoy/Patrones-Hermosos/commit/d91ca77))
+* improvement(menu): New responsive and recycling menu feature. ([6f5056a](https://github.com/iiRoy/Patrones-Hermosos/commit/6f5056a))
+
 ## 1.6.0 (2025-04-30)
 
 * chore: auto-resolve conflicts for known files ([b6b72ec](https://github.com/iiRoy/Patrones-Hermosos/commit/b6b72ec))
