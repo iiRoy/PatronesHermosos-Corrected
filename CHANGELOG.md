@@ -1,3 +1,9 @@
+## 1.4.0-login.2 (2025-04-30)
+
+* fix(login): Better token manager ([2a8a807](https://github.com/iiRoy/Patrones-Hermosos/commit/2a8a807))
+* improvement(admin|login): New menu filters & New login formatting ([a0fee77](https://github.com/iiRoy/Patrones-Hermosos/commit/a0fee77))
+* style(login): New UI experience for redirection & Navbar redesign ([86e2171](https://github.com/iiRoy/Patrones-Hermosos/commit/86e2171))
+
 ## 1.4.0-login.1 (2025-04-28)
 
 * chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
