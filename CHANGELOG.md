@@ -1,3 +1,7 @@
+## 1.4.0-admin.2 (2025-04-30)
+
+* feat(pages): nuevas páginas del dashboard de sedes superusuario ([0005aa3](https://github.com/iiRoy/Patrones-Hermosos/commit/0005aa3))
+
 ## 1.4.0-admin.1 (2025-04-28)
 
 * chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([92fca19](https://github.com/iiRoy/Patrones-Hermosos/commit/92fca19))
