@@ -1,3 +1,7 @@
+## <small>1.4.2 (2025-04-30)</small>
+
+* fix(formulario): Fixed inputs and merge errors. ([0ccc3ca](https://github.com/iiRoy/Patrones-Hermosos/commit/0ccc3ca))
+
 ## <small>1.4.1 (2025-04-30)</small>
 
 * chore: Corrected merge script ([473d665](https://github.com/iiRoy/Patrones-Hermosos/commit/473d665))
