@@ -76,6 +76,10 @@
   --dim: #616161;
 }
 
+.texto-primary-shade {
+  color: var(--primary-shade);
+}
+
 .custom-button {
   display: flex;
   align-items: center;
@@ -172,7 +176,7 @@
   outline: none;
   color: var(--text-color);
   font-size: 16px;
-  width: 100%;
+  width: 90%;
 }
 
 .error-text {
@@ -525,7 +529,7 @@
 .pagination .page {
   background: transparent;
   border: none;
-  color: white;
+  color: var(--background);
 }
 
 .pagination .active {
@@ -863,6 +867,18 @@
   gap: 10px;
   justify-content: start;
   flex-wrap: wrap;
+}
+
+/* Sedes */
+.pagina-sedes {
+  height: 100vh;
+}
+
+.fondo-sedes {
+  width: 100%;
+  height: 85%;
+  background-color: var(--text-color);
+  border-radius: 15px;
 }
 
 

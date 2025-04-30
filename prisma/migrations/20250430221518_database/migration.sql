@@ -114,7 +114,11 @@ CREATE TABLE `superusers` (
     `username` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
+<<<<<<<< HEAD:prisma/migrations/20250430183714_database_creation/migration.sql
     `profile_image` BLOB NULL,
+========
+    `tokenVersion` INTEGER NOT NULL DEFAULT 0,
+>>>>>>>> pages/login:prisma/migrations/20250430221518_database/migration.sql
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
@@ -145,6 +149,7 @@ CREATE TABLE `venue_coordinators` (
     `gender` VARCHAR(255) NULL,
     `username` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
+    `tokenVersion` INTEGER NOT NULL DEFAULT 0,
     `profile_image` BLOB NULL,
     `id_venue` INTEGER UNSIGNED NOT NULL,
 

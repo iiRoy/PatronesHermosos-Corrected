@@ -8,9 +8,9 @@ const login = async (req, res) => {
   const { emailOrUsername, password } = req.body;
   let user = null;
   let role = null;
+  let tokenVersion = 0;
 
   try {
-    // Buscar en Superusers por email o username
     user = await prisma.superusers.findFirst({
       where: {
         OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
@@ -19,10 +19,9 @@ const login = async (req, res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       role = 'superuser';
-      // Unificamos el campo id
       user.id = user.id_superuser;
+      tokenVersion = user.tokenVersion;
     } else {
-      // Buscar en venue coordinators
       user = await prisma.venue_coordinators.findFirst({
         where: {
           OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
@@ -32,6 +31,7 @@ const login = async (req, res) => {
       if (user && (await bcrypt.compare(password, user.password))) {
         role = 'venue_coordinator';
         user.id = user.id_venue_coord;
+        tokenVersion = user.tokenVersion;
       }
     }
 
@@ -45,9 +45,10 @@ const login = async (req, res) => {
         email: user.email,
         username: user.username,
         role,
+        tokenVersion,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' }
+      { expiresIn: '15m' } // corto y seguro
     );
 
     return res.json({
@@ -58,6 +59,7 @@ const login = async (req, res) => {
         name: user.name,
         id: user.id,
         email: user.email,
+        name: user.name,
         username: user.username,
         image: user.profile_image
       },
@@ -68,6 +70,30 @@ const login = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  const { id, role } = req.user;
+
+  try {
+    if (role === 'superuser') {
+      await prisma.superusers.update({
+        where: { id_superuser: id },
+        data: { tokenVersion: { increment: 1 } },
+      });
+    } else if (role === 'venue_coordinator') {
+      await prisma.venue_coordinators.update({
+        where: { id_venue_coord: id },
+        data: { tokenVersion: { increment: 1 } },
+      });
+    }
+
+    return res.status(200).json({ message: 'Sesión cerrada correctamente' });
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+    return res.status(500).json({ message: 'Error al cerrar sesión' });
+  }
+};
+
 module.exports = {
   login,
+  logout,
 };
