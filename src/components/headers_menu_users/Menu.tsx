@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import OptionLink from '../buttons_inputs/OptionLink';
 import * as Icons from '../icons';
 
@@ -11,65 +11,88 @@ const menuItems = [
       {
         icon: 'ChartBarHorizontal',
         label: 'Estadísticas',
-        href: '/estadísticas',
-        visible: ['admin', 'coordinador'],
+        href: '/estadisticas',
+        visible: ['superuser', 'venue_coordinator'],
       },
       {
         icon: 'Bank',
         label: 'SEDES',
-        href: '/admin/sedes',
-        visible: ['admin'],
+        href: '/sedes',
+        visible: ['superuser'],
       },
       {
         icon: 'Bank',
         label: 'Mi SEDE',
-        href: '/admin/mi-sede',
-        visible: ['coordinador'],
+        href: '/mi-sede',
+        visible: ['venue_coordinator'],
       },
       {
         icon: 'Users',
         label: 'Gestionar Usuarios',
-        href: '/admin/gestion-usuarios',
-        visible: ['admin'],
+        href: '/gestion-usuarios',
+        visible: ['superuser'],
       },
       {
         icon: 'PaperPlaneTilt',
         label: 'Solicitudes',
-        href: '/admin/solicitudes',
-        visible: ['admin', 'coordinador'],
+        href: '/solicitudes',
+        visible: ['superuser', 'venue_coordinator'],
       },
       {
         icon: 'Certificate',
         label: 'Diplomas',
-        href: '/admin/diplomas',
-        visible: ['admin', 'coordinador'],
+        href: '/diplomas',
+        visible: ['superuser', 'venue_coordinator'],
       },
       {
         icon: 'Envelope',
         label: 'Correos',
-        href: '/admin/correos',
-        visible: ['admin'],
+        href: '/correos',
+        visible: ['superuser'],
       },
     ],
   },
 ];
 
 const Menu: React.FC = () => {
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedRole = typeof window !== 'undefined' ? localStorage.getItem('user_role') : null;
+    setRole(storedRole);
+  }, []);
+
+  if (!role) {
+    return null;
+  }
+
+  // Establecer prefijo base según el rol
+  const basePath = role === 'superuser' ? '/admin' : '/coordinator';
+
   return (
     <div className='text-[clamp(1rem,1.5vw,3rem)]'>
       {menuItems.map((section) => (
         <div key={section.title} className='flex flex-col gap-[1.5vmax] px-2'>
-          {section.items.map((item) => {
-            const IconComponent = Icons[item.icon as keyof typeof Icons];
-            return (
-              <OptionLink
-                key={item.label}
-                label={item.label}
-                Icon={IconComponent}
-                href={item.href}
-              />
-            );
-          })}
+          {section.items
+            .filter((item) => item.visible.includes(role))
+            .map((item) => {
+              const IconComponent = Icons[item.icon as keyof typeof Icons];
+              const fullPath = `${basePath}${item.href}`;
+              {
+                /* const fullPath =
+                 item.href.startsWith('/estadisticas') // Excepción si es ruta compartida
+                  ? item.href
+                  : `${basePath}${item.href}`; }*/
+              }
+              return (
+                <OptionLink
+                  key={item.label}
+                  label={item.label}
+                  Icon={IconComponent}
+                  href={fullPath}
+                />
+              );
+            })}
         </div>
       ))}
     </div>
