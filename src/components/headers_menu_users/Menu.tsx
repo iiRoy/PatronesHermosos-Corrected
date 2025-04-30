@@ -11,43 +11,43 @@ const menuItems = [
       {
         icon: 'ChartBarHorizontal',
         label: 'Estadísticas',
-        href: '/estadísticas',
+        href: '/estadisticas',
         visible: ['superuser', 'venue_coordinator'],
       },
       {
         icon: 'Bank',
         label: 'SEDES',
-        href: '/admin/sedes',
+        href: '/sedes',
         visible: ['superuser'],
       },
       {
         icon: 'Bank',
         label: 'Mi SEDE',
-        href: '/admin/mi-sede',
+        href: '/mi-sede',
         visible: ['venue_coordinator'],
       },
       {
         icon: 'Users',
         label: 'Gestionar Usuarios',
-        href: '/admin/gestion-usuarios',
+        href: '/gestion-usuarios',
         visible: ['superuser'],
       },
       {
         icon: 'PaperPlaneTilt',
         label: 'Solicitudes',
-        href: '/admin/solicitudes',
+        href: '/solicitudes',
         visible: ['superuser', 'venue_coordinator'],
       },
       {
         icon: 'Certificate',
         label: 'Diplomas',
-        href: '/admin/diplomas',
+        href: '/diplomas',
         visible: ['superuser', 'venue_coordinator'],
       },
       {
         icon: 'Envelope',
         label: 'Correos',
-        href: '/admin/correos',
+        href: '/correos',
         visible: ['superuser'],
       },
     ],
@@ -63,24 +63,33 @@ const Menu: React.FC = () => {
   }, []);
 
   if (!role) {
-    // Si no hay rol todavía, puedes devolver null o un pequeño loader si quieres
     return null;
   }
+
+  // Establecer prefijo base según el rol
+  const basePath = role === 'superuser' ? '/admin' : '/coordinator';
 
   return (
     <div className='text-[clamp(1rem,1.5vw,3rem)]'>
       {menuItems.map((section) => (
         <div key={section.title} className='flex flex-col gap-[1.5vmax] px-2'>
           {section.items
-            .filter((item) => item.visible.includes(role)) // 👈 Filtrar según el rol
+            .filter((item) => item.visible.includes(role))
             .map((item) => {
               const IconComponent = Icons[item.icon as keyof typeof Icons];
+              const fullPath = `${basePath}${item.href}`;
+              {
+                /* const fullPath =
+                 item.href.startsWith('/estadisticas') // Excepción si es ruta compartida
+                  ? item.href
+                  : `${basePath}${item.href}`; }*/
+              }
               return (
                 <OptionLink
                   key={item.label}
                   label={item.label}
                   Icon={IconComponent}
-                  href={item.href}
+                  href={fullPath}
                 />
               );
             })}
