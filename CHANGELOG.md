@@ -1,3 +1,9 @@
+## 1.5.0 (2025-04-30)
+
+* feat(merge): Merge from pages/login to main ([4334ea0](https://github.com/iiRoy/Patrones-Hermosos/commit/4334ea0))
+* improvement(admin|login): New menu filters & New login formatting ([a0fee77](https://github.com/iiRoy/Patrones-Hermosos/commit/a0fee77))
+* style(login): New UI experience for redirection & Navbar redesign ([86e2171](https://github.com/iiRoy/Patrones-Hermosos/commit/86e2171))
+
 ## <small>1.4.2 (2025-04-30)</small>
 
 * fix(formulario): Fixed inputs and merge errors. ([0ccc3ca](https://github.com/iiRoy/Patrones-Hermosos/commit/0ccc3ca))
