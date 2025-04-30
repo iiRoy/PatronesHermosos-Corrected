@@ -11,13 +11,12 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     const storedUserId = localStorage.getItem('user_id');
     setUserId(storedUserId);
     if (!storedUserId) {
-      router.replace('/login'); // Redirige a login si no está logueado
+      router.replace('/login'); 
     }
   }, [router]);
 
   if (!userId) {
-    // Loader opcional para evitar flicker en client
-    return null;
+    return undefined;
   }
 
   return (
