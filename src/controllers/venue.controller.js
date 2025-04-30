@@ -20,26 +20,58 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const { name, location, address, logo, participation_file, status } = req.body;
+  const {
+    name,
+    location,
+    address,
+    logo,
+    participation_file,
+    generalCoordinator,
+    associatedCoordinator,
+    staffCoordinator,
+    participantsCoordinator,
+  } = req.body;
 
   try {
-    const newVenue = await prisma.venues.create({
-      data: {
-        name,
-        location,
-        address,
-        logo,
-        participation_file: participation_file
-          ? Buffer.from(Object.values(participation_file))
-          : null,
-        status,
-      },
-    });
+    // Call the stored procedure
+    await prisma.$queryRaw`
+      CALL registrar_sede(
+        ${name}, 
+        ${location}, 
+        ${address}, 
+        ${logo ? Buffer.from(logo, 'base64') : null}, 
+        ${Buffer.from(participation_file, 'base64')},
+        ${generalCoordinator.name},
+        ${generalCoordinator.lastNameP},
+        ${generalCoordinator.lastNameM || null},
+        ${generalCoordinator.email},
+        ${generalCoordinator.phone},
+        ${generalCoordinator.gender},
+        ${generalCoordinator.username},
+        ${generalCoordinator.password},
+        ${generalCoordinator.profileImage ? Buffer.from(generalCoordinator.profileImage, 'base64') : null},
+        ${associatedCoordinator.name || null},
+        ${associatedCoordinator.lastNameP || null},
+        ${associatedCoordinator.lastNameM || null},
+        ${associatedCoordinator.email || null},
+        ${associatedCoordinator.phone || null},
+        ${staffCoordinator.name || null},
+        ${staffCoordinator.lastNameP || null},
+        ${staffCoordinator.lastNameM || null},
+        ${staffCoordinator.email || null},
+        ${staffCoordinator.phone || null},
+        ${participantsCoordinator.name || null},
+        ${participantsCoordinator.lastNameP || null},
+        ${participantsCoordinator.lastNameM || null},
+        ${participantsCoordinator.email || null},
+        ${participantsCoordinator.phone || null}
+      )
+    `;
 
-    res.status(201).json({ message: 'Venue creado', data: newVenue });
+    res.status(201).json({ message: 'Venue creado exitosamente' });
   } catch (error) {
     console.error('Error al crear venue:', error);
-    res.status(500).json({ message: 'Error al crear venue', error });
+    res.status(500).json({ message: 'Error al crear venue', error: error.message });
   }
 };
 
@@ -48,16 +80,24 @@ const update = async (req, res) => {
   const { name, location, address, logo, participation_file, status } = req.body;
 
   try {
+    const venueExists = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+    });
+
+    if (!venueExists) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
     const updatedVenue = await prisma.venues.update({
       where: { id_venue: parseInt(id) },
       data: {
         name,
         location,
         address,
-        logo,
+        logo: logo ? Buffer.from(logo, 'base64') : undefined,
         participation_file: participation_file
-          ? Buffer.from(Object.values(participation_file))
-          : null,
+          ? Buffer.from(participation_file, 'base64')
+          : undefined,
         status,
       },
     });
@@ -65,7 +105,7 @@ const update = async (req, res) => {
     res.json({ message: 'Venue actualizado', data: updatedVenue });
   } catch (error) {
     console.error('Error al actualizar venue:', error);
-    res.status(500).json({ message: 'Error al actualizar venue', error });
+    res.status(500).json({ message: 'Error al actualizar venue', error: error.message });
   }
 };
 
