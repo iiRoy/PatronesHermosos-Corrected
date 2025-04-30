@@ -1,3 +1,12 @@
+## 1.6.0 (2025-04-30)
+
+* chore: auto-resolve conflicts for known files ([b6b72ec](https://github.com/iiRoy/Patrones-Hermosos/commit/b6b72ec))
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([92fca19](https://github.com/iiRoy/Patrones-Hermosos/commit/92fca19))
+* chore(release): 1.2.0-admin.2 [skip ci] ([c08456c](https://github.com/iiRoy/Patrones-Hermosos/commit/c08456c))
+* chore(release): 1.4.0-admin.1 [skip ci] ([d8b9bb0](https://github.com/iiRoy/Patrones-Hermosos/commit/d8b9bb0))
+* chore(release): 1.4.0-admin.2 [skip ci] ([1b3ef26](https://github.com/iiRoy/Patrones-Hermosos/commit/1b3ef26))
+* feat(pages): nuevas páginas del dashboard de sedes superusuario ([0005aa3](https://github.com/iiRoy/Patrones-Hermosos/commit/0005aa3))
+
 ## 1.4.0-admin.2 (2025-04-30)
 
 * feat(pages): nuevas páginas del dashboard de sedes superusuario ([0005aa3](https://github.com/iiRoy/Patrones-Hermosos/commit/0005aa3))
