@@ -1,3 +1,7 @@
+## 1.4.0-admin.3 (2025-04-30)
+
+* feat(pages): nuevas páginas de gestión de usuarios superusuario ([7fbc49d](https://github.com/iiRoy/Patrones-Hermosos/commit/7fbc49d))
+
 ## 1.4.0-admin.2 (2025-04-30)
 
 * feat(pages): nuevas páginas del dashboard de sedes superusuario ([0005aa3](https://github.com/iiRoy/Patrones-Hermosos/commit/0005aa3))
