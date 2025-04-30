@@ -1,3 +1,9 @@
+## <small>1.7.1-login.1 (2025-04-30)</small>
+
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([b93f343](https://github.com/iiRoy/Patrones-Hermosos/commit/b93f343))
+* chore(release): 1.4.0-login.2 [skip ci] ([55b6e83](https://github.com/iiRoy/Patrones-Hermosos/commit/55b6e83))
+* fix(login): Better token manager ([2a8a807](https://github.com/iiRoy/Patrones-Hermosos/commit/2a8a807))
+
 ## 1.7.0 (2025-04-30)
 
 * feat(merge): Merge from feature/components to main ([d91ca77](https://github.com/iiRoy/Patrones-Hermosos/commit/d91ca77))
