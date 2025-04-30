@@ -279,7 +279,7 @@ const CardSection = () => {
       </div>
       <div className='w-full lg:w-4/7 flex flex-col'>
         <div
-          className={`flex gap-4 justify-between transition-opacity duration-300 ${
+          className={`flex flex-wrap gap-4 justify-between transition-opacity duration-300 ${
             fadeSec ? 'opacity-0' : 'opacity-100'
           }`}
         >
