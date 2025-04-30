@@ -19,9 +19,8 @@ export default function LoginForm() {
         return '/admin/estadisticas';
       case 'venue_coordinator':
         return '/coordinador/estadisticas';
-      // Agrega aquí rutas para otros roles si tienes
       default:
-        return '/'; // O una ruta genérica
+        return '/login'
     }
   }
   
@@ -46,10 +45,9 @@ export default function LoginForm() {
 
       // Guarda en localStorage los datos del usuario
       localStorage.setItem('api_token', data.token);
-      localStorage.setItem('user_id', data.user.id); // <-- SIEMPRE viene como .id
+      localStorage.setItem('user_id', data.user.id);
       localStorage.setItem('user_role', data.role);
 
-      // Redirige según el rol
       router.push(getDashboardRouteByRole(data.role));
     } catch (err) {
       setError('Error de conexión');
@@ -59,7 +57,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#2e1c31]">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <form
         onSubmit={handleLogin}
         className="flex flex-col gap-6 p-10 rounded-xl bg-[#1f1220] shadow-xl min-w-[340px] w-[90vw] max-w-[380px]"
