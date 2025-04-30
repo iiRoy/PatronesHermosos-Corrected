@@ -1,3 +1,9 @@
+## 1.8.0-admin.1 (2025-04-30)
+
+* merge: resolved conflicts from main ([3e664cb](https://github.com/iiRoy/Patrones-Hermosos/commit/3e664cb))
+* chore(release): 1.4.0-admin.3 [skip ci] ([d4eed15](https://github.com/iiRoy/Patrones-Hermosos/commit/d4eed15))
+* feat(pages): nuevas páginas de gestión de usuarios superusuario ([7fbc49d](https://github.com/iiRoy/Patrones-Hermosos/commit/7fbc49d))
+
 ## 1.7.0 (2025-04-30)
 
 * feat(merge): Merge from feature/components to main ([d91ca77](https://github.com/iiRoy/Patrones-Hermosos/commit/d91ca77))
