@@ -8,14 +8,8 @@ import withIconDecorator from '@/components/decorators/IconDecorator';
 
 // Import icons using the specified path (placeholders)
 import User from '@components/icons/User'; // For name fields
-import Phone from '@components/icons/Phone'; // For phone fields
 import Location from '@components/icons/Gps'; // For localización field
-import Lock from '@components/icons/Lock'; // For contraseña fields
-import School from '@components/icons/GraduationCap'; // For escolaridad field
 import Send from '@components/icons/ArrowFatRight'; // For submit button
-import Email from '@components/icons/Envelope';
-import Image from '@components/icons/Image'; // For image upload buttons
-import Document from '@components/icons/File'; // For document upload button
 
 interface Coordinator {
   name: string;
@@ -407,11 +401,11 @@ const [formData, setFormData] = useState<FormData>({
               label="Nombre(s)*"
               placeholder="Edna"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.generalCoordinator.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('generalCoordinator', 'name', e.target.value)
-              }
+              onChangeText={(value: string) =>
+                handleInputChange('generalCoordinator', 'name', value)
+              }              
             />
 
             {/* Apellido Paterno */}
@@ -419,11 +413,11 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Paterno*"
               placeholder="Moda"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.generalCoordinator.lastNameP}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('generalCoordinator', 'lastNameP', e.target.value)
-              }
+              onChangeText={(value: string) =>
+                handleInputChange('generalCoordinator', 'lastNameP', value)
+              }              
             />
 
             {/* Apellido Materno */}
@@ -431,11 +425,11 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Materno"
               placeholder="Apellido Materno"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.generalCoordinator.lastNameM}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('generalCoordinator', 'lastNameM', e.target.value)
-              }
+              onChangeText={(value: string) =>
+                handleInputChange('generalCoordinator', 'lastNameM', value)
+              }              
             />
 
             {/* Correo Electrónico */}
@@ -443,11 +437,11 @@ const [formData, setFormData] = useState<FormData>({
               label="Correo Electrónico*"
               placeholder="ednamoda@disney.com"
               variant="accent"
-              Icon={withIconDecorator(Email)}
+              icon={"Envelope"}
               value={formData.generalCoordinator.email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('generalCoordinator', 'email', e.target.value)
-              }
+              onChangeText={(value: string) =>
+                handleInputChange('generalCoordinator', 'email', value)
+              }              
             />
 
             {/* Celular */}
@@ -455,11 +449,11 @@ const [formData, setFormData] = useState<FormData>({
               label="Celular*"
               placeholder="+52 222 123 4567"
               variant="accent"
-              Icon={withIconDecorator(Phone)}
+              icon={"Phone"}
               value={formData.generalCoordinator.phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('generalCoordinator', 'phone', e.target.value)
-              }
+              onChangeText={(value: string) =>
+                handleInputChange('generalCoordinator', 'phone', value)
+              }              
             />
 
             {/* Sexo */}
@@ -480,11 +474,11 @@ const [formData, setFormData] = useState<FormData>({
               description="El nombre de usuario solo puede contener letras, números y guiones bajos."
               placeholder="edna_moda"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.generalCoordinator.username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('generalCoordinator', 'username', e.target.value)
-              }
+              onChangeText={(value: string) =>
+                handleInputChange('generalCoordinator', 'username', value)
+              }              
             />
 
             {/* Contraseña */}
@@ -494,12 +488,12 @@ const [formData, setFormData] = useState<FormData>({
                 description="Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial."
                 placeholder="********"
                 variant="accent"
-                Icon={withIconDecorator(Lock)}
+                icon={"Lock"}
                 value={formData.generalCoordinator.password}
                 type={showPassword ? 'text' : 'password'}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange('generalCoordinator', 'password', e.target.value)
-                }
+                onChangeText={(value: string) =>
+                  handleInputChange('generalCoordinator', 'password', value)
+                }                
               />
               <div className="flex items-center mt-2">
                 <Checkbox
@@ -517,12 +511,12 @@ const [formData, setFormData] = useState<FormData>({
                 label="Confirmar Contraseña*"
                 placeholder="********"
                 variant="accent"
-                Icon={withIconDecorator(Lock)}
+                icon={"Lock"}
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={formData.generalCoordinator.confirmPassword}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange('generalCoordinator', 'confirmPassword', e.target.value)
-                }
+                onChangeText={(value: string) =>
+                  handleInputChange('generalCoordinator', 'confirmPassword', value)
+                }                
               />
               <div className="flex items-center mt-2">
                 <Checkbox
@@ -575,10 +569,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Nombre(s)*"
               placeholder="Juana"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.associatedCoordinator.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('associatedCoordinator', 'name', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('associatedCoordinator', 'name', value)
               }
             />
 
@@ -587,10 +581,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Paterno*"
               placeholder="De Arco"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.associatedCoordinator.lastNameP}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('associatedCoordinator', 'lastNameP', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('associatedCoordinator', 'lastNameP', value)
               }
             />
 
@@ -599,10 +593,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Materno"
               placeholder="Ramírez"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.associatedCoordinator.lastNameM}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('associatedCoordinator', 'lastNameM', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('associatedCoordinator', 'lastNameM', value)
               }
             />
 
@@ -611,10 +605,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Correo Electrónico*"
               placeholder="juanadearco@disney.com"
               variant="accent"
-              Icon={withIconDecorator(Email)}
+              icon={"Envelope"}
               value={formData.associatedCoordinator.email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('associatedCoordinator', 'email', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('associatedCoordinator', 'email', value)
               }
             />
 
@@ -623,10 +617,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Celular*"
               placeholder="+52 222 123 4567"
               variant="accent"
-              Icon={withIconDecorator(Phone)}
+              icon={"Phone"}
               value={formData.associatedCoordinator.phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('associatedCoordinator', 'phone', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('associatedCoordinator', 'phone', value)
               }
             />
           </div>
@@ -649,10 +643,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Nombre(s)*"
               placeholder="Juana"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.staffCoordinator.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('staffCoordinator', 'name', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('staffCoordinator', 'name', value)
               }
             />
 
@@ -661,10 +655,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Paterno*"
               placeholder="De Arco"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.staffCoordinator.lastNameP}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('staffCoordinator', 'lastNameP', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('staffCoordinator', 'lastNameP', value)
               }
             />
 
@@ -673,10 +667,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Materno"
               placeholder="Ramírez"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.staffCoordinator.lastNameM}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('staffCoordinator', 'lastNameM', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('staffCoordinator', 'lastNameM', value)
               }
             />
 
@@ -685,10 +679,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Correo Electrónico*"
               placeholder="juanadearco@disney.com"
               variant="accent"
-              Icon={withIconDecorator(Email)}
+              icon={"Envelope"}
               value={formData.staffCoordinator.email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('staffCoordinator', 'email', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('staffCoordinator', 'email', value)
               }
             />
 
@@ -697,10 +691,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Celular*"
               placeholder="+52 222 123 4567"
               variant="accent"
-              Icon={withIconDecorator(Phone)}
+              icon={"Phone"}
               value={formData.staffCoordinator.phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('staffCoordinator', 'phone', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('staffCoordinator', 'phone', value)
               }
             />
           </div>
@@ -723,10 +717,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Nombre(s)*"
               placeholder="Juana"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.participantsCoordinator.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('participantsCoordinator', 'name', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('participantsCoordinator', 'name', value)
               }
             />
 
@@ -735,10 +729,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Paterno*"
               placeholder="De Arco"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.participantsCoordinator.lastNameP}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('participantsCoordinator', 'lastNameP', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('participantsCoordinator', 'lastNameP', value)
               }
             />
 
@@ -747,10 +741,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Apellido Materno"
               placeholder="Ramírez"
               variant="accent"
-              Icon={withIconDecorator(User)}
+              icon={"User"}
               value={formData.participantsCoordinator.lastNameM}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('participantsCoordinator', 'lastNameM', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('participantsCoordinator', 'lastNameM', value)
               }
             />
 
@@ -759,10 +753,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Correo Electrónico*"
               placeholder="juanadearco@disney.com"
               variant="accent"
-              Icon={withIconDecorator(Email)}
+              icon={"Envelope"}
               value={formData.participantsCoordinator.email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('participantsCoordinator', 'email', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('participantsCoordinator', 'email', value)
               }
             />
 
@@ -771,10 +765,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Celular*"
               placeholder="+52 222 123 4567"
               variant="accent"
-              Icon={withIconDecorator(Phone)}
+              icon={"Phone"}
               value={formData.participantsCoordinator.phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('participantsCoordinator', 'phone', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('participantsCoordinator', 'phone', value)
               }
             />
           </div>
@@ -797,10 +791,10 @@ const [formData, setFormData] = useState<FormData>({
               label="Nombre de la SEDE*"
               placeholder="Instituto Oriente"
               variant="accent"
-              Icon={withIconDecorator(School)}
+              icon={"GraduationCap"}
               value={formData.venue.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleInputChange('venue', 'name', e.target.value)
+              onChangeText={(value: string) =>
+                handleInputChange('venue', 'name', value)
               }
             />
 
@@ -822,10 +816,10 @@ const [formData, setFormData] = useState<FormData>({
                 label="Dirección*"
                 placeholder="P. Sherman Calle Wallaby 42 Sidney"
                 variant="accent"
-                Icon={withIconDecorator(Location)}
+                icon={"Flag"}
                 value={formData.venue.address}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange('venue', 'address', e.target.value)
+                onChangeText={(value: string) =>
+                  handleInputChange('venue', 'address', value)
                 }
               />
             </div>
