@@ -21,9 +21,7 @@ const VerSede = () => {
     const [section, setSection] = useState('SEDES');
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
     const [fadeSec, setFadeSec] = useState(false);
-    const [currentPage, setCurrentPage] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedGroup, setSelectedGroup] = useState('Grupo 7');
 
     const filteredStudents = mockStudents.filter((s) =>
         s.nombre.toLowerCase().includes(searchTerm.toLowerCase())
