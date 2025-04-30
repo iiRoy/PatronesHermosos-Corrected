@@ -47,6 +47,9 @@ export default function LoginForm() {
       localStorage.setItem('api_token', data.token);
       localStorage.setItem('user_id', data.user.id);
       localStorage.setItem('user_role', data.role);
+      localStorage.setItem('user_name', data.user.name);
+      localStorage.setItem('user_username', data.user.username);
+      localStorage.setItem('user_image', data.user.image);
 
       router.push(getDashboardRouteByRole(data.role));
     } catch (err) {
