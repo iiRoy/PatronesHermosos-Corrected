@@ -100,7 +100,7 @@ const User = ({
           <Info width={'1.5rem'} height={'1.5rem'} strokeColor='#2E1C31' strokeWidth={1} />
         </Link>
         <button
-          className={`hidden lg:block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative`}
+          className={`block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative`}
           onClick={handleLogout}
           aria-label='Cerrar Sesión'
         >
