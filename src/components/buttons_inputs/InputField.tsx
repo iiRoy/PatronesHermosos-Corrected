@@ -40,6 +40,7 @@ const InputField: React.FC<InputFieldProps> = ({
   icon,
   value,
   onChangeText,
+  type = 'text'
 }) => {
   const [inputValue, setInputValue] = useState(value ?? '');
 
@@ -73,11 +74,11 @@ const InputField: React.FC<InputFieldProps> = ({
       <div className={inputClass}>
         {IconComponent && (
           <div className='icon-input'>
-            <IconComponent width={25} height={25} />
+            <IconComponent width={25} height={25} strokeWidth={0} />
           </div>
         )}
         <input
-          type='text'
+          type={type}
           placeholder={placeholder}
           disabled={variant.includes('disabled')}
           value={inputValue}
