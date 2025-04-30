@@ -8,6 +8,7 @@ interface PaginationProps {
   totalPages?: number;
   pageLinks: string[]; // nuevo: arreglo con los href de cada página
   variant?: 'primary' | 'secondary-shade' | 'accent';
+  onPageChange?: (page: number) => void;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -15,6 +16,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages = 1,
   pageLinks,
   variant = 'primary',
+  onPageChange,
 }) => {
   const [activeIndex, setActiveIndex] = useState(currentPage);
 
@@ -25,6 +27,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const handlePageClick = (index: number) => {
     setActiveIndex(index);
+    onPageChange?.(index);
   };
 
   return (

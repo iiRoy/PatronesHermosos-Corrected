@@ -1,27 +1,12 @@
-## 1.5.0 (2025-04-30)
+## 1.4.0-admin.2 (2025-04-30)
 
-* feat(merge): Merge from pages/login to main ([4334ea0](https://github.com/iiRoy/Patrones-Hermosos/commit/4334ea0))
-* improvement(admin|login): New menu filters & New login formatting ([a0fee77](https://github.com/iiRoy/Patrones-Hermosos/commit/a0fee77))
-* style(login): New UI experience for redirection & Navbar redesign ([86e2171](https://github.com/iiRoy/Patrones-Hermosos/commit/86e2171))
+* feat(pages): nuevas páginas del dashboard de sedes superusuario ([0005aa3](https://github.com/iiRoy/Patrones-Hermosos/commit/0005aa3))
 
-## <small>1.4.2 (2025-04-30)</small>
+## 1.4.0-admin.1 (2025-04-28)
 
-* fix(formulario): Fixed inputs and merge errors. ([0ccc3ca](https://github.com/iiRoy/Patrones-Hermosos/commit/0ccc3ca))
-
-## <small>1.4.1 (2025-04-30)</small>
-
-* chore: Corrected merge script ([473d665](https://github.com/iiRoy/Patrones-Hermosos/commit/473d665))
-* chore: manual conflict resolution after merge ([a246b01](https://github.com/iiRoy/Patrones-Hermosos/commit/a246b01))
-* fix: Icons, ParticipantForm &  CollabForm remove and other changes ([0f235b2](https://github.com/iiRoy/Patrones-Hermosos/commit/0f235b2))
-* Aplicación de Componentes Personalizados ([3610c2c](https://github.com/iiRoy/Patrones-Hermosos/commit/3610c2c))
-* experiment/forms/sede: Pruebas Jest iniciales ([f98aa66](https://github.com/iiRoy/Patrones-Hermosos/commit/f98aa66))
-* Merge branch 'main' into pages/formularios ([51b25c4](https://github.com/iiRoy/Patrones-Hermosos/commit/51b25c4))
-* pages/forms/sede: Venue Form Backend ([af2c62b](https://github.com/iiRoy/Patrones-Hermosos/commit/af2c62b))
-* Versión básica visual de formularios ([8e3d5c9](https://github.com/iiRoy/Patrones-Hermosos/commit/8e3d5c9))
-
-## 1.4.0 (2025-04-28)
-
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([92fca19](https://github.com/iiRoy/Patrones-Hermosos/commit/92fca19))
 * chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
+* chore(release): 1.2.0-admin.2 [skip ci] ([c08456c](https://github.com/iiRoy/Patrones-Hermosos/commit/c08456c))
 * chore(release): 1.2.0-login.1 [skip ci] ([6fb90fd](https://github.com/iiRoy/Patrones-Hermosos/commit/6fb90fd))
 * chore(release): 1.4.0-com.1 [skip ci] ([d95efa0](https://github.com/iiRoy/Patrones-Hermosos/commit/d95efa0))
 * chore(release): 1.4.0-login.1 [skip ci] ([37619c5](https://github.com/iiRoy/Patrones-Hermosos/commit/37619c5))
