@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import {useState, useEffect} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import withIconDecorator from '../decorators/IconDecorator';
@@ -21,15 +21,43 @@ const User = ({
   const { notifications } = useNotification();
   const router = useRouter();
 
-  const handleLogout = () => {
+    // Estado para el usuario
+    const [userName, setUserName] = useState<string | null>(null);
+    const [userUsername, setUserUsername] = useState<string | null>(null);
+  
+    // Cargar desde localStorage al montar el componente
+    useEffect(() => {
+      const name = localStorage.getItem('user_name');
+      const username = localStorage.getItem('user_username');
+  
+      setUserName(name);
+      setUserUsername(username);
+    }, []);
+
+  const handleLogout = async () => {
     if (confirm('¿Seguro que quieres cerrar sesión?')) {
+      const token = localStorage.getItem('api_token');
+  
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (err) {
+        console.error('Error al cerrar sesión:', err);
+      }
+  
       localStorage.removeItem('api_token');
       localStorage.removeItem('user_id');
       localStorage.removeItem('user_role');
-
+      localStorage.removeItem('user_name');
+      localStorage.removeItem('user_username');
+  
       router.push('/login');
     }
-  };
+  };  
 
   return (
     <div className='flex flex-col w-full gap-2 relative'>
@@ -43,9 +71,11 @@ const User = ({
             className='md:min-w-[3.5vw] md:min-h-[3.5vw] min-w-[5vmax] min-h-[5vmax] rounded-full'
           />
           <div className='hidden flex-col text-left lg:block'>
-            <span className='text-sm leading-5 text-[1.51vmax]'>User</span>
+          <span className='text-sm leading-5 text-[1.51vmax]'>
+              {userName ?? 'Usuario'}
+            </span>
             <span className='text-[1vmax] font-medium text-textDim block break-all'>
-              @username_example
+              @{userUsername ?? 'usuario'}
             </span>
           </div>
         </Link>

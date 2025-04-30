@@ -108,9 +108,13 @@ CREATE TABLE `participants` (
 -- CreateTable
 CREATE TABLE `superusers` (
     `id_superuser` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NULL,
+    `paternal_name` VARCHAR(255) NULL,
+    `maternal_name` VARCHAR(255) NULL,
     `username` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
+    `tokenVersion` INTEGER NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `updated_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
@@ -141,6 +145,7 @@ CREATE TABLE `venue_coordinators` (
     `gender` VARCHAR(255) NULL,
     `username` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
+    `tokenVersion` INTEGER NOT NULL DEFAULT 0,
     `profile_image` BLOB NULL,
     `id_venue` INTEGER UNSIGNED NOT NULL,
 
