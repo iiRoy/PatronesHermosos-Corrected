@@ -1,3 +1,14 @@
+## <small>1.4.1 (2025-04-30)</small>
+
+* chore: Corrected merge script ([473d665](https://github.com/iiRoy/Patrones-Hermosos/commit/473d665))
+* chore: manual conflict resolution after merge ([a246b01](https://github.com/iiRoy/Patrones-Hermosos/commit/a246b01))
+* fix: Icons, ParticipantForm &  CollabForm remove and other changes ([0f235b2](https://github.com/iiRoy/Patrones-Hermosos/commit/0f235b2))
+* Aplicación de Componentes Personalizados ([3610c2c](https://github.com/iiRoy/Patrones-Hermosos/commit/3610c2c))
+* experiment/forms/sede: Pruebas Jest iniciales ([f98aa66](https://github.com/iiRoy/Patrones-Hermosos/commit/f98aa66))
+* Merge branch 'main' into pages/formularios ([51b25c4](https://github.com/iiRoy/Patrones-Hermosos/commit/51b25c4))
+* pages/forms/sede: Venue Form Backend ([af2c62b](https://github.com/iiRoy/Patrones-Hermosos/commit/af2c62b))
+* Versión básica visual de formularios ([8e3d5c9](https://github.com/iiRoy/Patrones-Hermosos/commit/8e3d5c9))
+
 ## 1.4.0 (2025-04-28)
 
 * chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([c17d039](https://github.com/iiRoy/Patrones-Hermosos/commit/c17d039))
