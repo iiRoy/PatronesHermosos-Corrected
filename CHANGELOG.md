@@ -1,3 +1,9 @@
+## 1.8.0-admin.3 (2025-05-02)
+
+* feat(pages): nueva página de editar sede superusuario ([3e0b997](https://github.com/iiRoy/Patrones-Hermosos/commit/3e0b997))
+* feat(pages): nuevas páginas de gestión de usuarios superusuario ([a06cd1e](https://github.com/iiRoy/Patrones-Hermosos/commit/a06cd1e))
+* Merge branch 'pages/superuser' of https://github.com/iiRoy/Patrones-Hermosos into pages/superuser ([f360a88](https://github.com/iiRoy/Patrones-Hermosos/commit/f360a88))
+
 ## 1.8.0-admin.2 (2025-04-30)
 
 * chore: auto-resolve conflicts for known files ([5892018](https://github.com/iiRoy/Patrones-Hermosos/commit/5892018))
