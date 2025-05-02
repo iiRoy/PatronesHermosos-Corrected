@@ -48,7 +48,7 @@ const [formData, setFormData] = useState<FormData>({
     lastNameM: '',
     email: '',
     phone: '',
-    gender: 'Mujer',
+    gender: '',
     username: '',
     password: '',
     confirmPassword: '',
@@ -171,21 +171,21 @@ const [formData, setFormData] = useState<FormData>({
 
     // General Coordinator validation
     if (!formData.generalCoordinator.name)
-      newErrors.push('El nombre de la coordinadora general es obligatorio');
+      newErrors.push('El nombre de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.lastNameP)
-      newErrors.push('El apellido paterno de la coordinadora general es obligatorio');
+      newErrors.push('El apellido paterno de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.email)
-      newErrors.push('El correo electrónico de la coordinadora general es obligatorio');
+      newErrors.push('El correo electrónico de la Coordinadora de Sede es obligatorio');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.generalCoordinator.email))
-      newErrors.push('El correo electrónico de la coordinadora general debe ser válido');
+      newErrors.push('El correo electrónico de la Coordinadora de Sede debe ser válido');
     if (!formData.generalCoordinator.phone)
-      newErrors.push('El celular de la coordinadora general es obligatorio');
+      newErrors.push('El celular de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.gender)
-      newErrors.push('El sexo de la coordinadora general es obligatorio');
+      newErrors.push('El sexo de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.username)
-      newErrors.push('El nombre de usuario de la coordinadora general es obligatorio');
+      newErrors.push('El nombre de usuario de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.password)
-      newErrors.push('La contraseña de la coordinadora general es obligatoria');
+      newErrors.push('La contraseña de la Coordinadora de Sede es obligatoria');
     else {
       if (formData.generalCoordinator.password.length < 8)
         newErrors.push('La contraseña debe tener al menos 8 caracteres');
@@ -380,21 +380,21 @@ const [formData, setFormData] = useState<FormData>({
             />
           </div>
 
-          {/* Section: Datos Coordinadora General */}
+          {/* Section: Datos Coordinadora de Sede */}
           <div className="mb-6">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">❀</span> Datos Coordinadora General
+              <span className="text-purple-400 mr-2">❀</span> Datos Coordinadora de Sede
             </h2>
             <p className="text-gray-400 text-sm md:text-base mb-4">
               Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
               Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
             </p>
             <p className="text-gray-400 text-sm italic">
-              Si no se crean coordinadoras asociadas o de informes, la coordinadora general asumirá los roles faltantes automáticamente.
+              Si no se crean coordinadoras asociadas o de informes, la Coordinadora de Sede asumirá los roles faltantes automáticamente.
             </p>
           </div>
 
-          {/* Form Fields: Datos Coordinadora General */}
+          {/* Form Fields: Datos Coordinadora de Sede */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Nombre */}
             <InputField
