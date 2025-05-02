@@ -1,6 +1,6 @@
 {
   "name": "patrones-hermosos",
-  "version": "1.8.0-admin.1",
+  "version": "1.8.0-admin.2",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",
@@ -54,7 +54,7 @@
     "eslint-config-next": "14.2.5",
     "nodemon": "^3.1.9",
     "postcss": "^8.5.3",
-    "prisma": "^6.6.0",
+    "prisma": "^6.7.0",
     "semantic-release": "^24.2.3",
     "standard-version": "^9.5.0",
     "tailwindcss": "^3.4.17",

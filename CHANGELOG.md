@@ -1,8 +1,32 @@
-## 1.8.0-admin.1 (2025-04-30)
+## 1.8.0-admin.2 (2025-04-30)
 
-* merge: resolved conflicts from main ([3e664cb](https://github.com/iiRoy/Patrones-Hermosos/commit/3e664cb))
-* chore(release): 1.4.0-admin.3 [skip ci] ([d4eed15](https://github.com/iiRoy/Patrones-Hermosos/commit/d4eed15))
-* feat(pages): nuevas páginas de gestión de usuarios superusuario ([7fbc49d](https://github.com/iiRoy/Patrones-Hermosos/commit/7fbc49d))
+* chore: auto-resolve conflicts for known files ([5892018](https://github.com/iiRoy/Patrones-Hermosos/commit/5892018))
+* chore: manual conflict resolution after merge ([fd6d7ec](https://github.com/iiRoy/Patrones-Hermosos/commit/fd6d7ec))
+* chore: Minor merge fixes ([d27bdb7](https://github.com/iiRoy/Patrones-Hermosos/commit/d27bdb7))
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([b93f343](https://github.com/iiRoy/Patrones-Hermosos/commit/b93f343))
+* chore(estradisticas): Little changes on Cards ([4a7fb68](https://github.com/iiRoy/Patrones-Hermosos/commit/4a7fb68))
+* chore(release): 1.4.0-login.2 [skip ci] ([55b6e83](https://github.com/iiRoy/Patrones-Hermosos/commit/55b6e83))
+* chore(release): 1.7.1-com.1 [skip ci] ([3cb3863](https://github.com/iiRoy/Patrones-Hermosos/commit/3cb3863))
+* chore(release): 1.7.1-login.1 [skip ci] ([8c26892](https://github.com/iiRoy/Patrones-Hermosos/commit/8c26892))
+* improvement(Menu): Better component management ([9189479](https://github.com/iiRoy/Patrones-Hermosos/commit/9189479))
+* improvement(Menu): User section with information, and functional icons ([ac32a08](https://github.com/iiRoy/Patrones-Hermosos/commit/ac32a08))
+* fix(login): Better token manager ([2a8a807](https://github.com/iiRoy/Patrones-Hermosos/commit/2a8a807))
+
+## <small>1.7.1-com.1 (2025-04-30)</small>
+
+* chore: manual conflict resolution after merge ([fd6d7ec](https://github.com/iiRoy/Patrones-Hermosos/commit/fd6d7ec))
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([b93f343](https://github.com/iiRoy/Patrones-Hermosos/commit/b93f343))
+* chore(release): 1.4.0-login.2 [skip ci] ([55b6e83](https://github.com/iiRoy/Patrones-Hermosos/commit/55b6e83))
+* chore(release): 1.7.1-login.1 [skip ci] ([8c26892](https://github.com/iiRoy/Patrones-Hermosos/commit/8c26892))
+* improvement(Menu): Better component management ([9189479](https://github.com/iiRoy/Patrones-Hermosos/commit/9189479))
+* improvement(Menu): User section with information, and functional icons ([ac32a08](https://github.com/iiRoy/Patrones-Hermosos/commit/ac32a08))
+* fix(login): Better token manager ([2a8a807](https://github.com/iiRoy/Patrones-Hermosos/commit/2a8a807))
+
+## <small>1.7.1-login.1 (2025-04-30)</small>
+
+* chore: resolve conflict, keep theirs for package.json and package-lock.json CHANGELOG.md ([b93f343](https://github.com/iiRoy/Patrones-Hermosos/commit/b93f343))
+* chore(release): 1.4.0-login.2 [skip ci] ([55b6e83](https://github.com/iiRoy/Patrones-Hermosos/commit/55b6e83))
+* fix(login): Better token manager ([2a8a807](https://github.com/iiRoy/Patrones-Hermosos/commit/2a8a807))
 
 ## 1.7.0 (2025-04-30)
 
