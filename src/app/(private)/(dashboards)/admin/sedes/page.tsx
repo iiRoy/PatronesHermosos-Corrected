@@ -127,7 +127,14 @@ const SedesAdmin = () => {
 
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
-                                        <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
+                                        <Button
+                                            label=''
+                                            variant="warning"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Highlighter}
+                                            href={`sedes/editarSedes/editar${sede.campus}`}
+                                        />
                                     </td>
                                 </tr>
                             ))}
