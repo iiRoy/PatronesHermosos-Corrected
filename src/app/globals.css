@@ -194,6 +194,7 @@
 /*Colores botones*/
 .button-primary {
   background-color: var(--primaryColor);
+  color: var(--text-color);
 }
 
 .button-primary:hover {
@@ -207,6 +208,7 @@
 
 .button-secondary {
   background-color: var(--secondaryColor);
+  color: var(--text-color);
 }
 
 .button-secondary-shade {
@@ -224,6 +226,7 @@
 
 .button-success {
   background-color: var(--success);
+  color: var(--text-color);
 }
 
 .button-success:hover {
@@ -237,6 +240,7 @@
 
 .button-error {
   background-color: var(--error);
+  color: var(--text-color);
 }
 
 .button-error:hover {
@@ -250,6 +254,7 @@
 
 .button-warning {
   background-color: var(--warning);
+  color: var(--text-color);
 }
 
 .button-warning:hover {

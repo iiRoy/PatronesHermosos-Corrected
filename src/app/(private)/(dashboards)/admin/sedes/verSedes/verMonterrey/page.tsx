@@ -117,7 +117,7 @@ const VerSede = () => {
 
                 {/* Botón Listo */}
                 <div className="mt-6 self-start">
-                    <Button label="Volver" variant="primary" href='../sedes' />
+                    <Button label="Volver" variant="primary" href='../' />
                 </div>
             </div>
         </div>
