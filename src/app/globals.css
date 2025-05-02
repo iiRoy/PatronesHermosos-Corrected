@@ -134,10 +134,13 @@
   width: 1200px;
 }
 
+.darkText {
+  color: black;
+}
+
 .label-input {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--text-color);
+  font-size: 18px;
+  color: var(--background);
 }
 
 .description {
@@ -321,6 +324,11 @@
 
 .dim i {
   color: var(--dim);
+}
+
+.texto-filtro {
+  font-size: 18px;
+  color: var(--background);
 }
 
 /*Notificaciones*/
