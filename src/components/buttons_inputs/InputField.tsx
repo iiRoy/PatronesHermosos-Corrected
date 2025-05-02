@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
+import { tree } from 'next/dist/build/templates/app-page';
 
 interface InputFieldProps {
   label: string;
@@ -11,6 +12,7 @@ interface InputFieldProps {
   placeholder?: string;
   error?: string;
   showError?: boolean;
+  darkText?: boolean;
   variant?:
   | 'accent'
   | 'primary'
@@ -35,6 +37,7 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder = 'Text',
   error,
   showError = true,
+  darkText = true,
   variant = 'accent',
   dim = false,
   icon,
@@ -58,7 +61,7 @@ const InputField: React.FC<InputFieldProps> = ({
     }
   };
 
-  const inputClass = `input input-${variant}${dim ? ' dim' : ''}`;
+  const inputClass = `input input-${variant}${dim ? ' dim' : ''}${darkText ? ' darkText' : ''}`;
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 
