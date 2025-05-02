@@ -1,3 +1,4 @@
+// venue.controller.js
 const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -20,17 +21,27 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
+  // Extract text fields from req.body
   const {
     name,
     location,
     address,
-    logo,
-    participation_file,
     generalCoordinator,
     associatedCoordinator,
     staffCoordinator,
     participantsCoordinator,
   } = req.body;
+
+  // Extract files from req.files (uploaded via multer)
+  const files = req.files || {};
+  const participation_file = files['participation_file'] ? files['participation_file'][0].buffer : null;
+  const logo = files['logo'] ? files['logo'][0].buffer : null;
+  const profileImage = files['generalCoordinator.profileImage'] ? files['generalCoordinator.profileImage'][0].buffer : null;
+
+  // Validate required file
+  if (!participation_file) {
+    return res.status(400).json({ message: 'El archivo de participación es obligatorio' });
+  }
 
   try {
     // Call the stored procedure
@@ -39,8 +50,8 @@ const create = async (req, res) => {
         ${name}, 
         ${location}, 
         ${address}, 
-        ${logo ? Buffer.from(logo, 'base64') : null}, 
-        ${Buffer.from(participation_file, 'base64')},
+        ${logo}, 
+        ${participation_file},
         ${generalCoordinator.name},
         ${generalCoordinator.lastNameP},
         ${generalCoordinator.lastNameM || null},
@@ -49,7 +60,7 @@ const create = async (req, res) => {
         ${generalCoordinator.gender},
         ${generalCoordinator.username},
         ${generalCoordinator.password},
-        ${generalCoordinator.profileImage ? Buffer.from(generalCoordinator.profileImage, 'base64') : null},
+        ${profileImage},
         ${associatedCoordinator.name || null},
         ${associatedCoordinator.lastNameP || null},
         ${associatedCoordinator.lastNameM || null},
@@ -77,7 +88,12 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params;
-  const { name, location, address, logo, participation_file, status } = req.body;
+  const { name, location, address, status } = req.body;
+
+  // Extract files from req.files (uploaded via multer)
+  const files = req.files || {};
+  const participation_file = files['participation_file'] ? files['participation_file'][0].buffer : undefined;
+  const logo = files['logo'] ? files['logo'][0].buffer : undefined;
 
   try {
     const venueExists = await prisma.venues.findUnique({
@@ -94,10 +110,8 @@ const update = async (req, res) => {
         name,
         location,
         address,
-        logo: logo ? Buffer.from(logo, 'base64') : undefined,
-        participation_file: participation_file
-          ? Buffer.from(participation_file, 'base64')
-          : undefined,
+        logo,
+        participation_file,
         status,
       },
     });
