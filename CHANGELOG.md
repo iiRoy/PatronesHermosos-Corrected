@@ -1,3 +1,7 @@
+## 1.8.0-admin.4 (2025-05-04)
+
+* feat(pages): nuevas páginas de gestión de sedes y usuarios superusuario ([04cbce1](https://github.com/iiRoy/Patrones-Hermosos/commit/04cbce1))
+
 ## 1.8.0-admin.3 (2025-05-02)
 
 * feat(pages): nueva página de editar sede superusuario ([3e0b997](https://github.com/iiRoy/Patrones-Hermosos/commit/3e0b997))
