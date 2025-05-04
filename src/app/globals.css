@@ -894,6 +894,22 @@
   border-radius: 15px;
 }
 
+.titulo-agregar-participante {
+  font-size: 36px;
+  color: var(--background);
+}
+
+.texto-agregar-participante {
+  color: var(--background);
+}
+
+.fondo-agregar-participante {
+  background-color: var(--text-color);
+  width: 50%;
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
 
 
 @layer base {
