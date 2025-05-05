@@ -10,7 +10,16 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === 'participation_file' && file.mimetype !== 'application/pdf') {
+      return cb(new Error('El archivo de participación debe ser un PDF'));
+    }
+    if ((file.fieldname === 'logo' || file.fieldname === 'generalCoordinator.profileImage') && !file.mimetype.startsWith('image/')) {
+      return cb(new Error('Los archivos de logo y foto de perfil deben ser imágenes'));
+    }
+    cb(null, true);
+  },
 });
 
 // Routes
