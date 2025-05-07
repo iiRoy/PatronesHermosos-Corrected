@@ -1,8 +1,9 @@
 // src/routes/venue.routes.js
 const express = require('express');
 const multer = require('multer');
-const venueController = require('../venue.controller');
-const { validateVenue } = require('../venueValidator');
+const venueController = require('../controllers/venue.controller');
+const { validateVenue } = require('../validators/venueValidator');
+const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
@@ -10,12 +11,15 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 }, // Increased to 20MB
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'participation_file' && file.mimetype !== 'application/pdf') {
       return cb(new Error('El archivo de participación debe ser un PDF'));
     }
-    if ((file.fieldname === 'logo' || file.fieldname === 'generalCoordinator.profileImage') && !file.mimetype.startsWith('image/')) {
+    if (
+      (file.fieldname === 'logo' || file.fieldname === 'generalCoordinator.profileImage') &&
+      !file.mimetype.startsWith('image/')
+    ) {
       return cb(new Error('Los archivos de logo y foto de perfil deben ser imágenes'));
     }
     cb(null, true);

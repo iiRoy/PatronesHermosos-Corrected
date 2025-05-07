@@ -238,7 +238,7 @@ const [formData, setFormData] = useState<FormData>({
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Run client-side validation
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
@@ -246,56 +246,90 @@ const [formData, setFormData] = useState<FormData>({
       setSuccess(null);
       return;
     }
-
+  
     try {
-      // Convert files to base64
-      const profileImageBase64 = profileImage ? await fileToBase64(profileImage) : null;
-      const logoBase64 = logo ? await fileToBase64(logo) : null;
-      const participationFileBase64 = await fileToBase64(participationFile!);
-
-      // Prepare request body
-      const body = {
-        name: formData.venue.name,
-        location: formData.venue.location,
-        address: formData.venue.address,
-        logo: logoBase64,
-        participation_file: participationFileBase64,
-        generalCoordinator: {
-          ...formData.generalCoordinator,
-          profileImage: profileImageBase64,
-        },
-        associatedCoordinator: formData.associatedCoordinator,
-        staffCoordinator: formData.staffCoordinator,
-        participantsCoordinator: formData.participantsCoordinator,
-      };
-
-      // Get auth token (assuming it's stored in localStorage)
+      // Create FormData object
+      const formDataToSend = new FormData();
+  
+      // Append venue fields
+      formDataToSend.append('name', formData.venue.name);
+      formDataToSend.append('location', formData.venue.location);
+      formDataToSend.append('address', formData.venue.address);
+  
+      // Append general coordinator fields
+      formDataToSend.append('generalCoordinator[name]', formData.generalCoordinator.name);
+      formDataToSend.append('generalCoordinator[lastNameP]', formData.generalCoordinator.lastNameP);
+      formDataToSend.append('generalCoordinator[lastNameM]', formData.generalCoordinator.lastNameM);
+      formDataToSend.append('generalCoordinator[email]', formData.generalCoordinator.email);
+      formDataToSend.append('generalCoordinator[phone]', formData.generalCoordinator.phone);
+      formDataToSend.append('generalCoordinator[gender]', formData.generalCoordinator.gender);
+      formDataToSend.append('generalCoordinator[username]', formData.generalCoordinator.username);
+      formDataToSend.append('generalCoordinator[password]', formData.generalCoordinator.password);
+  
+      // Append associated coordinator fields (if provided)
+      if (formData.associatedCoordinator.name) {
+        formDataToSend.append('associatedCoordinator[name]', formData.associatedCoordinator.name);
+        formDataToSend.append('associatedCoordinator[lastNameP]', formData.associatedCoordinator.lastNameP);
+        formDataToSend.append('associatedCoordinator[lastNameM]', formData.associatedCoordinator.lastNameM);
+        formDataToSend.append('associatedCoordinator[email]', formData.associatedCoordinator.email);
+        formDataToSend.append('associatedCoordinator[phone]', formData.associatedCoordinator.phone);
+      }
+  
+      // Append staff coordinator fields (if provided)
+      if (formData.staffCoordinator.name) {
+        formDataToSend.append('staffCoordinator[name]', formData.staffCoordinator.name);
+        formDataToSend.append('staffCoordinator[lastNameP]', formData.staffCoordinator.lastNameP);
+        formDataToSend.append('staffCoordinator[lastNameM]', formData.staffCoordinator.lastNameM);
+        formDataToSend.append('staffCoordinator[email]', formData.staffCoordinator.email);
+        formDataToSend.append('staffCoordinator[phone]', formData.staffCoordinator.phone);
+      }
+  
+      // Append participants coordinator fields (if provided)
+      if (formData.participantsCoordinator.name) {
+        formDataToSend.append('participantsCoordinator[name]', formData.participantsCoordinator.name);
+        formDataToSend.append('participantsCoordinator[lastNameP]', formData.participantsCoordinator.lastNameP);
+        formDataToSend.append('participantsCoordinator[lastNameM]', formData.participantsCoordinator.lastNameM);
+        formDataToSend.append('participantsCoordinator[email]', formData.participantsCoordinator.email);
+        formDataToSend.append('participantsCoordinator[phone]', formData.participantsCoordinator.phone);
+      }
+  
+      // Append files
+      if (profileImage) {
+        formDataToSend.append('generalCoordinator.profileImage', profileImage);
+      }
+      if (logo) {
+        formDataToSend.append('logo', logo);
+      }
+      if (participationFile) {
+        formDataToSend.append('participation_file', participationFile);
+      }
+  
+      // Get auth token
       const token = localStorage.getItem('token');
-
+  
       // Make API request
       const response = await fetch('http://localhost:3000/api/venues', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          // Note: Do NOT set 'Content-Type' manually; FormData sets it automatically
         },
-        body: JSON.stringify(body),
+        body: formDataToSend,
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         if (response.status === 422 && data.errors) {
-          // Handle validation errors from the backend
           const backendErrors = data.errors.map((err: any) => err.msg);
           throw new Error(backendErrors.join(', '));
         }
         throw new Error(data.message || 'Error al registrar el venue');
       }
-
+  
       setSuccess(data.message || 'Venue registrado exitosamente');
       setErrors([]);
-
+  
       // Reset form
       setFormData({
         generalCoordinator: {
