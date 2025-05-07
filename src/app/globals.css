@@ -910,6 +910,11 @@
   padding-right: 60px;
 }
 
+/* Solicitudes de registro */
+.texto-popup {
+  color: var(--background);
+}
+
 
 
 @layer base {
