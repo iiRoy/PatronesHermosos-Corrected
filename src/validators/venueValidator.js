@@ -5,44 +5,42 @@ const validateVenue = [
   body('name').notEmpty().withMessage('El nombre del venue es obligatorio'),
   body('location').notEmpty().withMessage('La localización del venue es obligatoria'),
   body('address').notEmpty().withMessage('La dirección del venue es obligatoria'),
-  body('participation_file')
-    .notEmpty()
-    .withMessage('El archivo de participación es obligatorio'),
+  // Remove participation_file from body validation since it's in req.files
 
   // General Coordinator fields
   body('generalCoordinator.name')
     .notEmpty()
-    .withMessage('El nombre de la coordinadora general es obligatorio'),
+    .withMessage('El nombre de la coordinadora de sede es obligatorio'),
   body('generalCoordinator.lastNameP')
     .notEmpty()
-    .withMessage('El apellido paterno de la coordinadora general es obligatorio'),
+    .withMessage('El apellido paterno de la coordinadora de sede es obligatorio'),
   body('generalCoordinator.email')
     .notEmpty()
-    .withMessage('El correo electrónico de la coordinadora general es obligatorio')
+    .withMessage('El correo electrónico de la coordinadora de sede es obligatorio')
     .isEmail()
-    .withMessage('El correo electrónico de la coordinadora general debe ser válido'),
+    .withMessage('El correo electrónico de la coordinadora de sede debe ser válido'),
   body('generalCoordinator.phone')
     .notEmpty()
-    .withMessage('El celular de la coordinadora general es obligatorio'),
+    .withMessage('El celular de la coordinadora de sede es obligatorio'),
   body('generalCoordinator.gender')
     .notEmpty()
-    .withMessage('El sexo de la coordinadora general es obligatorio'),
+    .withMessage('El sexo de la coordinadora de sede es obligatorio'),
   body('generalCoordinator.username')
     .notEmpty()
-    .withMessage('El nombre de usuario de la coordinadora general es obligatorio'),
+    .withMessage('El nombre de usuario de la coordinadora de sede es obligatorio'),
   body('generalCoordinator.password')
     .notEmpty()
-    .withMessage('La contraseña de la coordinadora general es obligatoria')
+    .withMessage('La contraseña de la coordinadora de sede es obligatoria')
     .isLength({ min: 8 })
     .withMessage('La contraseña debe tener al menos 8 caracteres')
     .matches(/[A-Z]/)
-    .withMessage('La contraseña debe contener al least una mayúscula')
+    .withMessage('La contraseña debe contener al menos una mayúscula')
     .matches(/[a-z]/)
     .withMessage('La contraseña debe contener al menos una minúscula')
     .matches(/[!@#$%^&*(),.?":{}|<>]/)
     .withMessage('La contraseña debe contener al menos un carácter especial'),
 
-  // Associated Coordinator fields (optional, but if provided, email must be valid)
+  // Associated Coordinator fields (optional)
   body('associatedCoordinator.email')
     .if(body('associatedCoordinator.name').notEmpty())
     .notEmpty()
@@ -78,8 +76,16 @@ const validateVenue = [
     .notEmpty()
     .withMessage('El celular de la coordinadora de informes (participantes) es obligatorio si se proporciona un nombre'),
 
-  // Middleware to capture errors
+  // Custom middleware to validate files and capture errors
   (req, res, next) => {
+    // Check for participation_file in req.files
+    if (!req.files || !req.files['participation_file']) {
+      return res.status(422).json({
+        message: 'Error de validación',
+        errors: [{ msg: 'El archivo de participación es obligatorio' }],
+      });
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({
