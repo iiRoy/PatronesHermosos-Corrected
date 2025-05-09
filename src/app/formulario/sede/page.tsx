@@ -310,10 +310,6 @@ const [formData, setFormData] = useState<FormData>({
       // Make API request
       const response = await fetch('http://localhost:3000/api/venues', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Note: Do NOT set 'Content-Type' manually; FormData sets it automatically
-        },
         body: formDataToSend,
       });
   
