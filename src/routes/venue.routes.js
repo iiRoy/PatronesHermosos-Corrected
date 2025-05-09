@@ -6,7 +6,7 @@ const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddlewar
 
 // Rutas CRUD
 router.get('/', authMiddleware, venueController.getAll);
-router.post('/', authMiddleware, roleMiddleware(['admin']), validateVenue, venueController.create);
+router.post('/', authMiddleware, roleMiddleware(['superuser']), validateVenue, venueController.create);
 router.get('/specific', authMiddleware, venueController.getSpecificData); // Nueva ruta para obtener solo los datos específicos
 router.get('/:id', authMiddleware, venueController.getById);
 router.put(
