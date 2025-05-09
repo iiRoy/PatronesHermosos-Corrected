@@ -15,7 +15,7 @@ const dataRoutes = require('./routes/data.routes');
 const statusRoutes = require('./routes/status.routes');
 const venueCoordinatorRoutes = require('./routes/venueCoordinator.routes'); 
 const mentorRoutes = require('./routes/mentor.routes');
-const collaboratorsRoutes = require('./routes/collaborators.routes');
+
 
 const dev = process.env.NODE_ENV !== 'production';
 const appNext = next({ dev, dir: path.join(__dirname, '..') });
@@ -41,7 +41,7 @@ appNext.prepare().then(() => {
   app.use('/api/status', statusRoutes);
   app.use('/api/venue-coordinators', venueCoordinatorRoutes); 
   app.use('/api/mentors', mentorRoutes);
-  app.use('/api/collaborators', collaboratorsRoutes);
+  
 
   app.get('/api', (req, res) => {
     res.send('¡API corriendo!');
