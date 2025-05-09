@@ -1,5 +1,5 @@
-// controllers/participants.controller.js
-const prisma = require('../prismaClient');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 // Crear participante
 const createParticipant = async (req, res) => {

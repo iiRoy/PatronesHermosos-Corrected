@@ -1,5 +1,5 @@
-const prisma = require('../prisma/prismaClient');
-
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 // Crear una nueva colaboradora
 const createCollaborator = async (req, res) => {
   const {
