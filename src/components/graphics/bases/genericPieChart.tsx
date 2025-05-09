@@ -96,8 +96,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       try {
         const res = await fetch(apiEndpoint, {
           headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}` || '',
-          },
+            Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("api_token") : ""}`,
+          },          
         });
 
         const json = await res.json();

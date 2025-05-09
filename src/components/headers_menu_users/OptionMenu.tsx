@@ -11,9 +11,8 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
-import Notification from '../buttons_inputs/Notification';
+import { useNotification } from '../buttons_inputs/Notification';
 import { Switch } from '@/components/ui/switch';
-import * as Icons from '../icons';
 
 interface OptionsMenuProps {
   onMaxItemsChange: (value: number | undefined) => void;
@@ -40,11 +39,12 @@ const PALETTE = [
   { name: 'Verde', hex: '#4CAF50' },
   { name: 'Cyan', hex: '#00BCD4' },
   { name: 'Azul', hex: '#2196F3' },
-  { name: 'Violeta', hex: '#9C27B0' },
-  { name: 'Rosa', hex: '#E91E63' },
-  { name: 'Blanco', hex: '#FFFFFF' },
-  { name: 'Negro', hex: '#000000' },
+  { name: 'Violeta', hex: '#6E27B0FF' },
+  { name: 'Rosa', hex: '#F87DCDFF' },
   { name: 'Café', hex: '#795548' },
+  { name: 'Negro', hex: '#000000' },
+  { name: 'Gris', hex: '#7B7B7BFF' },
+  { name: 'Blanco', hex: '#FFFFFF' },
 ];
 
 const OptionsMenu: React.FC<OptionsMenuProps> = ({
@@ -67,20 +67,12 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
   const [selectOpen, setSelectOpen] = useState(false);
   const [includeTable, setIncludeTable] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { notify } = useNotification();
 
   // --- Color picker contextual ---
   const [colorPickerOpenIndex, setColorPickerOpenIndex] = useState<number | null>(null);
   const [colorPickerInput, setColorPickerInput] = useState('');
   const [customColors, setCustomColors] = useState<string[]>([]);
-
-  // -- Notificaciones --
-  const [notification, setNotification] = useState<{
-    show: boolean;
-    title: string;
-    message: string;
-    color: 'green' | 'yellow' | 'red' | 'purple';
-    icon: keyof typeof Icons;
-  }>({ show: false, title: '', message: '', color: 'green', icon: 'Check'});
 
   // Cerrar menú color picker si se da click fuera
   useEffect(() => {
@@ -92,15 +84,6 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [setVisible]);
-
-  // Para mensajes temporales
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (notification.show) {
-      timeout = setTimeout(() => setNotification({ show: false, title: '', message: '', color:'purple', icon:"Acorn"}), 1600);
-    }
-    return () => clearTimeout(timeout);
-  }, [notification.show]);
 
   const handleMaxChange = (value: string) => {
     const number = parseInt(value);
@@ -120,7 +103,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
     setColors(newColors);
     setColorPickerOpenIndex(null);
     setColorPickerInput('');
-    setNotification({ show: true, title: 'Colores Cambiados', message: 'El color fue actualizado correctamente', color: 'purple', icon: 'CheckFat' });
+    notify({ variant: 'two', title: 'Colores Cambiados', message: 'El color fue actualizado correctamente', color: 'purple', iconName: 'CheckFat' });
   };
 
   // Restaura el color default solo de la sección seleccionada
@@ -130,24 +113,24 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
     setColors(newColors);
     setColorPickerOpenIndex(null);
     setColorPickerInput('');
-    setNotification({
-      show: true,
+    notify({
+      variant: 'two',
       title: 'Color Restaurado',
       message: 'Color restaurado al valor por defecto',
       color: 'green',
-      icon: 'CheckCircle'
+      iconName: 'CheckCircle'
     });
   };
 
   // Restaura TODOS los colores a default
   const handleRestoreAllDefaults = () => {
     setColors([...defaultColors]);
-    setNotification({
-      show: true,
+    notify({
+      variant: 'two',
       title: 'Colores Restaurados',
       message: 'Colores restaurados al valor por defecto',
       color: 'green',
-      icon: 'CheckCircle'
+      iconName: 'CheckCircle'
     });
   };
 
@@ -369,15 +352,6 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
       id='options-menu'
       className='absolute right-0 mt-2 bg-white shadow-md rounded-lg z-50 p-4 w-72 animate-fadeIn'
     >
-      <Notification
-        show={notification.show}
-        color={notification.color}
-        variant='two'
-        title={notification.title}
-        message={notification.message}
-        iconName={notification.icon}
-        onClose={() => (notification.show = false)}
-      />
       <h3 className='font-semibold text-lg mb-3'>Opciones de gráfica</h3>
 
       <div className='mb-4'>
@@ -451,8 +425,6 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
                       onClick={() => {
                         if (/^#([0-9A-F]{3}){1,2}$/i.test(colorPickerInput)) {
                           handleChangeColor(i, colorPickerInput);
-                        } else {
-                          notification.show = true
                         }
                       }}
                     >
