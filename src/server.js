@@ -1,9 +1,9 @@
 // src/server.js
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const next = require('next');
 const path = require('path');
-const { PrismaClient } = require('@prisma/client');
 
 const logRequestMiddleware = require('./middlewares/logRequestMiddleware');
 const authRoutes = require('./routes/auth.routes');
@@ -23,7 +23,6 @@ const handle = appNext.getRequestHandler();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const prisma = new PrismaClient();
 
 appNext.prepare().then(() => {
   // Middlewares globales

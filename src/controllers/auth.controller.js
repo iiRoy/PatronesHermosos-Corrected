@@ -19,11 +19,10 @@ const login = async (req, res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       role = 'superuser';
-      username = user.username;
-    }
-
-    // Buscar en venue coordinators
-    if (!role) {
+      // Unificamos el campo id
+      user.id = user.id_superuser;
+    } else {
+      // Buscar en venue coordinators
       user = await prisma.venue_coordinators.findFirst({
         where: {
           OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
@@ -32,6 +31,7 @@ const login = async (req, res) => {
 
       if (user && (await bcrypt.compare(password, user.password))) {
         role = 'venue_coordinator';
+        user.id = user.id_venue_coord;
       }
     }
 
@@ -40,12 +40,26 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username, role },
+      {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        role,
+      },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' },
+      { expiresIn: '1d' }
     );
 
-    return res.json({ message: 'Login exitoso', token, role });
+    return res.json({
+      message: 'Login exitoso',
+      token,
+      role,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      },
+    });
   } catch (error) {
     console.error('Error en login:', error);
     return res.status(500).json({ message: 'Error del servidor' });
