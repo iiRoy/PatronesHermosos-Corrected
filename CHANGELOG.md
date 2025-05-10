@@ -1,3 +1,8 @@
+## 1.8.0-com.1 (2025-05-10)
+
+* feat(menu): Fixed items in menu, new order, and new login method ([adbf6aa](https://github.com/iiRoy/Patrones-Hermosos/commit/adbf6aa))
+* chore: Minor merge fixes ([d27bdb7](https://github.com/iiRoy/Patrones-Hermosos/commit/d27bdb7))
+
 ## <small>1.7.1-com.1 (2025-04-30)</small>
 
 * chore: manual conflict resolution after merge ([fd6d7ec](https://github.com/iiRoy/Patrones-Hermosos/commit/fd6d7ec))
