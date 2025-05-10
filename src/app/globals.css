@@ -569,7 +569,7 @@
   font-weight: 300;
 }
 
-.option-link:hover {
+.option-link:hover{
   color: var(--primaryColor);
 }
 
@@ -592,6 +592,10 @@
   color: var(--accent);
   text-decoration: underline;
   font-weight: bolder;
+}
+
+.option-link.hovered {
+  color: var(--primaryColor);
 }
 
 .checkbox-circle {
