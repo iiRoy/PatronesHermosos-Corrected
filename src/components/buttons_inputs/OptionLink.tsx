@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import withIconDecorator from '../decorators/IconDecorator';
+import { useMemo } from 'react';
 
 interface OptionLinkProps {
   label: string;
@@ -13,34 +14,85 @@ interface OptionLinkProps {
     fillColor?: string;
     className?: string;
   }>;
-  href: string;
+  href?: string;
+  forceActive?: boolean;
 }
 
-const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href }) => {
+const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href, forceActive }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = href ? pathname === href : false;
+  const isHovered = forceActive;
 
-  const DecoratedIcon = withIconDecorator(Icon);
+  const DecoratedIcon = useMemo(() => withIconDecorator(Icon), [Icon]);
 
-  return (
-    <Link
-      href={href}
-      className={`
-        option-link ${isActive ? 'active' : ''}
-        flex justify-center items-center gap-2 items-center
-      `}
-    >
-      <div className={`option-icon ${isActive ? 'active' : ''} flex items-center justify-center`}>
+  const classes = `
+    option-link group
+    ${isActive ? 'active' : ''} ${isHovered ? 'hovered' : ''}
+    transition-colors duration-300 ease-in-out
+    flex justify-center items-center gap-2
+  `;
+
+  const content = (
+    <>
+      <div
+        className={`
+          option-icon flex items-center justify-center
+          transition-transform duration-300 ease-in-out
+          ${isActive ? 'active scale-110' : 'scale-100'}
+        `}
+      >
+        <DecoratedIcon
+          strokeColor="#2E1C31"
+          fillColor="currentColor"
+          width="2rem"
+          height="2rem"
+          className="transition-colors duration-300 ease-in-out"
+        />
+      </div>
+      <span className="option-label hidden lg:block">{label}</span>
+    </>
+  );
+
+  return href ? (
+    <Link href={href} className={classes}>
+      {content}
+    </Link>
+  ) : (
+    <span className={classes}>{content}</span>
+  );
+};
+
+export default OptionLink;
+
+
+
+{/*
+  const classes = `
+    option-link ${isActive ? 'active' : ''} ${isHovered ? 'hovered' : ''}
+    flex justify-center items-center gap-2
+  `;
+
+  const content = (
+    <>
+      <div className={`option-icon transition-all ease-in-out duration-2000 ${isActive ? 'active' : ''} flex items-center justify-center`}>
         <DecoratedIcon
           strokeColor={'#2E1C31'}
           fillColor={'currentColor'}
           width={'2rem'}
           height={'2rem'}
+          className={`transition-all duration-2000 ease-in-out transform ${isActive ? 'scale-110' : 'scale-100'}`}
         />
       </div>
       <span className='option-label hidden lg:block'>{label}</span>
+    </>
+  );
+
+  return href ? (
+    <Link href={href} className={classes}>
+      {content}
     </Link>
+  ) : (
+    <span className={classes}>{content}</span>
   );
 };
-
-export default OptionLink;
+*/}

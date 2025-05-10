@@ -6,6 +6,7 @@ interface IconProps {
   strokeColor?: string;
   strokeWidth?: number;
   fillColor?: string;
+  className?: string;
 }
 
 const withIconDecorator = (Icon: React.FC<IconProps>) => {
@@ -50,13 +51,12 @@ const withIconDecorator = (Icon: React.FC<IconProps>) => {
     };
 
     return (
-      <div ref={iconRef}>
+      <div ref={iconRef} className={props.className}>
         <Icon {...decoratedProps} />
       </div>
     );
   };
 
-  // Asignar un nombre de componente para que ESLint y React DevTools lo reconozcan
   DecoratedIcon.displayName = `withIconDecorator(${Icon.displayName || Icon.name || 'Component'})`;
 
   return DecoratedIcon;
