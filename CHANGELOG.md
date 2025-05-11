@@ -1,3 +1,7 @@
+## 1.8.0-com.2 (2025-05-11)
+
+* fix: Fixed visual composition and layouts. ([f068c15](https://github.com/iiRoy/Patrones-Hermosos/commit/f068c15))
+
 ## 1.8.0-com.1 (2025-05-10)
 
 * feat(menu): Fixed items in menu, new order, and new login method ([adbf6aa](https://github.com/iiRoy/Patrones-Hermosos/commit/adbf6aa))
