@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface IconProps {
   width?: number | string;
@@ -13,33 +14,21 @@ const withIconDecorator = (Icon: React.FC<IconProps>) => {
   const DecoratedIcon: React.FC<IconProps> = (props) => {
     const [strokeWidth, setStrokeWidth] = useState<number>(1.1);
     const iconRef = useRef<HTMLDivElement>(null);
+    const pathname = usePathname();
 
     useEffect(() => {
       const updateStrokeWidth = () => {
         if (iconRef.current) {
           const computedStyle = getComputedStyle(iconRef.current);
-          const strokeWidthValue = parseFloat(
-            computedStyle.getPropertyValue('--icon-stroke-width'),
-          );
-
+          const strokeWidthValue = parseFloat(computedStyle.getPropertyValue('--icon-stroke-width'));
           if (!isNaN(strokeWidthValue)) {
             setStrokeWidth(strokeWidthValue);
           }
         }
       };
-
+    
       updateStrokeWidth();
-
-      const observer = new MutationObserver(updateStrokeWidth);
-      if (iconRef.current) {
-        observer.observe(iconRef.current, {
-          attributes: true,
-          attributeFilter: ['class', 'style'],
-        });
-      }
-
-      return () => observer.disconnect();
-    }, []);
+    }, [pathname]);
 
     const finalStrokeWidth = props.strokeWidth ?? strokeWidth;
 
