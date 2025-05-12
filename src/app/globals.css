@@ -67,7 +67,7 @@
   --error-dark: #970922;
   --error-disabled: #51262e;
   --warning: #c17a37;
-  --background: #2E1C31;
+  --background: #2e1c31;
   --warning-dark: #8d4807;
   --warning-disabled: #503d2c;
   --text-color: #ebe6eb;
@@ -81,26 +81,67 @@
 }
 
 .custom-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-evenly;
-  width: 175px;
+  justify-content: center;
   gap: 10px;
-  background-color: #6e2d75;
+  --icon-stroke-width: 0.7;
   color: var(--text-color);
   border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 15px;
+  border-radius: 14px;
+  padding: 0.5rem 1.5rem;
+  font-size: clamp(1em, 1.5vw, 2em);
+  font-weight: 500;
+  line-height: 1.2;
   cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
+.custom-button:hover:not(:disabled),
+.custom-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.custom-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botón redondo */
 .round-button {
-  width: 50px;
-  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  --icon-stroke-width: 0.7;
+  color: var(--text-color);
+  border: none;
+  border-radius: 14px;
+  padding: 0.5rem 1.5rem;
   cursor: pointer;
-  border-color: transparent;
-  font-size: 24px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.round-button:hover:not(:disabled),
+.round-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.round-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.round-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .icon,
@@ -194,71 +235,87 @@
 /*Colores botones*/
 .button-primary {
   background-color: var(--primaryColor);
+  color: var(--primaryColor);
 }
 
 .button-primary:hover {
   background-color: var(--primary-shade);
+  color: var(--primary-shade);
 }
 
 .primary-disabled {
   background-color: var(--primary-disabled);
   cursor: auto;
+  color: var(--primary-disabled);
 }
 
 .button-secondary {
   background-color: var(--secondaryColor);
+  color: var(--secondaryColor);
 }
 
 .button-secondary-shade {
   background-color: var(--secondary-shade);
+  color: var(--secondary-shade);
 }
 
 .button-secondary:hover {
   background-color: var(--secondary-shade);
+  color: var(--secondary-shade);
 }
 
 .secondary-disabled {
   background-color: var(--secondary-disabled);
   cursor: auto;
+  color: var(--secondary-disabled);
 }
 
 .button-success {
   background-color: var(--success);
+  color: var(--success);
 }
 
 .button-success:hover {
   background-color: var(--success-dark);
+  color: var(--success-dark);
 }
 
 .success-disabled {
   background-color: var(--success-disabled);
+  color: var(--success-disabled);
   cursor: auto;
 }
 
 .button-error {
   background-color: var(--error);
+  color: var(--error);
 }
 
 .button-error:hover {
   background-color: var(--error-dark);
+  color: var(--error-dark);
 }
 
 .error-disabled {
   background-color: var(--error-disabled);
   cursor: auto;
+  color: var(--error-disabled);
 }
 
 .button-warning {
   background-color: var(--warning);
+  color: var(--warning);
 }
 
 .button-warning:hover {
   background-color: var(--warning-dark);
+  color: var(--warning-dark);
 }
 
 .warning-disabled {
   background-color: var(--warning-disabled);
   cursor: auto;
+  color: var(--warning-disabled);
 }
 
 /*Colores inputs*/
@@ -569,7 +626,7 @@
   font-weight: 300;
 }
 
-.option-link:hover{
+.option-link:hover {
   color: var(--primaryColor);
 }
 
@@ -684,7 +741,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 
 /* Colored styles */
 .purple-checkbox {
@@ -885,8 +941,6 @@
   border-radius: 15px;
 }
 
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -943,8 +997,6 @@
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {
