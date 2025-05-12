@@ -84,7 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  width: 175px;
+  min-width: 175px;
   gap: 10px;
   background-color: #6e2d75;
   color: var(--text-color);
