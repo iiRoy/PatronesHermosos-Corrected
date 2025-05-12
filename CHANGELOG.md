@@ -1,3 +1,10 @@
+## 1.8.0-admin.5 (2025-05-12)
+
+* feat(pages): nueva páginas páginas de diplomas y correos superuser ([0dcd641](https://github.com/iiRoy/Patrones-Hermosos/commit/0dcd641))
+* Agrega archivo solicitudesRegistro/page.tsx ([3afb9dc](https://github.com/iiRoy/Patrones-Hermosos/commit/3afb9dc))
+* Cambios en globals.css y nuevas páginas de gestión de solicitudes ([9e0ccc3](https://github.com/iiRoy/Patrones-Hermosos/commit/9e0ccc3))
+* Merge branch 'main' into pages/superuser ([2eaa1c0](https://github.com/iiRoy/Patrones-Hermosos/commit/2eaa1c0))
+
 ## 1.8.0-admin.4 (2025-05-04)
 
 * feat(pages): nuevas páginas de gestión de sedes y usuarios superusuario ([04cbce1](https://github.com/iiRoy/Patrones-Hermosos/commit/04cbce1))
