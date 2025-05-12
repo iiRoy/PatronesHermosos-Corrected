@@ -1,6 +1,37 @@
-// venue.controller.js
 const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
+
+// Utility function to transform flat keys into nested objects
+const parseNestedBody = (body) => {
+  const result = {};
+
+  for (const key in body) {
+    const parts = key.split('[');
+    if (parts.length === 1) {
+      // Simple key (e.g., 'name', 'location')
+      result[key] = body[key];
+    } else {
+      // Nested key (e.g., 'generalCoordinator[name]')
+      let current = result;
+      for (let i = 0; i < parts.length; i++) {
+        let part = parts[i];
+        if (part.endsWith(']')) {
+          part = part.slice(0, -1); // Remove ']'
+        }
+        if (i === parts.length - 1) {
+          // Last part, set the value
+          current[part] = body[key];
+        } else {
+          // Create nested object if it doesn't exist
+          current[part] = current[part] || {};
+          current = current[part];
+        }
+      }
+    }
+  }
+
+  return result;
+};
 
 const getAll = async (req, res) => {
   const venues = await prisma.venues.findMany();
@@ -21,7 +52,10 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  // Extract text fields from req.body
+  // Transform flat req.body into nested structure
+  const parsedBody = parseNestedBody(req.body);
+
+  // Extract text fields from parsedBody
   const {
     name,
     location,
@@ -30,7 +64,7 @@ const create = async (req, res) => {
     associatedCoordinator,
     staffCoordinator,
     participantsCoordinator,
-  } = req.body;
+  } = parsedBody;
 
   // Extract files from req.files (uploaded via multer)
   const files = req.files || {};
@@ -61,21 +95,21 @@ const create = async (req, res) => {
         ${generalCoordinator.username},
         ${generalCoordinator.password},
         ${profileImage},
-        ${associatedCoordinator.name || null},
-        ${associatedCoordinator.lastNameP || null},
-        ${associatedCoordinator.lastNameM || null},
-        ${associatedCoordinator.email || null},
-        ${associatedCoordinator.phone || null},
-        ${staffCoordinator.name || null},
-        ${staffCoordinator.lastNameP || null},
-        ${staffCoordinator.lastNameM || null},
-        ${staffCoordinator.email || null},
-        ${staffCoordinator.phone || null},
-        ${participantsCoordinator.name || null},
-        ${participantsCoordinator.lastNameP || null},
-        ${participantsCoordinator.lastNameM || null},
-        ${participantsCoordinator.email || null},
-        ${participantsCoordinator.phone || null}
+        ${associatedCoordinator?.name || null},
+        ${associatedCoordinator?.lastNameP || null},
+        ${associatedCoordinator?.lastNameM || null},
+        ${associatedCoordinator?.email || null},
+        ${associatedCoordinator?.phone || null},
+        ${staffCoordinator?.name || null},
+        ${staffCoordinator?.lastNameP || null},
+        ${staffCoordinator?.lastNameM || null},
+        ${staffCoordinator?.email || null},
+        ${staffCoordinator?.phone || null},
+        ${participantsCoordinator?.name || null},
+        ${participantsCoordinator?.lastNameP || null},
+        ${participantsCoordinator?.lastNameM || null},
+        ${participantsCoordinator?.email || null},
+        ${participantsCoordinator?.phone || null}
       )
     `;
 
