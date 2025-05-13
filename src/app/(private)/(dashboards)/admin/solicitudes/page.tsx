@@ -5,7 +5,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 // Interfaces para los datos de cada sección
 interface Participante {
@@ -69,14 +69,42 @@ const SolicitudesRegistroAdmin = () => {
         { id: '03', institucion: 'ITESM Toluca', lugar: 'Hidalgo', fecha: '16/03/2025' },
     ];
 
+    // Filtrar los datos según el valor de búsqueda y la sección activa
+    const filteredData = useMemo(() => {
+        const searchTerm = inputValue.toLowerCase().trim();
+        if (!searchTerm) {
+            return section === 'PARTICIPANTES' ? participantesData : section === 'APOYO & STAFF' ? apoyoStaffData : sedesData;
+        }
+
+        if (section === 'PARTICIPANTES') {
+            return participantesData.filter(item =>
+                item.nombre.toLowerCase().includes(searchTerm) ||
+                item.sede.toLowerCase().includes(searchTerm) ||
+                item.fecha.toLowerCase().includes(searchTerm)
+            );
+        } else if (section === 'APOYO & STAFF') {
+            return apoyoStaffData.filter(item =>
+                item.nombre.toLowerCase().includes(searchTerm) ||
+                item.sede.toLowerCase().includes(searchTerm) ||
+                item.fecha.toLowerCase().includes(searchTerm)
+            );
+        } else {
+            return sedesData.filter(item =>
+                item.institucion.toLowerCase().includes(searchTerm) ||
+                item.lugar.toLowerCase().includes(searchTerm) ||
+                item.fecha.toLowerCase().includes(searchTerm)
+            );
+        }
+    }, [inputValue, section]);
+
     const sectionFilterChange = (newSection: 'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES') => {
         setSection(newSection);
         setCurrentPage(0); // Reset page when switching sections
+        setInputValue(''); // Resetear la barra de búsqueda al cambiar de sección
     };
 
-    const dataToShow = section === 'PARTICIPANTES' ? participantesData : section === 'APOYO & STAFF' ? apoyoStaffData : sedesData;
-    const totalPages = Math.ceil(dataToShow.length / rowsPerPage);
-    const paginatedData = dataToShow.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
     const openPopup = (item: Participante | ApoyoStaff | Sede) => {
         setSelectedItem(item);
@@ -110,13 +138,11 @@ const SolicitudesRegistroAdmin = () => {
     };
 
     const handleAccept = () => {
-        // Lógica para aceptar la solicitud (puedes integrarla con tu backend o estado)
         console.log('Solicitud aceptada para:', selectedItem, 'Grupo:', selectedGroup);
         closeConfirmPopup();
     };
 
     const handleReject = () => {
-        // Lógica para rechazar la solicitud (puedes integrarla con tu backend o estado)
         console.log('Solicitud rechazada para:', selectedItem);
         closeRejectPopup();
     };

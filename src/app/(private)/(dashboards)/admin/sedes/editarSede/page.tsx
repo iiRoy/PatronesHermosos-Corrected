@@ -27,27 +27,27 @@ const mockAddStudents = [
     { id: '110', nombre: 'Gabriela Ruiz', usuario: 'GabyRZ', correo: 'ejemplo@gmail.com', telefono: '2224405576' },
 ];
 
-
-
 const EditarSede = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('SEDES');
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
     const [fadeSec, setFadeSec] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false); // Estado del modal
 
     const filteredStudents = mockStudents.filter((s) =>
-        s.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        s.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
+        s.usuario.toLowerCase().includes(inputValue.toLowerCase())
     );
 
     const filteredAddStudents = mockAddStudents.filter((s) =>
-        s.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        s.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
+        s.usuario.toLowerCase().includes(inputValue.toLowerCase())
     );
 
     const sectionFilterChange = (newSection: string) => {
         setSection(newSection);
         setFilterActivaExtra({});
+        setInputValue(''); // Resetear la barra de búsqueda al cambiar de sección
     };
 
     const extraHandleFilterChange = (key: string, value: string) => {
@@ -84,62 +84,12 @@ const EditarSede = () => {
                             fade={fadeSec}
                         />
                     </div>
-
-                    <div>
-                        <FiltroEvento
-                            disableCheckboxes
-                            label="No. de Grupos"
-                            showSecciones
-                            labelSecciones=""
-                            secciones={[
-                                { label: '1', value: 'Grupos1' },
-                                { label: '2', value: 'Grupos2' },
-                                { label: '3', value: 'Grupos3' },
-                                { label: '4', value: 'Grupos4' },
-                                { label: '5', value: 'Grupos5' },
-                                { label: '6', value: 'Grupos6' },
-                                { label: '7', value: 'Grupos7' },
-                            ]}
-                            seccionActiva={section}
-                            onChangeSeccion={sectionFilterChange}
-                            extraFilters={[]}
-                            filterActiva={filterActivaExtra}
-                            onExtraFilterChange={extraHandleFilterChange}
-                            fade={fadeSec}
-                        />
-                    </div>
-                </div>
-
-                {/* Filtros adicionales */}
-                <div className="flex gap-4 justify-between mb-4">
-                    <div>
-                        <FiltroEvento
-                            disableCheckboxes
-                            label="Grupo"
-                            showSecciones
-                            labelSecciones="Secciones"
-                            secciones={[
-                                { label: '1', value: 'Grupos1' },
-                                { label: '2', value: 'Grupos2' },
-                                { label: '3', value: 'Grupos3' },
-                                { label: '4', value: 'Grupos4' },
-                                { label: '5', value: 'Grupos5' },
-                                { label: '6', value: 'Grupos6' },
-                                { label: '7', value: 'Grupos7' },
-                            ]}
-                            seccionActiva={section}
-                            onChangeSeccion={sectionFilterChange}
-                            extraFilters={[]}
-                            filterActiva={filterActivaExtra}
-                            onExtraFilterChange={extraHandleFilterChange}
-                            fade={fadeSec}
-                        />
-                    </div>
-
                     <div>
                         <Button label="Eliminar Grupo" variant="error" />
                     </div>
                 </div>
+
+                {/* Filtros adicionales */}
 
                 {/* Búsqueda y agregar */}
                 <div className="flex gap-4 justify-between mb-4">
@@ -164,7 +114,7 @@ const EditarSede = () => {
                 </div>
 
                 {/* Tabla de participantes */}
-                <div className="overflow-x-auto bg-white rounded-xl p-4 shadow">
+                <div className="overflow-x-auto bg-white rounded-xl p-4 shadow flex-1">
                     <table className="w-full text-left">
                         <thead className="text-gray-400 text-sm border-b">
                             <tr>
@@ -262,8 +212,7 @@ const EditarSede = () => {
 
                         <div className='flex gap-4 justify-center'>
                             <Button label="Confirmar" variant="primary" href="../" />
-                            <Button label="Cancelar" variant="secondary" onClick={() => setShowModal(false)}
-                            />
+                            <Button label="Cancelar" variant="secondary" onClick={() => setShowModal(false)} />
                         </div>
 
                     </div>
