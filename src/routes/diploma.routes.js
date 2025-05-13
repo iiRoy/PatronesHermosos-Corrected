@@ -16,54 +16,51 @@ router.post('/generate', async (req, res) => {
     const zipPath = path.join(__dirname, '../../temp/diplomas.zip');
     const output = fs.createWriteStream(zipPath);
     const archive = archiver('zip');
+
     archive.pipe(output);
 
     for (const user of users) {
       const { name, paternal_name, campus, role, start_date } = user;
       const fileName = `${name} ${paternal_name}.pdf`;
       const templatePath = path.join(__dirname, `../../public/diplomas/${role}.pdf`);
+
       if (!fs.existsSync(templatePath)) continue;
 
-      if (!fs.existsSync(templatePath)) {
-        console.error('❌ Archivo no existe:', templatePath);
-        continue;
-      }
-      const stat = fs.statSync(templatePath);
-      console.log('✅ Tamaño del archivo:', stat.size, 'bytes');
-      
       const existingPdf = await fs.promises.readFile(templatePath);
-      console.log('✅ Archivo leído correctamente');
-      
-      console.log('Rol recibido:', role);
-      console.log('Esperando plantilla:', `${role}.pdf`);
-
       const pdfDoc = await PDFDocument.load(existingPdf);
       const page = pdfDoc.getPages()[0];
-
+      const { width } = page.getSize();
       const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-      const color = rgb(0, 0, 0);
+      const color = rgb(0.345, 0.345, 0.345);
 
-      page.drawText(`${name} ${paternal_name}`, {
-        x: 160,
-        y: 290,
-        size: 24,
+      // Nombre completo centrado
+      const nombreCompleto = `${name} ${paternal_name}`;
+      const textWidth = font.widthOfTextAtSize(nombreCompleto, 50);
+      page.drawText(nombreCompleto, {
+        x: (width - textWidth) / 2 - 30,
+        y: 310,
+        size: 50,
         font,
-        color,
+        color: rgb(0.635, 0.416, 0.678),
       });
 
+      // Campus centrado (solo si existe)
       if (campus) {
-        page.drawText(`${campus}`, {
-          x: 185,
-          y: 245,
-          size: 18,
+        const campusWidth = font.widthOfTextAtSize(campus, 14);
+        page.drawText(campus, {
+          x: (width - campusWidth) / 2 - 200,
+          y: 220,
+          size: 14,
           font,
           color,
         });
       }
 
+      // Fecha centrada (solo si existe)
       if (start_date) {
-        page.drawText(`${start_date}`, {
-          x: 185,
+        const dateWidth = font.widthOfTextAtSize(start_date, 18);
+        page.drawText(start_date, {
+          x: (width - dateWidth) / 2,
           y: 215,
           size: 18,
           font,
@@ -72,13 +69,22 @@ router.post('/generate', async (req, res) => {
       }
 
       const pdfBytes = await pdfDoc.save();
-      archive.append(pdfBytes, { name: `${campus}/${role}/${fileName}` });
+      const fullPath = path.join(campus || 'sin_sede', role || 'sin_rol', fileName);
+      archive.append(Buffer.from(pdfBytes), { name: fullPath });
     }
 
-    await archive.finalize();
+    // Finalizar el archivo ZIP y esperar a que esté completamente escrito
     output.on('close', () => {
-      res.download(zipPath, 'diplomas.zip', () => fs.unlink(zipPath, () => {}));
+      res.download(zipPath, 'diplomas.zip', () => {
+        fs.unlink(zipPath, () => {});
+      });
     });
+
+    archive.on('error', (err) => {
+      throw err;
+    });
+
+    await archive.finalize();
   } catch (error) {
     console.error('Error generando diplomas:', error);
     res.status(500).json({ error: 'Error al generar diplomas.' });
