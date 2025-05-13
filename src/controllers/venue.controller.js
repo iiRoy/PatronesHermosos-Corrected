@@ -1,5 +1,7 @@
 const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
+const fs = require('fs').promises; // Use promises for async file operations
+const path = require('path');
 
 // Utility function to transform flat keys into nested objects
 const parseNestedBody = (body) => {
@@ -8,21 +10,17 @@ const parseNestedBody = (body) => {
   for (const key in body) {
     const parts = key.split('[');
     if (parts.length === 1) {
-      // Simple key (e.g., 'name', 'location')
       result[key] = body[key];
     } else {
-      // Nested key (e.g., 'generalCoordinator[name]')
       let current = result;
       for (let i = 0; i < parts.length; i++) {
         let part = parts[i];
         if (part.endsWith(']')) {
-          part = part.slice(0, -1); // Remove ']'
+          part = part.slice(0, -1);
         }
         if (i === parts.length - 1) {
-          // Last part, set the value
           current[part] = body[key];
         } else {
-          // Create nested object if it doesn't exist
           current[part] = current[part] || {};
           current = current[part];
         }
@@ -68,9 +66,23 @@ const create = async (req, res) => {
 
   // Extract files from req.files (uploaded via multer)
   const files = req.files || {};
-  const participation_file = files['participation_file'] ? files['participation_file'][0].buffer : null;
-  const logo = files['logo'] ? files['logo'][0].buffer : null;
-  const profileImage = files['generalCoordinator.profileImage'] ? files['generalCoordinator.profileImage'][0].buffer : null;
+  let participation_file = null;
+  let logo = null;
+  let profileImage = null;
+
+  // Read file contents for database storage
+  if (files['participation_file']) {
+    const filePath = files['participation_file'][0].path;
+    participation_file = await fs.readFile(filePath);
+  }
+  if (files['logo']) {
+    const filePath = files['logo'][0].path;
+    logo = await fs.readFile(filePath);
+  }
+  if (files['generalCoordinator.profileImage']) {
+    const filePath = files['generalCoordinator.profileImage'][0].path;
+    profileImage = await fs.readFile(filePath);
+  }
 
   // Validate required file
   if (!participation_file) {
@@ -113,7 +125,14 @@ const create = async (req, res) => {
       )
     `;
 
-    res.status(201).json({ message: 'Venue creado exitosamente' });
+    res.status(201).json({
+      message: 'Venue creado exitosamente',
+      files: {
+        participation_file: participation_file_path,
+        logo: logo_path,
+        profile_image: profile_image_path,
+      },
+    });
   } catch (error) {
     console.error('Error al crear venue:', error);
     res.status(500).json({ message: 'Error al crear venue', error: error.message });
@@ -126,8 +145,18 @@ const update = async (req, res) => {
 
   // Extract files from req.files (uploaded via multer)
   const files = req.files || {};
-  const participation_file = files['participation_file'] ? files['participation_file'][0].buffer : undefined;
-  const logo = files['logo'] ? files['logo'][0].buffer : undefined;
+  let participation_file = undefined;
+  let logo = undefined;
+
+  // Read file contents for database storage
+  if (files['participation_file']) {
+    const filePath = files['participation_file'][0].path;
+    participation_file = await fs.readFile(filePath);
+  }
+  if (files['logo']) {
+    const filePath = files['logo'][0].path;
+    logo = await fs.readFile(filePath);
+  }
 
   try {
     const venueExists = await prisma.venues.findUnique({
