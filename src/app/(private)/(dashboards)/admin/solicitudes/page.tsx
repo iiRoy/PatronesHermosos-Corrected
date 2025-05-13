@@ -39,7 +39,10 @@ const SolicitudesRegistroAdmin = () => {
     const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES'>('PARTICIPANTES');
     const [currentPage, setCurrentPage] = useState(0);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
+    const [isRejectPopupOpen, setIsRejectPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Participante | ApoyoStaff | Sede | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<string>('Grupo 03');
 
     const rowsPerPage = 4;
 
@@ -83,6 +86,39 @@ const SolicitudesRegistroAdmin = () => {
     const closePopup = () => {
         setIsPopupOpen(false);
         setSelectedItem(null);
+    };
+
+    const openConfirmPopup = (item: Participante | ApoyoStaff | Sede) => {
+        setSelectedItem(item);
+        setIsConfirmPopupOpen(true);
+    };
+
+    const closeConfirmPopup = () => {
+        setIsConfirmPopupOpen(false);
+        setSelectedItem(null);
+        setSelectedGroup('Grupo 03');
+    };
+
+    const openRejectPopup = (item: Participante | ApoyoStaff | Sede) => {
+        setSelectedItem(item);
+        setIsRejectPopupOpen(true);
+    };
+
+    const closeRejectPopup = () => {
+        setIsRejectPopupOpen(false);
+        setSelectedItem(null);
+    };
+
+    const handleAccept = () => {
+        // Lógica para aceptar la solicitud (puedes integrarla con tu backend o estado)
+        console.log('Solicitud aceptada para:', selectedItem, 'Grupo:', selectedGroup);
+        closeConfirmPopup();
+    };
+
+    const handleReject = () => {
+        // Lógica para rechazar la solicitud (puedes integrarla con tu backend o estado)
+        console.log('Solicitud rechazada para:', selectedItem);
+        closeRejectPopup();
     };
 
     return (
@@ -167,7 +203,7 @@ const SolicitudesRegistroAdmin = () => {
                                 <tr key={index} className="border-t border-gray-300">
                                     {section === 'PARTICIPANTES' && (
                                         <>
-                                            <td className="p-2 text-center">{item.id}</td>
+                                            <td className="p-2 text-center"></td>
                                             <td className="p-2 text-center">
                                                 <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as Participante)} />
                                             </td>
@@ -175,16 +211,16 @@ const SolicitudesRegistroAdmin = () => {
                                             <td className="p-2 text-center">{(item as Participante).sede}</td>
                                             <td className="p-2 text-center">{(item as Participante).fecha}</td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} />
+                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
                                             </td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} />
+                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
                                             </td>
                                         </>
                                     )}
                                     {section === 'APOYO & STAFF' && (
                                         <>
-                                            <td className="p-2 text-center">{item.id}</td>
+                                            <td className="p-2 text-center"></td>
                                             <td className="p-2 text-center">
                                                 <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as ApoyoStaff)} />
                                             </td>
@@ -192,16 +228,16 @@ const SolicitudesRegistroAdmin = () => {
                                             <td className="p-2 text-center">{(item as ApoyoStaff).sede}</td>
                                             <td className="p-2 text-center">{(item as ApoyoStaff).fecha}</td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} />
+                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
                                             </td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} />
+                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
                                             </td>
                                         </>
                                     )}
                                     {section === 'SEDES' && (
                                         <>
-                                            <td className="p-2 text-center">{item.id}</td>
+                                            <td className="p-2 text-center"></td>
                                             <td className="p-2 text-center">
                                                 <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as Sede)} />
                                             </td>
@@ -209,10 +245,10 @@ const SolicitudesRegistroAdmin = () => {
                                             <td className="p-2 text-center">{(item as Sede).lugar}</td>
                                             <td className="p-2 text-center">{(item as Sede).fecha}</td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} />
+                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Sede)} />
                                             </td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} />
+                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Sede)} />
                                             </td>
                                         </>
                                     )}
@@ -233,7 +269,7 @@ const SolicitudesRegistroAdmin = () => {
                     />
                 </div>
 
-                {/* Pop-up */}
+                {/* Pop-up de información */}
                 {isPopupOpen && selectedItem && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative">
@@ -263,6 +299,73 @@ const SolicitudesRegistroAdmin = () => {
                             )}
                             <div className="mt-4 flex justify-center">
                                 <Button label="Cerrar" variant="primary" onClick={closePopup} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Pop-up de confirmación (Aceptar) */}
+                {isConfirmPopupOpen && selectedItem && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                            <h2 className="text-lg font-bold mb-4">¿Aceptar a {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?</h2>
+                            <div className="pt-6 pb-6">
+                                {section === 'PARTICIPANTES' && selectedItem && (
+                                    <>
+                                        <p><strong>Sede:</strong> {(selectedItem as Participante).sede}</p>
+                                        <p className="mt-4"><strong>Asignar a un grupo</strong></p>
+                                        <select
+                                            className="w-full p-2 border rounded mt-2 bg-purple-100"
+                                            value={selectedGroup}
+                                            onChange={(e) => setSelectedGroup(e.target.value)}
+                                        >
+                                            <option>Grupo 01</option>
+                                            <option>Grupo 02</option>
+                                            <option>Grupo 03</option>
+                                        </select>
+                                    </>
+                                )}
+                                {section === 'APOYO & STAFF' && selectedItem && (
+                                    <>
+                                        <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).sede}</p>
+                                        <p className="mt-4"><strong>Asignar a un grupo</strong></p>
+                                        <select
+                                            className="w-full p-2 border rounded mt-2 bg-purple-100"
+                                            value={selectedGroup}
+                                            onChange={(e) => setSelectedGroup(e.target.value)}
+                                        >
+                                            <option>Grupo 01</option>
+                                            <option>Grupo 02</option>
+                                            <option>Grupo 03</option>
+                                        </select>
+                                    </>
+                                )}
+                                {section === 'SEDES' && selectedItem && (
+                                    <>
+                                        <p><strong>Institución:</strong> {(selectedItem as Sede).institucion}</p>
+                                        <p><strong>Lugar:</strong> {(selectedItem as Sede).lugar}</p>
+                                        <p><strong>Fecha:</strong> {(selectedItem as Sede).fecha}</p>
+                                    </>
+                                )}
+                            </div>
+                            <div className="mt-4 flex justify-center gap-4">
+                                <Button label="Aceptar" variant="success" onClick={handleAccept} />
+                                <Button label="Cancelar" variant="primary" onClick={closeConfirmPopup} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Pop-up de rechazo */}
+                {isRejectPopupOpen && selectedItem && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                            <h2 className="text-lg font-bold mb-4">
+                                ¿Seguro que quieres rechazar la solicitud de {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?
+                            </h2>
+                            <div className="mt-4 flex justify-center gap-4">
+                                <Button label="Rechazar" variant="error" onClick={handleReject} />
+                                <Button label="Cancelar" variant="primary" onClick={closeRejectPopup} />
                             </div>
                         </div>
                     </div>

@@ -93,8 +93,8 @@ const Button: React.FC<ButtonProps> = ({
       {showLeftIcon && DecoratedIconL && (
         <div className='ease-in-out duration-300 transition-colors'>
           <DecoratedIconL
-            width="2rem"
-            height="2rem"
+            width="1.5rem"
+            height="1.5rem"
             fillColor="#ebe6eb"
             strokeColor="currentColor"
           />
