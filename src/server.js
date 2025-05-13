@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 3000;
 
 const cron = require('node-cron');
 const fs = require('fs').promises;
-const path = require('path');
 
 const cleanupTmpFiles = async () => {
   const tmpDir = path.join(__dirname, 'uploads', 'tmp');
