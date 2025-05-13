@@ -1369,11 +1369,7 @@ BEGIN
     SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
   END IF;
 
-  -- Eliminar la sede
-  DELETE FROM venues
-  WHERE id_venue = p_id_venue;
-
-  -- Registrar acción en audit_log
+  -- Registrar acción en audit_log ANTES de eliminar la sede
   CALL registrar_log(
     'DELETE',
     'venues',
@@ -1381,9 +1377,15 @@ BEGIN
     p_username,
     p_id_venue
   );
+
+  -- Eliminar la sede
+  DELETE FROM venues
+  WHERE id_venue = p_id_venue;
+
 END$$
 
 DELIMITER ;
+
 
 
 
