@@ -111,7 +111,7 @@ const SedesAdmin = () => {
                                 <th className="p-2 text-center">Coordinador</th>
                                 <th className="p-2 text-center">No. de Grupos</th>
                                 <th className="p-2 text-center">No. de Estudiantes</th>
-                                <th className="p-2 text-center">Acciones</th>
+                                <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">

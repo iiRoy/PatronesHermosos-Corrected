@@ -96,7 +96,6 @@ const correosAdmin = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
                             <tr className='texto-primary-shade'>
-                                <th className="p-2 text-center">ID</th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
@@ -109,7 +108,6 @@ const correosAdmin = () => {
                             {paginatedData.map((diploma, index) => (
 
                                 <tr key={index} className="border-t border-gray-300">
-                                    <td className="p-2 text-center">{diploma.id}</td>
                                     <td className="p-2 text-center">{diploma.nombre}</td>
                                     <td className="p-2 text-center">{diploma.sede}</td>
                                     <td className="p-2 text-center">{diploma.grupo}</td>

@@ -8,7 +8,7 @@ import Button from '@/components/buttons_inputs/Button';
 import { Plus, Trash, Trash2 } from 'lucide-react';
 
 
-const EditarCoordinadora = () => {
+const EditarInstructora = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('SEDES');
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
@@ -155,4 +155,4 @@ const EditarCoordinadora = () => {
     );
 };
 
-export default EditarCoordinadora;
+export default EditarInstructora;
