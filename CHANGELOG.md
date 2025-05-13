@@ -1,3 +1,7 @@
+## 1.9.0-admin.2 (2025-05-13)
+
+* feat(components): funcionalidad InputField superuser ([00e4178](https://github.com/iiRoy/Patrones-Hermosos/commit/00e4178))
+
 ## 1.9.0-admin.1 (2025-05-13)
 
 * improve(pages): confirmación de aceptación y rechazo de solicitudes superuser ([17a6952](https://github.com/iiRoy/Patrones-Hermosos/commit/17a6952))
