@@ -21,16 +21,11 @@ const VerSede = () => {
     const [section, setSection] = useState('SEDES');
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
     const [fadeSec, setFadeSec] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
 
     const filteredStudents = mockStudents.filter((s) =>
-        s.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        s.id.toLowerCase().includes(inputValue.toLowerCase()) ||
+        s.nombre.toLowerCase().includes(inputValue.toLowerCase())
     );
-
-    const sectionFilterChange = (newSection: string) => {
-        setSection(newSection);
-        setFilterActivaExtra({});
-    };
 
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
@@ -80,7 +75,6 @@ const VerSede = () => {
                                 { label: 'ITESM Monterrey', value: 'Colaboradoras' },
                             ]}
                             seccionActiva={section}
-                            onChangeSeccion={sectionFilterChange}
                             extraFilters={[]}
                             filterActiva={filterActivaExtra}
                             onExtraFilterChange={extraHandleFilterChange}
@@ -90,7 +84,7 @@ const VerSede = () => {
                 </div>
 
                 {/* Tabla */}
-                <div className="overflow-x-auto bg-white rounded-xl p-4 shadow">
+                <div className="overflow-x-auto bg-white rounded-xl p-4 shadow flex-1">
                     <table className="w-full text-left">
                         <thead className="text-gray-400 text-sm border-b">
                             <tr>

@@ -6,7 +6,7 @@ import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Envelope, EnvelopeOpen, FileArrowDown, Trash } from '@/components/icons';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 const correosAdmin = () => {
     const [inputValue, setInputValue] = useState('');
@@ -16,11 +16,6 @@ const correosAdmin = () => {
     const [currentPage, setCurrentPage] = useState(0);
 
     const rowsPerPage = 4;
-
-    const sectionFilterChange = (newSection: string) => {
-        setSection(newSection);
-        setFilterActivaExtra({});
-    };
 
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
@@ -46,8 +41,20 @@ const correosAdmin = () => {
         { id: '14', nombre: 'Fernanda González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
     ];
 
-    const totalPages = Math.ceil(diplomasData.length / rowsPerPage);
-    const paginatedData = diplomasData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+    // Filtrar los datos según el valor de búsqueda (solo por la columna "Nombre")
+    const filteredData = useMemo(() => {
+        const searchTerm = inputValue.toLowerCase().trim();
+        if (!searchTerm) {
+            return diplomasData;
+        }
+
+        return diplomasData.filter(item =>
+            item.nombre.toLowerCase().includes(searchTerm)
+        );
+    }, [inputValue]);
+
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -81,7 +88,6 @@ const correosAdmin = () => {
                                     { label: 'ITESM Monterrey', value: 'Colaboradoras' },
                                 ]}
                                 seccionActiva={section}
-                                onChangeSeccion={sectionFilterChange}
                                 extraFilters={[]}
                                 filterActiva={filterActivaExtra}
                                 onExtraFilterChange={extraHandleFilterChange}
@@ -106,7 +112,6 @@ const correosAdmin = () => {
                         </thead>
                         <tbody className="text-gray-700">
                             {paginatedData.map((diploma, index) => (
-
                                 <tr key={index} className="border-t border-gray-300">
                                     <td className="p-2 text-center">{diploma.nombre}</td>
                                     <td className="p-2 text-center">{diploma.sede}</td>
@@ -123,7 +128,6 @@ const correosAdmin = () => {
                                                 { label: 'ITESM Monterrey', value: 'Colaboradoras' },
                                             ]}
                                             seccionActiva={section}
-                                            onChangeSeccion={sectionFilterChange}
                                             extraFilters={[]}
                                             filterActiva={filterActivaExtra}
                                             onExtraFilterChange={extraHandleFilterChange}

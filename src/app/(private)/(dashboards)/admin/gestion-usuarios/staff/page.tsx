@@ -6,7 +6,7 @@ import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 const GestionApoyo = () => {
     const [inputValue, setInputValue] = useState('');
@@ -17,10 +17,7 @@ const GestionApoyo = () => {
 
     const rowsPerPage = 5;
 
-    const sectionFilterChange = (newSection: string) => {
-        setSection(newSection);
-        setFilterActivaExtra({});
-    };
+
 
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
@@ -30,31 +27,43 @@ const GestionApoyo = () => {
     };
 
     const apoyoData = [
-        { id: '01', nombre: 'Nombre Apellido', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '02', nombre: 'Nombre Apellido', sede: 'Querétaro', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '03', nombre: 'Nombre Apellido', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '04', nombre: 'Nombre Apellido', sede: 'Hidalgo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '05', nombre: 'Nombre Apellido', sede: 'Guadalajara', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '06', nombre: 'Nombre Apellido', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '07', nombre: 'Nombre Apellido', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '08', nombre: 'Nombre Apellido', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '09', nombre: 'Nombre Apellido', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '10', nombre: 'Nombre Apellido', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '11', nombre: 'Nombre Apellido', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '12', nombre: 'Nombre Apellido', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '13', nombre: 'Nombre Apellido', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '14', nombre: 'Nombre Apellido', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '15', nombre: 'Nombre Apellido', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '16', nombre: 'Nombre Apellido', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '17', nombre: 'Nombre Apellido', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '18', nombre: 'Nombre Apellido', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '19', nombre: 'Nombre Apellido', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '20', nombre: 'Nombre Apellido', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '21', nombre: 'Nombre Apellido', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '01', nombre: 'Ana García', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '04', nombre: 'Diana Pérez', sede: 'Hidalgo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '05', nombre: 'Elena Rodríguez', sede: 'Guadalajara', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '06', nombre: 'Fabiola Sánchez', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '07', nombre: 'Gabriela Torres', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '08', nombre: 'Hilda Vargas', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '09', nombre: 'Isabel Ramírez', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '10', nombre: 'Julia Gómez', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '11', nombre: 'Karla Díaz', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '12', nombre: 'Laura Fernández', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '13', nombre: 'María Morales', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '14', nombre: 'Nadia Ortiz', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '15', nombre: 'Olivia Castro', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '16', nombre: 'Paula Mendoza', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '17', nombre: 'Raquel Silva', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '18', nombre: 'Sofía Rojas', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '19', nombre: 'Tania Navarro', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '20', nombre: 'Valeria Luna', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '21', nombre: 'Wendy Salazar', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
     ];
 
-    const totalPages = Math.ceil(apoyoData.length / rowsPerPage);
-    const paginatedData = apoyoData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+    // Filtrar los datos según el valor de búsqueda (solo por la columna "Nombre")
+    const filteredData = useMemo(() => {
+        const searchTerm = inputValue.toLowerCase().trim();
+        if (!searchTerm) {
+            return apoyoData;
+        }
+
+        return apoyoData.filter(item =>
+            item.nombre.toLowerCase().includes(searchTerm)
+        );
+    }, [inputValue]);
+
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -88,7 +97,6 @@ const GestionApoyo = () => {
                                     { label: 'ITESM Monterrey', value: 'Colaboradoras' },
                                 ]}
                                 seccionActiva={section}
-                                onChangeSeccion={sectionFilterChange}
                                 extraFilters={[]}
                                 filterActiva={filterActivaExtra}
                                 onExtraFilterChange={extraHandleFilterChange}
@@ -114,7 +122,6 @@ const GestionApoyo = () => {
                         </thead>
                         <tbody className="text-gray-700">
                             {paginatedData.map((apoyo, index) => (
-
                                 <tr key={index} className="border-t border-gray-300">
                                     <td className="p-2 text-center">{apoyo.id}</td>
                                     <td className="p-2 text-center">{apoyo.nombre}</td>
@@ -122,7 +129,6 @@ const GestionApoyo = () => {
                                     <td className="p-2 text-center">{apoyo.grupo}</td>
                                     <td className="p-2 text-center">{apoyo.correo}</td>
                                     <td className="p-2 text-center">{apoyo.telefono}</td>
-
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
                                         <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
