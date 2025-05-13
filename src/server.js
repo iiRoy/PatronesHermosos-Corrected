@@ -20,6 +20,32 @@ const handle = appNext.getRequestHandler();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const cron = require('node-cron');
+const fs = require('fs').promises;
+const path = require('path');
+
+const cleanupTmpFiles = async () => {
+  const tmpDir = path.join(__dirname, 'uploads', 'tmp');
+  const files = await fs.readdir(tmpDir);
+  const now = Date.now();
+  const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  for (const file of files) {
+    const filePath = path.join(tmpDir, file);
+    const stats = await fs.stat(filePath);
+    if (now - stats.mtimeMs > maxAge) {
+      await fs.unlink(filePath);
+      console.log(`Deleted old file: ${file}`);
+    }
+  }
+};
+
+// Run cleanup every hour
+cron.schedule('0 * * * *', cleanupTmpFiles);
+
+// Run once on startup
+cleanupTmpFiles();
+
 appNext.prepare().then(() => {
   // Middlewares globales
   app.set('trust proxy', 1);

@@ -1,22 +1,24 @@
-// src/routes/venue.routes.js
 const express = require('express');
 const multer = require('multer');
-const rateLimit = require('express-rate-limit');
+const path = require('path');
 const venueController = require('../controllers/venue.controller');
 const { validateVenue } = require('../validators/venueValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
-const router = express.Router();
-
-// Configure rate limiter: max 100 requests per 15 minutes per IP
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Demasiadas solicitudes desde esta IP, por favor intenta de nuevo después de 15 minutos.',
+// Configure multer to store files on disk
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Save files to uploads/tmp directory
+    cb(null, path.join(__dirname, '..', 'uploads', 'tmp'));
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with appropriate extension
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = file.fieldname === 'participation_file' ? '.pdf' : '.jpg';
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  },
 });
 
-// Configure multer to store files in memory
-const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
@@ -34,11 +36,12 @@ const upload = multer({
   },
 });
 
+const router = express.Router();
+
 // Routes
 router.get('/', authMiddleware, venueController.getAll);
 router.post(
   '/',
-  limiter, // Apply rate limiting
   upload.fields([
     { name: 'participation_file', maxCount: 1 },
     { name: 'logo', maxCount: 1 },
@@ -60,5 +63,27 @@ router.put(
   venueController.update
 );
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController.remove);
+
+// Serve files from uploads/tmp
+router.get('/files/:filename', (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, '..', 'uploads', 'tmp', filename);
+
+  // Check if file exists
+  fs.access(filePath)
+    .then(() => {
+      // Set appropriate headers
+      const ext = path.extname(filename).toLowerCase();
+      const contentType = ext === '.pdf' ? 'application/pdf' : 'image/jpeg';
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+
+      // Serve the file
+      res.sendFile(filePath);
+    })
+    .catch(() => {
+      res.status(404).json({ message: 'Archivo no encontrado' });
+    });
+});
 
 module.exports = router;
