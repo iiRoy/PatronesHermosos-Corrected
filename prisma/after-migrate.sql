@@ -1262,6 +1262,239 @@ BEGIN
 END;
 $$
 
+
+--proceso global para registrar los logs
+DELIMITER $$
+
+CREATE PROCEDURE registrar_log (
+  IN p_action VARCHAR(50),
+  IN p_table_name VARCHAR(50),
+  IN p_message TEXT,
+  IN p_username VARCHAR(255),
+  IN p_id_venue INT
+)
+BEGIN
+  INSERT INTO audit_log (action, table_name, message, username, id_venue)
+  VALUES (
+    p_action,
+    p_table_name,
+    p_message,
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+--Proceso para eliminar un grupo, se valida la existencia del grupo, que no tenga participantes, elimina el grupo y registra el log
+--CALL eliminar_grupo(3, 'juan@ejemplo.com', 1);
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_grupo (
+  IN p_id_group INT,
+  IN p_username VARCHAR(255),
+  IN p_id_venue INT
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE participant_count INT;
+
+  -- Verificar si el grupo existe
+  SELECT COUNT(*) INTO existe
+  FROM groups
+  WHERE id_group = p_id_group;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El grupo no existe.';
+  END IF;
+
+  -- Verificar si tiene participantes
+  SELECT COUNT(*) INTO participant_count
+  FROM participants
+  WHERE id_group = p_id_group;
+
+  IF participant_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
+  END IF;
+
+  -- Eliminar el grupo
+  DELETE FROM groups
+  WHERE id_group = p_id_group;
+
+  -- Registrar acción en audit_log
+  CALL registrar_log(
+    'DELETE',
+    'groups',
+    CONCAT('Se eliminó el grupo con ID ', p_id_group),
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+--Proceso para eliminar una sede, se valida la existencia de la sede, que no tenga grupos, elimina las sede y registra el log
+--CALL eliminar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_venue (
+  IN p_id_venue INT,
+  IN p_username VARCHAR(255)
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE group_count INT;
+
+  -- Verificar si la sede existe
+  SELECT COUNT(*) INTO existe
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'La sede no existe.';
+  END IF;
+
+  -- Verificar si tiene grupos
+  SELECT COUNT(*) INTO group_count
+  FROM groups
+  WHERE id_venue = p_id_venue;
+
+  IF group_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
+  END IF;
+
+  -- Eliminar la sede
+  DELETE FROM venues
+  WHERE id_venue = p_id_venue;
+
+  -- Registrar acción en audit_log
+  CALL registrar_log(
+    'DELETE',
+    'venues',
+    CONCAT('Se eliminó la sede con ID ', p_id_venue),
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+--JUNTAR LOS BEFORE Y AFTER
+--evitar eliminar un grupo si tiene participantes
+--evento para eliminar los audits logs cada mes y se ejecute cada semana
+DELIMITER $$
+CREATE TRIGGER before_delete_group
+BEFORE DELETE ON groups
+FOR EACH ROW
+BEGIN
+ DECLARE participant_count INT;
+ SELECT COUNT(*) INTO participant_count
+ FROM participants
+ WHERE id_group = OLD.id_group;
+ IF participant_count > 0 THEN
+ SIGNAL SQLSTATE '45000'
+ SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
+ END IF;
+END;
+$$
+DELIMITER ;
+
+--evitar eliminar una sede si tiene grupos
+DELIMITER $$
+CREATE TRIGGER before_delete_venue
+BEFORE DELETE ON venues
+FOR EACH ROW
+BEGIN
+ DECLARE group_count INT;
+ SELECT COUNT(*) INTO group_count
+ FROM groups
+ WHERE id_venue = OLD.id_venue;
+ IF group_count > 0 THEN
+ SIGNAL SQLSTATE '45000'
+ SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
+ END IF;
+END;
+$$
+DELIMITER ;
+
+
+--registrar eliminaciones en la tabla de auditoria
+DELIMITER $$
+CREATE TRIGGER after_delete_group
+AFTER DELETE ON groups
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('DELETE', 'groups', OLD.id_group, USER());
+END;
+$$
+DELIMITER ;
+
+
+--registrar eliminaciones en la tabla de auditoria
+DELIMITER $$
+CREATE TRIGGER after_delete_venue
+AFTER DELETE ON venues
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('DELETE', 'venues', OLD.id_venue, USER());
+END;
+$$
+DELIMITER ;
+
+--tres tipos de triggers: UPDATE, DELETE, ADD 
+--o hacerlo una función y que se llame desde el metodo (auditlog)
+
+--notas
+--una sola función general, audits logs no se pueden modificar (estaticos), en cada trigger mandar una 
+--un trigger para definir cuales van a ser los elementos de audit log e incluir en el procedimiento de actualizar y eliminar
+--investigar si el trigger se hace automaticamente cuando se hace un procedimiento
+
+--npm run release para hacer commits
+--npm run merge main
+
+--preguntar si sirve: aqui basicamente cuando se actualiza el rol de un colaborador, se pone como pendiente
+--no
+DELIMITER $$
+CREATE TRIGGER actualizar_estado_colaborador
+AFTER UPDATE ON collaborators
+FOR EACH ROW
+BEGIN
+ IF OLD.role != NEW.role THEN
+  UPDATE collaborators
+  SET status = 'Pendiente'
+  WHERE id_collaborator = NEW.id_collaborator;
+ END IF;
+END;
+$$
+DELIMITER ;
+
+--registrar cambio de participantes
+DELIMITER $$
+CREATE TRIGGER registrar_cambio_participante
+AFTER UPDATE ON participants
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('UPDATE', 'participants', NEW.id_participant, USER());
+END;
+$$
+DELIMITER ;
+
+
+
 -- 🔸 Ejemplo de uso:
 
 -- -- DELIMITER ;
