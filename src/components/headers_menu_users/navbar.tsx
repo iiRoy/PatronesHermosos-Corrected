@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import OptionLink from '../buttons_inputs/OptionLink';
 import * as Icons from '../icons';
 
