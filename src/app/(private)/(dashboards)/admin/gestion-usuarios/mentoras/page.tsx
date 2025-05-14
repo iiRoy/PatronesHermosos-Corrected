@@ -10,19 +10,10 @@ import { useState, useMemo } from 'react';
 
 const GestionMentoras = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('SEDES');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({});
-    const [fadeSec, setFadeSec] = useState(false);
+    const [section, setSection] = useState('__All__'); // Inicializar con "Todas"
     const [currentPage, setCurrentPage] = useState(0);
 
     const rowsPerPage = 5;
-
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-    };
 
     const mentorasData = [
         { id: '01', nombre: 'Ana García', sede: 'Puebla', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
@@ -32,28 +23,43 @@ const GestionMentoras = () => {
         { id: '05', nombre: 'Elena Rodríguez', sede: 'Guadalajara', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '06', nombre: 'Fabiola Sánchez', sede: 'Saltillo', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '07', nombre: 'Gabriela Torres', sede: 'Ciudad de México', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '08', nombre: 'Hilda Vargas', sede: 'Toluca', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '08', nombre: 'Hilda Vargas', sede: 'Monterrey', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '09', nombre: 'Isabel Ramírez', sede: 'León', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '10', nombre: 'Julia Gómez', sede: 'Chihuahua', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '10', nombre: 'Julia Gómez', sede: 'Monterrey', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '11', nombre: 'Karla Díaz', sede: 'Culiacán', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '12', nombre: 'Laura Fernández', sede: 'San Luis Potosí', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '13', nombre: 'María Morales', sede: 'Aguascalientes', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '12', nombre: 'Laura Fernández', sede: 'Puebla', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '13', nombre: 'María Morales', sede: 'Guadalajara', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
     ];
 
-    // Filtrar los datos según el valor de búsqueda (solo por la columna "Nombre")
+    // Obtener sedes únicas y convertirlas en opciones para FiltroEvento
+    const uniqueSedes = Array.from(new Set(mentorasData.map(mentora => mentora.sede))).sort();
+    const sedeOptions = [
+        { label: 'Todas', value: '__All__' },
+        ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
+    ];
+
+    // Filtrar los datos según el valor de búsqueda y la sede seleccionada
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
-        if (!searchTerm) {
-            return mentorasData;
-        }
+        return mentorasData.filter(mentora => {
+            // Filtro por nombre
+            const matchesSearch = !searchTerm || mentora.nombre.toLowerCase().includes(searchTerm);
 
-        return mentorasData.filter(item =>
-            item.nombre.toLowerCase().includes(searchTerm)
-        );
-    }, [inputValue]);
+            // Filtro por sede
+            const matchesSede = section === '__All__' ? true : mentora.sede === section;
+
+            return matchesSearch && matchesSede;
+        });
+    }, [inputValue, section]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue(''); // Resetear búsqueda al cambiar de sección
+        setCurrentPage(0); // Resetear página al cambiar de filtro
+    };
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -79,18 +85,12 @@ const GestionMentoras = () => {
                         <div className="basis-1/3">
                             <FiltroEvento
                                 disableCheckboxes
-                                label="Filtros"
+                                label="Filtrar por sede"
                                 showSecciones
-                                labelSecciones="Secciones"
-                                secciones={[
-                                    { label: 'ITESM Puebla', value: 'Participantes' },
-                                    { label: 'ITESM Monterrey', value: 'Colaboradoras' },
-                                ]}
+                                labelSecciones="Sedes"
+                                secciones={sedeOptions}
                                 seccionActiva={section}
-                                extraFilters={[]}
-                                filterActiva={filterActivaExtra}
-                                onExtraFilterChange={extraHandleFilterChange}
-                                fade={fadeSec}
+                                onChangeSeccion={sectionFilterChange}
                             />
                         </div>
                     </div>
@@ -135,7 +135,7 @@ const GestionMentoras = () => {
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}
-                        variant="secondary-shade"
+                        variant="primary"
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>

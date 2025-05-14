@@ -10,14 +10,11 @@ import { useState, useMemo } from 'react';
 
 const GestionApoyo = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('SEDES');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({});
-    const [fadeSec, setFadeSec] = useState(false);
+    const [section, setSection] = useState('__All__'); // Inicializar con "Todas" para sedes
+    const [filterActivaExtra, setFilterActivaExtra] = useState({ rol: '__All__' }); // Inicializar con "Todas" para roles
     const [currentPage, setCurrentPage] = useState(0);
 
     const rowsPerPage = 5;
-
-
 
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
@@ -27,43 +24,69 @@ const GestionApoyo = () => {
     };
 
     const apoyoData = [
-        { id: '01', nombre: 'Ana García', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '04', nombre: 'Diana Pérez', sede: 'Hidalgo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '05', nombre: 'Elena Rodríguez', sede: 'Guadalajara', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '06', nombre: 'Fabiola Sánchez', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '07', nombre: 'Gabriela Torres', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '08', nombre: 'Hilda Vargas', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '09', nombre: 'Isabel Ramírez', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '10', nombre: 'Julia Gómez', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '11', nombre: 'Karla Díaz', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '12', nombre: 'Laura Fernández', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '13', nombre: 'María Morales', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '14', nombre: 'Nadia Ortiz', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '15', nombre: 'Olivia Castro', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '16', nombre: 'Paula Mendoza', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '17', nombre: 'Raquel Silva', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '18', nombre: 'Sofía Rojas', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '19', nombre: 'Tania Navarro', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '20', nombre: 'Valeria Luna', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-        { id: '21', nombre: 'Wendy Salazar', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
+        { id: '01', nombre: 'Ana García', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
+        { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
+        { id: '04', nombre: 'Diana Pérez', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '05', nombre: 'Elena Rodríguez', sede: 'Guadalajara', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '06', nombre: 'Fabiola Sánchez', sede: 'Saltillo', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Staff' },
+        { id: '07', nombre: 'Gabriela Torres', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Staff' },
+        { id: '08', nombre: 'Hilda Vargas', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Staff' },
+        { id: '09', nombre: 'Isabel Ramírez', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '10', nombre: 'Julia Gómez', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '11', nombre: 'Karla Díaz', sede: 'Culiacán', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
+        { id: '12', nombre: 'Laura Fernández', sede: 'Guadalajara', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '13', nombre: 'María Morales', sede: 'Aguascalientes', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '14', nombre: 'Nadia Ortiz', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '15', nombre: 'Olivia Castro', sede: 'Ciudad de México', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Staff' },
+        { id: '16', nombre: 'Paula Mendoza', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
+        { id: '17', nombre: 'Raquel Silva', sede: 'León', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Staff' },
+        { id: '18', nombre: 'Sofía Rojas', sede: 'Chihuahua', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '19', nombre: 'Tania Navarro', sede: 'Toluca', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
+        { id: '20', nombre: 'Valeria Luna', sede: 'San Luis Potosí', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Staff' },
+        { id: '21', nombre: 'Wendy Salazar', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
     ];
 
-    // Filtrar los datos según el valor de búsqueda (solo por la columna "Nombre")
+    // Obtener sedes y roles únicos
+    const uniqueSedes = Array.from(new Set(apoyoData.map(apoyo => apoyo.sede))).sort();
+    const uniqueRoles = Array.from(new Set(apoyoData.map(apoyo => apoyo.rol))).sort();
+
+    const sedeOptions = [
+        { label: 'Todas', value: '__All__' },
+        ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
+    ];
+
+    const rolOptions = [
+        { label: 'Todas', value: '__All__' },
+        ...uniqueRoles.map(rol => ({ label: rol, value: rol })),
+    ];
+
+    // Filtrar los datos según el valor de búsqueda, sede y rol
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
-        if (!searchTerm) {
-            return apoyoData;
-        }
+        return apoyoData.filter(apoyo => {
+            // Filtro por nombre
+            const matchesSearch = !searchTerm || apoyo.nombre.toLowerCase().includes(searchTerm);
 
-        return apoyoData.filter(item =>
-            item.nombre.toLowerCase().includes(searchTerm)
-        );
-    }, [inputValue]);
+            // Filtro por sede
+            const matchesSede = section === '__All__' ? true : apoyo.sede === section;
+
+            // Filtro por rol
+            const selectedRol = filterActivaExtra['rol'];
+            const matchesRol = selectedRol === '__All__' ? true : apoyo.rol === selectedRol;
+
+            return matchesSearch && matchesSede && matchesRol;
+        });
+    }, [inputValue, section, filterActivaExtra]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue(''); // Resetear búsqueda al cambiar de sección
+        setCurrentPage(0); // Resetear página al cambiar de filtro
+    };
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -91,16 +114,19 @@ const GestionApoyo = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Secciones"
-                                secciones={[
-                                    { label: 'ITESM Puebla', value: 'Participantes' },
-                                    { label: 'ITESM Monterrey', value: 'Colaboradoras' },
-                                ]}
+                                labelSecciones="Sedes"
+                                secciones={sedeOptions}
                                 seccionActiva={section}
-                                extraFilters={[]}
+                                onChangeSeccion={sectionFilterChange}
+                                extraFilters={[
+                                    {
+                                        label: 'Roles',
+                                        key: 'rol',
+                                        options: rolOptions,
+                                    },
+                                ]}
                                 filterActiva={filterActivaExtra}
                                 onExtraFilterChange={extraHandleFilterChange}
-                                fade={fadeSec}
                             />
                         </div>
                     </div>
@@ -145,7 +171,7 @@ const GestionApoyo = () => {
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}
-                        variant="secondary-shade"
+                        variant="primary"
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>

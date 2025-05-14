@@ -10,19 +10,10 @@ import { useState, useMemo } from 'react';
 
 const GestionCoordinadoras = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('SEDES');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({});
-    const [fadeSec, setFadeSec] = useState(false);
+    const [section, setSection] = useState('__All__'); // Inicializar con "Todas"
     const [currentPage, setCurrentPage] = useState(0);
 
     const rowsPerPage = 5;
-
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-    };
 
     const coordinadorasData = [
         { id: '01', nombre: 'Ana García', sede: 'Puebla', correo: 'ejemplo@correo.com', telefono: '2222222222' },
@@ -42,20 +33,35 @@ const GestionCoordinadoras = () => {
         { id: '15', nombre: 'Olivia Castro', sede: 'Zacatecas', correo: 'ejemplo@correo.com', telefono: '2222222222' },
     ];
 
-    // Filtrar los datos según el valor de búsqueda (solo por la columna "Nombre")
+    // Obtener sedes únicas
+    const uniqueSedes = Array.from(new Set(coordinadorasData.map(coordinadora => coordinadora.sede))).sort();
+    const sedeOptions = [
+        { label: 'Todas', value: '__All__' },
+        ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
+    ];
+
+    // Filtrar los datos según el valor de búsqueda y sede
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
-        if (!searchTerm) {
-            return coordinadorasData;
-        }
+        return coordinadorasData.filter(coordinadora => {
+            // Filtro por nombre
+            const matchesSearch = !searchTerm || coordinadora.nombre.toLowerCase().includes(searchTerm);
 
-        return coordinadorasData.filter(item =>
-            item.nombre.toLowerCase().includes(searchTerm)
-        );
-    }, [inputValue]);
+            // Filtro por sede
+            const matchesSede = section === '__All__' ? true : coordinadora.sede === section;
+
+            return matchesSearch && matchesSede;
+        });
+    }, [inputValue, section]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue(''); // Resetear búsqueda al cambiar de sección
+        setCurrentPage(0); // Resetear página al cambiar de filtro
+    };
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -83,16 +89,10 @@ const GestionCoordinadoras = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Secciones"
-                                secciones={[
-                                    { label: 'ITESM Puebla', value: 'Participantes' },
-                                    { label: 'ITESM Monterrey', value: 'Colaboradoras' },
-                                ]}
+                                labelSecciones="Sedes"
+                                secciones={sedeOptions}
                                 seccionActiva={section}
-                                extraFilters={[]}
-                                filterActiva={filterActivaExtra}
-                                onExtraFilterChange={extraHandleFilterChange}
-                                fade={fadeSec}
+                                onChangeSeccion={sectionFilterChange}
                             />
                         </div>
                     </div>
@@ -135,7 +135,7 @@ const GestionCoordinadoras = () => {
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}
-                        variant="secondary-shade"
+                        variant="primary"
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>

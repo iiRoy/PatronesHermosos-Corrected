@@ -7,31 +7,33 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Button from '@/components/buttons_inputs/Button';
 
 const mockStudents = [
-    { id: '034', nombre: 'Andrea Sánchez', usuario: 'Andy01', correo: 'ejemplo@gmail.com', telefono: '2223456433' },
-    { id: '141', nombre: 'Sofía Ramírez', usuario: 'SofiaRmz', correo: 'ejemplo@gmail.com', telefono: '2226788933' },
-    { id: '012', nombre: 'Isabel Medina', usuario: 'Isa2005', correo: 'ejemplo@gmail.com', telefono: '2224558766' },
-    { id: '098', nombre: 'Valeria Torres', usuario: 'Vale123', correo: 'ejemplo@gmail.com', telefono: '2223415078' },
-    { id: '188', nombre: 'Camila Herrera', usuario: 'CamiHS', correo: 'ejemplo@gmail.com', telefono: '2229389544' },
-    { id: '042', nombre: 'Natalia Vázquez', usuario: 'Nati44', correo: 'ejemplo@gmail.com', telefono: '2221107408' },
-    { id: '110', nombre: 'Gabriela Ruiz', usuario: 'GabyRZ', correo: 'ejemplo@gmail.com', telefono: '2224405576' },
+    { id: '034', nombre: 'Andrea Sánchez', usuario: 'Andy01', correo: 'ejemplo@gmail.com', telefono: '2223456433', grupo: 'Grupo 1' },
+    { id: '141', nombre: 'Sofía Ramírez', usuario: 'SofiaRmz', correo: 'ejemplo@gmail.com', telefono: '2226788933', grupo: 'Grupo 2' },
+    { id: '012', nombre: 'Isabel Medina', usuario: 'Isa2005', correo: 'ejemplo@gmail.com', telefono: '2224558766', grupo: 'Grupo 2' },
+    { id: '098', nombre: 'Valeria Torres', usuario: 'Vale123', correo: 'ejemplo@gmail.com', telefono: '2223415078', grupo: 'Grupo 2' },
+    { id: '188', nombre: 'Camila Herrera', usuario: 'CamiHS', correo: 'ejemplo@gmail.com', telefono: '2229389544', grupo: 'Grupo 1' },
+    { id: '042', nombre: 'Natalia Vázquez', usuario: 'Nati44', correo: 'ejemplo@gmail.com', telefono: '2221107408', grupo: 'Grupo 1' },
+    { id: '110', nombre: 'Gabriela Ruiz', usuario: 'GabyRZ', correo: 'ejemplo@gmail.com', telefono: '2224405576', grupo: 'Grupo 1' },
 ];
 
 const VerSede = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('SEDES');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({});
-    const [fadeSec, setFadeSec] = useState(false);
+    const [section, setSection] = useState('__All__'); // Inicializar con "Todos"
 
-    const filteredStudents = mockStudents.filter((s) =>
-        s.id.toLowerCase().includes(inputValue.toLowerCase()) ||
-        s.nombre.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    const filteredStudents = mockStudents.filter((s) => {
+        // Filtro por nombre
+        const matchesSearch = s.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
+            s.usuario.toLowerCase().includes(inputValue.toLowerCase());
 
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
+        // Filtro por grupo seleccionado
+        const matchesGroup = section === '__All__' ? true : s.grupo === section;
+
+        return matchesSearch && matchesGroup;
+    });
+
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue(''); // Resetear búsqueda al cambiar de sección
     };
 
     return (
@@ -67,18 +69,16 @@ const VerSede = () => {
                     <div className="basis-1/3">
                         <FiltroEvento
                             disableCheckboxes
-                            label="Filtros"
+                            label='Filtrar por grupo'
                             showSecciones
-                            labelSecciones="Secciones"
+                            labelSecciones='Seleccionar Grupo'
                             secciones={[
-                                { label: 'ITESM Puebla', value: 'Participantes' },
-                                { label: 'ITESM Monterrey', value: 'Colaboradoras' },
+                                { label: 'Todos', value: '__All__' },
+                                { label: 'Grupo 1', value: 'Grupo 1' },
+                                { label: 'Grupo 2', value: 'Grupo 2' },
                             ]}
                             seccionActiva={section}
-                            extraFilters={[]}
-                            filterActiva={filterActivaExtra}
-                            onExtraFilterChange={extraHandleFilterChange}
-                            fade={fadeSec}
+                            onChangeSeccion={sectionFilterChange}
                         />
                     </div>
                 </div>
