@@ -10,6 +10,7 @@ import Navbar from '@/components/headers_menu_users/navbar';
 import User from '@components/icons/User';
 import Location from '@components/icons/Gps';
 import Send from '@components/icons/ArrowFatRight';
+import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
 
 interface Coordinator {
   name: string;
@@ -28,7 +29,8 @@ interface GeneralCoordinator extends Coordinator {
 
 interface Venue {
   name: string;
-  location: string;
+  country: string;
+  state: string;
   address: string;
 }
 
@@ -39,6 +41,41 @@ interface FormData {
   participantsCoordinator: Coordinator;
   venue: Venue;
 }
+
+const mexicanStates = [
+  'Aguascalientes',
+  'Baja California',
+  'Baja California Sur',
+  'Campeche',
+  'Chiapas',
+  'Chihuahua',
+  'Ciudad de México',
+  'Coahuila',
+  'Colima',
+  'Durango',
+  'Estado de México',
+  'Guanajuato',
+  'Guerrero',
+  'Hidalgo',
+  'Jalisco',
+  'Michoacán',
+  'Morelos',
+  'Nayarit',
+  'Nuevo León',
+  'Oaxaca',
+  'Puebla',
+  'Querétaro',
+  'Quintana Roo',
+  'San Luis Potosí',
+  'Sinaloa',
+  'Sonora',
+  'Tabasco',
+  'Tamaulipas',
+  'Tlaxcala',
+  'Veracruz',
+  'Yucatán',
+  'Zacatecas',
+].sort();
 
 const VenueRegistrationForm: React.FC = () => {
   const router = useRouter();
@@ -77,7 +114,8 @@ const VenueRegistrationForm: React.FC = () => {
     },
     venue: {
       name: '',
-      location: 'Puebla',
+      country: '',
+      state: '',
       address: '',
     },
   });
@@ -90,6 +128,8 @@ const VenueRegistrationForm: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
 
   type GeneralCoordinatorKeys = keyof GeneralCoordinator;
   type CoordinatorKeys = keyof Coordinator;
@@ -146,7 +186,8 @@ const VenueRegistrationForm: React.FC = () => {
     const newErrors: string[] = [];
 
     if (!formData.venue.name) newErrors.push('El nombre de la SEDE es obligatorio');
-    if (!formData.venue.location) newErrors.push('La localización de la SEDE es obligatoria');
+    if (!formData.venue.country) newErrors.push('El país de la SEDE es obligatorio');
+    if (!formData.venue.state) newErrors.push('El estado/provincia de la SEDE es obligatorio');
     if (!formData.venue.address) newErrors.push('La dirección de la SEDE es obligatoria');
     if (!participationFile) newErrors.push('El archivo de participación es obligatorio');
 
@@ -217,14 +258,17 @@ const VenueRegistrationForm: React.FC = () => {
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
+      setIsErrorModalOpen(true);
       setSuccess(null);
+      setIsSuccessToastOpen(false);
       return;
     }
 
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.venue.name);
-      formDataToSend.append('location', formData.venue.location);
+      formDataToSend.append('country', formData.venue.country);
+      formDataToSend.append('state', formData.venue.state);
       formDataToSend.append('address', formData.venue.address);
       formDataToSend.append('generalCoordinator[name]', formData.generalCoordinator.name);
       formDataToSend.append('generalCoordinator[lastNameP]', formData.generalCoordinator.lastNameP);
@@ -279,8 +323,12 @@ const VenueRegistrationForm: React.FC = () => {
       if (!response.ok) {
         if (response.status === 422 && data.errors) {
           const backendErrors = data.errors.map((err: any) => err.msg);
+          setErrors(backendErrors);
+          setIsErrorModalOpen(true);
           throw new Error(backendErrors.join(', '));
         }
+        setErrors([data.message || 'Error al registrar el venue']);
+        setIsErrorModalOpen(true);
         throw new Error(data.message || 'Error al registrar el venue');
       }
 
@@ -298,7 +346,9 @@ const VenueRegistrationForm: React.FC = () => {
         }
       }
       setSuccess(successMessage);
+      setIsSuccessToastOpen(true);
       setErrors([]);
+      setIsErrorModalOpen(false);
 
       setFormData({
         generalCoordinator: {
@@ -307,7 +357,7 @@ const VenueRegistrationForm: React.FC = () => {
           lastNameM: '',
           email: '',
           phone: '',
-          gender: 'Mujer',
+          gender: 'Femenino',
           username: '',
           password: '',
           confirmPassword: '',
@@ -335,7 +385,8 @@ const VenueRegistrationForm: React.FC = () => {
         },
         venue: {
           name: '',
-          location: 'Puebla',
+          country: '',
+          state: '',
           address: '',
         },
       });
@@ -345,33 +396,22 @@ const VenueRegistrationForm: React.FC = () => {
       setPrivacyAccepted(false);
     } catch (err: any) {
       setErrors([err.message]);
+      setIsErrorModalOpen(true);
       setSuccess(null);
+      setIsSuccessToastOpen(false);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white"> {/* Added text-white */}
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <Navbar />
       <form onSubmit={handleSubmit}>
         <div className="flex-1 p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 text-white"> {/* Added text-white */}
-            {errors.length > 0 && (
-              <div className="mb-4 p-4 bg-red-500 text-white rounded-lg">
-                {errors.map((error, index) => (
-                  <p key={index}>{error}</p>
-                ))}
-              </div>
-            )}
-            {success && (
-              <div className="mb-4 p-4 bg-green-500 text-white rounded-lg">
-                <div dangerouslySetInnerHTML={{ __html: success }} />
-              </div>
-            )}
-
+          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 text-white">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
                 <div className="w-2 h-12 bg-purple-600 mr-4"></div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white">Formulario de Registro<br />SEDE</h1> {/* Explicit text-white */}
+                <h1 className="text-2xl md:text-3xl font-bold text-white">Formulario de Registro<br />SEDE</h1>
               </div>
               <Button
                 label="Regresar"
@@ -384,14 +424,14 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             <div className="mb-6">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white"> {/* Explicit text-white */}
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white">
                 <span className="text-purple-400 mr-2">❀</span> Datos Coordinadora de Sede
               </h2>
-              <p className="text-gray-300 text-sm md:text-base mb-4"> {/* Changed to text-gray-300 for contrast */}
+              <p className="text-gray-300 text-sm md:text-base mb-4">
                 Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
-              <p className="text-gray-300 text-sm italic"> {/* Changed to text-gray-300 */}
+              <p className="text-gray-300 text-sm italic">
                 Si no se crean coordinadoras asociadas o de informes, la Coordinadora de Sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
@@ -406,6 +446,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'name', value)
                 }
+                
               />
               <InputField
                 label="Apellido Paterno*"
@@ -460,6 +501,7 @@ const VenueRegistrationForm: React.FC = () => {
                 }
                 variant="accent"
                 Icon={withIconDecorator(User)}
+                
               />
               <InputField
                 label="Nombre de Usuario*"
@@ -493,6 +535,7 @@ const VenueRegistrationForm: React.FC = () => {
                     color="purple"
                     checked={showPassword}
                     onChange={setShowPassword}
+                    
                   />
                 </div>
               </div>
@@ -521,10 +564,10 @@ const VenueRegistrationForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-white text-gray-900 rounded-lg"> {/* Changed to text-gray-900 for contrast */}
+            <div className="mt-6 p-4 bg-white text-gray-900 rounded-lg">
               <div className="flex items-center">
                 <span className="text-purple-600 text-2xl mr-2">🖼</span>
-                <h3 className="text-lg font-semibold text-gray-900">Sube tu foto de perfil</h3> {/* Explicit text-gray-900 */}
+                <h3 className="text-lg font-semibold text-gray-900">Sube tu foto de perfil</h3>
               </div>
               <p className="text-gray-600 text-sm mt-2">
                 Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte dentro del sistema. No es obligatorio subir una imagen, sin embargo lo recomendamos.
@@ -769,16 +812,41 @@ const VenueRegistrationForm: React.FC = () => {
                 
               />
               <Dropdown
-                label="Localización*"
-                options={['Puebla', 'Ciudad de México', 'Guadalajara']}
-                value={formData.venue.location}
+                label="País*"
+                options={['Mexico', 'Costa Rica', 'Ecuador']}
+                value={formData.venue.country}
                 onChange={(value: string) =>
-                  handleInputChange('venue', 'location', value)
+                  handleInputChange('venue', 'country', value)
                 }
                 variant="accent"
                 Icon={withIconDecorator(Location)}
                 
               />
+              {formData.venue.country === 'Mexico' ? (
+                <Dropdown
+                  label="Estado*"
+                  options={mexicanStates}
+                  value={formData.venue.state}
+                  onChange={(value: string) =>
+                    handleInputChange('venue', 'state', value)
+                  }
+                  variant="accent"
+                  Icon={withIconDecorator(Location)}
+                  
+                />
+              ) : (
+                <InputField
+                  label="Provincia/Región*"
+                  placeholder="San José"
+                  variant="accent"
+                  icon="Gps"
+                  value={formData.venue.state}
+                  onChangeText={(value: string) =>
+                    handleInputChange('venue', 'state', value)
+                  }
+                  
+                />
+              )}
               <div className="md:col-span-2">
                 <InputField
                   label="Dirección*"
@@ -870,6 +938,19 @@ const VenueRegistrationForm: React.FC = () => {
           </div>
         </div>
       </form>
+
+      <Modal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        title="Errores en el formulario"
+        messages={errors}
+      />
+
+      <Toast
+        isOpen={isSuccessToastOpen}
+        onClose={() => setIsSuccessToastOpen(false)}
+        message={success || ''}
+      />
     </div>
   );
 };

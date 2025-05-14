@@ -165,7 +165,8 @@ model venue_coordinators {
 model venues {
   id_venue               Int                      @id @default(autoincrement()) @db.UnsignedInt
   name                   String                   @db.VarChar(255)
-  location               String?                  @db.VarChar(255)
+  country                String?                  @db.VarChar(255)
+  state                  String?                  @db.VarChar(255)
   address                String?                  @db.VarChar(255)
   logo                   Bytes?                   @db.Blob
   participation_file     Bytes                    @db.Blob

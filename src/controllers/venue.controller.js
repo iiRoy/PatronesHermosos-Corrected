@@ -1,6 +1,6 @@
 const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
-const fs = require('fs').promises; // Use promises for async file operations
+const fs = require('fs').promises;
 const path = require('path');
 
 // Utility function to transform flat keys into nested objects
@@ -56,7 +56,8 @@ const create = async (req, res) => {
   // Extract text fields from parsedBody
   const {
     name,
-    location,
+    country,
+    state,
     address,
     generalCoordinator,
     associatedCoordinator,
@@ -96,11 +97,12 @@ const create = async (req, res) => {
   }
 
   try {
-    // Call the stored procedure with file paths
+    // Call the stored procedure with country and state
     await prisma.$queryRaw`
       CALL registrar_sede(
         ${name}, 
-        ${location}, 
+        ${country}, 
+        ${state}, 
         ${address}, 
         ${logo}, 
         ${participation_file},
@@ -150,7 +152,7 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params;
-  const { name, location, address, status } = req.body;
+  const { name, country, state, address, status } = req.body;
 
   // Extract files from req.files (uploaded via multer)
   const files = req.files || {};
@@ -180,7 +182,8 @@ const update = async (req, res) => {
       where: { id_venue: parseInt(id) },
       data: {
         name,
-        location,
+        country,
+        state,
         address,
         logo,
         participation_file,
