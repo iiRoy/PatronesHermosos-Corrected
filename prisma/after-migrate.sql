@@ -1387,7 +1387,60 @@ END$$
 DELIMITER ;
 
 
+DELIMITER $$
 
+CREATE PROCEDURE desactivar_colaborador (
+    IN p_id_collaborator INT,
+    IN p_username VARCHAR(255)
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_id_venue INT;
+
+    -- Verificar si el colaborador existe
+    SELECT COUNT(*) INTO v_existe
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El colaborador no existe.';
+    END IF;
+
+    -- Obtener el status actual
+    SELECT status INTO v_status
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    -- Validar si puede ser desactivado
+    IF v_status != 'Aprobada' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
+    END IF;
+
+    -- Obtener el id_venue a partir del grupo del colaborador
+    SELECT g.id_venue INTO v_id_venue
+    FROM collaborators c
+    JOIN groups g ON c.id_group = g.id_group
+    WHERE c.id_collaborator = p_id_collaborator;
+
+    -- Registrar el log
+    CALL registrar_log(
+        'UPDATE',
+        'collaborators',
+        CONCAT('Se desactivó al colaborador con ID ', p_id_collaborator),
+        p_username,
+        v_id_venue
+    );
+
+    -- Actualizar el status a Cancelada
+    UPDATE collaborators
+    SET status = 'Cancelada'
+    WHERE id_collaborator = p_id_collaborator;
+END$$
+
+DELIMITER ;
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
