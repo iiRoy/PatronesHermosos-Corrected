@@ -1337,6 +1337,60 @@ END$$
 DELIMITER ;
 
 
+DELIMITER $$
+
+CREATE PROCEDURE desactivar_venue (
+  IN p_id_venue INT,
+  IN p_username VARCHAR(255)
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE group_count INT;
+  DECLARE p_status VARCHAR(255);
+
+  -- Verificar si la sede existe
+  SELECT COUNT(*) INTO existe
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'La sede no existe.';
+  END IF;
+
+  -- Obtener el status actual
+  SELECT status INTO p_status
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  -- Validar si puede ser cancelada
+  IF NOT (p_status = 'Registrada sin participantes' OR p_status = 'Registrada con participantes') THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Solo se pueden cancelar las sedes que estén registradas.';
+  END IF;
+
+  -- Registrar acción en audit_log ANTES de modificar el estado de la sede
+  CALL registrar_log(
+    'DELETE',
+    'venues',
+    CONCAT('Se desactivó la sede con ID ', p_id_venue),
+    p_username,
+    p_id_venue
+  );
+
+  -- Cambiar estado a Cancelada
+  UPDATE venues
+  SET status = 'Cancelada'
+  WHERE id_venue = p_id_venue;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+
 --Proceso para eliminar una sede, se valida la existencia de la sede, que no tenga grupos, elimina las sede y registra el log
 --CALL eliminar_venue(2, 'admin@ejemplo.com');
 DELIMITER $$
