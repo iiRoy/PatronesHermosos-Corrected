@@ -1,3 +1,7 @@
+## 1.9.0-admin.3 (2025-05-14)
+
+* feat(components): funcionalidad FiltroEvento  superuser ([45a73ba](https://github.com/iiRoy/Patrones-Hermosos/commit/45a73ba))
+
 ## 1.9.0-admin.2 (2025-05-13)
 
 * feat(components): funcionalidad InputField superuser ([00e4178](https://github.com/iiRoy/Patrones-Hermosos/commit/00e4178))
