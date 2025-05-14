@@ -1338,6 +1338,67 @@ DELIMITER ;
 
 
 DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_grupo(
+    IN p_id_group INT,
+    IN p_username VARCHAR(255),
+    IN p_id_venue INT,
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE existe INT;
+    DECLARE p_status VARCHAR(255);
+    DECLARE nuevo_status VARCHAR(255);
+
+    SELECT COUNT(*) INTO existe
+    FROM groups
+    WHERE id_group = p_id_group;
+
+    IF existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El grupo no existe.';
+    END IF;
+
+    SELECT status INTO p_status
+    FROM groups
+    WHERE id_group = p_id_group;
+
+    IF p_accion = 'desactivar' THEN
+        IF p_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar los grupos aprobados.';
+        END IF;
+        SET nuevo_status = 'Cancelada';
+    ELSEIF p_accion = 'activar' THEN
+        IF p_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar los grupos cancelados.';
+        END IF;
+        SET nuevo_status = 'Aprobada';
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida.';
+    END IF;
+
+    -- Registrar el log
+    CALL registrar_log(
+        'UPDATE',
+        'groups',
+        CONCAT('Se ', p_accion, ' el grupo con ID ', p_id_group),
+        p_username,
+        p_id_venue
+    );
+
+    -- Actualizar el status
+    UPDATE groups
+    SET status = nuevo_status
+    WHERE id_group = p_id_group;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
 CREATE PROCEDURE desactivar_grupo(
     IN p_id_group INT,
     IN p_username VARCHAR(255),
