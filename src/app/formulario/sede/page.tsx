@@ -1,15 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 import InputField from '@components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import Navbar from '@/components/headers_menu_users/navbar'; // Adjust the path based on your project structure
-import { Modal, Toast } from '@/components/buttons_inputs/FormNotification';
-
-// Import icons using the specified path (placeholders)
+import Navbar from '@/components/headers_menu_users/navbar';
 import User from '@components/icons/User';
 import Location from '@components/icons/Gps';
 import Send from '@components/icons/ArrowFatRight';
@@ -44,7 +41,7 @@ interface FormData {
 }
 
 const VenueRegistrationForm: React.FC = () => {
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     generalCoordinator: {
       name: '',
@@ -92,11 +89,8 @@ const VenueRegistrationForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false); // New state for modal
   const [success, setSuccess] = useState<string | null>(null);
-  const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false); // New state for toast
 
-  // Handle input changes
   type GeneralCoordinatorKeys = keyof GeneralCoordinator;
   type CoordinatorKeys = keyof Coordinator;
   type VenueKeys = keyof Venue;
@@ -138,7 +132,6 @@ const VenueRegistrationForm: React.FC = () => {
     });
   };
 
-  // Handle file uploads
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setFile: React.Dispatch<React.SetStateAction<File | null>>
@@ -149,17 +142,14 @@ const VenueRegistrationForm: React.FC = () => {
     }
   };
 
-  // Client-side validation
   const validateForm = () => {
     const newErrors: string[] = [];
 
-    // Venue validation
     if (!formData.venue.name) newErrors.push('El nombre de la SEDE es obligatorio');
     if (!formData.venue.location) newErrors.push('La localización de la SEDE es obligatoria');
     if (!formData.venue.address) newErrors.push('La dirección de la SEDE es obligatoria');
     if (!participationFile) newErrors.push('El archivo de participación es obligatorio');
 
-    // General Coordinator validation
     if (!formData.generalCoordinator.name)
       newErrors.push('El nombre de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.lastNameP)
@@ -167,7 +157,7 @@ const VenueRegistrationForm: React.FC = () => {
     if (!formData.generalCoordinator.email)
       newErrors.push('El correo electrónico de la Coordinadora de Sede es obligatorio');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.generalCoordinator.email))
-      newErrors.push('El correo electrónico de la Coordinadora de Sede debe ser válido');
+      newErrors.push('El correo electrónico de la Coordinadora de Sede debe be válido');
     if (!formData.generalCoordinator.phone)
       newErrors.push('El celular de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.gender)
@@ -189,7 +179,6 @@ const VenueRegistrationForm: React.FC = () => {
     if (formData.generalCoordinator.password !== formData.generalCoordinator.confirmPassword)
       newErrors.push('Las contraseñas no coinciden');
 
-    // Associated Coordinator validation
     if (formData.associatedCoordinator.name) {
       if (!formData.associatedCoordinator.email)
         newErrors.push('El correo electrónico de la coordinadora asociada es obligatorio');
@@ -199,7 +188,6 @@ const VenueRegistrationForm: React.FC = () => {
         newErrors.push('El celular de la coordinadora asociada es obligatorio');
     }
 
-    // Staff Report Coordinator validation
     if (formData.staffCoordinator.name) {
       if (!formData.staffCoordinator.email)
         newErrors.push('El correo electrónico de la coordinadora de informes (staff) es obligatorio');
@@ -209,7 +197,6 @@ const VenueRegistrationForm: React.FC = () => {
         newErrors.push('El celular de la coordinadora de informes (staff) es obligatorio');
     }
 
-    // Participants Report Coordinator validation
     if (formData.participantsCoordinator.name) {
       if (!formData.participantsCoordinator.email)
         newErrors.push('El correo electrónico de la coordinadora de informes (participantes) es obligatorio');
@@ -219,204 +206,196 @@ const VenueRegistrationForm: React.FC = () => {
         newErrors.push('El celular de la coordinadora de informes (participantes) es obligatorio');
     }
 
-    // Privacy notice
     if (!privacyAccepted) newErrors.push('Debes aceptar el aviso de privacidad');
 
     return newErrors;
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const validationErrors = validateForm();
-  if (validationErrors.length > 0) {
-    setErrors(validationErrors);
-    setIsErrorModalOpen(true); // Show error modal
-    setSuccess(null);
-    setIsSuccessToastOpen(false);
-    return;
-  }
-
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.venue.name);
-    formDataToSend.append('location', formData.venue.location);
-    formDataToSend.append('address', formData.venue.address);
-    formDataToSend.append('generalCoordinator[name]', formData.generalCoordinator.name);
-    formDataToSend.append('generalCoordinator[lastNameP]', formData.generalCoordinator.lastNameP);
-    formDataToSend.append('generalCoordinator[lastNameM]', formData.generalCoordinator.lastNameM);
-    formDataToSend.append('generalCoordinator[email]', formData.generalCoordinator.email);
-    formDataToSend.append('generalCoordinator[phone]', formData.generalCoordinator.phone);
-    formDataToSend.append('generalCoordinator[gender]', formData.generalCoordinator.gender);
-    formDataToSend.append('generalCoordinator[username]', formData.generalCoordinator.username);
-    formDataToSend.append('generalCoordinator[password]', formData.generalCoordinator.password);
-
-    if (formData.associatedCoordinator.name) {
-      formDataToSend.append('associatedCoordinator[name]', formData.associatedCoordinator.name);
-      formDataToSend.append('associatedCoordinator[lastNameP]', formData.associatedCoordinator.lastNameP);
-      formDataToSend.append('associatedCoordinator[lastNameM]', formData.associatedCoordinator.lastNameM);
-      formDataToSend.append('associatedCoordinator[email]', formData.associatedCoordinator.email);
-      formDataToSend.append('associatedCoordinator[phone]', formData.associatedCoordinator.phone);
-    }
-
-    if (formData.staffCoordinator.name) {
-      formDataToSend.append('staffCoordinator[name]', formData.staffCoordinator.name);
-      formDataToSend.append('staffCoordinator[lastNameP]', formData.staffCoordinator.lastNameP);
-      formDataToSend.append('staffCoordinator[lastNameM]', formData.staffCoordinator.lastNameM);
-      formDataToSend.append('staffCoordinator[email]', formData.staffCoordinator.email);
-      formDataToSend.append('staffCoordinator[phone]', formData.staffCoordinator.phone);
-    }
-
-    if (formData.participantsCoordinator.name) {
-      formDataToSend.append('participantsCoordinator[name]', formData.participantsCoordinator.name);
-      formDataToSend.append('participantsCoordinator[lastNameP]', formData.participantsCoordinator.lastNameP);
-      formDataToSend.append('participantsCoordinator[lastNameM]', formData.participantsCoordinator.lastNameM);
-      formDataToSend.append('participantsCoordinator[email]', formData.participantsCoordinator.email);
-      formDataToSend.append('participantsCoordinator[phone]', formData.participantsCoordinator.phone);
-    }
-
-    if (profileImage) {
-      formDataToSend.append('generalCoordinator.profileImage', profileImage);
-    }
-    if (logo) {
-      formDataToSend.append('logo', logo);
-    }
-    if (participationFile) {
-      formDataToSend.append('participation_file', participationFile);
-    }
-
-    const response = await fetch('http://localhost:3000/api/venues', {
-      method: 'POST',
-      body: formDataToSend,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      if (response.status === 422 && data.errors) {
-        const backendErrors = data.errors.map((err: any) => err.msg);
-        setErrors(backendErrors);
-        setIsErrorModalOpen(true); // Show error modal
-        setSuccess(null);
-        setIsSuccessToastOpen(false);
-        throw new Error(backendErrors.join(', '));
-      }
-      setErrors([data.message || 'Error al registrar el venue']);
-      setIsErrorModalOpen(true); // Show error modal
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
       setSuccess(null);
-      setIsSuccessToastOpen(false);
-      throw new Error(data.message || 'Error al registrar el venue');
+      return;
     }
 
-    setSuccess(data.message || 'Venue registrado exitosamente');
-    setIsSuccessToastOpen(true); // Show success toast
-    setErrors([]);
-    setIsErrorModalOpen(false);
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.venue.name);
+      formDataToSend.append('location', formData.venue.location);
+      formDataToSend.append('address', formData.venue.address);
+      formDataToSend.append('generalCoordinator[name]', formData.generalCoordinator.name);
+      formDataToSend.append('generalCoordinator[lastNameP]', formData.generalCoordinator.lastNameP);
+      formDataToSend.append('generalCoordinator[lastNameM]', formData.generalCoordinator.lastNameM);
+      formDataToSend.append('generalCoordinator[email]', formData.generalCoordinator.email);
+      formDataToSend.append('generalCoordinator[phone]', formData.generalCoordinator.phone);
+      formDataToSend.append('generalCoordinator[gender]', formData.generalCoordinator.gender);
+      formDataToSend.append('generalCoordinator[username]', formData.generalCoordinator.username);
+      formDataToSend.append('generalCoordinator[password]', formData.generalCoordinator.password);
 
-    setFormData({
-      generalCoordinator: {
-        name: '',
-        lastNameP: '',
-        lastNameM: '',
-        email: '',
-        phone: '',
-        gender: 'Mujer',
-        username: '',
-        password: '',
-        confirmPassword: '',
-      },
-      associatedCoordinator: {
-        name: '',
-        lastNameP: '',
-        lastNameM: '',
-        email: '',
-        phone: '',
-      },
-      staffCoordinator: {
-        name: '',
-        lastNameP: '',
-        lastNameM: '',
-        email: '',
-        phone: '',
-      },
-      participantsCoordinator: {
-        name: '',
-        lastNameP: '',
-        lastNameM: '',
-        email: '',
-        phone: '',
-      },
-      venue: {
-        name: '',
-        location: 'Puebla',
-        address: '',
-      },
-    });
-    setProfileImage(null);
-    setLogo(null);
-    setParticipationFile(null);
-    setPrivacyAccepted(false);
-  } catch (err: any) {
-    setErrors([err.message]);
-    setIsErrorModalOpen(true); // Show error modal
-    setSuccess(null);
-    setIsSuccessToastOpen(false);
-  }
-};
+      if (formData.associatedCoordinator.name) {
+        formDataToSend.append('associatedCoordinator[name]', formData.associatedCoordinator.name);
+        formDataToSend.append('associatedCoordinator[lastNameP]', formData.associatedCoordinator.lastNameP);
+        formDataToSend.append('associatedCoordinator[lastNameM]', formData.associatedCoordinator.lastNameM);
+        formDataToSend.append('associatedCoordinator[email]', formData.associatedCoordinator.email);
+        formDataToSend.append('associatedCoordinator[phone]', formData.associatedCoordinator.phone);
+      }
+
+      if (formData.staffCoordinator.name) {
+        formDataToSend.append('staffCoordinator[name]', formData.staffCoordinator.name);
+        formDataToSend.append('staffCoordinator[lastNameP]', formData.staffCoordinator.lastNameP);
+        formDataToSend.append('staffCoordinator[lastNameM]', formData.staffCoordinator.lastNameM);
+        formDataToSend.append('staffCoordinator[email]', formData.staffCoordinator.email);
+        formDataToSend.append('staffCoordinator[phone]', formData.staffCoordinator.phone);
+      }
+
+      if (formData.participantsCoordinator.name) {
+        formDataToSend.append('participantsCoordinator[name]', formData.participantsCoordinator.name);
+        formDataToSend.append('participantsCoordinator[lastNameP]', formData.participantsCoordinator.lastNameP);
+        formDataToSend.append('participantsCoordinator[lastNameM]', formData.participantsCoordinator.lastNameM);
+        formDataToSend.append('participantsCoordinator[email]', formData.participantsCoordinator.email);
+        formDataToSend.append('participantsCoordinator[phone]', formData.participantsCoordinator.phone);
+      }
+
+      if (profileImage) {
+        formDataToSend.append('generalCoordinator.profileImage', profileImage);
+      }
+      if (logo) {
+        formDataToSend.append('logo', logo);
+      }
+      if (participationFile) {
+        formDataToSend.append('participation_file', participationFile);
+      }
+
+      const response = await fetch('http://localhost:3000/api/venues', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 422 && data.errors) {
+          const backendErrors = data.errors.map((err: any) => err.msg);
+          throw new Error(backendErrors.join(', '));
+        }
+        throw new Error(data.message || 'Error al registrar el venue');
+      }
+
+      let successMessage = data.message;
+      if (data.files) {
+        successMessage += '<br>Archivos disponibles:';
+        if (data.files.participation_file) {
+          successMessage += ` <a href="/api/venues/files/${data.files.participation_file}" target="_blank" class="text-purple-400 hover:underline">Convocatoria</a>`;
+        }
+        if (data.files.logo) {
+          successMessage += `, <a href="/api/venues/files/${data.files.logo}" target="_blank" class="text-purple-400 hover:underline">Logo</a>`;
+        }
+        if (data.files.profile_image) {
+          successMessage += `, <a href="/api/venues/files/${data.files.profile_image}" target="_blank" class="text-purple-400 hover:underline">Foto de Perfil</a>`;
+        }
+      }
+      setSuccess(successMessage);
+      setErrors([]);
+
+      setFormData({
+        generalCoordinator: {
+          name: '',
+          lastNameP: '',
+          lastNameM: '',
+          email: '',
+          phone: '',
+          gender: 'Mujer',
+          username: '',
+          password: '',
+          confirmPassword: '',
+        },
+        associatedCoordinator: {
+          name: '',
+          lastNameP: '',
+          lastNameM: '',
+          email: '',
+          phone: '',
+        },
+        staffCoordinator: {
+          name: '',
+          lastNameP: '',
+          lastNameM: '',
+          email: '',
+          phone: '',
+        },
+        participantsCoordinator: {
+          name: '',
+          lastNameP: '',
+          lastNameM: '',
+          email: '',
+          phone: '',
+        },
+        venue: {
+          name: '',
+          location: 'Puebla',
+          address: '',
+        },
+      });
+      setProfileImage(null);
+      setLogo(null);
+      setParticipationFile(null);
+      setPrivacyAccepted(false);
+    } catch (err: any) {
+      setErrors([err.message]);
+      setSuccess(null);
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
-      {/* Navbar */}
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white"> {/* Added text-white */}
       <Navbar />
-
-      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="flex-1 p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
-            {/* Header */}
+          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 text-white"> {/* Added text-white */}
+            {errors.length > 0 && (
+              <div className="mb-4 p-4 bg-red-500 text-white rounded-lg">
+                {errors.map((error, index) => (
+                  <p key={index}>{error}</p>
+                ))}
+              </div>
+            )}
+            {success && (
+              <div className="mb-4 p-4 bg-green-500 text-white rounded-lg">
+                <div dangerouslySetInnerHTML={{ __html: success }} />
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
                 <div className="w-2 h-12 bg-purple-600 mr-4"></div>
-                <h1 className="text-2xl md:text-3xl font-bold">Formulario de Registro<br />SEDE</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white">Formulario de Registro<br />SEDE</h1> {/* Explicit text-white */}
               </div>
               <Button
                 label="Regresar"
                 variant="error"
                 showRightIcon
-                IconRight={() => <span className="text-white">✕</span>}
-                onClick={() => router.push('/')} // Navigate to home
+                IconRight={() => <span >✕</span>}
+                onClick={() => router.push('/')}
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
-            {/* Modal for Errors */}
-          <Modal
-            isOpen={isErrorModalOpen}
-            onClose={() => setIsErrorModalOpen(false)}
-            title="Error de Validación"
-            messages={errors}
-          />
-            {/* Toast for Success */}
-            <Toast
-              message={success || ''}
-              isOpen={isSuccessToastOpen}
-              onClose={() => setIsSuccessToastOpen(false)}
-            />
-            {/* Section: Datos Coordinadora de Sede */}
+
             <div className="mb-6">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white"> {/* Explicit text-white */}
                 <span className="text-purple-400 mr-2">❀</span> Datos Coordinadora de Sede
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
+              <p className="text-gray-300 text-sm md:text-base mb-4"> {/* Changed to text-gray-300 for contrast */}
                 Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
+              <p className="text-gray-300 text-sm italic"> {/* Changed to text-gray-300 */}
                 Si no se crean coordinadoras asociadas o de informes, la Coordinadora de Sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
 
-            {/* Form Fields: Datos Coordinadora de Sede */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
@@ -437,6 +416,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'lastNameP', value)
                 }
+                
               />
               <InputField
                 label="Apellido Materno"
@@ -447,6 +427,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'lastNameM', value)
                 }
+                
               />
               <InputField
                 label="Correo Electrónico*"
@@ -457,6 +438,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'email', value)
                 }
+                
               />
               <InputField
                 label="Celular*"
@@ -467,6 +449,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'phone', value)
                 }
+                
               />
               <Dropdown
                 label="Sexo*"
@@ -488,6 +471,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'username', value)
                 }
+                
               />
               <div>
                 <InputField
@@ -501,6 +485,7 @@ const VenueRegistrationForm: React.FC = () => {
                   onChangeText={(value: string) =>
                     handleInputChange('generalCoordinator', 'password', value)
                   }
+                  
                 />
                 <div className="flex items-center mt-2">
                   <Checkbox
@@ -522,6 +507,7 @@ const VenueRegistrationForm: React.FC = () => {
                   onChangeText={(value: string) =>
                     handleInputChange('generalCoordinator', 'confirmPassword', value)
                   }
+                  
                 />
                 <div className="flex items-center mt-2">
                   <Checkbox
@@ -529,16 +515,16 @@ const VenueRegistrationForm: React.FC = () => {
                     color="purple"
                     checked={showConfirmPassword}
                     onChange={setShowConfirmPassword}
+                    
                   />
                 </div>
               </div>
             </div>
 
-            {/* Sube tu foto de perfil */}
-            <div className="mt-6 p-4 bg-white text-black rounded-lg">
+            <div className="mt-6 p-4 bg-white text-gray-900 rounded-lg"> {/* Changed to text-gray-900 for contrast */}
               <div className="flex items-center">
                 <span className="text-purple-600 text-2xl mr-2">🖼</span>
-                <h3 className="text-lg font-semibold">Sube tu foto de perfil</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Sube tu foto de perfil</h3> {/* Explicit text-gray-900 */}
               </div>
               <p className="text-gray-600 text-sm mt-2">
                 Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte dentro del sistema. No es obligatorio subir una imagen, sin embargo lo recomendamos.
@@ -547,7 +533,7 @@ const VenueRegistrationForm: React.FC = () => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileChange(e, setProfileImage)}
-                className="mt-4"
+                className="mt-4 text-gray-900"
               />
               {profileImage && (
                 <p className="mt-2 text-sm text-gray-600">
@@ -556,18 +542,16 @@ const VenueRegistrationForm: React.FC = () => {
               )}
             </div>
 
-            {/* Section: Datos Coordinadora Asociada */}
             <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white">
                 <span className="text-purple-400 mr-2">✨</span> Datos Coordinadora Asociada
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
+              <p className="text-gray-300 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
             </div>
 
-            {/* Form Fields: Datos Coordinadora Asociada */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
@@ -578,6 +562,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'name', value)
                 }
+                
               />
               <InputField
                 label="Apellido Paterno*"
@@ -588,6 +573,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'lastNameP', value)
                 }
+                
               />
               <InputField
                 label="Apellido Materno"
@@ -598,6 +584,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'lastNameM', value)
                 }
+                
               />
               <InputField
                 label="Correo Electrónico*"
@@ -608,6 +595,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'email', value)
                 }
+                
               />
               <InputField
                 label="Celular*"
@@ -618,21 +606,20 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'phone', value)
                 }
+                
               />
             </div>
 
-            {/* Section: Datos Coordinadora de Informes (Staff) */}
             <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white">
                 <span className="text-purple-400 mr-2">🏫</span> Datos Coordinadora de Informes (Staff)
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
+              <p className="text-gray-300 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
             </div>
 
-            {/* Form Fields: Datos Coordinadora de Informes (Staff) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
@@ -643,6 +630,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'name', value)
                 }
+                
               />
               <InputField
                 label="Apellido Paterno*"
@@ -653,6 +641,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'lastNameP', value)
                 }
+                
               />
               <InputField
                 label="Apellido Materno"
@@ -663,6 +652,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'lastNameM', value)
                 }
+                
               />
               <InputField
                 label="Correo Electrónico*"
@@ -673,6 +663,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'email', value)
                 }
+                
               />
               <InputField
                 label="Celular*"
@@ -683,21 +674,20 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'phone', value)
                 }
+                
               />
             </div>
 
-            {/* Section: Datos Coordinadora de Informes (Participantes) */}
             <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white">
                 <span className="text-purple-400 mr-2">👥</span> Datos Coordinadora de Informes (Participantes)
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
+              <p className="text-gray-300 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
             </div>
 
-            {/* Form Fields: Datos Coordinadora de Informes (Participantes) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
@@ -708,6 +698,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'name', value)
                 }
+                
               />
               <InputField
                 label="Apellido Paterno*"
@@ -718,6 +709,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'lastNameP', value)
                 }
+                
               />
               <InputField
                 label="Apellido Materno"
@@ -728,6 +720,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'lastNameM', value)
                 }
+                
               />
               <InputField
                 label="Correo Electrónico*"
@@ -738,6 +731,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'email', value)
                 }
+                
               />
               <InputField
                 label="Celular*"
@@ -748,21 +742,20 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'phone', value)
                 }
+                
               />
             </div>
 
-            {/* Section: Datos SEDE */}
             <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white">
                 <span className="text-purple-400 mr-2">🧪</span> Datos SEDE
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
+              <p className="text-gray-300 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de tu SEDE.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
             </div>
 
-            {/* Form Fields: Datos SEDE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre de la SEDE*"
@@ -773,6 +766,7 @@ const VenueRegistrationForm: React.FC = () => {
                 onChangeText={(value: string) =>
                   handleInputChange('venue', 'name', value)
                 }
+                
               />
               <Dropdown
                 label="Localización*"
@@ -783,6 +777,7 @@ const VenueRegistrationForm: React.FC = () => {
                 }
                 variant="accent"
                 Icon={withIconDecorator(Location)}
+                
               />
               <div className="md:col-span-2">
                 <InputField
@@ -794,15 +789,15 @@ const VenueRegistrationForm: React.FC = () => {
                   onChangeText={(value: string) =>
                     handleInputChange('venue', 'address', value)
                   }
+                  
                 />
               </div>
             </div>
 
-            {/* Sube tu logo */}
-            <div className="mt-6 p-4 bg-white text-black rounded-lg">
+            <div className="mt-6 p-4 bg-white text-gray-900 rounded-lg">
               <div className="flex items-center">
                 <span className="text-purple-600 text-2xl mr-2">🖼</span>
-                <h3 className="text-lg font-semibold">Sube tu logo</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Sube tu logo</h3>
               </div>
               <p className="text-gray-600 text-sm mt-2">
                 Selecciona una imagen que represente a tu SEDE, la cual se presentará a los usuarios para su fácil reconocimiento. No es obligatorio subir una imagen, sin embargo lo recomendamos.
@@ -811,7 +806,7 @@ const VenueRegistrationForm: React.FC = () => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileChange(e, setLogo)}
-                className="mt-4"
+                className="mt-4 text-gray-900"
               />
               {logo && (
                 <p className="mt-2 text-sm text-gray-600">
@@ -820,11 +815,10 @@ const VenueRegistrationForm: React.FC = () => {
               )}
             </div>
 
-            {/* Convocatoria SEDE */}
-            <div className="mt-6 p-4 bg-white text-black rounded-lg">
+            <div className="mt-6 p-4 bg-white text-gray-900 rounded-lg">
               <div className="flex items-center">
                 <span className="text-purple-600 text-2xl mr-2">📄</span>
-                <h3 className="text-lg font-semibold">Convocatoria SEDE</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Convocatoria SEDE</h3>
               </div>
               <p className="text-gray-600 text-sm mt-2">
                 Dentro de esta sección tendrás que subir el permiso de participación, la cual deberá de estar firmado por un representante legal de la institución.<br />
@@ -834,7 +828,7 @@ const VenueRegistrationForm: React.FC = () => {
                 type="file"
                 accept=".pdf"
                 onChange={(e) => handleFileChange(e, setParticipationFile)}
-                className="mt-4"
+                className="mt-4 text-gray-900"
               />
               {participationFile && (
                 <p className="mt-2 text-sm text-gray-600">
@@ -843,12 +837,11 @@ const VenueRegistrationForm: React.FC = () => {
               )}
             </div>
 
-            {/* Aviso de Privacidad */}
             <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2 text-white">
                 <span className="text-purple-400 mr-2">🔒</span> Aviso de Privacidad
               </h2>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-300 text-sm">
                 Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
                 <a href="https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores" className="text-purple-400 hover:underline">
                   https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
@@ -860,18 +853,18 @@ const VenueRegistrationForm: React.FC = () => {
                   color="purple"
                   checked={privacyAccepted}
                   onChange={setPrivacyAccepted}
+                  
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="mt-6 flex justify-end">
               <Button
                 label="Enviar Registro"
                 variant="success"
                 showRightIcon
                 IconRight={withIconDecorator(Send)}
-                className="px-6 py-2 rounded-full flex items-center"
+                className="px-6 py-2 rounded-full flex items-center text-white"
               />
             </div>
           </div>

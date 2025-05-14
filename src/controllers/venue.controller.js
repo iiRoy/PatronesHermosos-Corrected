@@ -69,19 +69,25 @@ const create = async (req, res) => {
   let participation_file = null;
   let logo = null;
   let profileImage = null;
+  let participation_file_path = null;
+  let logo_path = null;
+  let profile_image_path = null;
 
-  // Read file contents for database storage
+  // Read file contents and get filenames
   if (files['participation_file']) {
     const filePath = files['participation_file'][0].path;
     participation_file = await fs.readFile(filePath);
+    participation_file_path = files['participation_file'][0].filename;
   }
   if (files['logo']) {
     const filePath = files['logo'][0].path;
     logo = await fs.readFile(filePath);
+    logo_path = files['logo'][0].filename;
   }
   if (files['generalCoordinator.profileImage']) {
     const filePath = files['generalCoordinator.profileImage'][0].path;
     profileImage = await fs.readFile(filePath);
+    profile_image_path = files['generalCoordinator.profileImage'][0].filename;
   }
 
   // Validate required file
@@ -90,7 +96,7 @@ const create = async (req, res) => {
   }
 
   try {
-    // Call the stored procedure
+    // Call the stored procedure with file paths
     await prisma.$queryRaw`
       CALL registrar_sede(
         ${name}, 
@@ -98,6 +104,8 @@ const create = async (req, res) => {
         ${address}, 
         ${logo}, 
         ${participation_file},
+        ${logo_path},
+        ${participation_file_path},
         ${generalCoordinator.name},
         ${generalCoordinator.lastNameP},
         ${generalCoordinator.lastNameM || null},
@@ -107,6 +115,7 @@ const create = async (req, res) => {
         ${generalCoordinator.username},
         ${generalCoordinator.password},
         ${profileImage},
+        ${profile_image_path},
         ${associatedCoordinator?.name || null},
         ${associatedCoordinator?.lastNameP || null},
         ${associatedCoordinator?.lastNameM || null},
@@ -125,13 +134,13 @@ const create = async (req, res) => {
       )
     `;
 
-    res.status(201).json({
+    res.status(201).json({ 
       message: 'Venue creado exitosamente',
       files: {
         participation_file: participation_file_path,
         logo: logo_path,
         profile_image: profile_image_path,
-      },
+      }
     });
   } catch (error) {
     console.error('Error al crear venue:', error);
