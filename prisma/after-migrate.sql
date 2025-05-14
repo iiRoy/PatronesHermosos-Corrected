@@ -1338,6 +1338,56 @@ DELIMITER ;
 
 
 DELIMITER $$
+CREATE PROCEDURE desactivar_grupo(
+    IN p_id_group INT,
+    IN p_username VARCHAR(255),
+    IN p_id_venue INT
+)
+BEGIN
+ DECLARE existe INT;
+ DECLARE p_status VARCHAR(255);
+
+
+ SELECT COUNT(*) INTO existe
+ FROM groups
+ WHERE id_group = p_id_group;
+
+ IF existe = 0
+    SIGNAL SQLSTATE "45000"
+    SET MESSAGE_TEXT = "El grupo no existe.";
+END IF;
+
+
+SELECT status INTO p_status
+FROM groups
+WHERE id_group = p_id_group;
+
+IF p_status != "Aprobada" THEN
+  SIGNAL SQLSTATE "45000"
+  SET MESSAGE_TEXT = "Solo se pueden eliminar los grupos aprobados.";
+END IF;
+
+    -- Registrar el log
+ CALL registrar_log(
+    'UPDATE',
+    'groups',
+    CONCAT('Se desactivó el grupo con ID ', p_id_group),
+    p_username,
+    p_id_venue
+);
+
+    -- Actualizar el status a Cancelada
+    UPDATE groups
+    SET status = 'Cancelada'
+    WHERE id_group = p_id_group;
+END$$
+
+DELIMITER;
+
+
+--Proceso para desactivar una sede, se valida la existencia de la sede, valida su status, lo modifica y registra el log
+--CALL desactivar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
 
 CREATE PROCEDURE desactivar_venue (
   IN p_id_venue INT,
@@ -1371,7 +1421,7 @@ BEGIN
 
   -- Registrar acción en audit_log ANTES de modificar el estado de la sede
   CALL registrar_log(
-    'DELETE',
+    'UPDATE',
     'venues',
     CONCAT('Se desactivó la sede con ID ', p_id_venue),
     p_username,
@@ -1441,6 +1491,8 @@ END$$
 DELIMITER ;
 
 
+--Proceso para desactivar a un colaborador, se valida la existencia del colaborador, valida su status, lo modifica y registra el log
+--CALL desactivar_venue(2, 'admin@ejemplo.com');
 DELIMITER $$
 
 CREATE PROCEDURE desactivar_colaborador (
