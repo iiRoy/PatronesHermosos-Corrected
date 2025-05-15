@@ -15,6 +15,7 @@ interface Participante {
     fecha: string;
     correo: string;
     telefono: string;
+    grupo_preferido: string;
 }
 
 interface ApoyoStaff {
@@ -25,6 +26,7 @@ interface ApoyoStaff {
     correo: string;
     telefono: string;
     area: string;
+    grupo_preferido: string;
 }
 
 interface Sede {
@@ -47,20 +49,20 @@ const SolicitudesRegistroAdmin = () => {
     const rowsPerPage = 4;
 
     const participantesData: Participante[] = [
-        { id: '01', nombre: 'Sara Beltrán', sede: 'ITESM Querétaro', fecha: '10/03/2025', correo: 'sara@correo.com', telefono: '2223564354' },
-        { id: '02', nombre: 'Tamara Ibarra', sede: 'ITESM Puebla', fecha: '10/03/2025', correo: 'tamara@correo.com', telefono: '2224722344' },
-        { id: '03', nombre: 'Violeta Espinosa', sede: 'ITESM Monterrey', fecha: '10/03/2025', correo: 'violeta@correo.com', telefono: '2224665782' },
-        { id: '04', nombre: 'Amelia Jurado', sede: 'ITESM Hidalgo', fecha: '10/03/2025', correo: 'amelia@correo.com', telefono: '2225743455' },
-        { id: '05', nombre: 'Andrea González', sede: 'ITESM Puebla', fecha: '10/03/2025', correo: 'andrea@correo.com', telefono: '2224722344' },
-        { id: '06', nombre: 'Laura Rodríguez', sede: 'ITESM Monterrey', fecha: '10/03/2025', correo: 'laura@correo.com', telefono: '2224665782' },
-        { id: '07', nombre: 'Mónica Sánchez', sede: 'ITESM Hidalgo', fecha: '10/03/2025', correo: 'monica@correo.com', telefono: '2225743455' },
+        { id: '01', nombre: 'Sara Beltrán', sede: 'ITESM Querétaro', fecha: '10/03/2025', correo: 'sara@correo.com', telefono: '2223564354', grupo_preferido: 'Luna' },
+        { id: '02', nombre: 'Tamara Ibarra', sede: 'ITESM Puebla', fecha: '10/03/2025', correo: 'tamara@correo.com', telefono: '2224722344', grupo_preferido: 'Sol' },
+        { id: '03', nombre: 'Violeta Espinosa', sede: 'ITESM Monterrey', fecha: '10/03/2025', correo: 'violeta@correo.com', telefono: '2224665782', grupo_preferido: 'Mar' },
+        { id: '04', nombre: 'Amelia Jurado', sede: 'ITESM Hidalgo', fecha: '10/03/2025', correo: 'amelia@correo.com', telefono: '2225743455', grupo_preferido: 'Montaña' },
+        { id: '05', nombre: 'Andrea González', sede: 'ITESM Puebla', fecha: '10/03/2025', correo: 'andrea@correo.com', telefono: '2224722344', grupo_preferido: 'Mar' },
+        { id: '06', nombre: 'Laura Rodríguez', sede: 'ITESM Monterrey', fecha: '10/03/2025', correo: 'laura@correo.com', telefono: '2224665782', grupo_preferido: 'Luna' },
+        { id: '07', nombre: 'Mónica Sánchez', sede: 'ITESM Hidalgo', fecha: '10/03/2025', correo: 'monica@correo.com', telefono: '2225743455', grupo_preferido: 'Sol' },
     ];
 
     const apoyoStaffData: ApoyoStaff[] = [
-        { id: '01', nombre: 'Sofia Ruiz', sede: 'ITESM Guadalajara', fecha: '12/03/2025', correo: 'sofia@correo.com', telefono: '2224655893', area: 'staff' },
-        { id: '02', nombre: 'Laura Gómez', sede: 'ITESM Monterrey', fecha: '12/03/2025', correo: 'laura@correo.com', telefono: '2224653561', area: 'mentora' },
-        { id: '03', nombre: 'Mariana Sánchez', sede: 'ITESM Monterrey', fecha: '13/03/2025', correo: 'mariana@correo.com', telefono: '2224453389', area: 'mentora' },
-        { id: '04', nombre: 'Ana Martínez', sede: 'ITESM Puebla', fecha: '13/03/2025', correo: 'ana@correo.com', telefono: '22246553211', area: 'staff' },
+        { id: '01', nombre: 'Sofia Ruiz', sede: 'ITESM Guadalajara', fecha: '12/03/2025', correo: 'sofia@correo.com', telefono: '2224655893', area: 'Staff', grupo_preferido: 'Luna' },
+        { id: '02', nombre: 'Laura Gómez', sede: 'ITESM Monterrey', fecha: '12/03/2025', correo: 'laura@correo.com', telefono: '2224653561', area: 'Facilitadora', grupo_preferido: 'Sol' },
+        { id: '03', nombre: 'Mariana Sánchez', sede: 'ITESM Monterrey', fecha: '13/03/2025', correo: 'mariana@correo.com', telefono: '2224453389', area: 'Instructora', grupo_preferido: 'Montaña' },
+        { id: '04', nombre: 'Ana Martínez', sede: 'ITESM Puebla', fecha: '13/03/2025', correo: 'ana@correo.com', telefono: '22246553211', area: 'Staff', grupo_preferido: 'Sol' },
     ];
 
     const sedesData: Sede[] = [
@@ -237,10 +239,11 @@ const SolicitudesRegistroAdmin = () => {
                                             <td className="p-2 text-center">{(item as Participante).sede}</td>
                                             <td className="p-2 text-center">{(item as Participante).fecha}</td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
-                                            </td>
-                                            <td className="p-2 text-center">
-                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
+                                                <div className='flex gap-4 justify-center'>
+                                                    <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
+
+                                                    <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
+                                                </div>
                                             </td>
                                         </>
                                     )}
@@ -299,13 +302,14 @@ const SolicitudesRegistroAdmin = () => {
                 {isPopupOpen && selectedItem && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                            <h2 className="text-lg font-bold mb-4">Solicitud de Registro</h2>
+                            <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
                             {section === 'PARTICIPANTES' && selectedItem && (
                                 <div className='pt-6 pb-6'>
                                     <p><strong>Nombre:</strong> {(selectedItem as Participante).nombre}</p>
                                     <p><strong>Sede:</strong> {(selectedItem as Participante).sede}</p>
                                     <p><strong>Correo:</strong> {(selectedItem as Participante).correo}</p>
                                     <p><strong>Teléfono:</strong> {(selectedItem as Participante).telefono}</p>
+                                    <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).grupo_preferido}</p>
                                 </div>
                             )}
                             {section === 'APOYO & STAFF' && selectedItem && (
@@ -334,35 +338,50 @@ const SolicitudesRegistroAdmin = () => {
                 {isConfirmPopupOpen && selectedItem && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                            <h2 className="text-lg font-bold mb-4">¿Aceptar a {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?</h2>
+                            <h2 className="text-3xl font-bold mb-4 text-center">¿Aceptar a {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?</h2>
                             <div className="pt-6 pb-6">
                                 {section === 'PARTICIPANTES' && selectedItem && (
                                     <>
                                         <p><strong>Sede:</strong> {(selectedItem as Participante).sede}</p>
+                                        <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).grupo_preferido}</p>
                                         <p className="mt-4"><strong>Asignar a un grupo</strong></p>
                                         <select
                                             className="w-full p-2 border rounded mt-2 bg-purple-100"
                                             value={selectedGroup}
                                             onChange={(e) => setSelectedGroup(e.target.value)}
                                         >
-                                            <option>Grupo 01</option>
-                                            <option>Grupo 02</option>
-                                            <option>Grupo 03</option>
+                                            <option>Luna</option>
+                                            <option>Sol</option>
+                                            <option>Mar</option>
+                                            <option>Montaña</option>
+
                                         </select>
                                     </>
                                 )}
                                 {section === 'APOYO & STAFF' && selectedItem && (
                                     <>
                                         <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).sede}</p>
+                                        <p><strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).area}</p>
+                                        <p className="mt-4"><strong>Asignar un rol</strong></p>
+                                        <select
+                                            className="w-full p-2 border rounded mt-2 bg-purple-100"
+                                            value={selectedGroup}
+                                            onChange={(e) => setSelectedGroup(e.target.value)}
+                                        >
+                                            <option>Instructora</option>
+                                            <option>Staff</option>
+                                            <option>Facilitadora</option>
+                                        </select>
                                         <p className="mt-4"><strong>Asignar a un grupo</strong></p>
                                         <select
                                             className="w-full p-2 border rounded mt-2 bg-purple-100"
                                             value={selectedGroup}
                                             onChange={(e) => setSelectedGroup(e.target.value)}
                                         >
-                                            <option>Grupo 01</option>
-                                            <option>Grupo 02</option>
-                                            <option>Grupo 03</option>
+                                            <option>Luna</option>
+                                            <option>Sol</option>
+                                            <option>Mar</option>
+                                            <option>Montaña</option>
                                         </select>
                                     </>
                                 )}
@@ -386,7 +405,7 @@ const SolicitudesRegistroAdmin = () => {
                 {isRejectPopupOpen && selectedItem && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                            <h2 className="text-lg font-bold mb-4">
+                            <h2 className="text-2xl font-bold mx-4 mt-6 mb-12 text-center">
                                 ¿Seguro que quieres rechazar la solicitud de {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?
                             </h2>
                             <div className="mt-4 flex justify-center gap-4">
