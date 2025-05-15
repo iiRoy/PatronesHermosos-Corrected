@@ -1398,6 +1398,74 @@ END$$
 DELIMITER ;
 
 
+--CALL cambiar_estado_colaborador(1, "Diegorl", "activar");
+--Se cambia el estado del colaborador, de aprobada a cancelada, y viceversa.
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_colaborador(
+    IN p_id_collaborator INT,
+    IN p_username VARCHAR(255),
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_nuevo_status VARCHAR(255);
+
+    -- Verificar si el colaborador existe
+    SELECT COUNT(*) INTO v_existe
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El colaborador no existe.';
+    END IF;
+
+    -- Obtener status actual
+    SELECT status INTO v_status
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    -- Validaciones de cambio de estado
+    IF p_accion = 'desactivar' THEN
+        IF v_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
+        END IF;
+        SET v_nuevo_status = 'Cancelada';
+
+    ELSEIF p_accion = 'activar' THEN
+        IF v_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar colaboradores con estatus Cancelada.';
+        END IF;
+        SET v_nuevo_status = 'Aprobada';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
+    END IF;
+
+    -- Registrar el log (sin sede, se usa NULL)
+    CALL registrar_log(
+        'UPDATE',
+        'collaborators',
+        CONCAT('Se ', p_accion, ' al colaborador con ID ', p_id_collaborator),
+        p_username,
+        NULL
+    );
+
+    -- Actualizar el status
+    UPDATE collaborators
+    SET status = v_nuevo_status
+    WHERE id_collaborator = p_id_collaborator;
+END$$
+
+DELIMITER ;
+
+
+--desactivar_grupo función vieja, se sustituyo por la función cambiar_estado_grupo
 DELIMITER $$
 CREATE PROCEDURE desactivar_grupo(
     IN p_id_group INT,
@@ -1501,7 +1569,7 @@ DELIMITER ;
 
 
 
-
+--eliminar_venue procedimiento viejo, ha sido sustituido por desactivar_venue
 --Proceso para eliminar una sede, se valida la existencia de la sede, que no tenga grupos, elimina las sede y registra el log
 --CALL eliminar_venue(2, 'admin@ejemplo.com');
 DELIMITER $$
