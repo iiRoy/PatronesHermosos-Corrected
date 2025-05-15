@@ -8,7 +8,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { EnvelopeOpen, FileArrowDown, Trash } from '@/components/icons';
 import { useState } from 'react';
 
-const diplomasAdmin = () => {
+const DiplomasAdmin = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('SEDES');
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
@@ -160,4 +160,4 @@ const diplomasAdmin = () => {
     );
 };
 
-export default diplomasAdmin;
+export default DiplomasAdmin;

@@ -8,7 +8,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Envelope, EnvelopeOpen, FileArrowDown, Trash } from '@/components/icons';
 import { useState, useMemo } from 'react';
 
-const correosAdmin = () => {
+const CorreosAdmin = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('SEDES');
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
@@ -158,4 +158,4 @@ const correosAdmin = () => {
     );
 };
 
-export default correosAdmin;
+export default CorreosAdmin;
