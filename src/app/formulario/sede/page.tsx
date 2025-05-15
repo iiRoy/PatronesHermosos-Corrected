@@ -439,7 +439,7 @@ const VenueRegistrationForm: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
-                placeholder="Edna"
+                placeholder="Nombre"
                 variant="accent"
                 icon="User"
                 value={formData.generalCoordinator.name}
@@ -450,7 +450,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Paterno*"
-                placeholder="Moda"
+                placeholder="Paterno"
                 variant="accent"
                 icon="User"
                 value={formData.generalCoordinator.lastNameP}
@@ -461,7 +461,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Materno"
-                placeholder="Apellido Materno"
+                placeholder="Materno"
                 variant="accent"
                 icon="User"
                 value={formData.generalCoordinator.lastNameM}
@@ -472,7 +472,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="ednamoda@disney.com"
+                placeholder="ejemplocorreo1@gmail.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.generalCoordinator.email}
@@ -494,7 +494,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <Dropdown
                 label="Sexo*"
-                options={['Mujer', 'Hombre', 'Otro']}
+                options={['Femenino', 'Masculino', 'Otro', 'Prefiero no decirlo']}
                 value={formData.generalCoordinator.gender}
                 onChange={(value: string) =>
                   handleInputChange('generalCoordinator', 'gender', value)
@@ -506,7 +506,7 @@ const VenueRegistrationForm: React.FC = () => {
               <InputField
                 label="Nombre de Usuario*"
                 description="El nombre de usuario solo puede contener letras, números y guiones bajos."
-                placeholder="edna_moda"
+                placeholder="Us3r_n4me"
                 variant="accent"
                 icon="User"
                 value={formData.generalCoordinator.username}
@@ -598,7 +598,7 @@ const VenueRegistrationForm: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
-                placeholder="Juana"
+                placeholder="Nombre"
                 variant="accent"
                 icon="User"
                 value={formData.associatedCoordinator.name}
@@ -609,7 +609,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Paterno*"
-                placeholder="De Arco"
+                placeholder="Paterno"
                 variant="accent"
                 icon="User"
                 value={formData.associatedCoordinator.lastNameP}
@@ -620,7 +620,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Materno"
-                placeholder="Ramírez"
+                placeholder="Materno"
                 variant="accent"
                 icon="User"
                 value={formData.associatedCoordinator.lastNameM}
@@ -631,7 +631,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="juanadearco@disney.com"
+                placeholder="ejemplocorreo1@gmail.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.associatedCoordinator.email}
@@ -666,7 +666,7 @@ const VenueRegistrationForm: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
-                placeholder="Juana"
+                placeholder="Nombre"
                 variant="accent"
                 icon="User"
                 value={formData.staffCoordinator.name}
@@ -677,7 +677,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Paterno*"
-                placeholder="De Arco"
+                placeholder="Paterno"
                 variant="accent"
                 icon="User"
                 value={formData.staffCoordinator.lastNameP}
@@ -688,7 +688,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Materno"
-                placeholder="Ramírez"
+                placeholder="Materno"
                 variant="accent"
                 icon="User"
                 value={formData.staffCoordinator.lastNameM}
@@ -699,7 +699,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="juanadearco@disney.com"
+                placeholder="ejemplocorreo1@gmail.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.staffCoordinator.email}
@@ -734,7 +734,7 @@ const VenueRegistrationForm: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre(s)*"
-                placeholder="Juana"
+                placeholder="Nombre"
                 variant="accent"
                 icon="User"
                 value={formData.participantsCoordinator.name}
@@ -745,7 +745,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Paterno*"
-                placeholder="De Arco"
+                placeholder="Paterno"
                 variant="accent"
                 icon="User"
                 value={formData.participantsCoordinator.lastNameP}
@@ -756,7 +756,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Materno"
-                placeholder="Ramírez"
+                placeholder="Materno"
                 variant="accent"
                 icon="User"
                 value={formData.participantsCoordinator.lastNameM}
@@ -767,7 +767,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="juanadearco@disney.com"
+                placeholder="ejemplocorreo1@gmail.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.participantsCoordinator.email}
@@ -802,7 +802,7 @@ const VenueRegistrationForm: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Nombre de la SEDE*"
-                placeholder="Instituto Oriente"
+                placeholder="ITESM Puebla"
                 variant="accent"
                 icon="GraduationCap"
                 value={formData.venue.name}
@@ -837,7 +837,7 @@ const VenueRegistrationForm: React.FC = () => {
               ) : (
                 <InputField
                   label="Provincia/Región*"
-                  placeholder="San José"
+                  placeholder="Región"
                   variant="accent"
                   icon="Gps"
                   value={formData.venue.state}
@@ -850,7 +850,7 @@ const VenueRegistrationForm: React.FC = () => {
               <div className="md:col-span-2">
                 <InputField
                   label="Dirección*"
-                  placeholder="P. Sherman Calle Wallaby 42 Sidney"
+                  placeholder="Dirección 123"
                   variant="accent"
                   icon="Flag"
                   value={formData.venue.address}
