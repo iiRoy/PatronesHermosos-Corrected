@@ -1262,6 +1262,598 @@ BEGIN
 END;
 $$
 
+
+--proceso global para registrar los logs
+DELIMITER $$
+
+CREATE PROCEDURE registrar_log (
+  IN p_action VARCHAR(50),
+  IN p_table_name VARCHAR(50),
+  IN p_message TEXT,
+  IN p_username VARCHAR(255),
+  IN p_id_venue INT
+)
+BEGIN
+  INSERT INTO audit_log (action, table_name, message, username, id_venue)
+  VALUES (
+    p_action,
+    p_table_name,
+    p_message,
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+--Proceso para eliminar un grupo, se valida la existencia del grupo, que no tenga participantes, elimina el grupo y registra el log
+--CALL eliminar_grupo(3, 'juan@ejemplo.com', 1);
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_grupo (
+  IN p_id_group INT,
+  IN p_username VARCHAR(255),
+  IN p_id_venue INT
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE participant_count INT;
+
+  -- Verificar si el grupo existe
+  SELECT COUNT(*) INTO existe
+  FROM groups
+  WHERE id_group = p_id_group;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El grupo no existe.';
+  END IF;
+
+  -- Verificar si tiene participantes
+  SELECT COUNT(*) INTO participant_count
+  FROM participants
+  WHERE id_group = p_id_group;
+
+  IF participant_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
+  END IF;
+
+  -- Eliminar el grupo
+  DELETE FROM groups
+  WHERE id_group = p_id_group;
+
+  -- Registrar acción en audit_log
+  CALL registrar_log(
+    'DELETE',
+    'groups',
+    CONCAT('Se eliminó el grupo con ID ', p_id_group),
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_grupo(
+    IN p_id_group INT,
+    IN p_username VARCHAR(255),
+    IN p_id_venue INT,
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE existe INT;
+    DECLARE p_status VARCHAR(255);
+    DECLARE nuevo_status VARCHAR(255);
+
+    SELECT COUNT(*) INTO existe
+    FROM groups
+    WHERE id_group = p_id_group;
+
+    IF existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El grupo no existe.';
+    END IF;
+
+    SELECT status INTO p_status
+    FROM groups
+    WHERE id_group = p_id_group;
+
+    IF p_accion = 'desactivar' THEN
+        IF p_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar los grupos aprobados.';
+        END IF;
+        SET nuevo_status = 'Cancelada';
+    ELSEIF p_accion = 'activar' THEN
+        IF p_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar los grupos cancelados.';
+        END IF;
+        SET nuevo_status = 'Aprobada';
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida.';
+    END IF;
+
+    -- Registrar el log
+    CALL registrar_log(
+        'UPDATE',
+        'groups',
+        CONCAT('Se ', p_accion, ' el grupo con ID ', p_id_group),
+        p_username,
+        p_id_venue
+    );
+
+    -- Actualizar el status
+    UPDATE groups
+    SET status = nuevo_status
+    WHERE id_group = p_id_group;
+END$$
+
+DELIMITER ;
+
+
+--CALL cambiar_estado_colaborador(1, "Diegorl", "activar");
+--Se cambia el estado del colaborador, de aprobada a cancelada, y viceversa.
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_colaborador(
+    IN p_id_collaborator INT,
+    IN p_username VARCHAR(255),
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_nuevo_status VARCHAR(255);
+
+    -- Verificar si el colaborador existe
+    SELECT COUNT(*) INTO v_existe
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El colaborador no existe.';
+    END IF;
+
+    -- Obtener status actual
+    SELECT status INTO v_status
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    -- Validaciones de cambio de estado
+    IF p_accion = 'desactivar' THEN
+        IF v_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
+        END IF;
+        SET v_nuevo_status = 'Cancelada';
+
+    ELSEIF p_accion = 'activar' THEN
+        IF v_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar colaboradores con estatus Cancelada.';
+        END IF;
+        SET v_nuevo_status = 'Aprobada';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
+    END IF;
+
+    -- Registrar el log (sin sede, se usa NULL)
+    CALL registrar_log(
+        'UPDATE',
+        'collaborators',
+        CONCAT('Se ', p_accion, ' al colaborador con ID ', p_id_collaborator),
+        p_username,
+        NULL
+    );
+
+    -- Actualizar el status
+    UPDATE collaborators
+    SET status = v_nuevo_status
+    WHERE id_collaborator = p_id_collaborator;
+END$$
+
+DELIMITER ;
+
+
+--desactivar_grupo función vieja, se sustituyo por la función cambiar_estado_grupo
+DELIMITER $$
+CREATE PROCEDURE desactivar_grupo(
+    IN p_id_group INT,
+    IN p_username VARCHAR(255),
+    IN p_id_venue INT
+)
+BEGIN
+ DECLARE existe INT;
+ DECLARE p_status VARCHAR(255);
+
+
+ SELECT COUNT(*) INTO existe
+ FROM groups
+ WHERE id_group = p_id_group;
+
+ IF existe = 0
+    SIGNAL SQLSTATE "45000"
+    SET MESSAGE_TEXT = "El grupo no existe.";
+END IF;
+
+
+SELECT status INTO p_status
+FROM groups
+WHERE id_group = p_id_group;
+
+IF p_status != "Aprobada" THEN
+  SIGNAL SQLSTATE "45000"
+  SET MESSAGE_TEXT = "Solo se pueden eliminar los grupos aprobados.";
+END IF;
+
+    -- Registrar el log
+ CALL registrar_log(
+    'UPDATE',
+    'groups',
+    CONCAT('Se desactivó el grupo con ID ', p_id_group),
+    p_username,
+    p_id_venue
+);
+
+    -- Actualizar el status a Cancelada
+    UPDATE groups
+    SET status = 'Cancelada'
+    WHERE id_group = p_id_group;
+END$$
+
+DELIMITER;
+
+
+--Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
+--CALL cambiar_estado_participant(114, "Diegorl", "activar");
+--CALL cambiar_estado_participant(114, "Diegorl", "desactivar");
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_participant(
+    IN p_id_participant INT,
+    IN p_username VARCHAR(255),
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_nuevo_status VARCHAR(255);
+
+    -- Verificar si el participante existe
+    SELECT COUNT(*) INTO v_existe
+    FROM participants
+    WHERE id_participant = p_id_participant;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El participante no existe.';
+    END IF;
+
+    -- Obtener status actual
+    SELECT status INTO v_status
+    FROM participants
+    WHERE id_participant = p_id_participant;
+
+    -- Validaciones de cambio de estado
+    IF p_accion = 'desactivar' THEN
+        IF v_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar participantes con estatus Aprobada.';
+        END IF;
+        SET v_nuevo_status = 'Cancelada';
+
+    ELSEIF p_accion = 'activar' THEN
+        IF v_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar participantes con estatus Cancelada.';
+        END IF;
+        SET v_nuevo_status = 'Aprobada';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
+    END IF;
+
+    -- Registrar el log (sin sede, se usa NULL)
+    CALL registrar_log(
+        'UPDATE',
+        'participants',
+        CONCAT('Se ', p_accion, ' al participante con ID ', p_id_participant),
+        p_username,
+        NULL
+    );
+
+    -- Actualizar el status
+    UPDATE participants
+    SET status = v_nuevo_status
+    WHERE id_participant = p_id_participant;
+END$$
+
+DELIMITER ;
+
+
+
+--Proceso para desactivar una sede, se valida la existencia de la sede, valida su status, lo modifica y registra el log
+--CALL desactivar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE desactivar_venue (
+  IN p_id_venue INT,
+  IN p_username VARCHAR(255)
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE group_count INT;
+  DECLARE p_status VARCHAR(255);
+
+  -- Verificar si la sede existe
+  SELECT COUNT(*) INTO existe
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'La sede no existe.';
+  END IF;
+
+  -- Obtener el status actual
+  SELECT status INTO p_status
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  -- Validar si puede ser cancelada
+  IF NOT (p_status = 'Registrada sin participantes' OR p_status = 'Registrada con participantes') THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Solo se pueden cancelar las sedes que estén registradas.';
+  END IF;
+
+  -- Registrar acción en audit_log ANTES de modificar el estado de la sede
+  CALL registrar_log(
+    'UPDATE',
+    'venues',
+    CONCAT('Se desactivó la sede con ID ', p_id_venue),
+    p_username,
+    p_id_venue
+  );
+
+  -- Cambiar estado a Cancelada
+  UPDATE venues
+  SET status = 'Cancelada'
+  WHERE id_venue = p_id_venue;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+--eliminar_venue procedimiento viejo, ha sido sustituido por desactivar_venue
+--Proceso para eliminar una sede, se valida la existencia de la sede, que no tenga grupos, elimina las sede y registra el log
+--CALL eliminar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_venue (
+  IN p_id_venue INT,
+  IN p_username VARCHAR(255)
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE group_count INT;
+
+  -- Verificar si la sede existe
+  SELECT COUNT(*) INTO existe
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'La sede no existe.';
+  END IF;
+
+  -- Verificar si tiene grupos
+  SELECT COUNT(*) INTO group_count
+  FROM groups
+  WHERE id_venue = p_id_venue;
+
+  IF group_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
+  END IF;
+
+  -- Registrar acción en audit_log ANTES de eliminar la sede
+  CALL registrar_log(
+    'DELETE',
+    'venues',
+    CONCAT('Se eliminó la sede con ID ', p_id_venue),
+    p_username,
+    p_id_venue
+  );
+
+  -- Eliminar la sede
+  DELETE FROM venues
+  WHERE id_venue = p_id_venue;
+
+END$$
+
+DELIMITER ;
+
+
+--Proceso para desactivar a un colaborador, se valida la existencia del colaborador, valida su status, lo modifica y registra el log
+--CALL desactivar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE desactivar_colaborador (
+    IN p_id_collaborator INT,
+    IN p_username VARCHAR(255)
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_id_venue INT;
+
+    -- Verificar si el colaborador existe
+    SELECT COUNT(*) INTO v_existe
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El colaborador no existe.';
+    END IF;
+
+    -- Obtener el status actual
+    SELECT status INTO v_status
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    -- Validar si puede ser desactivado
+    IF v_status != 'Aprobada' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
+    END IF;
+
+    -- Obtener el id_venue a partir del grupo del colaborador
+    SELECT g.id_venue INTO v_id_venue
+    FROM collaborators c
+    JOIN groups g ON c.id_group = g.id_group
+    WHERE c.id_collaborator = p_id_collaborator;
+
+    -- Registrar el log
+    CALL registrar_log(
+        'UPDATE',
+        'collaborators',
+        CONCAT('Se desactivó al colaborador con ID ', p_id_collaborator),
+        p_username,
+        v_id_venue
+    );
+
+    -- Actualizar el status a Cancelada
+    UPDATE collaborators
+    SET status = 'Cancelada'
+    WHERE id_collaborator = p_id_collaborator;
+END$$
+
+DELIMITER ;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+--JUNTAR LOS BEFORE Y AFTER
+--evitar eliminar un grupo si tiene participantes
+--evento para eliminar los audits logs cada mes y se ejecute cada semana
+DELIMITER $$
+CREATE TRIGGER before_delete_group
+BEFORE DELETE ON groups
+FOR EACH ROW
+BEGIN
+ DECLARE participant_count INT;
+ SELECT COUNT(*) INTO participant_count
+ FROM participants
+ WHERE id_group = OLD.id_group;
+ IF participant_count > 0 THEN
+ SIGNAL SQLSTATE '45000'
+ SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
+ END IF;
+END;
+$$
+DELIMITER ;
+
+--evitar eliminar una sede si tiene grupos
+DELIMITER $$
+CREATE TRIGGER before_delete_venue
+BEFORE DELETE ON venues
+FOR EACH ROW
+BEGIN
+ DECLARE group_count INT;
+ SELECT COUNT(*) INTO group_count
+ FROM groups
+ WHERE id_venue = OLD.id_venue;
+ IF group_count > 0 THEN
+ SIGNAL SQLSTATE '45000'
+ SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
+ END IF;
+END;
+$$
+DELIMITER ;
+
+
+--registrar eliminaciones en la tabla de auditoria
+DELIMITER $$
+CREATE TRIGGER after_delete_group
+AFTER DELETE ON groups
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('DELETE', 'groups', OLD.id_group, USER());
+END;
+$$
+DELIMITER ;
+
+
+--registrar eliminaciones en la tabla de auditoria
+DELIMITER $$
+CREATE TRIGGER after_delete_venue
+AFTER DELETE ON venues
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('DELETE', 'venues', OLD.id_venue, USER());
+END;
+$$
+DELIMITER ;
+
+--tres tipos de triggers: UPDATE, DELETE, ADD 
+--o hacerlo una función y que se llame desde el metodo (auditlog)
+
+--notas
+--una sola función general, audits logs no se pueden modificar (estaticos), en cada trigger mandar una 
+--un trigger para definir cuales van a ser los elementos de audit log e incluir en el procedimiento de actualizar y eliminar
+--investigar si el trigger se hace automaticamente cuando se hace un procedimiento
+
+--npm run release para hacer commits
+--npm run merge main
+
+--preguntar si sirve: aqui basicamente cuando se actualiza el rol de un colaborador, se pone como pendiente
+--no
+DELIMITER $$
+CREATE TRIGGER actualizar_estado_colaborador
+AFTER UPDATE ON collaborators
+FOR EACH ROW
+BEGIN
+ IF OLD.role != NEW.role THEN
+  UPDATE collaborators
+  SET status = 'Pendiente'
+  WHERE id_collaborator = NEW.id_collaborator;
+ END IF;
+END;
+$$
+DELIMITER ;
+
+--registrar cambio de participantes
+DELIMITER $$
+CREATE TRIGGER registrar_cambio_participante
+AFTER UPDATE ON participants
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('UPDATE', 'participants', NEW.id_participant, USER());
+END;
+$$
+DELIMITER ;
+
+
+
 -- 🔸 Ejemplo de uso:
 
 -- -- DELIMITER ;
