@@ -1,3 +1,9 @@
+## 1.9.0-admin.3 (2025-05-15)
+
+* improve(pages): correcciones y mejoras de textos y layout páginas superuser ([aa289c2](https://github.com/iiRoy/Patrones-Hermosos/commit/aa289c2))
+* feat(components): funcionalidad FiltroEvento  superuser ([55195f2](https://github.com/iiRoy/Patrones-Hermosos/commit/55195f2))
+* feat(components): funcionalidad FiltroEvento  superuser ([45a73ba](https://github.com/iiRoy/Patrones-Hermosos/commit/45a73ba))
+
 ## 1.9.0-admin.3 (2025-05-14)
 
 * feat(components): funcionalidad FiltroEvento  superuser ([45a73ba](https://github.com/iiRoy/Patrones-Hermosos/commit/45a73ba))
