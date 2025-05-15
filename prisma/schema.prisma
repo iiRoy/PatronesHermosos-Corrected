@@ -176,6 +176,7 @@ model venue_coordinators {
   password       String  @db.VarChar(255)
   tokenVersion Int    @default(0)
   profile_image  Bytes?  @db.Blob
+  profile_image_path    String?   @db.VarChar(255)
   id_venue       Int     @db.UnsignedInt
   venues         venues  @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "venue_coordinators_ibfk_1")
 
@@ -185,10 +186,13 @@ model venue_coordinators {
 model venues {
   id_venue               Int                      @id @default(autoincrement()) @db.UnsignedInt
   name                   String                   @db.VarChar(255)
-  location               String?                  @db.VarChar(255)
+  country                String?                  @db.VarChar(255)
+  state                  String?                  @db.VarChar(255)
   address                String?                  @db.VarChar(255)
   logo                   Bytes?                   @db.Blob
   participation_file     Bytes                    @db.Blob
+  logo_path              String?                  @db.VarChar(255)
+  participation_file_path String?                 @db.VarChar(255)
   status                 venues_status            @default(Pendiente)
   created_at             DateTime                 @default(now()) @db.Timestamp(0)
   updated_at             DateTime                 @default(now()) @db.Timestamp(0)

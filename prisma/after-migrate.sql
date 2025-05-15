@@ -1174,12 +1174,14 @@ $$
 
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE registrar_sede(
-    -- Datos sede
+    -- Datos de la sede
     IN nombre_sede VARCHAR(255),
     IN ubicacion_sede VARCHAR(255),
     IN direccion_sede VARCHAR(255),
     IN logo BLOB,
     IN convocatoria BLOB,
+    IN logo_path VARCHAR(255),
+    IN convocatoria_path VARCHAR(255),
 
     -- Coordinadora General
     IN nombre_general VARCHAR(255),
@@ -1191,6 +1193,7 @@ CREATE OR REPLACE PROCEDURE registrar_sede(
     IN usuario_general VARCHAR(255),
     IN contrasena_general VARCHAR(255),
     IN imagen_perfil BLOB,
+    IN imagen_perfil_path VARCHAR(255),
 
     -- Coordinadora Asociada
     IN nombre_asociada VARCHAR(255),
@@ -1216,18 +1219,56 @@ CREATE OR REPLACE PROCEDURE registrar_sede(
 BEGIN
     DECLARE nueva_sede_id INT;
 
-    INSERT INTO venues (name, location, address, logo, participation_file, status)
-    VALUES (nombre_sede, ubicacion_sede, direccion_sede, logo, convocatoria, 'Pendiente');
+    -- Insert into venues with file paths
+    INSERT INTO venues (
+        name, 
+        location, 
+        address, 
+        logo, 
+        participation_file, 
+        logo_path, 
+        participation_file_path, 
+        status
+    )
+    VALUES (
+        nombre_sede, 
+        ubicacion_sede, 
+        direccion_sede, 
+        logo, 
+        convocatoria, 
+        logo_path, 
+        convocatoria_path, 
+        'Pendiente'
+    );
 
     SET nueva_sede_id = LAST_INSERT_ID();
 
+    -- Insert General Coordinator with profile image path
     INSERT INTO venue_coordinators (
-        name, paternal_name, maternal_name, email, phone_number,
-        gender, username, password, profile_image, id_venue
+        name, 
+        paternal_name, 
+        maternal_name, 
+        email, 
+        phone_number,
+        gender, 
+        username, 
+        password, 
+        profile_image, 
+        profile_image_path, 
+        id_venue
     )
     VALUES (
-        nombre_general, paterno_general, materno_general, email_general, celular_general,
-        sexo_general, usuario_general, contrasena_general, imagen_perfil, nueva_sede_id
+        nombre_general, 
+        paterno_general, 
+        materno_general, 
+        email_general, 
+        celular_general,
+        sexo_general, 
+        usuario_general, 
+        contrasena_general, 
+        imagen_perfil, 
+        imagen_perfil_path, 
+        nueva_sede_id
     );
 
     IF nombre_asociada IS NOT NULL AND nombre_asociada != '' THEN
