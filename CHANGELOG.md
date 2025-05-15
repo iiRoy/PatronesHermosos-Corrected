@@ -1,3 +1,19 @@
+## 1.11.0 (2025-05-15)
+
+* chore: manual conflict resolution after merge ([dacbab5](https://github.com/iiRoy/Patrones-Hermosos/commit/dacbab5))
+* feat(tests): Removal of Jest/Completion of Cypress for mutations ([782484f](https://github.com/iiRoy/Patrones-Hermosos/commit/782484f))
+* fix: Text Color and Notifications/ Paths for uploaded files ([1bc6318](https://github.com/iiRoy/Patrones-Hermosos/commit/1bc6318))
+* fix(page): Adaptation of form to multer ([dcf3b6c](https://github.com/iiRoy/Patrones-Hermosos/commit/dcf3b6c))
+* fix(page): Resolved Bugs/Removal of unnecessary Token ([2009fd5](https://github.com/iiRoy/Patrones-Hermosos/commit/2009fd5))
+* fix(prisma): Atomization of Location ([75a3ab6](https://github.com/iiRoy/Patrones-Hermosos/commit/75a3ab6))
+* fix(prisma): Fixed seed script ([c6f6da5](https://github.com/iiRoy/Patrones-Hermosos/commit/c6f6da5))
+* fix(VenueForm): Path fix for the server ([567fdc9](https://github.com/iiRoy/Patrones-Hermosos/commit/567fdc9))
+* feature(server)Instalación de multer ([e216bbd](https://github.com/iiRoy/Patrones-Hermosos/commit/e216bbd))
+* fix(routes) Venue Routes Update ([61b4783](https://github.com/iiRoy/Patrones-Hermosos/commit/61b4783))
+* Merge branch 'main' into forms/sede ([2add8d8](https://github.com/iiRoy/Patrones-Hermosos/commit/2add8d8))
+* feature(VenueForm): Form Complete/Temporal Storage added ([6565f2a](https://github.com/iiRoy/Patrones-Hermosos/commit/6565f2a))
+* feature(VenueForm): Functional Form ([637119b](https://github.com/iiRoy/Patrones-Hermosos/commit/637119b))
+
 ## 1.10.0 (2025-05-15)
 
 * chore: auto-resolve conflicts for known files ([5892018](https://github.com/iiRoy/Patrones-Hermosos/commit/5892018))
