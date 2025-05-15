@@ -1514,6 +1514,75 @@ END$$
 DELIMITER;
 
 
+--Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
+--CALL cambiar_estado_participant(114, "Diegorl", "activar");
+--CALL cambiar_estado_participant(114, "Diegorl", "desactivar");
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_participant(
+    IN p_id_participant INT,
+    IN p_username VARCHAR(255),
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_nuevo_status VARCHAR(255);
+
+    -- Verificar si el participante existe
+    SELECT COUNT(*) INTO v_existe
+    FROM participants
+    WHERE id_participant = p_id_participant;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El participante no existe.';
+    END IF;
+
+    -- Obtener status actual
+    SELECT status INTO v_status
+    FROM participants
+    WHERE id_participant = p_id_participant;
+
+    -- Validaciones de cambio de estado
+    IF p_accion = 'desactivar' THEN
+        IF v_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar participantes con estatus Aprobada.';
+        END IF;
+        SET v_nuevo_status = 'Cancelada';
+
+    ELSEIF p_accion = 'activar' THEN
+        IF v_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar participantes con estatus Cancelada.';
+        END IF;
+        SET v_nuevo_status = 'Aprobada';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
+    END IF;
+
+    -- Registrar el log (sin sede, se usa NULL)
+    CALL registrar_log(
+        'UPDATE',
+        'participants',
+        CONCAT('Se ', p_accion, ' al participante con ID ', p_id_participant),
+        p_username,
+        NULL
+    );
+
+    -- Actualizar el status
+    UPDATE participants
+    SET status = v_nuevo_status
+    WHERE id_participant = p_id_participant;
+END$$
+
+DELIMITER ;
+
+
+
 --Proceso para desactivar una sede, se valida la existencia de la sede, valida su status, lo modifica y registra el log
 --CALL desactivar_venue(2, 'admin@ejemplo.com');
 DELIMITER $$
