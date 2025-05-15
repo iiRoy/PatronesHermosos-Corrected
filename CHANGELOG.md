@@ -1,3 +1,9 @@
+## 1.12.0 (2025-05-15)
+
+* feat(diplomas): Generación de diplomas automático ([8c42553](https://github.com/iiRoy/Patrones-Hermosos/commit/8c42553))
+* feat(merge): Merge from pages/diplomas to main ([f1c7948](https://github.com/iiRoy/Patrones-Hermosos/commit/f1c7948))
+* improvement(diplomas): Corrección en la visualización de diplomas y estructurador de controladores ([e29c976](https://github.com/iiRoy/Patrones-Hermosos/commit/e29c976))
+
 ## 1.11.0 (2025-05-15)
 
 * chore: manual conflict resolution after merge ([dacbab5](https://github.com/iiRoy/Patrones-Hermosos/commit/dacbab5))
