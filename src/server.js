@@ -15,7 +15,7 @@ const dataRoutes = require('./routes/data.routes');
 const statusRoutes = require('./routes/status.routes');
 const venueCoordinatorRoutes = require('./routes/venueCoordinator.routes'); 
 const mentorRoutes = require('./routes/mentor.routes');
-
+const diplomaRoutes = require('./routes/diploma.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const appNext = next({ dev, dir: path.join(__dirname, '..') });
@@ -33,7 +33,8 @@ appNext.prepare().then(() => {
   // Rutas backend
   app.use('/api/auth', authRoutes);
   app.use('/api/venues', venueRoutes);
-  app.use('/api/participants', participantsRoutes);
+  app.use('/api/participants', participantRoutes);
+  app.use('/api/diplomas', diplomaRoutes);
   app.use('/api/superusers', superuserRoutes);
   app.use('/api/data', dataRoutes);
   app.use('/api/collaborators', collaboratorRoutes);
