@@ -144,31 +144,28 @@ const Menu: React.FC = () => {
                         className='fixed z-30'
                         style={{
                           top:
-                          submenuDirection === 'down'
-                            ? submenuCoords.top
-                            : submenuCoords.top + 80,
+                            submenuDirection === 'down'
+                              ? submenuCoords.top
+                              : submenuCoords.top + 80,
                           left: submenuCoords.left - 200,
                           width: 260,
                           height: submenuDirection === 'down'
-                          ? submenuHeight / 14
-                          : submenuHeight / 3, // zona de hover
+                            ? submenuHeight / 14
+                            : submenuHeight / 3, // zona de hover
                         }}
                         onMouseEnter={triggerOpenSubmenu}
                         onMouseLeave={triggerCloseSubmenu}
                       >
                         {/* submenú real */}
                         <div
-                          className={`absolute left-[200px] ${
-                            submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
-                          } transition-opacity duration-200 ${
-                            fadeSubmenu ? 'opacity-100' : 'opacity-0'
-                          }`}
+                          className={`absolute left-[200px] ${submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
+                            } transition-opacity duration-200 ${fadeSubmenu ? 'opacity-100' : 'opacity-0'
+                            }`}
                         >
                           {/* flechita */}
                           <div
-                            className={`absolute -left-3 ${
-                              submenuDirection === 'down' ? 'top-4' : 'top-20'
-                            } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
+                            className={`absolute -left-3 ${submenuDirection === 'down' ? 'top-4' : 'top-20'
+                              } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
                           />
                           <div
                             className='bg-[var(--primaryColor)] rounded-lg shadow-custom-dark w-60 p-2 flex flex-col border border-transparent overflow-y-auto scrollbar-hide'
