@@ -5,7 +5,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 // Interfaces para los datos de cada sección
 interface Participante {
@@ -107,6 +107,15 @@ const SolicitudesRegistroAdmin = () => {
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
+    useEffect(() => {
+        if (currentPage >= totalPages && totalPages > 0) {
+            setCurrentPage(totalPages - 1);
+        } else if (totalPages === 0) {
+            setCurrentPage(0);
+        }
+    }, [filteredData.length, currentPage, totalPages]);
 
     const openPopup = (item: Participante | ApoyoStaff | Sede) => {
         setSelectedItem(item);
@@ -356,7 +365,6 @@ const SolicitudesRegistroAdmin = () => {
                                             <option>Sol</option>
                                             <option>Mar</option>
                                             <option>Montaña</option>
-
                                         </select>
                                     </>
                                 )}
