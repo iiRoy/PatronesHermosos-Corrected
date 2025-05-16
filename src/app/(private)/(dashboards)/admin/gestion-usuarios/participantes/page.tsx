@@ -109,6 +109,15 @@ const GestionParticipantes = () => {
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
+    // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
+    useEffect(() => {
+        if (currentPage >= totalPages && totalPages > 0) {
+            setCurrentPage(totalPages - 1);
+        } else if (totalPages === 0) {
+            setCurrentPage(0);
+        }
+    }, [filteredData.length, currentPage, totalPages]);
+
     const sectionFilterChange = (value: string) => {
         setSection(value);
         setInputValue('');

@@ -6,7 +6,7 @@ import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Trash, Highlighter } from '@/components/icons';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react'; // Añadimos useEffect
 
 // Definir el tipo Coordinadora
 interface Coordinadora {
@@ -67,6 +67,17 @@ const GestionCoordinadoras = () => {
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
+    useEffect(() => {
+        // Si la página actual es mayor o igual al número total de páginas después del filtrado,
+        // ajustamos currentPage para que no exceda el rango válido
+        if (currentPage >= totalPages && totalPages > 0) {
+            setCurrentPage(totalPages - 1);
+        } else if (totalPages === 0) {
+            setCurrentPage(0);
+        }
+    }, [filteredData.length, currentPage, totalPages]);
 
     const sectionFilterChange = (value: string) => {
         setSection(value);

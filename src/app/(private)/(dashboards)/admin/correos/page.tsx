@@ -5,8 +5,8 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { Envelope, EnvelopeOpen, FileArrowDown, Trash } from '@/components/icons';
-import { useState, useMemo } from 'react';
+import { Envelope } from '@/components/icons';
+import { useState, useMemo, useEffect } from 'react';
 
 const CorreosAdmin = () => {
     const [inputValue, setInputValue] = useState('');
@@ -15,7 +15,7 @@ const CorreosAdmin = () => {
     const [fadeSec, setFadeSec] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
-    const rowsPerPage = 4;
+    const rowsPerPage = 5;
 
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
@@ -24,7 +24,7 @@ const CorreosAdmin = () => {
         }));
     };
 
-    const diplomasData = [
+    const correosData = [
         { id: '01', nombre: 'María González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
         { id: '02', nombre: 'Sofía González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
         { id: '03', nombre: 'Bárbara González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
@@ -41,20 +41,33 @@ const CorreosAdmin = () => {
         { id: '14', nombre: 'Fernanda González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
     ];
 
-    // Filtrar los datos según el valor de búsqueda (solo por la columna "Nombre")
+    // Filtrar los datos según el valor de búsqueda (por las columnas "Nombre", "Sede", "Grupo", "Correo", "Asunto")
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
         if (!searchTerm) {
-            return diplomasData;
+            return correosData;
         }
 
-        return diplomasData.filter(item =>
-            item.nombre.toLowerCase().includes(searchTerm)
+        return correosData.filter(item =>
+            item.nombre.toLowerCase().includes(searchTerm) ||
+            item.sede.toLowerCase().includes(searchTerm) ||
+            item.grupo.toLowerCase().includes(searchTerm) ||
+            item.correo.toLowerCase().includes(searchTerm) ||
+            item.asunto.toLowerCase().includes(searchTerm)
         );
     }, [inputValue]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
+    useEffect(() => {
+        if (currentPage >= totalPages && totalPages > 0) {
+            setCurrentPage(totalPages - 1);
+        } else if (totalPages === 0) {
+            setCurrentPage(0);
+        }
+    }, [filteredData.length, currentPage, totalPages]);
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
