@@ -1336,20 +1336,20 @@ END$$
 
 DELIMITER ;
 
-
-DELIMITER $$
+DELIMITER //
 
 CREATE PROCEDURE cambiar_estado_grupo(
     IN p_id_group INT,
     IN p_username VARCHAR(255),
     IN p_id_venue INT,
-    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+    IN p_accion VARCHAR(10)
 )
 BEGIN
     DECLARE existe INT;
     DECLARE p_status VARCHAR(255);
     DECLARE nuevo_status VARCHAR(255);
 
+    -- Verifica si el grupo existe
     SELECT COUNT(*) INTO existe
     FROM groups
     WHERE id_group = p_id_group;
@@ -1359,28 +1359,68 @@ BEGIN
         SET MESSAGE_TEXT = 'El grupo no existe.';
     END IF;
 
+    -- Obtiene el estado actual del grupo
     SELECT status INTO p_status
     FROM groups
     WHERE id_group = p_id_group;
 
+    -- Define la lógica de acción
     IF p_accion = 'desactivar' THEN
         IF p_status != 'Aprobada' THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Solo se pueden desactivar los grupos aprobados.';
         END IF;
+
+        -- Actualiza estado y relación de participantes
+        UPDATE participants
+        SET status = 'Pendiente',
+            id_group = NULL
+        WHERE id_group = p_id_group AND status = 'Aprobada';
+
+        -- Actualiza estado y relación de colaboradores
+        UPDATE collaborators
+        SET status = 'Pendiente',
+            id_group = NULL,
+            role = 'Pendiente'
+        WHERE id_group = p_id_group AND status = 'Aprobada';
+
+        -- Registra en logs la cancelación de participantes y colaboradores
+        CALL registrar_log(
+            'UPDATE',
+            'collaborators',
+            CONCAT('Grupo cancelado (ID ', p_id_group, '): colaboradores aprobados pasaron a Pendiente y se desasignaron.'),
+            p_username,
+            p_id_venue
+        );
+
+        CALL registrar_log(
+            'UPDATE',
+            'participants',
+            CONCAT('Grupo cancelado (ID ', p_id_group, '): participantes aprobados pasaron a Pendiente y se desasignaron.'),
+            p_username,
+            p_id_venue
+        );
+
         SET nuevo_status = 'Cancelada';
+
     ELSEIF p_accion = 'activar' THEN
         IF p_status != 'Cancelada' THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Solo se pueden activar los grupos cancelados.';
         END IF;
         SET nuevo_status = 'Aprobada';
+
     ELSE
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Acción no válida.';
     END IF;
 
-    -- Registrar el log
+    -- Cambia el estado del grupo
+    UPDATE groups
+    SET status = nuevo_status
+    WHERE id_group = p_id_group;
+
+    -- Registra el cambio de estado
     CALL registrar_log(
         'UPDATE',
         'groups',
@@ -1388,14 +1428,77 @@ BEGIN
         p_username,
         p_id_venue
     );
-
-    -- Actualizar el status
-    UPDATE groups
-    SET status = nuevo_status
-    WHERE id_group = p_id_group;
-END$$
+END //
 
 DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER after_venue_cancellation
+AFTER UPDATE ON venues
+FOR EACH ROW
+BEGIN
+  IF NEW.status = 'Cancelada' AND OLD.status != 'Cancelada' THEN
+
+    -- Cancelar todos los grupos de la venue
+    UPDATE groups
+    SET status = 'Cancelada'
+    WHERE id_venue = NEW.id_venue;
+
+    -- Rechazar colaboradores (si estaban Pendientes o Aceptados) y quitarles el role
+    UPDATE collaborators
+    SET status = 'Rechazado',
+        role = NULL
+    WHERE id_group IN (
+      SELECT id_group FROM groups WHERE id_venue = NEW.id_venue
+    ) AND (status = 'Pendiente' OR status = 'Aceptado');
+
+    -- Rechazar participantes (si estaban Pendientes o Aceptados)
+    UPDATE participants
+    SET status = 'Rechazado'
+    WHERE id_group IN (
+      SELECT id_group FROM groups WHERE id_venue = NEW.id_venue
+    ) AND (status = 'Pendiente' OR status = 'Aceptado');
+
+    -- Logs
+    CALL registrar_log(
+      'UPDATE',
+      'venues',
+      CONCAT('Se canceló la venue con ID ', NEW.id_venue, '. Todos sus grupos fueron cancelados.'),
+      'TRIGGER-after_venue_cancellation',
+      NEW.id_venue
+    );
+
+    CALL registrar_log(
+      'UPDATE',
+      'collaborators',
+      CONCAT('Venue cancelada (ID ', NEW.id_venue, '): todos los colaboradores con status Pendiente o Aceptado fueron rechazados y su rol eliminado.'),
+      'TRIGGER-after_venue_cancellation',
+      NEW.id_venue
+    );
+
+    CALL registrar_log(
+      'UPDATE',
+      'participants',
+      CONCAT('Venue cancelada (ID ', NEW.id_venue, '): todos los participantes con status Pendiente o Aceptado fueron rechazados.'),
+      'TRIGGER-after_venue_cancellation',
+      NEW.id_venue
+    );
+
+  END IF;
+END //
+
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
 
 
 --CALL cambiar_estado_colaborador(1, "Diegorl", "activar");
