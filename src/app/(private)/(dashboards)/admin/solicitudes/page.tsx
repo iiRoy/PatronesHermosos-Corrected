@@ -257,10 +257,11 @@ const SolicitudesRegistroAdmin = () => {
                                             <td className="p-2 text-center">{(item as ApoyoStaff).sede}</td>
                                             <td className="p-2 text-center">{(item as ApoyoStaff).fecha}</td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
-                                            </td>
-                                            <td className="p-2 text-center">
-                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
+                                                <div className='flex gap-4 justify-center'>
+                                                    <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
+
+                                                    <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
+                                                </div>
                                             </td>
                                         </>
                                     )}
@@ -274,10 +275,11 @@ const SolicitudesRegistroAdmin = () => {
                                             <td className="p-2 text-center">{(item as Sede).lugar}</td>
                                             <td className="p-2 text-center">{(item as Sede).fecha}</td>
                                             <td className="p-2 text-center">
-                                                <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Sede)} />
-                                            </td>
-                                            <td className="p-2 text-center">
-                                                <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Sede)} />
+                                                <div className='flex gap-4 justify-center'>
+                                                    <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Sede)} />
+
+                                                    <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Sede)} />
+                                                </div>
                                             </td>
                                         </>
                                     )}
