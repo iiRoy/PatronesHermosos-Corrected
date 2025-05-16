@@ -1,3 +1,8 @@
+## 1.9.0-admin.4 (2025-05-16)
+
+* fix(pages): se corrigió la búsqueda con InputField para que funcione en todas las páginas de paginac ([916b75b](https://github.com/iiRoy/Patrones-Hermosos/commit/916b75b))
+* improve(pages): gestión de usuarios mejorado para llamar información de la db ([db59032](https://github.com/iiRoy/Patrones-Hermosos/commit/db59032))
+
 ## 1.9.0-admin.3 (2025-05-15)
 
 * improve(pages): correcciones y mejoras de textos y layout páginas superuser ([aa289c2](https://github.com/iiRoy/Patrones-Hermosos/commit/aa289c2))
