@@ -8,11 +8,24 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
 import { useState, useMemo } from 'react';
 
+// Definir el tipo Apoyo
+interface Apoyo {
+    id: string;
+    nombre: string;
+    sede: string;
+    grupo: string;
+    correo: string;
+    telefono: string;
+    rol: string;
+}
+
 const GestionApoyo = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__'); // Inicializar con "Todas" para sedes
     const [filterActivaExtra, setFilterActivaExtra] = useState({ rol: '__All__' }); // Inicializar con "Todas" para roles
     const [currentPage, setCurrentPage] = useState(0);
+    const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para controlar el popup
+    const [selectedApoyo, setSelectedApoyo] = useState<Apoyo | null>(null); // Persona seleccionada para eliminar
 
     const rowsPerPage = 5;
 
@@ -23,7 +36,7 @@ const GestionApoyo = () => {
         }));
     };
 
-    const apoyoData = [
+    const apoyoData: Apoyo[] = [
         { id: '01', nombre: 'Ana García', sede: 'Puebla', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Instructora' },
         { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
         { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', grupo: '5', correo: 'ejemplo@correo.com', telefono: '2222222222', rol: 'Facilitadora' },
@@ -86,6 +99,26 @@ const GestionApoyo = () => {
         setSection(value);
         setInputValue(''); // Resetear búsqueda al cambiar de sección
         setCurrentPage(0); // Resetear página al cambiar de filtro
+    };
+
+    // Función para abrir el popup de confirmación
+    const handleDeleteClick = (apoyo: Apoyo) => {
+        setSelectedApoyo(apoyo);
+        setIsPopupOpen(true);
+    };
+
+    // Función para cerrar el popup
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        setSelectedApoyo(null);
+    };
+
+    // Función para confirmar la eliminación
+    const handleConfirmDelete = () => {
+        if (selectedApoyo) {
+            alert(`Eliminando a ${selectedApoyo.nombre}`); // Placeholder para la lógica real de eliminación
+            handleClosePopup();
+        }
     };
 
     return (
@@ -156,7 +189,7 @@ const GestionApoyo = () => {
                                     <td className="p-2 text-center">{apoyo.correo}</td>
                                     <td className="p-2 text-center">{apoyo.telefono}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
+                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(apoyo)} />
                                         <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
                                     </td>
                                 </tr>
@@ -175,6 +208,22 @@ const GestionApoyo = () => {
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
+
+                {/* Popup de confirmación */}
+                {isPopupOpen && selectedApoyo && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+                            <p className="my-12">
+                                ¿Segura que quieres eliminar a la {selectedApoyo.rol.toLowerCase()} {selectedApoyo.nombre}?
+                            </p>
+                            <div className="flex justify-center gap-4">
+                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

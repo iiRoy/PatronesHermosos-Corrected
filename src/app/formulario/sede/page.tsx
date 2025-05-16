@@ -41,45 +41,45 @@ interface FormData {
 }
 
 const VenueRegistrationForm: React.FC = () => {
-const [formData, setFormData] = useState<FormData>({
-  generalCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-    gender: 'Mujer',
-    username: '',
-    password: '',
-    confirmPassword: '',
-  },
-  associatedCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-  },
-  staffCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-  },
-  participantsCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-  },
-  venue: {
-    name: '',
-    location: 'Puebla',
-    address: '',
-  },
-});
+  const [formData, setFormData] = useState<FormData>({
+    generalCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+      gender: 'Mujer',
+      username: '',
+      password: '',
+      confirmPassword: '',
+    },
+    associatedCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+    },
+    staffCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+    },
+    participantsCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+    },
+    venue: {
+      name: '',
+      location: 'Puebla',
+      address: '',
+    },
+  });
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [logo, setLogo] = useState<File | null>(null);
@@ -105,7 +105,7 @@ const [formData, setFormData] = useState<FormData>({
     venue: VenueKeys;
   };
 
-  
+
   const handleInputChange = <S extends Section>(
     section: S,
     field: string,
@@ -405,7 +405,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.name}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'name', value)
-              }              
+              }
             />
 
             {/* Apellido Paterno */}
@@ -417,7 +417,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.lastNameP}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'lastNameP', value)
-              }              
+              }
             />
 
             {/* Apellido Materno */}
@@ -429,7 +429,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.lastNameM}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'lastNameM', value)
-              }              
+              }
             />
 
             {/* Correo Electrónico */}
@@ -441,7 +441,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.email}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'email', value)
-              }              
+              }
             />
 
             {/* Celular */}
@@ -453,7 +453,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.phone}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'phone', value)
-              }              
+              }
             />
 
             {/* Sexo */}
@@ -478,7 +478,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.username}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'username', value)
-              }              
+              }
             />
 
             {/* Contraseña */}
@@ -493,7 +493,7 @@ const [formData, setFormData] = useState<FormData>({
                 type={showPassword ? 'text' : 'password'}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'password', value)
-                }                
+                }
               />
               <div className="flex items-center mt-2">
                 <Checkbox
@@ -516,7 +516,7 @@ const [formData, setFormData] = useState<FormData>({
                 value={formData.generalCoordinator.confirmPassword}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'confirmPassword', value)
-                }                
+                }
               />
               <div className="flex items-center mt-2">
                 <Checkbox

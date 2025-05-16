@@ -8,14 +8,26 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
 import { useState, useMemo } from 'react';
 
+// Definir el tipo Mentora
+interface Mentora {
+    id: string;
+    nombre: string;
+    sede: string;
+    numgrupos: string;
+    correo: string;
+    telefono: string;
+}
+
 const GestionMentoras = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__'); // Inicializar con "Todas"
     const [currentPage, setCurrentPage] = useState(0);
+    const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para controlar el popup
+    const [selectedMentora, setSelectedMentora] = useState<Mentora | null>(null); // Mentora seleccionada para eliminar
 
     const rowsPerPage = 5;
 
-    const mentorasData = [
+    const mentorasData: Mentora[] = [
         { id: '01', nombre: 'Ana García', sede: 'Puebla', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', numgrupos: '5', correo: 'ejemplo@correo.com', telefono: '2222222222' },
@@ -59,6 +71,26 @@ const GestionMentoras = () => {
         setSection(value);
         setInputValue(''); // Resetear búsqueda al cambiar de sección
         setCurrentPage(0); // Resetear página al cambiar de filtro
+    };
+
+    // Función para abrir el popup de confirmación
+    const handleDeleteClick = (mentora: Mentora) => {
+        setSelectedMentora(mentora);
+        setIsPopupOpen(true);
+    };
+
+    // Función para cerrar el popup
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        setSelectedMentora(null);
+    };
+
+    // Función para confirmar la eliminación
+    const handleConfirmDelete = () => {
+        if (selectedMentora) {
+            alert(`Eliminando a ${selectedMentora.nombre}`); // Placeholder para la lógica real de eliminación
+            handleClosePopup();
+        }
     };
 
     return (
@@ -120,7 +152,7 @@ const GestionMentoras = () => {
                                     <td className="p-2 text-center">{mentora.correo}</td>
                                     <td className="p-2 text-center">{mentora.telefono}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
+                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(mentora)} />
                                         <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
                                     </td>
                                 </tr>
@@ -139,6 +171,20 @@ const GestionMentoras = () => {
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
+
+                {/* Popup de confirmación */}
+                {isPopupOpen && selectedMentora && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+                            <p className="my-12">¿Estás seguro de que quieres eliminar a la mentora {selectedMentora.nombre}?</p>
+                            <div className="flex justify-center gap-4">
+                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

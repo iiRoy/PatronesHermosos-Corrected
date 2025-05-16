@@ -8,14 +8,25 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Trash, Highlighter } from '@/components/icons';
 import { useState, useMemo } from 'react';
 
+// Definir el tipo Coordinadora
+interface Coordinadora {
+    id: string;
+    nombre: string;
+    sede: string;
+    correo: string;
+    telefono: string;
+}
+
 const GestionCoordinadoras = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__'); // Inicializar con "Todas"
     const [currentPage, setCurrentPage] = useState(0);
+    const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para controlar el popup
+    const [selectedCoordinadora, setSelectedCoordinadora] = useState<Coordinadora | null>(null); // Coordinadora seleccionada para eliminar
 
     const rowsPerPage = 5;
 
-    const coordinadorasData = [
+    const coordinadorasData: Coordinadora[] = [
         { id: '01', nombre: 'Ana García', sede: 'Puebla', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', correo: 'ejemplo@correo.com', telefono: '2222222222' },
         { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', correo: 'ejemplo@correo.com', telefono: '2222222222' },
@@ -61,6 +72,26 @@ const GestionCoordinadoras = () => {
         setSection(value);
         setInputValue(''); // Resetear búsqueda al cambiar de sección
         setCurrentPage(0); // Resetear página al cambiar de filtro
+    };
+
+    // Función para abrir el popup de confirmación
+    const handleDeleteClick = (coordinadora: Coordinadora) => {
+        setSelectedCoordinadora(coordinadora);
+        setIsPopupOpen(true);
+    };
+
+    // Función para cerrar el popup
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        setSelectedCoordinadora(null);
+    };
+
+    // Función para confirmar la eliminación
+    const handleConfirmDelete = () => {
+        if (selectedCoordinadora) {
+            alert(`Eliminando a ${selectedCoordinadora.nombre}`); // Placeholder para la lógica real de eliminación
+            handleClosePopup();
+        }
     };
 
     return (
@@ -120,7 +151,7 @@ const GestionCoordinadoras = () => {
                                     <td className="p-2 text-center">{coordinadora.correo}</td>
                                     <td className="p-2 text-center">{coordinadora.telefono}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
+                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(coordinadora)} />
                                         <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
                                     </td>
                                 </tr>
@@ -139,6 +170,20 @@ const GestionCoordinadoras = () => {
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
+
+                {/* Popup de confirmación */}
+                {isPopupOpen && selectedCoordinadora && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+                            <p className="my-12">¿Estás seguro de que quieres eliminar a la coordinadora {selectedCoordinadora.nombre}?</p>
+                            <div className="flex justify-center gap-4">
+                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
