@@ -1492,7 +1492,219 @@ DELIMITER ;
 
 
 
+DELIMITER //
 
+CREATE FUNCTION fun_validar_cupo(
+    idGrupo INT,
+    rol VARCHAR(255)
+)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE cupoMaximo INT;
+    DECLARE cupoActual INT;
+    DECLARE disponible INT;
+    DECLARE grupoStatus VARCHAR(255);
+
+    -- Verificar estado del grupo
+    SELECT status INTO grupoStatus FROM groups WHERE id_group = idGrupo;
+
+    IF grupoStatus <> 'Aprobada' THEN
+        RETURN 0; -- Grupo cancelado o no activo
+    END IF;
+
+    -- Asignar cupo máximo según el rol
+    IF rol = 'Instructora' THEN
+        SET cupoMaximo = 1;
+    ELSEIF rol = 'Facilitadora' THEN
+        SET cupoMaximo = 2;
+    ELSEIF rol = 'Staff' THEN
+        SET cupoMaximo = 1;
+    ELSE
+        SET cupoMaximo = 0; -- Rol no permitido
+    END IF;
+
+    -- Contar cuántas personas con ese rol ya están en ese grupo y aprobadas
+    SELECT COUNT(*) INTO cupoActual
+    FROM collaborators
+    WHERE id_group = idGrupo AND role = rol AND status = 'Aprobada';
+
+    -- Comparar si hay espacio
+    IF cupoActual < cupoMaximo THEN
+        SET disponible = 1;
+    ELSE
+        SET disponible = 0;
+    END IF;
+
+    RETURN disponible;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE gestionar_solicitud_colab(IN id_colab INT, IN grupo_alternativo INT)
+BEGIN
+    DECLARE grupo_preferido INT;
+    DECLARE rol_colab VARCHAR(255);
+    DECLARE cupo_disponible_preferido INT;
+    DECLARE cupo_disponible_alternativo INT;
+
+    -- Obtener grupo preferido y rol
+    SELECT preferred_group, role
+    INTO grupo_preferido, rol_colab
+    FROM collaborators
+    WHERE id_collaborator = id_colab;
+
+    -- Si grupo preferido es NULL, rechazar
+    IF grupo_preferido IS NULL THEN
+        UPDATE collaborators
+        SET status = 'Rechazada'
+        WHERE id_collaborator = id_colab;
+        LEAVE gestionar_solicitud_colab;
+    END IF;
+
+    -- Validar cupo en grupo preferido
+    SET cupo_disponible_preferido = fun_validar_cupo(grupo_preferido, rol_colab);
+
+    -- Si hay cupo en el preferido, aprobar
+    IF cupo_disponible_preferido = 1 THEN
+        UPDATE collaborators
+        SET id_group = grupo_preferido,
+            status = 'Aprobada',
+            level = 'Asignado',
+            language = 'Asignado'
+        WHERE id_collaborator = id_colab;
+
+    -- Si no hay cupo en el preferido, intentar con alternativo
+    ELSE
+        -- Si grupo alternativo es NULL, rechazar
+        IF grupo_alternativo IS NULL THEN
+            UPDATE collaborators
+            SET status = 'Rechazada'
+            WHERE id_collaborator = id_colab;
+            LEAVE gestionar_solicitud_colab;
+        END IF;
+
+        -- Validar cupo en grupo alternativo
+        SET cupo_disponible_alternativo = fun_validar_cupo(grupo_alternativo, rol_colab);
+
+        IF cupo_disponible_alternativo = 1 THEN
+            UPDATE collaborators
+            SET id_group = grupo_alternativo,
+                status = 'Aprobada',
+                level = 'Asignado',
+                language = 'Asignado'
+            WHERE id_collaborator = id_colab;
+        ELSE
+            UPDATE collaborators
+            SET status = 'Rechazada'
+            WHERE id_collaborator = id_colab;
+        END IF;
+    END IF;
+END //
+
+DELIMITER ;
+
+
+--participantes 
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE gestionar_solicitud_pendiente(
+    IN participante_id INT,
+    IN grupo_alternativo_id INT -- Puede ser NULL si solo se quiere rechazar
+)
+BEGIN
+    DECLARE grupo_preferido INT;
+    DECLARE cupo_max INT;
+    DECLARE total_aprobadas INT;
+    DECLARE status_grupo_preferido VARCHAR(20);
+    DECLARE status_grupo_alternativo VARCHAR(20);
+
+    -- Verifica que el participante esté en estado Pendiente
+    IF (SELECT status FROM participants WHERE id_participant = participante_id) != 'Pendiente' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';
+    END IF;
+
+    -- Obtener grupo preferido
+    SELECT preferred_group INTO grupo_preferido
+    FROM participants
+    WHERE id_participant = participante_id;
+
+    -- Si no hay grupo preferido, solo se puede rechazar
+    IF grupo_preferido IS NULL THEN
+        IF grupo_alternativo_id IS NULL THEN
+            UPDATE participants
+            SET status = 'Rechazada'
+            WHERE id_participant = participante_id;
+            SELECT 'Solicitud rechazada. Puede volver a aplicar a otro grupo.' AS mensaje;
+            LEAVE gestionar_solicitud_pendiente;
+        ELSE
+            SET grupo_preferido = grupo_alternativo_id;
+        END IF;
+    END IF;
+
+    -- Verificar estado y cupo en grupo preferido
+    SELECT status, max_places INTO status_grupo_preferido, cupo_max FROM groups WHERE id_group = grupo_preferido;
+    IF status_grupo_preferido = 'Cancelada' THEN
+        -- Si grupo preferido cancelado y no hay grupo alternativo, rechazar
+        IF grupo_alternativo_id IS NULL THEN
+            UPDATE participants
+            SET status = 'Rechazada'
+            WHERE id_participant = participante_id;
+            SELECT 'Grupo preferido cancelado. Solicitud rechazada.' AS mensaje;
+            LEAVE gestionar_solicitud_pendiente;
+        END IF;
+    END IF;
+
+    SELECT fun_part_aceptadas(grupo_preferido) INTO total_aprobadas;
+
+    IF status_grupo_preferido = 'Cancelada' OR total_aprobadas >= cupo_max THEN
+        -- Grupo preferido no válido (cancelado o lleno), evaluar grupo alternativo
+        IF grupo_alternativo_id IS NULL THEN
+            UPDATE participants
+            SET status = 'Rechazada'
+            WHERE id_participant = participante_id;
+            SELECT 'Grupo preferido cancelado o lleno. Solicitud rechazada.' AS mensaje;
+        ELSE
+            -- Verificar estado y cupo en grupo alternativo
+            SELECT status, max_places INTO status_grupo_alternativo, cupo_max FROM groups WHERE id_group = grupo_alternativo_id;
+
+            IF status_grupo_alternativo = 'Cancelada' THEN
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'El grupo alternativo está cancelado.';
+            END IF;
+
+            SELECT fun_part_aceptadas(grupo_alternativo_id) INTO total_aprobadas;
+
+            IF total_aprobadas >= cupo_max THEN
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'El grupo alternativo también está lleno.';
+            END IF;
+
+            -- Aprobar participante en grupo alternativo
+            UPDATE participants
+            SET id_group = grupo_alternativo_id,
+                status = 'Aprobada'
+            WHERE id_participant = participante_id;
+
+            SELECT 'Participante aprobado en el grupo alternativo.' AS mensaje;
+        END IF;
+    ELSE
+        -- Grupo preferido válido y con cupo, aprobar participante
+        UPDATE participants
+        SET id_group = grupo_preferido,
+            status = 'Aprobada'
+        WHERE id_participant = participante_id;
+
+        SELECT 'Participante aprobado en su grupo preferido.' AS mensaje;
+    END IF;
+END;
+$$
+
+DELIMITER ;
 
 
 
