@@ -910,6 +910,22 @@
   color: var(--text-color);
 }
 
+.tarjeta-archivo-amarilla {
+  color: var(--background);
+  border-left: 20px solid var(--warning);
+}
+
+.titulo-tarjeta-archivo-amarilla h3 {
+  color: var(--warning);
+}
+
+.icono-tarjeta-archivo-amarilla {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: var(--warning);
+  color: var(--text-color);
+}
+
 
 
 @layer base {

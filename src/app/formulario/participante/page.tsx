@@ -440,7 +440,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
             <Navbar />
             <div className="pagina-formulario min-h-screen bg-gray-900 text-white p-4 md:p-8 flex flex-col justify-center items-center">
 
-                <div className="info-formulario w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
+                <div className="info-formulario w-full max-w-6xl rounded-lg shadow-lg p-6 md:p-8">
 
                     {/* Header */}
                     <div className="flex justify-between items-center mb-6">
