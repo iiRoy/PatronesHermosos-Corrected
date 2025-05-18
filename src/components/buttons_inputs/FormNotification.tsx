@@ -18,14 +18,14 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, messages }
         onClose();
       }
     },
-    [onClose]
+    [onClose],
   );
 
   // Focus trapping
   useEffect(() => {
     if (isOpen) {
       const focusableElements = modalRef.current?.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const firstElement = focusableElements?.[0] as HTMLElement;
       const lastElement = focusableElements?.[focusableElements.length - 1] as HTMLElement;
@@ -56,40 +56,40 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, messages }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
+    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300'>
       <div
         ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        className="bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full transform transition-transform duration-300 scale-100"
+        role='dialog'
+        aria-modal='true'
+        aria-labelledby='modal-title'
+        className='bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full transform transition-transform duration-300 scale-100'
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 id="modal-title" className="text-xl font-bold text-red-500">
+        <div className='flex justify-between items-center mb-4'>
+          <h2 id='modal-title' className='text-xl font-bold text-red-500'>
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white focus:outline-none"
-            aria-label="Cerrar modal"
+            className='text-gray-400 hover:text-white focus:outline-none'
+            aria-label='Cerrar modal'
           >
             ✕
           </button>
         </div>
-        <div className="mb-4">
+        <div className='mb-4'>
           {messages.length > 0 ? (
             messages.map((message, index) => (
-              <p key={index} className="text-white">
+              <p key={index} className='text-white'>
                 {message}
               </p>
             ))
           ) : (
-            <p className="text-white">No hay mensajes para mostrar.</p>
+            <p className='text-white'>No hay mensajes para mostrar.</p>
           )}
         </div>
         <button
           onClick={onClose}
-          className="w-full bg-purple-600 text-white py-2 rounded-full hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className='w-full bg-purple-600 text-white py-2 rounded-full hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500'
         >
           Cerrar
         </button>
@@ -117,16 +117,16 @@ export const Toast: React.FC<ToastProps> = ({ message, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 transition-opacity duration-300">
+    <div className='fixed top-4 right-4 z-50 transition-opacity duration-300'>
       <div
-        role="alert"
-        className="bg-green-500 text-white p-4 rounded-lg shadow-lg max-w-sm flex items-center justify-between"
+        role='alert'
+        className='bg-green-500 text-white p-4 rounded-lg shadow-lg max-w-sm flex items-center justify-between'
       >
         <div dangerouslySetInnerHTML={{ __html: message }} />
         <button
           onClick={onClose}
-          className="ml-4 text-white hover:text-gray-200 focus:outline-none"
-          aria-label="Cerrar notificación"
+          className='ml-4 text-white hover:text-gray-200 focus:outline-none'
+          aria-label='Cerrar notificación'
         >
           ✕
         </button>

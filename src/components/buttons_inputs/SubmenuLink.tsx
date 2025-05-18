@@ -33,13 +33,13 @@ const SubmenuLink: React.FC<SubmenuLinkProps> = ({ label, Icon, href }) => {
         text-white
       `}
     >
-        <DecoratedIcon
-          strokeColor={'var(--primaryColor)'}
-          strokeWidth={0.7}
-          fillColor={'currentColor'}
-          width={'1.5rem'}
-          height={'1.5rem'}
-        />
+      <DecoratedIcon
+        strokeColor={'var(--primaryColor)'}
+        strokeWidth={0.7}
+        fillColor={'currentColor'}
+        width={'1.5rem'}
+        height={'1.5rem'}
+      />
       <span className='text-sm'>{label}</span>
     </Link>
   );

@@ -30,8 +30,8 @@ const EstadisticasAdmin = () => {
             xKey='sede'
             title='Personas Aceptadas por SEDE'
             labelFormatterPrefix='SEDE: '
-            selectAll = {false}
-            deselectAll = {true}
+            selectAll={false}
+            deselectAll={true}
             maxItemsSelected={5}
           />
         </div>

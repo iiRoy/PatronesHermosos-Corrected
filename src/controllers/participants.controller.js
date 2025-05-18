@@ -79,23 +79,23 @@ const getParticipantsTable = async (req, res) => {
           select: {
             name: true,
             venues: {
-              select: { name: true }
-            }
-          }
+              select: { name: true },
+            },
+          },
         },
         tutors: {
-          select: { phone_number: true }
-        }
-      }
+          select: { phone_number: true },
+        },
+      },
     });
 
-    const formatted = participants.map(p => ({
+    const formatted = participants.map((p) => ({
       id: p.id_participant,
       nombre: `${p.name || ''} ${p.paternal_name || ''} ${p.maternal_name || ''}`.trim(),
       sede: p.groups?.venues?.name || 'No asignado',
       grupo: p.groups?.name || 'No asignado',
       correo: p.email,
-      telefono: p.tutors?.phone_number || 'No asignado'
+      telefono: p.tutors?.phone_number || 'No asignado',
     }));
 
     res.json(formatted);
@@ -116,13 +116,13 @@ const updateParticipantBasicInfo = async (req, res) => {
 
     const updatedParticipant = await prisma.participants.update({
       where: { id_participant: parseInt(id) },
-      data: { name, paternal_name, maternal_name, email, id_group }
+      data: { name, paternal_name, maternal_name, email, id_group },
     });
 
     if (tutor && req.body.phone_number) {
       await prisma.tutors.update({
         where: { id_tutor: tutor.id_tutor },
-        data: { phone_number: req.body.phone_number }
+        data: { phone_number: req.body.phone_number },
       });
     }
 
@@ -140,5 +140,5 @@ module.exports = {
   updateParticipant,
   deleteParticipant,
   getParticipantsTable,
-  updateParticipantBasicInfo
+  updateParticipantBasicInfo,
 };

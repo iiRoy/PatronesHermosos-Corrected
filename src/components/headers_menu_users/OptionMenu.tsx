@@ -103,7 +103,13 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
     setColors(newColors);
     setColorPickerOpenIndex(null);
     setColorPickerInput('');
-    notify({ variant: 'two', title: 'Colores Cambiados', message: 'El color fue actualizado correctamente', color: 'purple', iconName: 'CheckFat' });
+    notify({
+      variant: 'two',
+      title: 'Colores Cambiados',
+      message: 'El color fue actualizado correctamente',
+      color: 'purple',
+      iconName: 'CheckFat',
+    });
   };
 
   // Restaura el color default solo de la sección seleccionada
@@ -118,7 +124,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
       title: 'Color Restaurado',
       message: 'Color restaurado al valor por defecto',
       color: 'green',
-      iconName: 'CheckCircle'
+      iconName: 'CheckCircle',
     });
   };
 
@@ -130,7 +136,7 @@ const OptionsMenu: React.FC<OptionsMenuProps> = ({
       title: 'Colores Restaurados',
       message: 'Colores restaurados al valor por defecto',
       color: 'green',
-      iconName: 'CheckCircle'
+      iconName: 'CheckCircle',
     });
   };
 

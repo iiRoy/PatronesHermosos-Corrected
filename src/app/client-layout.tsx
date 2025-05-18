@@ -18,7 +18,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
     setTimeout(() => {
       setShowLoader(false);
-    }, 600); 
+    }, 600);
   }, []);
 
   return (

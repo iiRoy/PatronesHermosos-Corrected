@@ -32,11 +32,17 @@ describe('Venue Registration E2E', () => {
     cy.contains('La dirección de la SEDE es obligatoria').should('be.visible');
     cy.contains('El archivo de participación es obligatorio').should('be.visible');
     cy.contains('El nombre de la Coordinadora de Sede es obligatorio').should('be.visible');
-    cy.contains('El apellido paterno de la Coordinadora de Sede es obligatorio').should('be.visible');
-    cy.contains('El correo electrónico de la Coordinadora de Sede es obligatorio').should('be.visible');
+    cy.contains('El apellido paterno de la Coordinadora de Sede es obligatorio').should(
+      'be.visible',
+    );
+    cy.contains('El correo electrónico de la Coordinadora de Sede es obligatorio').should(
+      'be.visible',
+    );
     cy.contains('El celular de la Coordinadora de Sede es obligatorio').should('be.visible');
     cy.contains('El sexo de la Coordinadora de Sede es obligatorio').should('be.visible');
-    cy.contains('El nombre de usuario de la Coordinadora de Sede es obligatorio').should('be.visible');
+    cy.contains('El nombre de usuario de la Coordinadora de Sede es obligatorio').should(
+      'be.visible',
+    );
     cy.contains('La contraseña de la Coordinadora de Sede es obligatoria').should('be.visible');
     cy.contains('Debes aceptar el aviso de privacidad').should('be.visible');
   });
@@ -77,11 +83,13 @@ describe('Venue Registration E2E', () => {
     cy.get('input[placeholder="P. Sherman Calle Wallaby 42 Sidney"]').type('123 Main St');
 
     // Upload participation file
-    cy.get('input[type="file"]').eq(2).selectFile({
-      contents: Cypress.Buffer.from('dummy pdf'),
-      fileName: 'test.pdf',
-      mimeType: 'application/pdf',
-    });
+    cy.get('input[type="file"]')
+      .eq(2)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy pdf'),
+        fileName: 'test.pdf',
+        mimeType: 'application/pdf',
+      });
 
     // Check privacy notice
     cy.get('input[type="checkbox"]').check();
@@ -98,12 +106,14 @@ describe('Venue Registration E2E', () => {
     });
 
     // Verify database
-    cy.task('queryDatabase', 'SELECT * FROM venues WHERE name = "Instituto Oriente"').then((result) => {
-      expect(result[0].name).to.equal('Instituto Oriente');
-      expect(result[0].country).to.equal('Mexico');
-      expect(result[0].state).to.equal('Puebla');
-      expect(result[0].status).to.equal('Pendiente');
-    });
+    cy.task('queryDatabase', 'SELECT * FROM venues WHERE name = "Instituto Oriente"').then(
+      (result) => {
+        expect(result[0].name).to.equal('Instituto Oriente');
+        expect(result[0].country).to.equal('Mexico');
+        expect(result[0].state).to.equal('Puebla');
+        expect(result[0].status).to.equal('Pendiente');
+      },
+    );
   });
 
   it('submits the form successfully with Costa Rica', () => {
@@ -130,11 +140,13 @@ describe('Venue Registration E2E', () => {
     cy.get('input[placeholder="P. Sherman Calle Wallaby 42 Sidney"]').type('123 Main St');
 
     // Upload participation file
-    cy.get('input[type="file"]').eq(2).selectFile({
-      contents: Cypress.Buffer.from('dummy pdf'),
-      fileName: 'test.pdf',
-      mimeType: 'application/pdf',
-    });
+    cy.get('input[type="file"]')
+      .eq(2)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy pdf'),
+        fileName: 'test.pdf',
+        mimeType: 'application/pdf',
+      });
 
     // Check privacy notice
     cy.get('input[type="checkbox"]').check();
@@ -151,12 +163,14 @@ describe('Venue Registration E2E', () => {
     });
 
     // Verify database
-    cy.task('queryDatabase', 'SELECT * FROM venues WHERE name = "Instituto Oriente"').then((result) => {
-      expect(result[0].name).to.equal('Instituto Oriente');
-      expect(result[0].country).to.equal('Costa Rica');
-      expect(result[0].state).to.equal('San José');
-      expect(result[0].status).to.equal('Pendiente');
-    });
+    cy.task('queryDatabase', 'SELECT * FROM venues WHERE name = "Instituto Oriente"').then(
+      (result) => {
+        expect(result[0].name).to.equal('Instituto Oriente');
+        expect(result[0].country).to.equal('Costa Rica');
+        expect(result[0].state).to.equal('San José');
+        expect(result[0].status).to.equal('Pendiente');
+      },
+    );
   });
 
   it('displays error messages on failed submission', () => {
@@ -184,11 +198,13 @@ describe('Venue Registration E2E', () => {
     cy.get('input[placeholder="P. Sherman Calle Wallaby 42 Sidney"]').type('123 Main St');
 
     // Upload participation file
-    cy.get('input[type="file"]').eq(2).selectFile({
-      contents: Cypress.Buffer.from('dummy pdf'),
-      fileName: 'test.pdf',
-      mimeType: 'application/pdf',
-    });
+    cy.get('input[type="file"]')
+      .eq(2)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy pdf'),
+        fileName: 'test.pdf',
+        mimeType: 'application/pdf',
+      });
 
     // Check privacy notice
     cy.get('input[type="checkbox"]').check();
@@ -197,7 +213,9 @@ describe('Venue Registration E2E', () => {
     cy.contains('Enviar Registro').click();
 
     // Verify error
-    cy.contains('El correo electrónico de la Coordinadora de Sede debe ser válido').should('be.visible');
+    cy.contains('El correo electrónico de la Coordinadora de Sede debe ser válido').should(
+      'be.visible',
+    );
     cy.wait('@createVenue');
   });
 });

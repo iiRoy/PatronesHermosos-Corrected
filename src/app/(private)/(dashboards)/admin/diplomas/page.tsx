@@ -37,10 +37,12 @@ const DiplomasPage = () => {
         const data = await res.json();
 
         setOpcionesSede(data.sedes.map((s: string) => ({ label: s, value: s })));
-        setOpcionesRol(data.roles.map((r: string) => ({
-          label: r.charAt(0).toUpperCase() + r.slice(1),
-          value: r
-        })));
+        setOpcionesRol(
+          data.roles.map((r: string) => ({
+            label: r.charAt(0).toUpperCase() + r.slice(1),
+            value: r,
+          })),
+        );
       } catch {
         toast.error('Error cargando filtros');
       }
@@ -56,7 +58,7 @@ const DiplomasPage = () => {
         const userRole = localStorage.getItem('user_role') || '';
 
         const res = await fetch(
-          `/api/diplomas/users?search=${encodeURIComponent(search)}&sede=${encodeURIComponent(filterSede)}&rol=${encodeURIComponent(filterRol)}&user_id=${userId}&user_role=${userRole}`
+          `/api/diplomas/users?search=${encodeURIComponent(search)}&sede=${encodeURIComponent(filterSede)}&rol=${encodeURIComponent(filterRol)}&user_id=${userId}&user_role=${userRole}`,
         );
 
         if (!res.ok) {
@@ -94,9 +96,13 @@ const DiplomasPage = () => {
 
   const downloadIndividual = async (user: UsuarioDiploma) => {
     try {
-      const res = await axios.post('/api/diplomas/generate', {
-        users: [user],
-      }, { responseType: 'blob' });
+      const res = await axios.post(
+        '/api/diplomas/generate',
+        {
+          users: [user],
+        },
+        { responseType: 'blob' },
+      );
 
       const blob = new Blob([res.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
@@ -113,9 +119,13 @@ const DiplomasPage = () => {
   const downloadZIP = async () => {
     try {
       const usersSelected = users.filter((u) => selected.includes(`${u.id}-${u.role}`));
-      const res = await axios.post('/api/diplomas/generate', {
-        users: usersSelected,
-      }, { responseType: 'blob' });
+      const res = await axios.post(
+        '/api/diplomas/generate',
+        {
+          users: usersSelected,
+        },
+        { responseType: 'blob' },
+      );
 
       const blob = new Blob([res.data], { type: 'application/zip' });
       const url = window.URL.createObjectURL(blob);
@@ -130,27 +140,27 @@ const DiplomasPage = () => {
   };
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Generar Diplomas</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
-                placeholder="Buscar por nombre"
+                label=''
+                placeholder='Buscar por nombre'
                 value={search}
                 onChangeText={setSearch}
-                icon="MagnifyingGlass"
+                icon='MagnifyingGlass'
               />
             </div>
-            <div className="basis-1/3">
+            <div className='basis-1/3'>
               <FiltroEvento
                 disableCheckboxes
-                label="Filtros"
+                label='Filtros'
                 showSecciones
-                labelSecciones="Sede"
+                labelSecciones='Sede'
                 secciones={opcionesSede}
                 seccionActiva={filterSede}
                 onChangeSeccion={setFilterSede}
@@ -168,36 +178,38 @@ const DiplomasPage = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold">
+        <div className='overflow-x-auto'>
+          <table className='min-w-full text-left text-sm'>
+            <thead className='text-purple-800 font-bold'>
               <tr>
-                <th className="p-2 text-center">
-                  <input type="checkbox" onChange={toggleSelectAllVisible} />
+                <th className='p-2 text-center'>
+                  <input type='checkbox' onChange={toggleSelectAllVisible} />
                 </th>
-                <th className="p-2 text-center">Nombre</th>
-                <th className="p-2 text-center">Rol</th>
-                <th className="p-2 text-center">Sede</th>
-                <th className="p-2 text-center">Acciones</th>
+                <th className='p-2 text-center'>Nombre</th>
+                <th className='p-2 text-center'>Rol</th>
+                <th className='p-2 text-center'>Sede</th>
+                <th className='p-2 text-center'>Acciones</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {users.map((user) => (
-                <tr key={`${user.id}-${user.role}`} className="border-t border-gray-300">
-                  <td className="p-2 text-center">
+                <tr key={`${user.id}-${user.role}`} className='border-t border-gray-300'>
+                  <td className='p-2 text-center'>
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       checked={selected.includes(`${user.id}-${user.role}`)}
                       onChange={() => toggleSelect(`${user.id}-${user.role}`)}
                     />
                   </td>
-                  <td className="p-2 text-center">{user.name} {user.paternal_name}</td>
-                  <td className="p-2 text-center capitalize">{user.role}</td>
-                  <td className="p-2 text-center">{user.campus}</td>
-                  <td className="p-2 flex gap-2 justify-center">
+                  <td className='p-2 text-center'>
+                    {user.name} {user.paternal_name}
+                  </td>
+                  <td className='p-2 text-center capitalize'>{user.role}</td>
+                  <td className='p-2 text-center'>{user.campus}</td>
+                  <td className='p-2 flex gap-2 justify-center'>
                     <Button
-                      label=""
-                      variant="primary"
+                      label=''
+                      variant='primary'
                       round
                       showLeftIcon
                       IconLeft={Download}
@@ -210,10 +222,10 @@ const DiplomasPage = () => {
           </table>
         </div>
 
-        <div className="mt-auto pt-4 flex justify-end">
+        <div className='mt-auto pt-4 flex justify-end'>
           <Button
-            label="Generar ZIP"
-            variant="primary"
+            label='Generar ZIP'
+            variant='primary'
             IconLeft={Download}
             showLeftIcon
             onClick={downloadZIP}

@@ -20,7 +20,7 @@ const createCollaborator = async (req, res) => {
     status,
     level,
     language,
-    id_group
+    id_group,
   } = req.body;
 
   try {
@@ -43,8 +43,8 @@ const createCollaborator = async (req, res) => {
         status,
         level,
         language,
-        id_group
-      }
+        id_group,
+      },
     });
 
     res.status(201).json(newCollaborator);
@@ -75,7 +75,7 @@ const getCollaboratorById = async (req, res) => {
 
   try {
     const collaborator = await prisma.collaborators.findUnique({
-      where: { id_collaborator: parseInt(id) }
+      where: { id_collaborator: parseInt(id) },
     });
 
     if (!collaborator) {
@@ -101,7 +101,7 @@ const updateCollaborator = async (req, res) => {
   try {
     const updatedCollaborator = await prisma.collaborators.update({
       where: { id_collaborator: parseInt(id) },
-      data
+      data,
     });
 
     res.json(updatedCollaborator);
@@ -121,7 +121,7 @@ const deleteCollaborator = async (req, res) => {
 
   try {
     await prisma.collaborators.delete({
-      where: { id_collaborator: parseInt(id) }
+      where: { id_collaborator: parseInt(id) },
     });
 
     res.json({ message: 'Colaboradora eliminada correctamente' });
@@ -145,21 +145,21 @@ const getCollaboratorsTable = async (req, res) => {
             id_group: true,
             venues: {
               select: {
-                name: true
-              }
-            }
-          }
-        }
-      }
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    const formatted = collaborators.map(collab => ({
+    const formatted = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name,
       venue: collab.groups?.venues?.name || null,
       group: collab.groups?.id_group || null,
       email: collab.email,
-      phone_number: collab.phone_number
+      phone_number: collab.phone_number,
     }));
 
     res.json(formatted);
@@ -172,14 +172,7 @@ const getCollaboratorsTable = async (req, res) => {
 // Actualizar solo nombre, sede, correo, teléfono y grupo
 const updateCollaboratorBasicInfo = async (req, res) => {
   const { id } = req.params;
-  const {
-    name,
-    paternal_name,
-    maternal_name,
-    email,
-    phone_number,
-    id_group
-  } = req.body;
+  const { name, paternal_name, maternal_name, email, phone_number, id_group } = req.body;
 
   if (isNaN(parseInt(id))) {
     return res.status(400).json({ message: 'ID de colaboradora inválido' });
@@ -194,8 +187,8 @@ const updateCollaboratorBasicInfo = async (req, res) => {
         maternal_name,
         email,
         phone_number,
-        id_group
-      }
+        id_group,
+      },
     });
 
     res.json(updatedCollaborator);
@@ -212,5 +205,5 @@ module.exports = {
   updateCollaborator,
   deleteCollaborator,
   getCollaboratorsTable,
-  updateCollaboratorBasicInfo
+  updateCollaboratorBasicInfo,
 };

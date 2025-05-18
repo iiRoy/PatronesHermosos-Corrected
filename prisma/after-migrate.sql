@@ -1439,7 +1439,7 @@ END$$
 DELIMITER ;
 
 
---CALL cambiar_estado_colaborador(1, "Diegorl", "activar");
+--CALL cambiar_estado_colaborador(1, 'Diegorl', 'activar');
 --Se cambia el estado del colaborador, de aprobada a cancelada, y viceversa.
 DELIMITER $$
 
@@ -1522,9 +1522,9 @@ BEGIN
  FROM groups
  WHERE id_group = p_id_group;
 
- IF existe = 0
-    SIGNAL SQLSTATE "45000"
-    SET MESSAGE_TEXT = "El grupo no existe.";
+ IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El grupo no existe.';
 END IF;
 
 
@@ -1532,9 +1532,9 @@ SELECT status INTO p_status
 FROM groups
 WHERE id_group = p_id_group;
 
-IF p_status != "Aprobada" THEN
-  SIGNAL SQLSTATE "45000"
-  SET MESSAGE_TEXT = "Solo se pueden eliminar los grupos aprobados.";
+IF p_status != 'Aprobada' THEN
+  SIGNAL SQLSTATE '45000'
+  SET MESSAGE_TEXT = 'Solo se pueden eliminar los grupos aprobados.';
 END IF;
 
     -- Registrar el log
@@ -1552,12 +1552,12 @@ END IF;
     WHERE id_group = p_id_group;
 END$$
 
-DELIMITER;
+DELIMITER ;
 
 
 --Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
---CALL cambiar_estado_participant(114, "Diegorl", "activar");
---CALL cambiar_estado_participant(114, "Diegorl", "desactivar");
+--CALL cambiar_estado_participant(114, 'Diegorl', 'activar');
+--CALL cambiar_estado_participant(114, 'Diegorl', 'desactivar');
 DELIMITER $$
 
 CREATE PROCEDURE cambiar_estado_participant(
@@ -1929,7 +1929,7 @@ DELIMITER ;
 -- Cambios en la Base de Datos
 -- =====================================================
 
--- 🔸 Se agregó una tabla llamada "excluded_date" para poder poner todas las fechas que no se cuentan para la impartición del curso, actualizando de manera automática la fecha de finalización del evento del grupo.
--- 🔸 Se cambió el valor de los "prefered_groups" en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
--- 🔸 Se puso como valor predeterminado de "occupied_places" en la tabla "groups" como 0.
--- 🔸 Se agregaron las columnas de "level" y "language" a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.
+-- 🔸 Se agregó una tabla llamada 'excluded_date' para poder poner todas las fechas que no se cuentan para la impartición del curso, actualizando de manera automática la fecha de finalización del evento del grupo.
+-- 🔸 Se cambió el valor de los 'prefered_groups' en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
+-- 🔸 Se puso como valor predeterminado de 'occupied_places' en la tabla 'groups' como 0.
+-- 🔸 Se agregaron las columnas de 'level' y 'language' a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.

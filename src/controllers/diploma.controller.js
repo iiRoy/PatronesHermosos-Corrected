@@ -133,7 +133,7 @@ const getDiplomaUsers = async (req, res) => {
     ],
   });
 
-try {
+  try {
     // PARTICIPANTES
     if (
       (role === '' || role === 'participante') &&

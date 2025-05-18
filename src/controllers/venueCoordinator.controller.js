@@ -7,7 +7,8 @@ const createCoordinator = async (req, res) => {
 
   if (!name || !email || !phone_number || !username || !id_venue) {
     return res.status(400).json({
-      message: 'Faltan datos necesarios: nombre, apellido, correo, teléfono, nombre de usuario y sede.',
+      message:
+        'Faltan datos necesarios: nombre, apellido, correo, teléfono, nombre de usuario y sede.',
     });
   }
 
@@ -60,18 +61,22 @@ const getSpecific = async (req, res) => {
     res.json({ data: coordinators });
   } catch (error) {
     console.error('Error fetching specific coordinator data:', error);
-    res.status(500).json({ message: 'Error al obtener los datos específicos de los coordinadores' });
+    res
+      .status(500)
+      .json({ message: 'Error al obtener los datos específicos de los coordinadores' });
   }
 };
 
 //actualizar todos los datos de coordinador
 const updateCoordinator = async (req, res) => {
   const { id } = req.params;
-  const { name, paternal_name, maternal_name, email, phone_number, username, profile_image } = req.body;
+  const { name, paternal_name, maternal_name, email, phone_number, username, profile_image } =
+    req.body;
 
   if (!name || !email || !phone_number || !username || !profile_image) {
     return res.status(400).json({
-      message: 'Faltan datos necesarios: nombre, apellido, correo, teléfono, nombre de usuario y imagen de perfil.',
+      message:
+        'Faltan datos necesarios: nombre, apellido, correo, teléfono, nombre de usuario y imagen de perfil.',
     });
   }
 
@@ -104,7 +109,8 @@ const updateCoordinatorFields = async (req, res) => {
   // Validación de los campos
   if (!name || !email || !phone_number || !username) {
     return res.status(400).json({
-      message: 'Solo se pueden actualizar los campos: nombre, apellido, correo, teléfono y nombre de usuario.',
+      message:
+        'Solo se pueden actualizar los campos: nombre, apellido, correo, teléfono y nombre de usuario.',
     });
   }
 

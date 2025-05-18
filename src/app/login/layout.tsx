@@ -30,22 +30,20 @@ export default function LoginLayout({
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#160D17]">
+      <div className='h-screen w-screen flex items-center justify-center bg-[#160D17]'>
         {/* Loader visual */}
-        <div className="text-white text-lg animate-pulse">Cargando...</div>
+        <div className='text-white text-lg animate-pulse'>Cargando...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col text-text bg-[#160D17] overflow-hidden">
-      <div className="h-[13%] min-h-[70px] shadow-custom-dark w-full flex items-center justify-between bg-[var(--background)] rounded-br-[1.5vmax] rounded-bl-[1.5vmax]">
+    <div className='h-screen w-screen flex flex-col text-text bg-[#160D17] overflow-hidden'>
+      <div className='h-[13%] min-h-[70px] shadow-custom-dark w-full flex items-center justify-between bg-[var(--background)] rounded-br-[1.5vmax] rounded-bl-[1.5vmax]'>
         <Navbar />
       </div>
-      <div className="h-[87%] w-full flex items-center justify-center relative z-0 overflow-hidden">
-        <div className="flex flex-col justify-center items-center w-full h-full">
-          {children}
-        </div>
+      <div className='h-[87%] w-full flex items-center justify-center relative z-0 overflow-hidden'>
+        <div className='flex flex-col justify-center items-center w-full h-full'>{children}</div>
       </div>
     </div>
   );

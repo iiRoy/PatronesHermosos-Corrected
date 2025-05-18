@@ -21,7 +21,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   const triggerTransition = (href: string) => {
     setShowOverlay(true);
     setTargetPath(href);
-  
+
     setTimeout(() => {
       if (href !== pathname) {
         router.push(href);
@@ -45,12 +45,12 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
       <AnimatePresence>
         {showOverlay && (
           <motion.div
-            key="overlay"
+            key='overlay'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: (targetPath && pathname === targetPath) ? 0.6 : 0.2 }}
-            className="fixed top-0 left-0 w-full h-full z-20 bg-back pointer-events-none"
+            transition={{ duration: targetPath && pathname === targetPath ? 0.6 : 0.2 }}
+            className='fixed top-0 left-0 w-full h-full z-20 bg-back pointer-events-none'
           />
         )}
       </AnimatePresence>
