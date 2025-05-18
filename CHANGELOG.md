@@ -1,3 +1,8 @@
+## <small>1.12.1 (2025-05-18)</small>
+
+* fix(database): Errores en procedimientos, formateo de documentos y errores en tablas. ([edd2df1](https://github.com/iiRoy/Patrones-Hermosos/commit/edd2df1))
+* style(visual): Corrección a Componentes menores ([daa95ac](https://github.com/iiRoy/Patrones-Hermosos/commit/daa95ac))
+
 ## 1.12.0 (2025-05-15)
 
 - feat(diplomas): Generación de diplomas automático ([8c42553](https://github.com/iiRoy/Patrones-Hermosos/commit/8c42553))
