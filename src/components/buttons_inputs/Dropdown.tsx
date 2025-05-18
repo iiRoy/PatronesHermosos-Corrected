@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { CaretDoubleDown } from '@/components/icons';
 
 interface DropdownProps {
   label: string;
@@ -9,15 +10,15 @@ interface DropdownProps {
   value: string;
   onChange: (value: string) => void;
   variant?:
-    | 'accent'
-    | 'primary'
-    | 'secondary-shade'
-    | 'text-color'
-    | 'warning'
-    | 'accent-disabled'
-    | 'primary-disabled'
-    | 'secondary-shade-disabled'
-    | 'text-color-disabled';
+  | 'accent'
+  | 'primary'
+  | 'secondary-shade'
+  | 'text-color'
+  | 'warning'
+  | 'accent-disabled'
+  | 'primary-disabled'
+  | 'secondary-shade-disabled'
+  | 'text-color-disabled';
   dim?: boolean;
   Icon: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
 }
@@ -46,7 +47,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-10 py-2 bg-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
+          className="w-full pl-10 pr-10 py-2 bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer z-30"
           disabled={variant.includes('disabled')}
         >
           {options.map((option) => (
@@ -55,7 +56,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             </option>
           ))}
         </select>
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">▼</span>
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2"><CaretDoubleDown></CaretDoubleDown></span>
       </div>
     </div>
   );
