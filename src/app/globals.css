@@ -168,6 +168,10 @@
   gap: 10px;
 }
 
+.icon-white {
+  color: var(--text-color);
+}
+
 .row {
   display: flex;
   gap: 10px;
