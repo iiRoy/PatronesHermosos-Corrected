@@ -195,6 +195,12 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
             </div>
           </div>
 
+        {error && (
+          <div className="text-red-500 text-sm text-center my-4" role="alert">
+            {error}
+          </div>
+        )}
+
           <div className='flex flex-col-reverse md:flex-row-reverse gap-4 md:gap-2 justify-between items-center mt-4 mb-7 ml-7 mr-7'>
             <div
               className={`custom-legend-container flex md:w-[60%] w-full transition duration-300 ease-in-out ${
