@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
-import { tree } from 'next/dist/build/templates/app-page';
 
 interface InputFieldProps {
   label: string;

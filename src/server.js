@@ -60,7 +60,7 @@ appNext.prepare().then(() => {
   // Rutas backend
   app.use('/api/auth', authRoutes);
   app.use('/api/venues', venueRoutes);
-  app.use('/api/participants', participantRoutes);
+  app.use('/api/participants', participantsRoutes);
   app.use('/api/diplomas', diplomaRoutes);
   app.use('/api/superusers', superuserRoutes);
   app.use('/api/data', dataRoutes);
