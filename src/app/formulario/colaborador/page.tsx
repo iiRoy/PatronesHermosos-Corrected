@@ -135,11 +135,11 @@ const CollaboratorRegistrationForm: React.FC = () => {
         { sede: 'ITESM Hidalgo', modalidad: 'Presencial', grupos: '8', coordinadora: 'Laura Pinal', fechas: 'DD/MM - DD/MM' },
     ];
 
-    // Obtener sedes únicas
-    const uniqueSedes = Array.from(new Set(sedesData.map(sedes => sedes.sede))).sort();
-    const sedeOptions = [
+    // Obtener modalidades únicas
+    const uniqueModalidades = Array.from(new Set(sedesData.map(sedes => sedes.modalidad))).sort();
+    const modalidadesOptions = [
         { label: 'Todas', value: '__All__' },
-        ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
+        ...uniqueModalidades.map(modalidad => ({ label: modalidad, value: modalidad })),
     ];
 
     // Filtrar los datos según el valor de búsqueda y sede
@@ -150,7 +150,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
             const matchesSearch = !searchTerm || sedes.sede.toLowerCase().includes(searchTerm);
 
             // Filtro por sede
-            const matchesSede = section === '__All__' ? true : sedes.sede === section;
+            const matchesSede = section === '__All__' ? true : sedes.modalidad === section;
 
             return matchesSearch && matchesSede;
         });
@@ -607,11 +607,11 @@ const CollaboratorRegistrationForm: React.FC = () => {
                         <h2 className='mx-4 font-semibold'>SEDE Elegida: </h2>
                         <p>{chosenSede || 'Ninguna'}</p>
                     </div>
-                    <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh] justify-center">
+                    <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh]">
 
                         {/* Fila de búsqueda, filtro y botón */}
-                        <div className="flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex flex-1 gap-4">
+                        <div className="flex flex-wrap justify-between gap-4">
+                            <div className="flex flex-1 gap-4 top-0">
                                 <div className="basis-2/3">
                                     <InputField
                                         label=""
@@ -628,10 +628,10 @@ const CollaboratorRegistrationForm: React.FC = () => {
                                 <div className="basis-1/3">
                                     <FiltroEvento
                                         disableCheckboxes
-                                        label="Filtros"
+                                        label="Modalidad"
                                         showSecciones
-                                        labelSecciones="Sedes"
-                                        secciones={sedeOptions}
+                                        labelSecciones="Seleccionar"
+                                        secciones={modalidadesOptions}
                                         seccionActiva={section}
                                         onChangeSeccion={sectionFilterChange}
                                     />
