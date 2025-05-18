@@ -5,9 +5,10 @@ import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import withIconDecorator from '@/components/decorators/IconDecorator';
+import Navbar from '@/components/headers_menu_users/navbar';
+import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files } from '@/components/icons';
 
 // Import icons using the specified path (placeholders)
-import User from '@components/icons/User'; // For name fields
 import Location from '@components/icons/Gps'; // For localización field
 import Send from '@components/icons/ArrowFatRight'; // For submit button
 
@@ -41,45 +42,45 @@ interface FormData {
 }
 
 const VenueRegistrationForm: React.FC = () => {
-const [formData, setFormData] = useState<FormData>({
-  generalCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-    gender: 'Mujer',
-    username: '',
-    password: '',
-    confirmPassword: '',
-  },
-  associatedCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-  },
-  staffCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-  },
-  participantsCoordinator: {
-    name: '',
-    lastNameP: '',
-    lastNameM: '',
-    email: '',
-    phone: '',
-  },
-  venue: {
-    name: '',
-    location: 'Puebla',
-    address: '',
-  },
-});
+  const [formData, setFormData] = useState<FormData>({
+    generalCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+      gender: 'Mujer',
+      username: '',
+      password: '',
+      confirmPassword: '',
+    },
+    associatedCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+    },
+    staffCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+    },
+    participantsCoordinator: {
+      name: '',
+      lastNameP: '',
+      lastNameM: '',
+      email: '',
+      phone: '',
+    },
+    venue: {
+      name: '',
+      location: 'Puebla',
+      address: '',
+    },
+  });
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [logo, setLogo] = useState<File | null>(null);
@@ -105,7 +106,7 @@ const [formData, setFormData] = useState<FormData>({
     venue: VenueKeys;
   };
 
-  
+
   const handleInputChange = <S extends Section>(
     section: S,
     field: string,
@@ -347,9 +348,10 @@ const [formData, setFormData] = useState<FormData>({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
-        <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
+    <form className='pagina-formulario' onSubmit={handleSubmit}>
+      <Navbar />
+      <div className="pagina-formulario min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
+        <div className="info-formulario w-full max-w-6xl rounded-lg shadow-lg p-6 md:p-8">
           {/* Error/Success Messages */}
           {errors.length > 0 && (
             <div className="mb-4 p-4 bg-red-500 text-white rounded-lg">
@@ -367,14 +369,15 @@ const [formData, setFormData] = useState<FormData>({
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
-              <div className="w-2 h-12 bg-purple-600 mr-4"></div>
-              <h1 className="text-2xl md:text-3xl font-bold">Formulario de Registro<br />SEDE</h1>
+              <div className="w-2 rounded-full h-16 mr-4 notification-icon-purple"></div>
+              <h1 className="text-2xl"><span className='italic'>Formulario de Registro</span><br /><span className='font-bold text-3xl'>Sedes</span></h1>
             </div>
             <Button
-              label="Regresar"
+              label=""
               variant="error"
-              showRightIcon
-              IconRight={() => <span className="text-white">✕</span>}
+              showLeftIcon
+              round
+              IconLeft={X}
               onClick={() => console.log('Regresar clicked')}
               className="px-4 py-2 rounded-full flex items-center"
             />
@@ -383,7 +386,7 @@ const [formData, setFormData] = useState<FormData>({
           {/* Section: Datos Coordinadora General */}
           <div className="mb-6">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">❀</span> Datos Coordinadora General
+              <span className="mr-2"><FlowerLotus></FlowerLotus></span> Datos Coordinadora General
             </h2>
             <p className="text-gray-400 text-sm md:text-base mb-4">
               Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
@@ -395,41 +398,41 @@ const [formData, setFormData] = useState<FormData>({
           </div>
 
           {/* Form Fields: Datos Coordinadora General */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Nombre */}
             <InputField
               label="Nombre(s)*"
               placeholder="Edna"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.generalCoordinator.name}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'name', value)
-              }              
+              }
             />
 
             {/* Apellido Paterno */}
             <InputField
               label="Apellido Paterno*"
               placeholder="Moda"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.generalCoordinator.lastNameP}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'lastNameP', value)
-              }              
+              }
             />
 
             {/* Apellido Materno */}
             <InputField
               label="Apellido Materno"
               placeholder="Apellido Materno"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.generalCoordinator.lastNameM}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'lastNameM', value)
-              }              
+              }
             />
 
             {/* Correo Electrónico */}
@@ -441,7 +444,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.email}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'email', value)
-              }              
+              }
             />
 
             {/* Celular */}
@@ -453,7 +456,7 @@ const [formData, setFormData] = useState<FormData>({
               value={formData.generalCoordinator.phone}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'phone', value)
-              }              
+              }
             />
 
             {/* Sexo */}
@@ -473,12 +476,12 @@ const [formData, setFormData] = useState<FormData>({
               label="Nombre de Usuario*"
               description="El nombre de usuario solo puede contener letras, números y guiones bajos."
               placeholder="edna_moda"
-              variant="accent"
+              variant="secondary"
               icon={"User"}
               value={formData.generalCoordinator.username}
               onChangeText={(value: string) =>
                 handleInputChange('generalCoordinator', 'username', value)
-              }              
+              }
             />
 
             {/* Contraseña */}
@@ -487,13 +490,13 @@ const [formData, setFormData] = useState<FormData>({
                 label="Contraseña*"
                 description="Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial."
                 placeholder="********"
-                variant="accent"
+                variant="secondary"
                 icon={"Lock"}
                 value={formData.generalCoordinator.password}
                 type={showPassword ? 'text' : 'password'}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'password', value)
-                }                
+                }
               />
               <div className="flex items-center mt-2">
                 <Checkbox
@@ -510,13 +513,13 @@ const [formData, setFormData] = useState<FormData>({
               <InputField
                 label="Confirmar Contraseña*"
                 placeholder="********"
-                variant="accent"
+                variant="secondary"
                 icon={"Lock"}
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={formData.generalCoordinator.confirmPassword}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'confirmPassword', value)
-                }                
+                }
               />
               <div className="flex items-center mt-2">
                 <Checkbox
@@ -530,12 +533,12 @@ const [formData, setFormData] = useState<FormData>({
           </div>
 
           {/* Sube tu foto de perfil */}
-          <div className="mt-6 p-4 bg-white text-black rounded-lg">
-            <div className="flex items-center">
-              <span className="text-purple-600 text-2xl mr-2">🖼</span>
+          <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo-amarilla">
+            <div className="flex items-center titulo-tarjeta-archivo-amarilla">
+              <span className="text-purple-600 text-2xl mr-2 icono-tarjeta-archivo-amarilla"><FileJpg></FileJpg></span>
               <h3 className="text-lg font-semibold">Sube tu foto de perfil</h3>
             </div>
-            <p className="text-gray-600 text-sm mt-2">
+            <p className="text-sm my-6">
               Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte dentro del sistema. No es obligatorio subir una imagen, sin embargo lo recomendamos.
             </p>
             <input
@@ -545,7 +548,7 @@ const [formData, setFormData] = useState<FormData>({
               className="mt-4"
             />
             {profileImage && (
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-xs text-gray-600">
                 Archivo seleccionado: {profileImage.name}
               </p>
             )}
@@ -554,7 +557,7 @@ const [formData, setFormData] = useState<FormData>({
           {/* Section: Datos Coordinadora Asociada */}
           <div className="mt-8">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">✨</span> Datos Coordinadora Asociada
+              <span className="mr-2"><Sparkle></Sparkle></span> Datos Coordinadora Asociada
             </h2>
             <p className="text-gray-400 text-sm md:text-base mb-4">
               Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
@@ -563,12 +566,12 @@ const [formData, setFormData] = useState<FormData>({
           </div>
 
           {/* Form Fields: Datos Coordinadora Asociada */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {/* Nombre */}
             <InputField
               label="Nombre(s)*"
               placeholder="Juana"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.associatedCoordinator.name}
               onChangeText={(value: string) =>
@@ -580,7 +583,7 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Apellido Paterno*"
               placeholder="De Arco"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.associatedCoordinator.lastNameP}
               onChangeText={(value: string) =>
@@ -592,13 +595,16 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Apellido Materno"
               placeholder="Ramírez"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.associatedCoordinator.lastNameM}
               onChangeText={(value: string) =>
                 handleInputChange('associatedCoordinator', 'lastNameM', value)
               }
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Correo Electrónico */}
             <InputField
@@ -628,7 +634,7 @@ const [formData, setFormData] = useState<FormData>({
           {/* Section: Datos Coordinadora de Informes (Staff) */}
           <div className="mt-8">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">🏫</span> Datos Coordinadora de Informes (Staff)
+              <span className="mr-2"><Student></Student></span> Datos Coordinadora de Informes (Staff)
             </h2>
             <p className="text-gray-400 text-sm md:text-base mb-4">
               Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
@@ -637,12 +643,12 @@ const [formData, setFormData] = useState<FormData>({
           </div>
 
           {/* Form Fields: Datos Coordinadora de Informes (Staff) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Nombre */}
             <InputField
               label="Nombre(s)*"
               placeholder="Juana"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.staffCoordinator.name}
               onChangeText={(value: string) =>
@@ -654,7 +660,7 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Apellido Paterno*"
               placeholder="De Arco"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.staffCoordinator.lastNameP}
               onChangeText={(value: string) =>
@@ -666,7 +672,7 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Apellido Materno"
               placeholder="Ramírez"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.staffCoordinator.lastNameM}
               onChangeText={(value: string) =>
@@ -674,6 +680,9 @@ const [formData, setFormData] = useState<FormData>({
               }
             />
 
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Correo Electrónico */}
             <InputField
               label="Correo Electrónico*"
@@ -702,7 +711,7 @@ const [formData, setFormData] = useState<FormData>({
           {/* Section: Datos Coordinadora de Informes (Participantes) */}
           <div className="mt-8">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">👥</span> Datos Coordinadora de Informes (Participantes)
+              <span className="mr-2"><UsersFour></UsersFour></span> Datos Coordinadora de Informes (Participantes)
             </h2>
             <p className="text-gray-400 text-sm md:text-base mb-4">
               Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
@@ -711,12 +720,12 @@ const [formData, setFormData] = useState<FormData>({
           </div>
 
           {/* Form Fields: Datos Coordinadora de Informes (Participantes) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Nombre */}
             <InputField
               label="Nombre(s)*"
               placeholder="Juana"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.participantsCoordinator.name}
               onChangeText={(value: string) =>
@@ -728,7 +737,7 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Apellido Paterno*"
               placeholder="De Arco"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.participantsCoordinator.lastNameP}
               onChangeText={(value: string) =>
@@ -740,14 +749,16 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Apellido Materno"
               placeholder="Ramírez"
-              variant="accent"
+              variant="primary"
               icon={"User"}
               value={formData.participantsCoordinator.lastNameM}
               onChangeText={(value: string) =>
                 handleInputChange('participantsCoordinator', 'lastNameM', value)
               }
             />
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Correo Electrónico */}
             <InputField
               label="Correo Electrónico*"
@@ -776,7 +787,7 @@ const [formData, setFormData] = useState<FormData>({
           {/* Section: Datos SEDE */}
           <div className="mt-8">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">🧪</span> Datos SEDE
+              <span className="mr-2"><Bank></Bank></span> Datos SEDE
             </h2>
             <p className="text-gray-400 text-sm md:text-base mb-4">
               Responde con sinceridad las siguientes preguntas acerca de los datos de tu SEDE.<br />
@@ -790,7 +801,7 @@ const [formData, setFormData] = useState<FormData>({
             <InputField
               label="Nombre de la SEDE*"
               placeholder="Instituto Oriente"
-              variant="accent"
+              variant="primary"
               icon={"GraduationCap"}
               value={formData.venue.name}
               onChangeText={(value: string) =>
@@ -806,7 +817,7 @@ const [formData, setFormData] = useState<FormData>({
               onChange={(value: string) =>
                 handleInputChange('venue', 'location', value)
               }
-              variant="accent"
+              variant="primary"
               Icon={withIconDecorator(Location)}
             />
 
@@ -826,12 +837,12 @@ const [formData, setFormData] = useState<FormData>({
           </div>
 
           {/* Sube tu logo */}
-          <div className="mt-6 p-4 bg-white text-black rounded-lg">
-            <div className="flex items-center">
-              <span className="text-purple-600 text-2xl mr-2">🖼</span>
+          <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
+            <div className="flex items-center titulo-tarjeta-archivo">
+              <span className="text-2xl mr-2 icono-tarjeta-archivo"><FileJpg></FileJpg></span>
               <h3 className="text-lg font-semibold">Sube tu logo</h3>
             </div>
-            <p className="text-gray-600 text-sm mt-2">
+            <p className="text-sm my-6">
               Selecciona una imagen que represente a tu SEDE, la cual se presentará a los usuarios para su fácil reconocimiento. No es obligatorio subir una imagen, sin embargo lo recomendamos.
             </p>
             <input
@@ -841,21 +852,30 @@ const [formData, setFormData] = useState<FormData>({
               className="mt-4"
             />
             {logo && (
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-xs text-gray-600">
                 Archivo seleccionado: {logo.name}
               </p>
             )}
           </div>
 
-          {/* Convocatoria SEDE */}
-          <div className="mt-6 p-4 bg-white text-black rounded-lg">
-            <div className="flex items-center">
-              <span className="text-purple-600 text-2xl mr-2">📄</span>
-              <h3 className="text-lg font-semibold">Convocatoria SEDE</h3>
-            </div>
-            <p className="text-gray-600 text-sm mt-2">
-              Dentro de esta sección tendrás que subir el permiso de participación, la cual deberá de estar firmado por un representante legal de la institución.<br />
+          <div className="mt-8">
+            <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+              <span className="mr-2"><Files></Files></span> Convocatoria SEDE
+            </h2>
+            <p className="text-gray-400 text-sm md:text-base mb-4">
+              Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá de estar firmado por un representante legal de la institución participante. <br />
               Esta sección es obligatoria.
+            </p>
+          </div>
+
+          {/* Convocatoria SEDE */}
+          <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
+            <div className="flex items-center titulo-tarjeta-archivo">
+              <span className="text-2xl mr-2 icono-tarjeta-archivo"><FilePdf></FilePdf></span>
+              <h3 className="text-lg font-semibold">Sube tu convocatoria</h3>
+            </div>
+            <p className="text-gray-600 text-sm my-6">
+              Selecciona un documento para subir.  Ten cuidado al subir tus documentos y verifica dos veces que se suba correctamente.
             </p>
             <input
               type="file"
@@ -864,7 +884,7 @@ const [formData, setFormData] = useState<FormData>({
               className="mt-4"
             />
             {participationFile && (
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-xs">
                 Archivo seleccionado: {participationFile.name}
               </p>
             )}
@@ -873,7 +893,7 @@ const [formData, setFormData] = useState<FormData>({
           {/* Aviso de Privacidad */}
           <div className="mt-8">
             <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-              <span className="text-purple-400 mr-2">🔒</span> Aviso de Privacidad
+              <span className="mr-2"><Megaphone></Megaphone></span> Aviso de Privacidad
             </h2>
             <p className="text-gray-400 text-sm">
               Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
