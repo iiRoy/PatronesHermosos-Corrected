@@ -1,4 +1,4 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 const mysql = require('mysql2/promise');
 
 export default defineConfig({

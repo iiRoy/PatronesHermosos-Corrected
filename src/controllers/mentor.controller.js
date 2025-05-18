@@ -131,54 +131,49 @@ const remove = async (req, res) => {
   }
 };
 
-
 const getGroupMentor = async (req, res) => {
-    const {id_mentor} = req.params;
+  const { id_mentor } = req.params;
 
-    if (isNaN(parseInt(id_mentor))) {
-        return res.status(400).json({ message: "ID de mentora inválido" });
-      }    
+  if (isNaN(parseInt(id_mentor))) {
+    return res.status(400).json({ message: 'ID de mentora inválido' });
+  }
 
-    try {
-        const groups = await prisma.groups.findMany({
-            where: {
-                id_mentor: parseInt(id_mentor),
-            },
-        });
-        res.json(groups);
-
-    }   catch(error) {
-        console.error("Error fetching mentors:", error);
-        res.status(500).json({message:"Error al obtener grupos de la mentora"})
-    }
-
-}
-
+  try {
+    const groups = await prisma.groups.findMany({
+      where: {
+        id_mentor: parseInt(id_mentor),
+      },
+    });
+    res.json(groups);
+  } catch (error) {
+    console.error('Error fetching mentors:', error);
+    res.status(500).json({ message: 'Error al obtener grupos de la mentora' });
+  }
+};
 
 const removeMentorFromGroup = async (req, res) => {
-    const { id_group } = req.params;
-  
-    if (isNaN(parseInt(id_group))) {
-      return res.status(400).json({ message: "ID de grupo inválido" });
-    }
-  
-    try {
-      const updatedGroup = await prisma.groups.update({
-        where: {
-          id_group: parseInt(id_group),
-        },
-        data: {
-          id_mentor: null,
-        },
-      });
-  
-      res.json({ message: "Mentora removida del grupo correctamente", updatedGroup });
-    } catch (error) {
-      console.error("Error removing mentor from group:", error);
-      res.status(500).json({ message: "Error al remover mentora del grupo" });
-    }
-  };
-  
+  const { id_group } = req.params;
+
+  if (isNaN(parseInt(id_group))) {
+    return res.status(400).json({ message: 'ID de grupo inválido' });
+  }
+
+  try {
+    const updatedGroup = await prisma.groups.update({
+      where: {
+        id_group: parseInt(id_group),
+      },
+      data: {
+        id_mentor: null,
+      },
+    });
+
+    res.json({ message: 'Mentora removida del grupo correctamente', updatedGroup });
+  } catch (error) {
+    console.error('Error removing mentor from group:', error);
+    res.status(500).json({ message: 'Error al remover mentora del grupo' });
+  }
+};
 
 module.exports = {
   getAll,

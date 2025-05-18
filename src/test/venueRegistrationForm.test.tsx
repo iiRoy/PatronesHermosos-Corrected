@@ -38,7 +38,9 @@ interface Sede {
 
 const SolicitudesRegistroAdmin = () => {
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES'>('PARTICIPANTES');
+  const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES'>(
+    'PARTICIPANTES',
+  );
   const [currentPage, setCurrentPage] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
@@ -49,20 +51,112 @@ const SolicitudesRegistroAdmin = () => {
   const rowsPerPage = 4;
 
   const participantesData: Participante[] = [
-    { id: '01', nombre: 'Sara Beltrán', sede: 'ITESM Querétaro', fecha: '10/03/2025', correo: 'sara@correo.com', telefono: '2223564354', grupo_preferido: 'Luna' },
-    { id: '02', nombre: 'Tamara Ibarra', sede: 'ITESM Puebla', fecha: '10/03/2025', correo: 'tamara@correo.com', telefono: '2224722344', grupo_preferido: 'Sol' },
-    { id: '03', nombre: 'Violeta Espinosa', sede: 'ITESM Monterrey', fecha: '10/03/2025', correo: 'violeta@correo.com', telefono: '2224665782', grupo_preferido: 'Mar' },
-    { id: '04', nombre: 'Amelia Jurado', sede: 'ITESM Hidalgo', fecha: '10/03/2025', correo: 'amelia@correo.com', telefono: '2225743455', grupo_preferido: 'Montaña' },
-    { id: '05', nombre: 'Andrea González', sede: 'ITESM Puebla', fecha: '10/03/2025', correo: 'andrea@correo.com', telefono: '2224722344', grupo_preferido: 'Mar' },
-    { id: '06', nombre: 'Laura Rodríguez', sede: 'ITESM Monterrey', fecha: '10/03/2025', correo: 'laura@correo.com', telefono: '2224665782', grupo_preferido: 'Luna' },
-    { id: '07', nombre: 'Mónica Sánchez', sede: 'ITESM Hidalgo', fecha: '10/03/2025', correo: 'monica@correo.com', telefono: '2225743455', grupo_preferido: 'Sol' },
+    {
+      id: '01',
+      nombre: 'Sara Beltrán',
+      sede: 'ITESM Querétaro',
+      fecha: '10/03/2025',
+      correo: 'sara@correo.com',
+      telefono: '2223564354',
+      grupo_preferido: 'Luna',
+    },
+    {
+      id: '02',
+      nombre: 'Tamara Ibarra',
+      sede: 'ITESM Puebla',
+      fecha: '10/03/2025',
+      correo: 'tamara@correo.com',
+      telefono: '2224722344',
+      grupo_preferido: 'Sol',
+    },
+    {
+      id: '03',
+      nombre: 'Violeta Espinosa',
+      sede: 'ITESM Monterrey',
+      fecha: '10/03/2025',
+      correo: 'violeta@correo.com',
+      telefono: '2224665782',
+      grupo_preferido: 'Mar',
+    },
+    {
+      id: '04',
+      nombre: 'Amelia Jurado',
+      sede: 'ITESM Hidalgo',
+      fecha: '10/03/2025',
+      correo: 'amelia@correo.com',
+      telefono: '2225743455',
+      grupo_preferido: 'Montaña',
+    },
+    {
+      id: '05',
+      nombre: 'Andrea González',
+      sede: 'ITESM Puebla',
+      fecha: '10/03/2025',
+      correo: 'andrea@correo.com',
+      telefono: '2224722344',
+      grupo_preferido: 'Mar',
+    },
+    {
+      id: '06',
+      nombre: 'Laura Rodríguez',
+      sede: 'ITESM Monterrey',
+      fecha: '10/03/2025',
+      correo: 'laura@correo.com',
+      telefono: '2224665782',
+      grupo_preferido: 'Luna',
+    },
+    {
+      id: '07',
+      nombre: 'Mónica Sánchez',
+      sede: 'ITESM Hidalgo',
+      fecha: '10/03/2025',
+      correo: 'monica@correo.com',
+      telefono: '2225743455',
+      grupo_preferido: 'Sol',
+    },
   ];
 
   const apoyoStaffData: ApoyoStaff[] = [
-    { id: '01', nombre: 'Sofia Ruiz', sede: 'ITESM Guadalajara', fecha: '12/03/2025', correo: 'sofia@correo.com', telefono: '2224655893', area: 'Staff', grupo_preferido: 'Luna' },
-    { id: '02', nombre: 'Laura Gómez', sede: 'ITESM Monterrey', fecha: '12/03/2025', correo: 'laura@correo.com', telefono: '2224653561', area: 'Facilitadora', grupo_preferido: 'Sol' },
-    { id: '03', nombre: 'Mariana Sánchez', sede: 'ITESM Monterrey', fecha: '13/03/2025', correo: 'mariana@correo.com', telefono: '2224453389', area: 'Instructora', grupo_preferido: 'Montaña' },
-    { id: '04', nombre: 'Ana Martínez', sede: 'ITESM Puebla', fecha: '13/03/2025', correo: 'ana@correo.com', telefono: '22246553211', area: 'Staff', grupo_preferido: 'Sol' },
+    {
+      id: '01',
+      nombre: 'Sofia Ruiz',
+      sede: 'ITESM Guadalajara',
+      fecha: '12/03/2025',
+      correo: 'sofia@correo.com',
+      telefono: '2224655893',
+      area: 'Staff',
+      grupo_preferido: 'Luna',
+    },
+    {
+      id: '02',
+      nombre: 'Laura Gómez',
+      sede: 'ITESM Monterrey',
+      fecha: '12/03/2025',
+      correo: 'laura@correo.com',
+      telefono: '2224653561',
+      area: 'Facilitadora',
+      grupo_preferido: 'Sol',
+    },
+    {
+      id: '03',
+      nombre: 'Mariana Sánchez',
+      sede: 'ITESM Monterrey',
+      fecha: '13/03/2025',
+      correo: 'mariana@correo.com',
+      telefono: '2224453389',
+      area: 'Instructora',
+      grupo_preferido: 'Montaña',
+    },
+    {
+      id: '04',
+      nombre: 'Ana Martínez',
+      sede: 'ITESM Puebla',
+      fecha: '13/03/2025',
+      correo: 'ana@correo.com',
+      telefono: '22246553211',
+      area: 'Staff',
+      grupo_preferido: 'Sol',
+    },
   ];
 
   const sedesData: Sede[] = [
@@ -75,26 +169,33 @@ const SolicitudesRegistroAdmin = () => {
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
     if (!searchTerm) {
-      return section === 'PARTICIPANTES' ? participantesData : section === 'APOYO & STAFF' ? apoyoStaffData : sedesData;
+      return section === 'PARTICIPANTES'
+        ? participantesData
+        : section === 'APOYO & STAFF'
+          ? apoyoStaffData
+          : sedesData;
     }
 
     if (section === 'PARTICIPANTES') {
-      return participantesData.filter(item =>
-        item.nombre.toLowerCase().includes(searchTerm) ||
-        item.sede.toLowerCase().includes(searchTerm) || // Mutante 1: Operadores "OR" se cambiaron por operadores "AND"
-        item.fecha.toLowerCase().includes(searchTerm)
+      return participantesData.filter(
+        (item) =>
+          item.nombre.toLowerCase().includes(searchTerm) ||
+          item.sede.toLowerCase().includes(searchTerm) || // Mutante 1: Operadores "OR" se cambiaron por operadores "AND"
+          item.fecha.toLowerCase().includes(searchTerm),
       );
     } else if (section === 'APOYO & STAFF') {
-      return apoyoStaffData.filter(item =>
-        item.nombre.toLowerCase().includes(searchTerm) ||
-        item.sede.toLowerCase().includes(searchTerm) ||
-        item.fecha.toLowerCase().includes(searchTerm)
+      return apoyoStaffData.filter(
+        (item) =>
+          item.nombre.toLowerCase().includes(searchTerm) ||
+          item.sede.toLowerCase().includes(searchTerm) ||
+          item.fecha.toLowerCase().includes(searchTerm),
       );
     } else {
-      return sedesData.filter(item =>
-        item.institucion.toLowerCase().includes(searchTerm) ||
-        item.lugar.toLowerCase().includes(searchTerm) ||
-        item.fecha.toLowerCase().includes(searchTerm)
+      return sedesData.filter(
+        (item) =>
+          item.institucion.toLowerCase().includes(searchTerm) ||
+          item.lugar.toLowerCase().includes(searchTerm) ||
+          item.fecha.toLowerCase().includes(searchTerm),
       );
     }
   }, [inputValue, section]);
@@ -106,7 +207,10 @@ const SolicitudesRegistroAdmin = () => {
   };
 
   const totalPages = Math.ceil(filteredData.length * rowsPerPage); // Mutante 2: División se cambió por multiplicación (Se mató el mutante)
-  const paginatedData = filteredData.slice(currentPage / rowsPerPage, (currentPage + 1) * rowsPerPage);
+  const paginatedData = filteredData.slice(
+    currentPage / rowsPerPage,
+    (currentPage + 1) * rowsPerPage,
+  );
   // Mutante 3: Primera multiplicación se cambió por división (Se mató el mutante)
 
   const openPopup = (item: Participante | ApoyoStaff | Sede) => {
@@ -151,21 +255,21 @@ const SolicitudesRegistroAdmin = () => {
   };
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-solicitudes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-solicitudes'>
       <PageTitle>Solicitudes de Registro</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
         {/* Fila de búsqueda */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
+                label=''
                 showDescription={false}
-                placeholder="Search"
+                placeholder='Search'
                 showError={false}
-                variant="primary"
-                icon="MagnifyingGlass"
+                variant='primary'
+                icon='MagnifyingGlass'
                 value={inputValue}
                 onChangeText={(val) => setInputValue(val)}
               />
@@ -174,7 +278,7 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Section Headers */}
-        <div className="flex justify-center gap-48 mt-2 pb-2">
+        <div className='flex justify-center gap-48 mt-2 pb-2'>
           <div
             className={`cursor-pointer text-lg font-bold ${section === 'PARTICIPANTES' ? 'text-purple-800' : 'text-gray-500'}`}
             onClick={() => sectionFilterChange('PARTICIPANTES')}
@@ -196,88 +300,151 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Tabla */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold">
+        <div className='overflow-x-auto'>
+          <table className='min-w-full text-left text-sm'>
+            <thead className='text-purple-800 font-bold'>
               <tr className='texto-primary-shade'>
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center"></th>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'></th>
                 {section === 'PARTICIPANTES' || ( //Mutante 5: Se cambió el operador "AND" por "OR" (Se mató el mutante)
                   <>
-                    <th className="p-2 text-center">Nombre</th>
-                    <th className="p-2 text-center">Sede</th>
-                    <th className="p-2 text-center">Fecha</th>
+                    <th className='p-2 text-center'>Nombre</th>
+                    <th className='p-2 text-center'>Sede</th>
+                    <th className='p-2 text-center'>Fecha</th>
                   </>
                 )}
                 {section === 'APOYO & STAFF' && (
                   <>
-                    <th className="p-2 text-center">Nombre</th>
-                    <th className="p-2 text-center">Sede</th>
-                    <th className="p-2 text-center">Fecha</th>
+                    <th className='p-2 text-center'>Nombre</th>
+                    <th className='p-2 text-center'>Sede</th>
+                    <th className='p-2 text-center'>Fecha</th>
                   </>
                 )}
                 {section === 'SEDES' && (
                   <>
-                    <th className="p-2 text-center">Institución</th>
-                    <th className="p-2 text-center">Lugar</th>
-                    <th className="p-2 text-center">Fecha</th>
+                    <th className='p-2 text-center'>Institución</th>
+                    <th className='p-2 text-center'>Lugar</th>
+                    <th className='p-2 text-center'>Fecha</th>
                   </>
                 )}
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center"></th>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'></th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {paginatedData.map((item, index) => (
-                <tr key={index} className="border-t border-gray-300">
+                <tr key={index} className='border-t border-gray-300'>
                   {section === 'PARTICIPANTES' && (
                     <>
-                      <td className="p-2 text-center"></td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as Participante)} />
+                      <td className='p-2 text-center'></td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='warning'
+                          round
+                          showLeftIcon
+                          IconLeft={Eye}
+                          onClick={() => openPopup(item as Participante)}
+                        />
                       </td>
-                      <td className="p-2 text-center">{(item as Participante).nombre}</td>
-                      <td className="p-2 text-center">{(item as Participante).sede}</td>
-                      <td className="p-2 text-center">{(item as Participante).fecha}</td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
+                      <td className='p-2 text-center'>{(item as Participante).nombre}</td>
+                      <td className='p-2 text-center'>{(item as Participante).sede}</td>
+                      <td className='p-2 text-center'>{(item as Participante).fecha}</td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='success'
+                          round
+                          showLeftIcon
+                          IconLeft={Check}
+                          onClick={() => openConfirmPopup(item as Participante)}
+                        />
                       </td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='error'
+                          round
+                          showLeftIcon
+                          IconLeft={X}
+                          onClick={() => openRejectPopup(item as Participante)}
+                        />
                       </td>
                     </>
                   )}
                   {section === 'APOYO & STAFF' && (
                     <>
-                      <td className="p-2 text-center"></td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as ApoyoStaff)} />
+                      <td className='p-2 text-center'></td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='warning'
+                          round
+                          showLeftIcon
+                          IconLeft={Eye}
+                          onClick={() => openPopup(item as ApoyoStaff)}
+                        />
                       </td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).nombre}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).sede}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).fecha}</td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
+                      <td className='p-2 text-center'>{(item as ApoyoStaff).nombre}</td>
+                      <td className='p-2 text-center'>{(item as ApoyoStaff).sede}</td>
+                      <td className='p-2 text-center'>{(item as ApoyoStaff).fecha}</td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='success'
+                          round
+                          showLeftIcon
+                          IconLeft={Check}
+                          onClick={() => openConfirmPopup(item as ApoyoStaff)}
+                        />
                       </td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='error'
+                          round
+                          showLeftIcon
+                          IconLeft={X}
+                          onClick={() => openRejectPopup(item as ApoyoStaff)}
+                        />
                       </td>
                     </>
                   )}
                   {section === 'SEDES' && (
                     <>
-                      <td className="p-2 text-center"></td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as Sede)} />
+                      <td className='p-2 text-center'></td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='warning'
+                          round
+                          showLeftIcon
+                          IconLeft={Eye}
+                          onClick={() => openPopup(item as Sede)}
+                        />
                       </td>
-                      <td className="p-2 text-center">{(item as Sede).institucion}</td>
-                      <td className="p-2 text-center">{(item as Sede).lugar}</td>
-                      <td className="p-2 text-center">{(item as Sede).fecha}</td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Sede)} />
+                      <td className='p-2 text-center'>{(item as Sede).institucion}</td>
+                      <td className='p-2 text-center'>{(item as Sede).lugar}</td>
+                      <td className='p-2 text-center'>{(item as Sede).fecha}</td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='success'
+                          round
+                          showLeftIcon
+                          IconLeft={Check}
+                          onClick={() => openConfirmPopup(item as Sede)}
+                        />
                       </td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Sede)} />
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='error'
+                          round
+                          showLeftIcon
+                          IconLeft={X}
+                          onClick={() => openRejectPopup(item as Sede)}
+                        />
                       </td>
                     </>
                   )}
@@ -288,47 +455,72 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Paginación */}
-        <div className="mt-auto pt-4 flex justify-center">
+        <div className='mt-auto pt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            variant="secondary-shade"
+            variant='secondary-shade'
             pageLinks={Array(totalPages).fill('#')}
           />
         </div>
 
         {/* Pop-up de información */}
         {isPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative">
-              <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Solicitud de Registro</h2>
               {section === 'PARTICIPANTES' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>Nombre:</strong> {(selectedItem as Participante).nombre}</p>
-                  <p><strong>Sede:</strong> {(selectedItem as Participante).sede}</p>
-                  <p><strong>Correo:</strong> {(selectedItem as Participante).correo}</p>
-                  <p><strong>Teléfono:</strong> {(selectedItem as Participante).telefono}</p>
-                  <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).grupo_preferido}</p>
+                  <p>
+                    <strong>Nombre:</strong> {(selectedItem as Participante).nombre}
+                  </p>
+                  <p>
+                    <strong>Sede:</strong> {(selectedItem as Participante).sede}
+                  </p>
+                  <p>
+                    <strong>Correo:</strong> {(selectedItem as Participante).correo}
+                  </p>
+                  <p>
+                    <strong>Teléfono:</strong> {(selectedItem as Participante).telefono}
+                  </p>
+                  <p>
+                    <strong>Grupo preferido:</strong>{' '}
+                    {(selectedItem as Participante).grupo_preferido}
+                  </p>
                 </div>
               )}
               {section === 'APOYO & STAFF' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>Nombre:</strong> {(selectedItem as ApoyoStaff).nombre}</p>
-                  <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).sede}</p>
-                  <p><strong>Correo:</strong> {(selectedItem as ApoyoStaff).correo}</p>
-                  <p><strong>Teléfono:</strong> {(selectedItem as ApoyoStaff).telefono}</p>
-                  <p><strong>Área de preferencia:</strong> {(selectedItem as ApoyoStaff).area}</p>
+                  <p>
+                    <strong>Nombre:</strong> {(selectedItem as ApoyoStaff).nombre}
+                  </p>
+                  <p>
+                    <strong>Sede:</strong> {(selectedItem as ApoyoStaff).sede}
+                  </p>
+                  <p>
+                    <strong>Correo:</strong> {(selectedItem as ApoyoStaff).correo}
+                  </p>
+                  <p>
+                    <strong>Teléfono:</strong> {(selectedItem as ApoyoStaff).telefono}
+                  </p>
+                  <p>
+                    <strong>Área de preferencia:</strong> {(selectedItem as ApoyoStaff).area}
+                  </p>
                 </div>
               )}
               {section === 'SEDES' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>Institución:</strong> {(selectedItem as Sede).institucion}</p>
-                  <p><strong>Lugar:</strong> {(selectedItem as Sede).lugar}</p>
+                  <p>
+                    <strong>Institución:</strong> {(selectedItem as Sede).institucion}
+                  </p>
+                  <p>
+                    <strong>Lugar:</strong> {(selectedItem as Sede).lugar}
+                  </p>
                 </div>
               )}
-              <div className="mt-4 flex justify-center">
-                <Button label="Cerrar" variant="primary" onClick={closePopup} />
+              <div className='mt-4 flex justify-center'>
+                <Button label='Cerrar' variant='primary' onClick={closePopup} />
               </div>
             </div>
           </div>
@@ -336,17 +528,30 @@ const SolicitudesRegistroAdmin = () => {
 
         {/* Pop-up de confirmación (Aceptar) */}
         {isConfirmPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-              <h2 className="text-3xl font-bold mb-4 text-center">¿Aceptar a {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?</h2>
-              <div className="pt-6 pb-6">
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>
+                ¿Aceptar a{' '}
+                {section === 'SEDES'
+                  ? (selectedItem as Sede).institucion
+                  : (selectedItem as Participante | ApoyoStaff).nombre}
+                ?
+              </h2>
+              <div className='pt-6 pb-6'>
                 {section === 'PARTICIPANTES' && selectedItem && (
                   <>
-                    <p><strong>Sede:</strong> {(selectedItem as Participante).sede}</p>
-                    <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).grupo_preferido}</p>
-                    <p className="mt-4"><strong>Asignar a un grupo</strong></p>
+                    <p>
+                      <strong>Sede:</strong> {(selectedItem as Participante).sede}
+                    </p>
+                    <p>
+                      <strong>Grupo preferido:</strong>{' '}
+                      {(selectedItem as Participante).grupo_preferido}
+                    </p>
+                    <p className='mt-4'>
+                      <strong>Asignar a un grupo</strong>
+                    </p>
                     <select
-                      className="w-full p-2 border rounded mt-2 bg-purple-100"
+                      className='w-full p-2 border rounded mt-2 bg-purple-100'
                       value={selectedGroup}
                       onChange={(e) => setSelectedGroup(e.target.value)}
                     >
@@ -354,17 +559,22 @@ const SolicitudesRegistroAdmin = () => {
                       <option>Sol</option>
                       <option>Mar</option>
                       <option>Montaña</option>
-
                     </select>
                   </>
                 )}
                 {section === 'APOYO & STAFF' && selectedItem && (
                   <>
-                    <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).sede}</p>
-                    <p><strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).area}</p>
-                    <p className="mt-4"><strong>Asignar un rol</strong></p>
+                    <p>
+                      <strong>Sede:</strong> {(selectedItem as ApoyoStaff).sede}
+                    </p>
+                    <p>
+                      <strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).area}
+                    </p>
+                    <p className='mt-4'>
+                      <strong>Asignar un rol</strong>
+                    </p>
                     <select
-                      className="w-full p-2 border rounded mt-2 bg-purple-100"
+                      className='w-full p-2 border rounded mt-2 bg-purple-100'
                       value={selectedGroup}
                       onChange={(e) => setSelectedGroup(e.target.value)}
                     >
@@ -372,9 +582,11 @@ const SolicitudesRegistroAdmin = () => {
                       <option>Staff</option>
                       <option>Facilitadora</option>
                     </select>
-                    <p className="mt-4"><strong>Asignar a un grupo</strong></p>
+                    <p className='mt-4'>
+                      <strong>Asignar a un grupo</strong>
+                    </p>
                     <select
-                      className="w-full p-2 border rounded mt-2 bg-purple-100"
+                      className='w-full p-2 border rounded mt-2 bg-purple-100'
                       value={selectedGroup}
                       onChange={(e) => setSelectedGroup(e.target.value)}
                     >
@@ -387,15 +599,21 @@ const SolicitudesRegistroAdmin = () => {
                 )}
                 {section === 'SEDES' && selectedItem && (
                   <>
-                    <p><strong>Institución:</strong> {(selectedItem as Sede).institucion}</p>
-                    <p><strong>Lugar:</strong> {(selectedItem as Sede).lugar}</p>
-                    <p><strong>Fecha:</strong> {(selectedItem as Sede).fecha}</p>
+                    <p>
+                      <strong>Institución:</strong> {(selectedItem as Sede).institucion}
+                    </p>
+                    <p>
+                      <strong>Lugar:</strong> {(selectedItem as Sede).lugar}
+                    </p>
+                    <p>
+                      <strong>Fecha:</strong> {(selectedItem as Sede).fecha}
+                    </p>
                   </>
                 )}
               </div>
-              <div className="mt-4 flex justify-center gap-4">
-                <Button label="Aceptar" variant="success" onClick={handleAccept} />
-                <Button label="Cancelar" variant="primary" onClick={closeConfirmPopup} />
+              <div className='mt-4 flex justify-center gap-4'>
+                <Button label='Aceptar' variant='success' onClick={handleAccept} />
+                <Button label='Cancelar' variant='primary' onClick={closeConfirmPopup} />
               </div>
             </div>
           </div>
@@ -403,14 +621,18 @@ const SolicitudesRegistroAdmin = () => {
 
         {/* Pop-up de rechazo */}
         {isRejectPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-              <h2 className="text-2xl font-bold mx-4 mt-6 mb-12 text-center">
-                ¿Seguro que quieres rechazar la solicitud de {section === 'SEDES' ? (selectedItem as Sede).institucion : (selectedItem as Participante | ApoyoStaff).nombre}?
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative'>
+              <h2 className='text-2xl font-bold mx-4 mt-6 mb-12 text-center'>
+                ¿Seguro que quieres rechazar la solicitud de{' '}
+                {section === 'SEDES'
+                  ? (selectedItem as Sede).institucion
+                  : (selectedItem as Participante | ApoyoStaff).nombre}
+                ?
               </h2>
-              <div className="mt-4 flex justify-center gap-4">
-                <Button label="Rechazar" variant="error" onClick={handleReject} />
-                <Button label="Cancelar" variant="primary" onClick={closeRejectPopup} />
+              <div className='mt-4 flex justify-center gap-4'>
+                <Button label='Rechazar' variant='error' onClick={handleReject} />
+                <Button label='Cancelar' variant='primary' onClick={closeRejectPopup} />
               </div>
             </div>
           </div>

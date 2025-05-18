@@ -71,37 +71,51 @@ const validateVenue = [
   body('associatedCoordinator[email]')
     .if(body('associatedCoordinator[name]').notEmpty())
     .notEmpty()
-    .withMessage('El correo electrónico de la coordinadora asociada es obligatorio si se proporciona un nombre')
+    .withMessage(
+      'El correo electrónico de la coordinadora asociada es obligatorio si se proporciona un nombre',
+    )
     .isEmail()
     .withMessage('El correo electrónico de la coordinadora asociada debe ser válido'),
   body('associatedCoordinator[phone]')
     .if(body('associatedCoordinator[name]').notEmpty())
     .notEmpty()
-    .withMessage('El celular de la coordinadora asociada es obligatorio si se proporciona un nombre'),
+    .withMessage(
+      'El celular de la coordinadora asociada es obligatorio si se proporciona un nombre',
+    ),
 
   // Staff Report Coordinator fields (optional)
   body('staffCoordinator[email]')
     .if(body('staffCoordinator[name]').notEmpty())
     .notEmpty()
-    .withMessage('El correo electrónico de la coordinadora de informes (staff) es obligatorio si se proporciona un nombre')
+    .withMessage(
+      'El correo electrónico de la coordinadora de informes (staff) es obligatorio si se proporciona un nombre',
+    )
     .isEmail()
     .withMessage('El correo electrónico de la coordinadora de informes (staff) debe ser válido'),
   body('staffCoordinator[phone]')
     .if(body('staffCoordinator[name]').notEmpty())
     .notEmpty()
-    .withMessage('El celular de la coordinadora de informes (staff) es obligatorio si se proporciona un nombre'),
+    .withMessage(
+      'El celular de la coordinadora de informes (staff) es obligatorio si se proporciona un nombre',
+    ),
 
   // Participants Report Coordinator fields (optional)
   body('participantsCoordinator[email]')
     .if(body('participantsCoordinator[name]').notEmpty())
     .notEmpty()
-    .withMessage('El correo electrónico de la coordinadora de informes (participantes) es obligatorio si se proporciona un nombre')
+    .withMessage(
+      'El correo electrónico de la coordinadora de informes (participantes) es obligatorio si se proporciona un nombre',
+    )
     .isEmail()
-    .withMessage('El correo electrónico de la coordinadora de informes (participantes) debe ser válido'),
+    .withMessage(
+      'El correo electrónico de la coordinadora de informes (participantes) debe ser válido',
+    ),
   body('participantsCoordinator[phone]')
     .if(body('participantsCoordinator[name]').notEmpty())
     .notEmpty()
-    .withMessage('El celular de la coordinadora de informes (participantes) es obligatorio si se proporciona un nombre'),
+    .withMessage(
+      'El celular de la coordinadora de informes (participantes) es obligatorio si se proporciona un nombre',
+    ),
 
   // Middleware to validate files, transform req.body, and capture errors
   (req, res, next) => {

@@ -20,13 +20,15 @@ const withIconDecorator = (Icon: React.FC<IconProps>) => {
       const updateStrokeWidth = () => {
         if (iconRef.current) {
           const computedStyle = getComputedStyle(iconRef.current);
-          const strokeWidthValue = parseFloat(computedStyle.getPropertyValue('--icon-stroke-width'));
+          const strokeWidthValue = parseFloat(
+            computedStyle.getPropertyValue('--icon-stroke-width'),
+          );
           if (!isNaN(strokeWidthValue)) {
             setStrokeWidth(strokeWidthValue);
           }
         }
       };
-    
+
       updateStrokeWidth();
     }, [pathname]);
 

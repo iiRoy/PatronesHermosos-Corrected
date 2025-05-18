@@ -95,7 +95,9 @@
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
 }
 
 .custom-button:hover:not(:disabled),
@@ -127,7 +129,9 @@
   border-radius: 50%;
   padding: 0.5rem 1.5rem;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
 }
 
 .round-button:hover:not(:disabled),
@@ -971,8 +975,6 @@
 .texto-popup {
   color: var(--background);
 }
-
-
 
 @layer base {
   :root {

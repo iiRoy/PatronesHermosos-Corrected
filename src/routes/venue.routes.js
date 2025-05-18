@@ -48,7 +48,7 @@ router.post(
     { name: 'generalCoordinator.profileImage', maxCount: 1 },
   ]),
   validateVenue,
-  venueController.create
+  venueController.create,
 );
 router.get('/specific', authMiddleware, venueController.getSpecificData); // Nueva ruta para obtener solo los datos específicos
 router.get('/:id', authMiddleware, venueController.getById);
@@ -61,7 +61,7 @@ router.put(
   authMiddleware,
   roleMiddleware(['admin']),
   validateVenue,
-  venueController.update
+  venueController.update,
 );
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController.remove);
 

@@ -37,7 +37,7 @@ const getAll = async (req, res) => {
   res.json(venues);
 };
 
-//obtener los datos para presentarlos en una tabla 
+//obtener los datos para presentarlos en una tabla
 const getSpecificData = async (req, res) => {
   try {
     const venues = await prisma.venues.findMany({
@@ -47,13 +47,15 @@ const getSpecificData = async (req, res) => {
         campus: true,
         coordinador: true,
         no_grupos: true,
-        no_estudiantes: true
-      }
+        no_estudiantes: true,
+      },
     });
     res.status(200).json(venues);
   } catch (error) {
     console.error('Error al obtener los datos específicos de las sedes:', error);
-    res.status(500).json({ message: 'Error interno al obtener los datos específicos de las sedes' });
+    res
+      .status(500)
+      .json({ message: 'Error interno al obtener los datos específicos de las sedes' });
   }
 };
 
@@ -159,13 +161,13 @@ const create = async (req, res) => {
       )
     `;
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Venue creado exitosamente',
       files: {
         participation_file: participation_file_path,
         logo: logo_path,
         profile_image: profile_image_path,
-      }
+      },
     });
   } catch (error) {
     console.error('Error al crear venue:', error);

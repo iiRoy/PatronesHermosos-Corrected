@@ -13,7 +13,7 @@ const superuserRoutes = require('./routes/superuser.routes');
 const collaboratorRoutes = require('./routes/collaborator.routes');
 const dataRoutes = require('./routes/data.routes');
 const statusRoutes = require('./routes/status.routes');
-const venueCoordinatorRoutes = require('./routes/venueCoordinator.routes'); 
+const venueCoordinatorRoutes = require('./routes/venueCoordinator.routes');
 const mentorRoutes = require('./routes/mentor.routes');
 const diplomaRoutes = require('./routes/diploma.routes');
 
@@ -66,9 +66,8 @@ appNext.prepare().then(() => {
   app.use('/api/data', dataRoutes);
   app.use('/api/collaborators', collaboratorRoutes);
   app.use('/api/status', statusRoutes);
-  app.use('/api/venue-coordinators', venueCoordinatorRoutes); 
+  app.use('/api/venue-coordinators', venueCoordinatorRoutes);
   app.use('/api/mentors', mentorRoutes);
-  
 
   app.get('/api', (req, res) => {
     res.send('¡API corriendo!');
