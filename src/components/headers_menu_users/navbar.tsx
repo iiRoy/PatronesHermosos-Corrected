@@ -1,6 +1,8 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import Button from '@/components/buttons_inputs/Button';
+import { FingerprintSimple } from '@/components/icons';
 
 const navItems = [
   {
@@ -61,13 +63,12 @@ const Navbar = () => {
                   <span className='hidden lg:block text-white'>{item.label}</span>
                 </Link>
               ) : (
-                <button
-                  key={item.label}
-                  className='flex items-center justify-center gap-2 p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition duration-200 ease-in-out'
-                >
-                  <Image src={item.icon} alt='' width={30} height={30} className='center' />
-                  <span className='hidden lg:block text-white-500'>{item.label}</span>
-                </button>
+                <Button
+                  label='Perfil'
+                  variant='secondary'
+                  showLeftIcon
+                  IconLeft={FingerprintSimple}
+                />
               ),
             )}
           </div>
