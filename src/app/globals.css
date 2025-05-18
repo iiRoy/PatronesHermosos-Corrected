@@ -894,6 +894,22 @@
   background-color: #160D17;
 }
 
+.tarjeta-archivo {
+  color: var(--background);
+  border-left: 20px solid var(--primaryColor);
+}
+
+.titulo-tarjeta-archivo h3 {
+  color: var(--primaryColor);
+}
+
+.icono-tarjeta-archivo {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: var(--primaryColor);
+  color: var(--text-color);
+}
+
 
 
 @layer base {
