@@ -109,7 +109,6 @@ const GestionParticipantes = () => {
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
-    // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
     useEffect(() => {
         if (currentPage >= totalPages && totalPages > 0) {
             setCurrentPage(totalPages - 1);
@@ -127,6 +126,10 @@ const GestionParticipantes = () => {
     const handleDeleteClick = (participante: Participante) => {
         setSelectedParticipante(participante);
         setIsPopupOpen(true);
+    };
+
+    const handleEditClick = (participante: Participante) => {
+        router.push(`/admin/gestion-usuarios/participantes/editarParticipante/${participante.id_participant}`);
     };
 
     const handleClosePopup = () => {
@@ -241,7 +244,7 @@ const GestionParticipantes = () => {
                                     <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button label="" variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(participante)} />
-                                        <Button label="" variant="warning" round showLeftIcon IconLeft={Highlighter} />
+                                        <Button label="" variant="warning" round showLeftIcon IconLeft={Highlighter} onClick={() => handleEditClick(participante)} />
                                     </td>
                                 </tr>
                             ))}
