@@ -1,3 +1,13 @@
+## 1.13.0-mail.1 (2025-05-19)
+
+* feat(notifications): Sistema de Correos Funcional ([4642c26](https://github.com/iiRoy/Patrones-Hermosos/commit/4642c26))
+* chore: manual conflict resolution after merge ([089d5d0](https://github.com/iiRoy/Patrones-Hermosos/commit/089d5d0))
+* Creación de Rutas API ([9d1e4d2](https://github.com/iiRoy/Patrones-Hermosos/commit/9d1e4d2))
+* Librerias Actualizadas ([5b015a6](https://github.com/iiRoy/Patrones-Hermosos/commit/5b015a6))
+* Merge branch 'main' into experiment/correo ([2e25e06](https://github.com/iiRoy/Patrones-Hermosos/commit/2e25e06))
+* Merge branch 'main' of https://github.com/iiRoy/Patrones-Hermosos into Rutas-API ([9e3c545](https://github.com/iiRoy/Patrones-Hermosos/commit/9e3c545))
+* Setup inicial de correo ([71b7e70](https://github.com/iiRoy/Patrones-Hermosos/commit/71b7e70))
+
 ## <small>1.12.1 (2025-05-18)</small>
 
 * fix(database): Errores en procedimientos, formateo de documentos y errores en tablas. ([edd2df1](https://github.com/iiRoy/Patrones-Hermosos/commit/edd2df1))
