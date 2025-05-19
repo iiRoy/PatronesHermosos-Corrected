@@ -247,9 +247,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
 
             {/* Imagen central */}
             <div
-              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 transition-opacity duration-300 ${
-                fadeSec ? 'opacity-0' : 'opacity-100'
-              }`}
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'
+                }`}
             >
               <Image src={imageSrc} alt='Logo centro' width={60} height={60} />
             </div>
@@ -260,9 +259,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       {/* Leyendas Interactivas */}
       {innerData.length > 0 ? (
         <div
-          className={`flex ${interactionsDisabled ? 'pointer-events-none' : ''} flex-col items-center gap-3 mt-4 transition-opacity duration-300 ${
-            fade ? 'opacity-0' : 'opacity-100'
-          }`}
+          className={`flex ${interactionsDisabled ? 'pointer-events-none' : ''} flex-col items-center gap-3 mt-4 transition-opacity duration-300 ${fade ? 'opacity-0' : 'opacity-100'
+            }`}
         >
           <div className={`flex flex-row items-center justify-end w-full relative`}>
             {/* Título dinámico */}
@@ -308,51 +306,51 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
           <div className='flex gap-2 justify-center items-center text-center h-full'>
             {selectedRol === undefined
               ? innerData.map((item) => {
-                  const hasDetails = outerData.some((d) => d.rol === item.name);
-                  return (
-                    <div
-                      key={item.name}
-                      className='flex flex-col hover:scale-110 transition-all items-center w-24 text-center cursor-pointer group'
-                      style={{ color: item.fill || '#ccc' }}
-                      onClick={() => {
-                        if (hasDetails) {
-                          setFade(true);
-                          setTimeout(() => {
-                            setSelectedRol(item.name);
-                            setRolColor(item.fill);
-                            setFade(false);
-                          }, 200);
-                        }
-                      }}
-                      title={hasDetails ? 'Ver detalles' : 'Sin detalles'}
-                    >
-                      <div className='items-center justify-center gap-1 mb-1'>
-                        <div
-                          className='w-5 h-5 rounded-full'
-                          style={{ backgroundColor: item.fill || '#ccc' }}
-                        />
-                      </div>
-                      <h1 className='font-semibold text-sm'>{item.total}</h1>
-                      <h2 className='text-xs text-gray-600 break-words'>{item.name}</h2>
-                    </div>
-                  );
-                })
-              : outerData
-                  .filter((d) => d.rol === selectedRol)
-                  .map((item, idx) => (
-                    <div
-                      key={idx}
-                      className='flex flex-col items-center w-24 text-center'
-                      style={{ color: item.fill || '#ccc' }}
-                    >
+                const hasDetails = outerData.some((d) => d.rol === item.name);
+                return (
+                  <div
+                    key={item.name}
+                    className='flex flex-col hover:scale-110 transition-all items-center w-24 text-center cursor-pointer group'
+                    style={{ color: item.fill || '#ccc' }}
+                    onClick={() => {
+                      if (hasDetails) {
+                        setFade(true);
+                        setTimeout(() => {
+                          setSelectedRol(item.name);
+                          setRolColor(item.fill);
+                          setFade(false);
+                        }, 200);
+                      }
+                    }}
+                    title={hasDetails ? 'Ver detalles' : 'Sin detalles'}
+                  >
+                    <div className='items-center justify-center gap-1 mb-1'>
                       <div
-                        className='w-5 h-5 rounded-full mb-1'
+                        className='w-5 h-5 rounded-full'
                         style={{ backgroundColor: item.fill || '#ccc' }}
                       />
-                      <h1 className='font-semibold text-sm'>{item.total}</h1>
-                      <h2 className='text-xs text-gray-600 break-words'>{item.name}</h2>
                     </div>
-                  ))}
+                    <h1 className='font-semibold text-sm'>{item.total}</h1>
+                    <h2 className='text-xs text-gray-600 break-words'>{item.name}</h2>
+                  </div>
+                );
+              })
+              : outerData
+                .filter((d) => d.rol === selectedRol)
+                .map((item, idx) => (
+                  <div
+                    key={idx}
+                    className='flex flex-col items-center w-24 text-center'
+                    style={{ color: item.fill || '#ccc' }}
+                  >
+                    <div
+                      className='w-5 h-5 rounded-full mb-1'
+                      style={{ backgroundColor: item.fill || '#ccc' }}
+                    />
+                    <h1 className='font-semibold text-sm'>{item.total}</h1>
+                    <h2 className='text-xs text-gray-600 break-words'>{item.name}</h2>
+                  </div>
+                ))}
           </div>
         </div>
       ) : undefined}
