@@ -1,3 +1,9 @@
+## 1.9.0-admin.5 (2025-05-19)
+
+* feat(pages): Nueva página de inicio implementada ([944ec7d](https://github.com/iiRoy/Patrones-Hermosos/commit/944ec7d))
+* improve(pages): componente dropdown funcionando en pages/superuser ([16c3984](https://github.com/iiRoy/Patrones-Hermosos/commit/16c3984))
+* improve(pages): EditarParticipante ya utiliza la información del participante seleccionado en Gestio ([9698bd2](https://github.com/iiRoy/Patrones-Hermosos/commit/9698bd2))
+
 ## 1.9.0-admin.4 (2025-05-16)
 
 * fix(pages): se corrigió la búsqueda con InputField para que funcione en todas las páginas de paginac ([916b75b](https://github.com/iiRoy/Patrones-Hermosos/commit/916b75b))
