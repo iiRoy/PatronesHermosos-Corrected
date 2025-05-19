@@ -24,6 +24,7 @@ interface GenericBarChartProps {
   apiEndpoint: string;
   title?: string;
   dataPath?: string;
+  onMinimize: () => void;
   xKey?: string;
   labelFormatterPrefix?: string;
   filters?: Record<string, string | undefined>;
@@ -40,6 +41,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   apiEndpoint,
   title = 'Gráfica',
   dataPath,
+  onMinimize,
   xKey = 'name',
   labelFormatterPrefix = '',
   filters = {},
@@ -160,9 +162,13 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           <div className='relative flex justify-between items-center'>
             <h1 className='font-bold text-2xl'>{title}</h1>
             <button
-              onClick={() => setShowMenu(!showMenu)}
+              onClick={() => {
+                if (!showMenu) setShowMenu(true);
+              }}
+              disabled={showMenu}
               id='options-button'
-              className='cursor-pointer'
+              className={`cursor-pointer transition-opacity ${showMenu ? 'opacity-50 pointer-events-none' : 'opacity-100'
+                }`}
             >
               <Options
                 fillColor='var(--secondaryColor)'
@@ -175,6 +181,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
             {/* Menú fuera del flujo flex, pero dentro de contenedor relative */}
             <div className='absolute top-full right-0 z-50'>
               <OptionsMenu
+                onMinimize={onMinimize}
                 onMaxItemsChange={setMaxItems}
                 onToggleVisibility={() => setIsVisible(false)}
                 setColors={setColors}
@@ -185,23 +192,24 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 totalItems={data.length}
                 defaultColors={defaultColorPallete}
                 restoreDefaultColors={() => setColors(defaultColorPallete)}
-                // nuevas props necesarias para exportación:
                 filteredData={filteredData}
                 xKey={xKey}
                 seriesKeys={seriesKeys}
                 title={title}
                 colors={colors}
+                elementLabels={seriesKeys.map(
+                  (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' '),
+                )}
               />
             </div>
           </div>
 
           <div className='flex flex-col-reverse md:flex-row-reverse gap-4 md:gap-2 justify-between items-center mt-4 mb-7 ml-7 mr-7'>
             <div
-              className={`custom-legend-container flex md:w-[60%] w-full transition duration-300 ease-in-out ${
-                (fade && isFirstRender.current) || selectedKeys.length < 1
-                  ? 'opacity-0'
-                  : 'opacity-100'
-              }`}
+              className={`custom-legend-container flex md:w-[60%] w-full transition duration-300 ease-in-out ${(fade && isFirstRender.current) || selectedKeys.length < 1
+                ? 'opacity-0'
+                : 'opacity-100'
+                }`}
             >
               <CustomLegend legendKeys={seriesKeys} colors={colors} />
             </div>
@@ -223,9 +231,8 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           </div>
 
           <div
-            className={`w-full h-full transform transition-all duration-300 ease-in-out ${
-              fade ? 'opacity-0' : 'opacity-100'
-            }`}
+            className={`w-full h-full transform transition-all duration-300 ease-in-out ${fade ? 'opacity-0' : 'opacity-100'
+              }`}
           >
             {filteredData.length === 0 ? (
               <div className='flex justify-center items-center h-full'>
@@ -278,15 +285,6 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               </ResponsiveContainer>
             )}
           </div>
-        </div>
-      )}
-      {!isVisible && (
-        <div
-          onClick={() => setIsVisible(true)}
-          className='h-6 w-full bg-gray-300 rounded-full cursor-pointer hover:bg-gray-400 transition-all flex items-center justify-center'
-          title='Mostrar gráfica'
-        >
-          <span className='text-xs font-medium text-gray-700'>Expandir</span>
         </div>
       )}
     </>
