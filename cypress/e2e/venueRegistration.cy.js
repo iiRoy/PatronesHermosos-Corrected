@@ -1,23 +1,16 @@
 describe('Venue Registration E2E', () => {
   beforeEach(() => {
-    // Mock login to set token (adjust credentials as needed)
-    cy.request('POST', 'http://localhost:3000/api/auth/login', {
-      username: 'admin',
-      password: 'admin_password',
-    }).then((response) => {
-      window.localStorage.setItem('token', response.body.token);
-    });
-
-    // Visit the form page
     cy.visit('http://localhost:3000/formulario/sede');
   });
 
   it('renders the form correctly', () => {
-    cy.contains('Formulario de Registro SEDE').should('be.visible');
-    cy.get('input[placeholder="Edna"]').should('be.visible');
-    cy.get('input[placeholder="ednamoda@disney.com"]').should('be.visible');
-    cy.get('select').contains('País*').should('be.visible');
-    cy.get('input[placeholder="Instituto Oriente"]').should('be.visible');
+    cy.get('input[placeholder="Nombre"]').should('be.visible');
+    cy.get('input[placeholder="Paterno"]').should('be.visible');
+    cy.get('input[placeholder="Materno"]').should('be.visible');
+    cy.get('input[placeholder="correo1@ejemplo.com"]').should('be.visible');
+    cy.contains('label', 'País*').should('be.visible');
+    cy.get('select').eq(1).should('contain', 'Mexico');
+    cy.get('input[placeholder="ITESM Puebla"]').should('be.visible');
     cy.contains('Enviar Registro').should('be.visible');
     cy.get('input[type="file"]').should('have.length', 3); // Profile, logo, participation file
     cy.get('input[type="checkbox"]').should('be.visible');
@@ -43,13 +36,14 @@ describe('Venue Registration E2E', () => {
 
   it('shows state dropdown when Mexico is selected', () => {
     cy.get('select').eq(1).select('Mexico');
-    cy.get('select').contains('Estado*').should('be.visible');
+    cy.contains('label', 'Estado*').should('be.visible');
+    cy.get('select').eq(2).should('contain', 'Puebla');
     cy.get('input[placeholder="San José"]').should('not.exist');
   });
 
   it('shows state input when Costa Rica is selected', () => {
     cy.get('select').eq(1).select('Costa Rica');
-    cy.get('input[placeholder="San José"]').should('be.visible');
+    cy.get('input[placeholder="Región"]').should('be.visible');
     cy.get('select').contains('Estado*').should('not.exist');
   });
 
@@ -61,20 +55,21 @@ describe('Venue Registration E2E', () => {
     }).as('createVenue');
 
     // Fill General Coordinator
-    cy.get('input[placeholder="Edna"]').type('Edna');
-    cy.get('input[placeholder="Moda"]').type('Moda');
-    cy.get('input[placeholder="ednamoda@disney.com"]').type('edna@example.com');
-    cy.get('input[placeholder="+52 222 123 4567"]').first().type('+52 222 123 4567');
-    cy.get('select').first().select('Mujer');
-    cy.get('input[placeholder="edna_moda"]').type('edna_moda');
+    cy.get('input[placeholder="Nombre"]').first().type('Edna');
+    cy.get('input[placeholder="Paterno"]').first().type('Moda');
+    cy.get('input[placeholder="Materno"]').first().type('Lorena');
+    cy.get('input[placeholder="correo1@ejemplo.com"]').first().type('edna@example.com');
+    cy.get('input[placeholder="+522221234567"]').first().type('+522221234567');
+    cy.get('select').first().select('Femenino');
+    cy.get('input[placeholder="Us3r_n4me"]').first().type('edna_moda');
     cy.get('input[placeholder="********"]').eq(0).type('Password123!');
     cy.get('input[placeholder="********"]').eq(1).type('Password123!');
 
     // Fill Venue
-    cy.get('input[placeholder="Instituto Oriente"]').type('Instituto Oriente');
+    cy.get('input[placeholder="ITESM Puebla"]').type('Instituto Oriente');
     cy.get('select').eq(1).select('Mexico');
     cy.get('select').eq(2).select('Puebla');
-    cy.get('input[placeholder="P. Sherman Calle Wallaby 42 Sidney"]').type('123 Main St');
+    cy.get('input[placeholder="Dirección 123"]').type('123 Main St');
 
     // Upload participation file
     cy.get('input[type="file"]').eq(2).selectFile({
@@ -114,20 +109,21 @@ describe('Venue Registration E2E', () => {
     }).as('createVenue');
 
     // Fill General Coordinator
-    cy.get('input[placeholder="Edna"]').type('Edna');
-    cy.get('input[placeholder="Moda"]').type('Moda');
-    cy.get('input[placeholder="ednamoda@disney.com"]').type('edna@example.com');
-    cy.get('input[placeholder="+52 222 123 4567"]').first().type('+52 222 123 4567');
-    cy.get('select').first().select('Mujer');
-    cy.get('input[placeholder="edna_moda"]').type('edna_moda');
+    cy.get('input[placeholder="Nombre"]').first().type('Edna');
+    cy.get('input[placeholder="Paterno"]').first().type('Moda');
+    cy.get('input[placeholder="Materno"]').first().type('Lorena');
+    cy.get('input[placeholder="correo1@ejemplo.com"]').first().type('edna@example.com');
+    cy.get('input[placeholder="+522221234567"]').first().type('+522221234567');
+    cy.get('select').first().select('Femenino');
+    cy.get('input[placeholder="Us3r_n4me"]').type('edna_moda');
     cy.get('input[placeholder="********"]').eq(0).type('Password123!');
     cy.get('input[placeholder="********"]').eq(1).type('Password123!');
 
     // Fill Venue
-    cy.get('input[placeholder="Instituto Oriente"]').type('Instituto Oriente');
+    cy.get('input[placeholder="ITESM Puebla"]').type('Instituto Oriente');
     cy.get('select').eq(1).select('Costa Rica');
     cy.get('input[placeholder="San José"]').type('San José');
-    cy.get('input[placeholder="P. Sherman Calle Wallaby 42 Sidney"]').type('123 Main St');
+    cy.get('input[placeholder="Dirección 123"]').type('123 Main St');
 
     // Upload participation file
     cy.get('input[type="file"]').eq(2).selectFile({
@@ -170,18 +166,19 @@ describe('Venue Registration E2E', () => {
     }).as('createVenue');
 
     // Fill with invalid email
-    cy.get('input[placeholder="Edna"]').type('Edna');
-    cy.get('input[placeholder="Moda"]').type('Moda');
-    cy.get('input[placeholder="ednamoda@disney.com"]').type('invalid-email');
-    cy.get('input[placeholder="+52 222 123 4567"]').first().type('+52 222 123 4567');
-    cy.get('select').first().select('Mujer');
-    cy.get('input[placeholder="edna_moda"]').type('edna_moda');
+    cy.get('input[placeholder="Nombre"]').first().type('Edna');
+    cy.get('input[placeholder="Paterno"]').first().type('Moda');
+    cy.get('input[placeholder="Materno"]').first().type('Lorena');
+    cy.get('input[placeholder="correo1@ejemplo.com"]').first().type('invalid-email');
+    cy.get('input[placeholder="+522221234567"]').first().type('+522221234567');
+    cy.get('select').first().select('Femenino');
+    cy.get('input[placeholder="Us3r_n4me"]').type('edna_moda');
     cy.get('input[placeholder="********"]').eq(0).type('Password123!');
     cy.get('input[placeholder="********"]').eq(1).type('Password123!');
-    cy.get('input[placeholder="Instituto Oriente"]').type('Instituto Oriente');
+    cy.get('input[placeholder="ITESM Puebla"]').type('Instituto Oriente');
     cy.get('select').eq(1).select('Mexico');
     cy.get('select').eq(2).select('Puebla');
-    cy.get('input[placeholder="P. Sherman Calle Wallaby 42 Sidney"]').type('123 Main St');
+    cy.get('input[placeholder="Dirección 123"]').type('123 Main St');
 
     // Upload participation file
     cy.get('input[type="file"]').eq(2).selectFile({
