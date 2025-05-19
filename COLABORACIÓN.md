@@ -30,13 +30,13 @@ main
 
 Usa prefijos según el tipo de trabajo:
 
-| Tipo de rama          | Prefijo          | Ejemplo                       |
-|-----------------------|------------------|-------------------------------|
-| Nueva funcionalidad   | `feature/`       | `feature/rutasAPI`           |
-| Página o componente UI| `pages/`         | `pages/superuser`            |
-| Refactorización       | `refactor/`      | `refactor/sql-depuracion`    |
-| Corrección de bugs    | `fix/` o `bugfix/`| `fix/login-error`            |
-| Pruebas o experimentos| `experiment/`    | `experiment/nueva-api`       |
+| Tipo de rama           | Prefijo            | Ejemplo                   |
+| ---------------------- | ------------------ | ------------------------- |
+| Nueva funcionalidad    | `feature/`         | `feature/rutasAPI`        |
+| Página o componente UI | `pages/`           | `pages/superuser`         |
+| Refactorización        | `refactor/`        | `refactor/sql-depuracion` |
+| Corrección de bugs     | `fix/` o `bugfix/` | `fix/login-error`         |
+| Pruebas o experimentos | `experiment/`      | `experiment/nueva-api`    |
 
 ---
 
@@ -51,17 +51,10 @@ Usa prefijos según el tipo de trabajo:
 2. **Haz tus cambios y commitea:**
 
    ```bash
-   git add .
-   git commit -m "feat: descripción clara del cambio"
+   npm run release -- "Commit Name"
    ```
 
-3. **Sube tu rama a GitHub:**
-
-   ```bash
-   git push origin feature/nombre-de-la-rama
-   ```
-
-4. **Abre un Pull Request (PR)** hacia `main`.
+3. **Abre un Pull Request (PR)** hacia `main` cuando hayas terminado todos los cambios necesarios.
 
 ---
 

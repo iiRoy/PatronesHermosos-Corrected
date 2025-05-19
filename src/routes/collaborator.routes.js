@@ -1,19 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const { validateCollaborator } = require('../validators/collaboratorValidator');
-const collaboratorController = require('../controllers/collaborator.controller');
+const collaboratorsController = require('../controllers/collaborator.controller');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
-router.get('/', authMiddleware, roleMiddleware(['admin']), collaboratorController.getAll);
-router.post('/', validateCollaborator, collaboratorController.create);
-router.get('/:id', authMiddleware, collaboratorController.getById);
+router.post(
+  '/',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  collaboratorsController.createCollaborator,
+);
+router.get('/table/all', authMiddleware, collaboratorsController.getCollaboratorsTable); // <- primero rutas específicas
+router.get('/', authMiddleware, collaboratorsController.getAllCollaborators);
+router.put(
+  '/basic/:id',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  collaboratorsController.updateCollaboratorBasicInfo,
+);
+router.get('/:id', authMiddleware, collaboratorsController.getCollaboratorById); // <- rutas dinámicas al final
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin']),
-  validateCollaborator,
-  collaboratorController.update,
+  roleMiddleware(['superuser']),
+  collaboratorsController.updateCollaborator,
 );
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), collaboratorController.remove);
+router.delete(
+  '/:id',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  collaboratorsController.deleteCollaborator,
+);
 
 module.exports = router;

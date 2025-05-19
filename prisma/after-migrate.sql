@@ -402,14 +402,15 @@ DELIMITER $$
 CREATE OR REPLACE FUNCTION fun_total_coord(
     email_coordinadora VARCHAR(255),
     tipo_usuario ENUM('superuser', 'venue_coordinator'),
-    id_sede_param INT,
-    rol_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
+    id_sede_param INT
 )
-RETURNS INT
+RETURNS JSON
 DETERMINISTIC
 BEGIN
     DECLARE v_id INT;
-    DECLARE total INT DEFAULT 0;
+    DECLARE cg INT DEFAULT 0;
+    DECLARE ca INT DEFAULT 0;
+    DECLARE ci INT DEFAULT 0;
 
     IF tipo_usuario = 'venue_coordinator' THEN
         SELECT id_venue INTO v_id
@@ -417,35 +418,30 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
-    IF rol_param IS NULL OR rol_param = 'Coordinadora General' THEN
-        SELECT total + COUNT(*) INTO total
-        FROM venue_coordinators vc
-        JOIN venues v ON vc.id_venue = v.id_venue
-        WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-          AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
-          AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
-    END IF;
+    SELECT COUNT(*) INTO cg
+    FROM venue_coordinators vc
+    JOIN venues v ON vc.id_venue = v.id_venue
+    WHERE v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+      AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
 
-    IF rol_param IS NULL OR rol_param IN ('Coordinadora Asociada', 'Coordinadora de informes') THEN
-        SELECT total + COUNT(*) INTO total
-        FROM assistant_coordinators ac
-        JOIN venues v ON ac.id_venue = v.id_venue
-        WHERE ac.role IN (
-                CASE
-                    WHEN rol_param IS NULL THEN 'Coordinadora Asociada'
-                    ELSE rol_param
-                END,
-                CASE
-                    WHEN rol_param IS NULL THEN 'Coordinadora de informes'
-                    ELSE rol_param
-                END
-            )
-          AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
-          AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
-          AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
-    END IF;
+    SELECT COUNT(*) INTO ca
+    FROM assistant_coordinators ac
+    JOIN venues v ON ac.id_venue = v.id_venue
+    WHERE ac.role = 'Coordinadora Asociada'
+      AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+      AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
 
-    RETURN total;
+    SELECT COUNT(*) INTO ci
+    FROM assistant_coordinators ac
+    JOIN venues v ON ac.id_venue = v.id_venue
+    WHERE ac.role = 'Coordinadora de informes'
+      AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+      AND (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param);
+
+    RETURN JSON_OBJECT('coord_gen', cg, 'coord_aso', ca, 'coord_info', ci);
 END;
 $$
 
@@ -479,33 +475,30 @@ BEGIN
     SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
             'sede', v.name,
-            'participantes_aceptadas', (
+            'participantes', (
                 SELECT COUNT(*) FROM participants p
                 JOIN groups g ON p.id_group = g.id_group
-                WHERE g.id_venue = v.id_venue AND p.status = 'Aprobada'
+                WHERE g.id_venue = v.id_venue AND (p.status = 'Aprobada')
             ),
-            'participantes_pendientes', (
-                SELECT COUNT(*) FROM participants p
-                LEFT JOIN groups g ON p.id_group = g.id_group
-                LEFT JOIN groups pg ON p.preferred_group = pg.id_group
-                WHERE p.status = 'Pendiente' AND (
-                    (p.id_group IS NOT NULL AND g.id_venue = v.id_venue)
-                    OR (p.id_group IS NULL AND pg.id_venue = v.id_venue)
-                )
-            ),
-            'colaboradores_aceptados', (
+            'colaboradores', (
                 SELECT COUNT(*) FROM collaborators c
                 JOIN groups g ON c.id_group = g.id_group
-                WHERE g.id_venue = v.id_venue AND c.status = 'Aprobada'
+                WHERE g.id_venue = v.id_venue AND (c.status = 'Aprobada')
             ),
-            'colaboradores_pendientes', (
-                SELECT COUNT(*) FROM collaborators c
-                LEFT JOIN groups g ON c.id_group = g.id_group
-                LEFT JOIN groups pgc ON c.preferred_group = pgc.id_group
-                WHERE c.status = 'Pendiente' AND (
-                    (c.id_group IS NOT NULL AND g.id_venue = v.id_venue)
-                    OR (c.id_group IS NULL AND pgc.id_venue = v.id_venue)
-                )
+            'mentoras', (
+                SELECT COUNT(*) FROM mentors m
+                WHERE m.id_venue = v.id_venue AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+            ),
+            'coordinadoras', (
+              (
+                SELECT COUNT(*) FROM venue_coordinators vc
+                WHERE vc.id_venue = v.id_venue AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+              )
+              +
+              (
+                SELECT COUNT(*) FROM assistant_coordinators ac
+                WHERE ac.id_venue = v.id_venue AND v.status IN ('Registrada con participantes', 'Registrada sin participantes')
+              )
             )
         )
     ) AS resumen
@@ -537,15 +530,24 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
-    CREATE TEMPORARY TABLE IF NOT EXISTS temp_colab_resumen (
+    DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
+    CREATE TEMPORARY TABLE temp_colab_resumen (
+        status VARCHAR(255),
         rol VARCHAR(255),
         total INT
     );
     DELETE FROM temp_colab_resumen;
 
-    INSERT INTO temp_colab_resumen (rol, total)
+    INSERT INTO temp_colab_resumen (status, rol, total)
     SELECT
-        c.role,
+        CASE
+          WHEN c.status = 'Cancelada' THEN 'Rechazada'
+          ELSE c.status
+        END AS status,
+        CASE
+            WHEN c.status = 'Aprobada' THEN c.role
+            ELSE c.preferred_role
+        END AS rol,
         COUNT(*) AS total
     FROM collaborators c
     LEFT JOIN groups g ON c.id_group = g.id_group
@@ -558,15 +560,21 @@ BEGIN
         id_sede_param IS NULL
         OR v.id_venue = id_sede_param
     )
-    GROUP BY c.role;
+    GROUP BY c.status,
+        CASE
+            WHEN c.status = 'Aprobada' THEN c.role
+            ELSE c.preferred_role
+        END;
 
     SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
+            'status', status,
             'rol', rol,
             'total', total
         )
     ) AS resumen
     FROM temp_colab_resumen;
+    DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
 
 END;
 $$
@@ -646,20 +654,19 @@ CREATE OR REPLACE PROCEDURE resumen_evento(
     IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
     IN email_coordinadora VARCHAR(255),
     IN id_sede_param INT,
-    IN rol_colab_param VARCHAR(255) COLLATE utf8mb4_unicode_ci,
-    IN rol_coord_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
+    IN rol_colab_param VARCHAR(255) COLLATE utf8mb4_unicode_ci
 )
 BEGIN
     DECLARE participantes_json JSON;
     DECLARE colaboradoras_json JSON;
     DECLARE total_mentoras INT DEFAULT 0;
-    DECLARE total_coordinadoras INT DEFAULT 0;
+    DECLARE coordinadoras_json JSON;
     DECLARE sedes_json JSON;
 
     SET participantes_json = fun_total_part(email_coordinadora, tipo_usuario, id_sede_param);
     SET colaboradoras_json = fun_total_colab(email_coordinadora, tipo_usuario, id_sede_param, rol_colab_param);
     SELECT fun_total_ment(email_coordinadora, tipo_usuario, id_sede_param) INTO total_mentoras;
-    SELECT fun_total_coord(email_coordinadora, tipo_usuario, id_sede_param, rol_coord_param) INTO total_coordinadoras;
+    SET coordinadoras_json = fun_total_coord(email_coordinadora, tipo_usuario, id_sede_param);
 
     IF tipo_usuario = 'superuser' THEN
         SET sedes_json = fun_total_sedes(tipo_usuario);
@@ -671,7 +678,7 @@ BEGIN
         'total_participantes', participantes_json,
         'total_colaboradores', colaboradoras_json,
         'total_mentoras', total_mentoras,
-        'total_coordinadoras', total_coordinadoras,
+        'total_coordinadoras', coordinadoras_json,
         'total_sedes', sedes_json
     ) AS resumen;
 END;
@@ -1167,12 +1174,14 @@ $$
 
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE registrar_sede(
-    -- Datos sede
+    -- Datos de la sede
     IN nombre_sede VARCHAR(255),
     IN ubicacion_sede VARCHAR(255),
     IN direccion_sede VARCHAR(255),
     IN logo BLOB,
     IN convocatoria BLOB,
+    IN logo_path VARCHAR(255),
+    IN convocatoria_path VARCHAR(255),
 
     -- Coordinadora General
     IN nombre_general VARCHAR(255),
@@ -1184,6 +1193,7 @@ CREATE OR REPLACE PROCEDURE registrar_sede(
     IN usuario_general VARCHAR(255),
     IN contrasena_general VARCHAR(255),
     IN imagen_perfil BLOB,
+    IN imagen_perfil_path VARCHAR(255),
 
     -- Coordinadora Asociada
     IN nombre_asociada VARCHAR(255),
@@ -1209,18 +1219,56 @@ CREATE OR REPLACE PROCEDURE registrar_sede(
 BEGIN
     DECLARE nueva_sede_id INT;
 
-    INSERT INTO venues (name, location, address, logo, participation_file, status)
-    VALUES (nombre_sede, ubicacion_sede, direccion_sede, logo, convocatoria, 'Pendiente');
+    -- Insert into venues with file paths
+    INSERT INTO venues (
+        name, 
+        location, 
+        address, 
+        logo, 
+        participation_file, 
+        logo_path, 
+        participation_file_path, 
+        status
+    )
+    VALUES (
+        nombre_sede, 
+        ubicacion_sede, 
+        direccion_sede, 
+        logo, 
+        convocatoria, 
+        logo_path, 
+        convocatoria_path, 
+        'Pendiente'
+    );
 
     SET nueva_sede_id = LAST_INSERT_ID();
 
+    -- Insert General Coordinator with profile image path
     INSERT INTO venue_coordinators (
-        name, paternal_name, maternal_name, email, phone_number,
-        gender, username, password, profile_image, id_venue
+        name, 
+        paternal_name, 
+        maternal_name, 
+        email, 
+        phone_number,
+        gender, 
+        username, 
+        password, 
+        profile_image, 
+        profile_image_path, 
+        id_venue
     )
     VALUES (
-        nombre_general, paterno_general, materno_general, email_general, celular_general,
-        sexo_general, usuario_general, contrasena_general, imagen_perfil, nueva_sede_id
+        nombre_general, 
+        paterno_general, 
+        materno_general, 
+        email_general, 
+        celular_general,
+        sexo_general, 
+        usuario_general, 
+        contrasena_general, 
+        imagen_perfil, 
+        imagen_perfil_path, 
+        nueva_sede_id
     );
 
     IF nombre_asociada IS NOT NULL AND nombre_asociada != '' THEN
@@ -1254,6 +1302,598 @@ BEGIN
     END IF;
 END;
 $$
+
+
+--proceso global para registrar los logs
+DELIMITER $$
+
+CREATE PROCEDURE registrar_log (
+  IN p_action VARCHAR(50),
+  IN p_table_name VARCHAR(50),
+  IN p_message TEXT,
+  IN p_username VARCHAR(255),
+  IN p_id_venue INT
+)
+BEGIN
+  INSERT INTO audit_log (action, table_name, message, username, id_venue)
+  VALUES (
+    p_action,
+    p_table_name,
+    p_message,
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+--Proceso para eliminar un grupo, se valida la existencia del grupo, que no tenga participantes, elimina el grupo y registra el log
+--CALL eliminar_grupo(3, 'juan@ejemplo.com', 1);
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_grupo (
+  IN p_id_group INT,
+  IN p_username VARCHAR(255),
+  IN p_id_venue INT
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE participant_count INT;
+
+  -- Verificar si el grupo existe
+  SELECT COUNT(*) INTO existe
+  FROM groups
+  WHERE id_group = p_id_group;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El grupo no existe.';
+  END IF;
+
+  -- Verificar si tiene participantes
+  SELECT COUNT(*) INTO participant_count
+  FROM participants
+  WHERE id_group = p_id_group;
+
+  IF participant_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
+  END IF;
+
+  -- Eliminar el grupo
+  DELETE FROM groups
+  WHERE id_group = p_id_group;
+
+  -- Registrar acción en audit_log
+  CALL registrar_log(
+    'DELETE',
+    'groups',
+    CONCAT('Se eliminó el grupo con ID ', p_id_group),
+    p_username,
+    p_id_venue
+  );
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_grupo(
+    IN p_id_group INT,
+    IN p_username VARCHAR(255),
+    IN p_id_venue INT,
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE existe INT;
+    DECLARE p_status VARCHAR(255);
+    DECLARE nuevo_status VARCHAR(255);
+
+    SELECT COUNT(*) INTO existe
+    FROM groups
+    WHERE id_group = p_id_group;
+
+    IF existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El grupo no existe.';
+    END IF;
+
+    SELECT status INTO p_status
+    FROM groups
+    WHERE id_group = p_id_group;
+
+    IF p_accion = 'desactivar' THEN
+        IF p_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar los grupos aprobados.';
+        END IF;
+        SET nuevo_status = 'Cancelada';
+    ELSEIF p_accion = 'activar' THEN
+        IF p_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar los grupos cancelados.';
+        END IF;
+        SET nuevo_status = 'Aprobada';
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida.';
+    END IF;
+
+    -- Registrar el log
+    CALL registrar_log(
+        'UPDATE',
+        'groups',
+        CONCAT('Se ', p_accion, ' el grupo con ID ', p_id_group),
+        p_username,
+        p_id_venue
+    );
+
+    -- Actualizar el status
+    UPDATE groups
+    SET status = nuevo_status
+    WHERE id_group = p_id_group;
+END$$
+
+DELIMITER ;
+
+
+--CALL cambiar_estado_colaborador(1, 'Diegorl', 'activar');
+--Se cambia el estado del colaborador, de aprobada a cancelada, y viceversa.
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_colaborador(
+    IN p_id_collaborator INT,
+    IN p_username VARCHAR(255),
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_nuevo_status VARCHAR(255);
+
+    -- Verificar si el colaborador existe
+    SELECT COUNT(*) INTO v_existe
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El colaborador no existe.';
+    END IF;
+
+    -- Obtener status actual
+    SELECT status INTO v_status
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    -- Validaciones de cambio de estado
+    IF p_accion = 'desactivar' THEN
+        IF v_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
+        END IF;
+        SET v_nuevo_status = 'Cancelada';
+
+    ELSEIF p_accion = 'activar' THEN
+        IF v_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar colaboradores con estatus Cancelada.';
+        END IF;
+        SET v_nuevo_status = 'Aprobada';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
+    END IF;
+
+    -- Registrar el log (sin sede, se usa NULL)
+    CALL registrar_log(
+        'UPDATE',
+        'collaborators',
+        CONCAT('Se ', p_accion, ' al colaborador con ID ', p_id_collaborator),
+        p_username,
+        NULL
+    );
+
+    -- Actualizar el status
+    UPDATE collaborators
+    SET status = v_nuevo_status
+    WHERE id_collaborator = p_id_collaborator;
+END$$
+
+DELIMITER ;
+
+
+--desactivar_grupo función vieja, se sustituyo por la función cambiar_estado_grupo
+DELIMITER $$
+CREATE PROCEDURE desactivar_grupo(
+    IN p_id_group INT,
+    IN p_username VARCHAR(255),
+    IN p_id_venue INT
+)
+BEGIN
+ DECLARE existe INT;
+ DECLARE p_status VARCHAR(255);
+
+
+ SELECT COUNT(*) INTO existe
+ FROM groups
+ WHERE id_group = p_id_group;
+
+ IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El grupo no existe.';
+END IF;
+
+
+SELECT status INTO p_status
+FROM groups
+WHERE id_group = p_id_group;
+
+IF p_status != 'Aprobada' THEN
+  SIGNAL SQLSTATE '45000'
+  SET MESSAGE_TEXT = 'Solo se pueden eliminar los grupos aprobados.';
+END IF;
+
+    -- Registrar el log
+ CALL registrar_log(
+    'UPDATE',
+    'groups',
+    CONCAT('Se desactivó el grupo con ID ', p_id_group),
+    p_username,
+    p_id_venue
+);
+
+    -- Actualizar el status a Cancelada
+    UPDATE groups
+    SET status = 'Cancelada'
+    WHERE id_group = p_id_group;
+END$$
+
+DELIMITER ;
+
+
+--Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
+--CALL cambiar_estado_participant(114, 'Diegorl', 'activar');
+--CALL cambiar_estado_participant(114, 'Diegorl', 'desactivar');
+DELIMITER $$
+
+CREATE PROCEDURE cambiar_estado_participant(
+    IN p_id_participant INT,
+    IN p_username VARCHAR(255),
+    IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_nuevo_status VARCHAR(255);
+
+    -- Verificar si el participante existe
+    SELECT COUNT(*) INTO v_existe
+    FROM participants
+    WHERE id_participant = p_id_participant;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El participante no existe.';
+    END IF;
+
+    -- Obtener status actual
+    SELECT status INTO v_status
+    FROM participants
+    WHERE id_participant = p_id_participant;
+
+    -- Validaciones de cambio de estado
+    IF p_accion = 'desactivar' THEN
+        IF v_status != 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden desactivar participantes con estatus Aprobada.';
+        END IF;
+        SET v_nuevo_status = 'Cancelada';
+
+    ELSEIF p_accion = 'activar' THEN
+        IF v_status != 'Cancelada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo se pueden activar participantes con estatus Cancelada.';
+        END IF;
+        SET v_nuevo_status = 'Aprobada';
+
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
+    END IF;
+
+    -- Registrar el log (sin sede, se usa NULL)
+    CALL registrar_log(
+        'UPDATE',
+        'participants',
+        CONCAT('Se ', p_accion, ' al participante con ID ', p_id_participant),
+        p_username,
+        NULL
+    );
+
+    -- Actualizar el status
+    UPDATE participants
+    SET status = v_nuevo_status
+    WHERE id_participant = p_id_participant;
+END$$
+
+DELIMITER ;
+
+
+
+--Proceso para desactivar una sede, se valida la existencia de la sede, valida su status, lo modifica y registra el log
+--CALL desactivar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE desactivar_venue (
+  IN p_id_venue INT,
+  IN p_username VARCHAR(255)
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE group_count INT;
+  DECLARE p_status VARCHAR(255);
+
+  -- Verificar si la sede existe
+  SELECT COUNT(*) INTO existe
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'La sede no existe.';
+  END IF;
+
+  -- Obtener el status actual
+  SELECT status INTO p_status
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  -- Validar si puede ser cancelada
+  IF NOT (p_status = 'Registrada sin participantes' OR p_status = 'Registrada con participantes') THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Solo se pueden cancelar las sedes que estén registradas.';
+  END IF;
+
+  -- Registrar acción en audit_log ANTES de modificar el estado de la sede
+  CALL registrar_log(
+    'UPDATE',
+    'venues',
+    CONCAT('Se desactivó la sede con ID ', p_id_venue),
+    p_username,
+    p_id_venue
+  );
+
+  -- Cambiar estado a Cancelada
+  UPDATE venues
+  SET status = 'Cancelada'
+  WHERE id_venue = p_id_venue;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+--eliminar_venue procedimiento viejo, ha sido sustituido por desactivar_venue
+--Proceso para eliminar una sede, se valida la existencia de la sede, que no tenga grupos, elimina las sede y registra el log
+--CALL eliminar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE eliminar_venue (
+  IN p_id_venue INT,
+  IN p_username VARCHAR(255)
+)
+BEGIN
+  DECLARE existe INT;
+  DECLARE group_count INT;
+
+  -- Verificar si la sede existe
+  SELECT COUNT(*) INTO existe
+  FROM venues
+  WHERE id_venue = p_id_venue;
+
+  IF existe = 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'La sede no existe.';
+  END IF;
+
+  -- Verificar si tiene grupos
+  SELECT COUNT(*) INTO group_count
+  FROM groups
+  WHERE id_venue = p_id_venue;
+
+  IF group_count > 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
+  END IF;
+
+  -- Registrar acción en audit_log ANTES de eliminar la sede
+  CALL registrar_log(
+    'DELETE',
+    'venues',
+    CONCAT('Se eliminó la sede con ID ', p_id_venue),
+    p_username,
+    p_id_venue
+  );
+
+  -- Eliminar la sede
+  DELETE FROM venues
+  WHERE id_venue = p_id_venue;
+
+END$$
+
+DELIMITER ;
+
+
+--Proceso para desactivar a un colaborador, se valida la existencia del colaborador, valida su status, lo modifica y registra el log
+--CALL desactivar_venue(2, 'admin@ejemplo.com');
+DELIMITER $$
+
+CREATE PROCEDURE desactivar_colaborador (
+    IN p_id_collaborator INT,
+    IN p_username VARCHAR(255)
+)
+BEGIN
+    DECLARE v_existe INT;
+    DECLARE v_status VARCHAR(255);
+    DECLARE v_id_venue INT;
+
+    -- Verificar si el colaborador existe
+    SELECT COUNT(*) INTO v_existe
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El colaborador no existe.';
+    END IF;
+
+    -- Obtener el status actual
+    SELECT status INTO v_status
+    FROM collaborators
+    WHERE id_collaborator = p_id_collaborator;
+
+    -- Validar si puede ser desactivado
+    IF v_status != 'Aprobada' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
+    END IF;
+
+    -- Obtener el id_venue a partir del grupo del colaborador
+    SELECT g.id_venue INTO v_id_venue
+    FROM collaborators c
+    JOIN groups g ON c.id_group = g.id_group
+    WHERE c.id_collaborator = p_id_collaborator;
+
+    -- Registrar el log
+    CALL registrar_log(
+        'UPDATE',
+        'collaborators',
+        CONCAT('Se desactivó al colaborador con ID ', p_id_collaborator),
+        p_username,
+        v_id_venue
+    );
+
+    -- Actualizar el status a Cancelada
+    UPDATE collaborators
+    SET status = 'Cancelada'
+    WHERE id_collaborator = p_id_collaborator;
+END$$
+
+DELIMITER ;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+--JUNTAR LOS BEFORE Y AFTER
+--evitar eliminar un grupo si tiene participantes
+--evento para eliminar los audits logs cada mes y se ejecute cada semana
+DELIMITER $$
+CREATE TRIGGER before_delete_group
+BEFORE DELETE ON groups
+FOR EACH ROW
+BEGIN
+ DECLARE participant_count INT;
+ SELECT COUNT(*) INTO participant_count
+ FROM participants
+ WHERE id_group = OLD.id_group;
+ IF participant_count > 0 THEN
+ SIGNAL SQLSTATE '45000'
+ SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
+ END IF;
+END;
+$$
+DELIMITER ;
+
+--evitar eliminar una sede si tiene grupos
+DELIMITER $$
+CREATE TRIGGER before_delete_venue
+BEFORE DELETE ON venues
+FOR EACH ROW
+BEGIN
+ DECLARE group_count INT;
+ SELECT COUNT(*) INTO group_count
+ FROM groups
+ WHERE id_venue = OLD.id_venue;
+ IF group_count > 0 THEN
+ SIGNAL SQLSTATE '45000'
+ SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
+ END IF;
+END;
+$$
+DELIMITER ;
+
+
+--registrar eliminaciones en la tabla de auditoria
+DELIMITER $$
+CREATE TRIGGER after_delete_group
+AFTER DELETE ON groups
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('DELETE', 'groups', OLD.id_group, USER());
+END;
+$$
+DELIMITER ;
+
+
+--registrar eliminaciones en la tabla de auditoria
+DELIMITER $$
+CREATE TRIGGER after_delete_venue
+AFTER DELETE ON venues
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('DELETE', 'venues', OLD.id_venue, USER());
+END;
+$$
+DELIMITER ;
+
+--tres tipos de triggers: UPDATE, DELETE, ADD 
+--o hacerlo una función y que se llame desde el metodo (auditlog)
+
+--notas
+--una sola función general, audits logs no se pueden modificar (estaticos), en cada trigger mandar una 
+--un trigger para definir cuales van a ser los elementos de audit log e incluir en el procedimiento de actualizar y eliminar
+--investigar si el trigger se hace automaticamente cuando se hace un procedimiento
+
+--npm run release para hacer commits
+--npm run merge main
+
+--preguntar si sirve: aqui basicamente cuando se actualiza el rol de un colaborador, se pone como pendiente
+--no
+DELIMITER $$
+CREATE TRIGGER actualizar_estado_colaborador
+AFTER UPDATE ON collaborators
+FOR EACH ROW
+BEGIN
+ IF OLD.role != NEW.role THEN
+  UPDATE collaborators
+  SET status = 'Pendiente'
+  WHERE id_collaborator = NEW.id_collaborator;
+ END IF;
+END;
+$$
+DELIMITER ;
+
+--registrar cambio de participantes
+DELIMITER $$
+CREATE TRIGGER registrar_cambio_participante
+AFTER UPDATE ON participants
+FOR EACH ROW
+BEGIN
+ INSERT INTO audit_log (action, table_name, record_id, user)
+ VALUES ('UPDATE', 'participants', NEW.id_participant, USER());
+END;
+$$
+DELIMITER ;
+
+
 
 -- 🔸 Ejemplo de uso:
 
@@ -1289,7 +1929,7 @@ $$
 -- Cambios en la Base de Datos
 -- =====================================================
 
--- 🔸 Se agregó una tabla llamada "excluded_date" para poder poner todas las fechas que no se cuentan para la impartición del curso, actualizando de manera automática la fecha de finalización del evento del grupo.
--- 🔸 Se cambió el valor de los "prefered_groups" en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
--- 🔸 Se puso como valor predeterminado de "occupied_places" en la tabla "groups" como 0.
--- 🔸 Se agregaron las columnas de "level" y "language" a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.
+-- 🔸 Se agregó una tabla llamada 'excluded_date' para poder poner todas las fechas que no se cuentan para la impartición del curso, actualizando de manera automática la fecha de finalización del evento del grupo.
+-- 🔸 Se cambió el valor de los 'prefered_groups' en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
+-- 🔸 Se puso como valor predeterminado de 'occupied_places' en la tabla 'groups' como 0.
+-- 🔸 Se agregaron las columnas de 'level' y 'language' a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.

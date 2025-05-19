@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
 
-// Middleware para autenticar token JWT
-const authMiddleware = (req, res, next) => {
+const prisma = new PrismaClient();
+
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Token no proporcionado' });
   }
@@ -11,10 +12,23 @@ const authMiddleware = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    // Verifica token con tu clave secreta
-    const decoded = jwt.verify(token, 'mi_clave_secreta');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_clave_secreta');
 
-    // Agrega info decodificada al request
+    let user;
+    if (decoded.role === 'superuser') {
+      user = await prisma.superusers.findUnique({
+        where: { id_superuser: decoded.userId },
+      });
+    } else if (decoded.role === 'venue_coordinator') {
+      user = await prisma.venue_coordinators.findUnique({
+        where: { id_venue_coord: decoded.userId },
+      });
+    }
+
+    if (!user || user.tokenVersion !== decoded.tokenVersion) {
+      return res.status(403).json({ message: 'Token inválido' });
+    }
+
     req.user = {
       id: decoded.userId,
       email: decoded.email,
@@ -28,8 +42,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Opcional: Middleware para validar roles
-// Middleware para verificar que el usuario tenga un rol permitido
 const roleMiddleware = (roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
