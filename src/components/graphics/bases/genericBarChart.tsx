@@ -70,8 +70,8 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
         try {
           const res = await fetch(fullUrl, {
             headers: {
-              Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("api_token") : ""}`,
-            },            
+              Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''}`,
+            },
           });
 
           const json = await res.json();

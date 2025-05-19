@@ -37,11 +37,11 @@ const Dropdown: React.FC<DropdownProps> = ({
   const selectClass = `input input-${variant}${dim ? ' dim' : ''} relative`;
 
   return (
-    <div className="container-input">
-      <div className="label-input">{label}</div>
-      {showDescription && description && <div className="description-input">{description}</div>}
+    <div className='container-input'>
+      <div className='label-input'>{label}</div>
+      {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={selectClass}>
-        <div className="icon-input">
+        <div className='icon-input'>
           <Icon width={25} height={25} />
         </div>
         <select

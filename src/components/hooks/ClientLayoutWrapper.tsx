@@ -1,6 +1,6 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { NotificationProvider } from "@/components/buttons_inputs/Notification";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { NotificationProvider } from '@/components/buttons_inputs/Notification';
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
@@ -14,9 +14,5 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     return <div>Cargando...</div>;
   }
 
-  return (
-    <NotificationProvider userId={userId}>
-      {children}
-    </NotificationProvider>
-  );
+  return <NotificationProvider userId={userId}>{children}</NotificationProvider>;
 }

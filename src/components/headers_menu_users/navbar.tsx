@@ -58,7 +58,14 @@ const Navbar = () => {
                 />
               );
             })}
-            <Button label='Iniciar Sesión' variant="secondary" showLeftIcon IconLeft={Icons.FingerprintSimple} onClick={() => router.push('/login')} activeTransition={true} />
+            <Button
+              label='Iniciar Sesión'
+              variant='secondary'
+              showLeftIcon
+              IconLeft={Icons.FingerprintSimple}
+              onClick={() => router.push('/login')}
+              activeTransition={true}
+            />
           </div>
         ))}
       </div>

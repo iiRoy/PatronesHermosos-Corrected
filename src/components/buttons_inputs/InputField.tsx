@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
-import { tree } from 'next/dist/build/templates/app-page';
 
 interface InputFieldProps {
   label: string;
@@ -43,7 +42,7 @@ const InputField: React.FC<InputFieldProps> = ({
   icon,
   value,
   onChangeText,
-  type = 'text'
+  type = 'text',
 }) => {
   const [inputValue, setInputValue] = useState(value ?? '');
 
@@ -65,15 +64,12 @@ const InputField: React.FC<InputFieldProps> = ({
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 
-  const IconComponent =
-    icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
+  const IconComponent = icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
 
   return (
     <div className='container-input'>
       <div className='label-input'>{label}</div>
-      {showDescription && description && (
-        <div className='description-input'>{description}</div>
-      )}
+      {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={inputClass}>
         {IconComponent && (
           <div className='icon-input'>
