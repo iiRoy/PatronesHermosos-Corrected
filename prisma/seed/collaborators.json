@@ -17,7 +17,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 1.0
+    "id_group": 1
   },
   {
     "name": "Abraham",
@@ -34,7 +34,7 @@
     "preferred_group": 1,
     "gender": "Femenino",
     "role": "Pendiente",
-    "status": "Pendiente",
+    "status": "Rechazada",
     "level": "Pendiente",
     "language": "Pendiente",
     "id_group": null
@@ -57,7 +57,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 1.0
+    "id_group": 1
   },
   {
     "name": "Itzel",
@@ -74,7 +74,7 @@
     "preferred_group": 1,
     "gender": "Femenino",
     "role": "Pendiente",
-    "status": "Pendiente",
+    "status": "Cancelada",
     "level": "Pendiente",
     "language": "Pendiente",
     "id_group": null
@@ -97,7 +97,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 1.0
+    "id_group": 1
   },
   {
     "name": "Antonio",
@@ -137,7 +137,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 2.0
+    "id_group": 2
   },
   {
     "name": "Rosario",
@@ -177,7 +177,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 2.0
+    "id_group": 2
   },
   {
     "name": "Rosa",
@@ -217,7 +217,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 2.0
+    "id_group": 2
   },
   {
     "name": "Hugo",
@@ -257,7 +257,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 3.0
+    "id_group": 3
   },
   {
     "name": "Wilfrido",
@@ -297,7 +297,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 3.0
+    "id_group": 3
   },
   {
     "name": "Mariano",
@@ -337,7 +337,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 3.0
+    "id_group": 3
   },
   {
     "name": "Elisa",
@@ -377,7 +377,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 4.0
+    "id_group": 4
   },
   {
     "name": "Helena",
@@ -417,7 +417,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 4.0
+    "id_group": 4
   },
   {
     "name": "Ernesto",
@@ -457,7 +457,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 4.0
+    "id_group": 4
   },
   {
     "name": "Gregorio",
@@ -497,7 +497,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 5.0
+    "id_group": 5
   },
   {
     "name": "Juana",
@@ -537,7 +537,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 5.0
+    "id_group": 5
   },
   {
     "name": "Lucía",
@@ -577,7 +577,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 5.0
+    "id_group": 5
   },
   {
     "name": "Vanesa",
@@ -617,7 +617,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 6.0
+    "id_group": 6
   },
   {
     "name": "Blanca",
@@ -657,7 +657,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 6.0
+    "id_group": 6
   },
   {
     "name": "Ana Luisa",
@@ -697,7 +697,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 6.0
+    "id_group": 6
   },
   {
     "name": "Esther",
@@ -737,7 +737,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 7.0
+    "id_group": 7
   },
   {
     "name": "Gonzalo",
@@ -777,7 +777,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 7.0
+    "id_group": 7
   },
   {
     "name": "Natividad",
@@ -817,7 +817,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 7.0
+    "id_group": 7
   },
   {
     "name": "Samuel",
@@ -857,7 +857,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 8.0
+    "id_group": 8
   },
   {
     "name": "Benito",
@@ -897,7 +897,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 8.0
+    "id_group": 8
   },
   {
     "name": "Natalia",
@@ -937,7 +937,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 8.0
+    "id_group": 8
   },
   {
     "name": "Alejandra",
@@ -977,7 +977,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 9.0
+    "id_group": 9
   },
   {
     "name": "María del Carmen",
@@ -1017,7 +1017,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 9.0
+    "id_group": 9
   },
   {
     "name": "Emiliano",
@@ -1057,7 +1057,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 9.0
+    "id_group": 9
   },
   {
     "name": "Adalberto",
@@ -1097,7 +1097,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 10.0
+    "id_group": 10
   },
   {
     "name": "Leonardo",
@@ -1137,7 +1137,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 10.0
+    "id_group": 10
   },
   {
     "name": "Dulce",
@@ -1177,7 +1177,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 10.0
+    "id_group": 10
   },
   {
     "name": "Guillermo",
@@ -1217,7 +1217,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 11.0
+    "id_group": 11
   },
   {
     "name": "Estela",
@@ -1257,7 +1257,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 11.0
+    "id_group": 11
   },
   {
     "name": "Ofelia",
@@ -1297,7 +1297,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 11.0
+    "id_group": 11
   },
   {
     "name": "Isabela",
@@ -1337,7 +1337,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 12.0
+    "id_group": 12
   },
   {
     "name": "Ángel",
@@ -1377,7 +1377,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 12.0
+    "id_group": 12
   },
   {
     "name": "Blanca",
@@ -1417,7 +1417,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 12.0
+    "id_group": 12
   },
   {
     "name": "Lucas",
@@ -1457,7 +1457,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 13.0
+    "id_group": 13
   },
   {
     "name": "José Emilio",
@@ -1497,7 +1497,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 13.0
+    "id_group": 13
   },
   {
     "name": "Diana",
@@ -1537,7 +1537,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 13.0
+    "id_group": 13
   },
   {
     "name": "Nancy",
@@ -1577,7 +1577,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 14.0
+    "id_group": 14
   },
   {
     "name": "Armando",
@@ -1617,7 +1617,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 14.0
+    "id_group": 14
   },
   {
     "name": "Raquel",
@@ -1657,7 +1657,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 14.0
+    "id_group": 14
   },
   {
     "name": "Miguel",
@@ -1697,7 +1697,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 15.0
+    "id_group": 15
   },
   {
     "name": "José Eduardo",
@@ -1737,7 +1737,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Inglés",
-    "id_group": 15.0
+    "id_group": 15
   },
   {
     "name": "Juan Carlos",
@@ -1777,7 +1777,7 @@
     "status": "Aprobada",
     "level": "Avanzado",
     "language": "Español",
-    "id_group": 15.0
+    "id_group": 15
   },
   {
     "name": "Martín",
@@ -1817,7 +1817,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 16.0
+    "id_group": 16
   },
   {
     "name": "Florencia",
@@ -1857,7 +1857,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 16.0
+    "id_group": 16
   },
   {
     "name": "Alta  Gracia",
@@ -1897,7 +1897,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 16.0
+    "id_group": 16
   },
   {
     "name": "Elena",
@@ -1937,7 +1937,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 17.0
+    "id_group": 17
   },
   {
     "name": "Micaela",
@@ -1977,7 +1977,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Español",
-    "id_group": 17.0
+    "id_group": 17
   },
   {
     "name": "Guadalupe",
@@ -2017,7 +2017,7 @@
     "status": "Aprobada",
     "level": "Básico",
     "language": "Inglés",
-    "id_group": 17.0
+    "id_group": 17
   },
   {
     "name": "Úrsula",

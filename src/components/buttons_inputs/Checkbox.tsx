@@ -22,7 +22,13 @@ const Checkbox: React.FC<CheckboxProps> = ({
 
   return (
     <label className={`checkbox-container ${colorClass} ${borderClass}`}>
-      <input type='checkbox' checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input
+        type='checkbox'
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className='hidden-checkbox'
+      />
+      <span className='custom-checkbox' />
       <span className='label-text'>{label}</span>
     </label>
   );
