@@ -58,7 +58,7 @@ const EditarSede = () => {
     };
 
     return (
-        <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes relative">
+        <div className="p-6 pl-14 flex gap-4 flex-col pagina-sedes relative">
 
             <PageTitle>Editar Sede ITESM Monterrey</PageTitle>
 
@@ -134,14 +134,16 @@ const EditarSede = () => {
                                     <td className="py-2 text-center">{s.correo}</td>
                                     <td className="py-2 text-center">{s.telefono}</td>
                                     <td className="py-2 text-center">
-                                        <Button
-                                            label=""
-                                            variant="error"
-                                            round
-                                            showLeftIcon
-                                            IconLeft={Trash2}
-                                            href="../sedes"
-                                        />
+                                        <div className='texto-blanco'>
+                                            <Button
+                                                label=""
+                                                variant="error"
+                                                round
+                                                showLeftIcon
+                                                IconLeft={Trash2}
+                                                href="../sedes"
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

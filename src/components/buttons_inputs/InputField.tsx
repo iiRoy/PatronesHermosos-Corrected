@@ -23,7 +23,7 @@ interface InputFieldProps {
   | 'primary-disabled'
   | 'secondary-shade-disabled'
   | 'text-color-disabled';
-  dim?: boolean;
+  disabled?: boolean;
   icon?: keyof typeof Icons;
   value?: string;
   onChangeText?: (value: string) => void;
@@ -39,7 +39,7 @@ const InputField: React.FC<InputFieldProps> = ({
   showError = true,
   darkText = true,
   variant = 'accent',
-  dim = false,
+  disabled = false,
   icon,
   value,
   onChangeText,
@@ -61,7 +61,7 @@ const InputField: React.FC<InputFieldProps> = ({
     }
   };
 
-  const inputClass = `input input-${variant}${dim ? ' dim' : ''}${darkText ? ' darkText' : ''}`;
+  const inputClass = `input input-${variant}${disabled ? ' input-disabled' : ''}${darkText ? ' darkText' : ''}`;
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 

@@ -17,14 +17,6 @@ const SedesAdmin = () => {
 
     const rowsPerPage = 5;
 
-    const sedes = [
-        { label: 'Puebla', value: 'Puebla' },
-        { label: 'Querétaro', value: 'Querétaro' },
-        { label: 'Monterrey', value: 'Monterrey' },
-        { label: 'Hidalgo', value: 'Hidalgo' },
-        { label: 'Guadalajara', value: 'Guadalajara' },
-    ];
-
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
             ...prev,
@@ -33,21 +25,13 @@ const SedesAdmin = () => {
     };
 
     const sedesData = [
-        { id: '01', universidad: 'ITESM', lugar: 'Puebla', coordinador: 'Rosa Paredes', grupos: '07', estudiantes: '63' },
-        { id: '02', universidad: 'ITESM', lugar: 'Querétaro', coordinador: 'Beatriz Mendoza', grupos: '06', estudiantes: '55' },
-        { id: '03', universidad: 'ITESM', lugar: 'Monterrey', coordinador: 'Carolina Reyes', grupos: '11', estudiantes: '103' },
-        { id: '04', universidad: 'ITESM', lugar: 'Hidalgo', coordinador: 'Diana Soto', grupos: '04', estudiantes: '39' },
-        { id: '05', universidad: 'ITESM', lugar: 'Guadalajara', coordinador: 'Fabiola Paredes', grupos: '09', estudiantes: '87' },
-        { id: '06', universidad: 'ITESM', lugar: 'Saltillo', coordinador: 'Luis Torres', grupos: '08', estudiantes: '72' },
-        { id: '07', universidad: 'ITESM', lugar: 'Ciudad de México', coordinador: 'María López', grupos: '10', estudiantes: '95' },
-        { id: '08', universidad: 'ITESM', lugar: 'Toluca', coordinador: 'Juan Pérez', grupos: '06', estudiantes: '58' },
-        { id: '09', universidad: 'ITESM', lugar: 'León', coordinador: 'Patricia Ramírez', grupos: '07', estudiantes: '64' },
-        { id: '10', universidad: 'ITESM', lugar: 'Chihuahua', coordinador: 'Oscar García', grupos: '05', estudiantes: '43' },
-        { id: '11', universidad: 'ITESM', lugar: 'Culiacán', coordinador: 'Laura Jiménez', grupos: '09', estudiantes: '88' },
-        { id: '12', universidad: 'ITESM', lugar: 'San Luis Potosí', coordinador: 'Antonio Salinas', grupos: '07', estudiantes: '70' },
-        { id: '13', universidad: 'ITESM', lugar: 'Aguascalientes', coordinador: 'Isabel Rodríguez', grupos: '08', estudiantes: '74' },
-        { id: '14', universidad: 'ITESM', lugar: 'Tijuana', coordinador: 'Miguel Sánchez', grupos: '06', estudiantes: '60' },
-        { id: '15', universidad: 'ITESM', lugar: 'Zacatecas', coordinador: 'Fernanda Ortega', grupos: '04', estudiantes: '35' },
+        { id: '01', nombre: 'ITESM Puebla', lugar: 'Puebla', status: 'Registrada con participantes', grupos: '07', estudiantes: '63' },
+        { id: '02', nombre: 'ITESM Querétaro', lugar: 'Querétaro', status: 'Registrada con participantes', grupos: '06', estudiantes: '55' },
+        { id: '03', nombre: 'ITESM Monterrey', lugar: 'Monterrey', status: 'Registrada con participantes', grupos: '11', estudiantes: '103' },
+        { id: '04', nombre: 'ITESM Hidalgo', lugar: 'Hidalgo', status: 'Pendiente', grupos: '04', estudiantes: '39' },
+        { id: '05', nombre: 'ITESM Guadalajara', lugar: 'Guadalajara', status: 'Registrada con participantes', grupos: '09', estudiantes: '87' },
+        { id: '06', nombre: 'ITESM Saltillo', lugar: 'Saltillo', status: 'Pendiente', grupos: '08', estudiantes: '72' },
+        { id: '07', nombre: 'ITESM Cuernavaca', lugar: 'Cuernavaca', status: 'Registrada con participantes', grupos: '10', estudiantes: '95' },
     ];
 
     // Filtrar los datos según el valor de búsqueda (solo por las columnas "Universidad" y "Campus")
@@ -59,9 +43,9 @@ const SedesAdmin = () => {
 
         return sedesData.filter(item =>
             item.id.toLowerCase().includes(searchTerm) ||
-            item.universidad.toLowerCase().includes(searchTerm) ||
+            item.nombre.toLowerCase().includes(searchTerm) ||
             item.lugar.toLowerCase().includes(searchTerm) ||
-            item.coordinador.toLowerCase().includes(searchTerm)
+            item.status.toLowerCase().includes(searchTerm)
         );
     }, [inputValue]);
 
@@ -126,7 +110,7 @@ const SedesAdmin = () => {
                                 <th className="p-2 text-center">ID</th>
                                 <th className="p-2 text-center">Universidad</th>
                                 <th className="p-2 text-center">Campus</th>
-                                <th className="p-2 text-center">Coordinador</th>
+                                <th className="p-2 text-center">Status</th>
                                 <th className="p-2 text-center">No. de Grupos</th>
                                 <th className="p-2 text-center">No. de Estudiantes</th>
                                 <th className="p-2 text-center"></th>
@@ -136,9 +120,9 @@ const SedesAdmin = () => {
                             {paginatedData.map((sede, index) => (
                                 <tr key={index} className="border-t border-gray-300">
                                     <td className="p-2 text-center">{sede.id}</td>
-                                    <td className="p-2 text-center">{sede.universidad}</td>
+                                    <td className="p-2 text-center">{sede.nombre}</td>
                                     <td className="p-2 text-center">{sede.lugar}</td>
-                                    <td className="p-2 text-center">{sede.coordinador}</td>
+                                    <td className="p-2 text-center">{sede.status}</td>
                                     <td className="p-2 text-center">{sede.grupos}</td>
                                     <td className="p-2 text-center">{sede.estudiantes}</td>
                                     <td className="p-2 flex gap-2 justify-center">
