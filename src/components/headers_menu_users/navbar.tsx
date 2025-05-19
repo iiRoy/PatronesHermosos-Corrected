@@ -28,7 +28,7 @@ const navItems = [
 const Navbar = () => {
   const router = useRouter();
   return (
-    <div className='min-h-[45px] flex item-center justify-between pr-4 pl-4 pb-2 pt-2 w-full rounded-b-lg'>
+    <div className='min-h-[45px] flex item-center justify-between pr-4 pl-4 pb-2 pt-2 w-full rounded-b-lg bg-[#2E1C31]'>
       {/* Logo */}
       <Link
         href='/'
