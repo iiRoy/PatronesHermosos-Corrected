@@ -4,7 +4,6 @@ const express = require('express');
 const morgan = require('morgan');
 const next = require('next');
 const path = require('path');
-const { PrismaClient } = require('@prisma/client');
 
 const logRequestMiddleware = require('./middlewares/logRequestMiddleware');
 const authRoutes = require('./routes/auth.routes');
@@ -21,9 +20,36 @@ const handle = appNext.getRequestHandler();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const cron = require('node-cron');
+const fs = require('fs').promises;
+
+const cleanupTmpFiles = async () => {
+  const tmpDir = path.join(__dirname, 'uploads', 'tmp');
+  const files = await fs.readdir(tmpDir);
+  const now = Date.now();
+  const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  for (const file of files) {
+    const filePath = path.join(tmpDir, file);
+    const stats = await fs.stat(filePath);
+    if (now - stats.mtimeMs > maxAge) {
+      await fs.unlink(filePath);
+      console.log(`Deleted old file: ${file}`);
+    }
+  }
+};
+
+// Run cleanup every hour
+cron.schedule('0 * * * *', cleanupTmpFiles);
+
+// Run once on startup
+cleanupTmpFiles();
+
 appNext.prepare().then(() => {
   // Middlewares globales
-  app.use(express.json());
+  app.set('trust proxy', 1);
+  app.use(express.json({ limit: '50mb' })); // Increase JSON payload limit
+  app.use(express.urlencoded({ limit: '50mb', extended: true })); // Optional: for form-urlencoded data
   app.use(morgan('dev'));
   app.use(logRequestMiddleware);
 

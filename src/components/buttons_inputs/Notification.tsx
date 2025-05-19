@@ -203,7 +203,6 @@ export const NotificationProvider = ({
     </NotificationContext.Provider>
   );
 };
-// Componente de historial de notificaciones persistentes
 export function NotificationsHistory() {
   const { notifications, dismissFromHistory } = useNotification();
   return (
