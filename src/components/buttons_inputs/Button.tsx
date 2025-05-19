@@ -26,7 +26,7 @@ interface ButtonProps {
     fillColor?: string;
     className?: string;
   }>;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void; // Actualizado para aceptar un evento
   href?: string;
   className?: string;
   activeTransition?: boolean;
@@ -64,7 +64,7 @@ const Button: React.FC<ButtonProps> = ({
     }
 
     if (onClick) {
-      onClick();
+      onClick(e); // Pasar el evento a la función onClick
     }
   };
 

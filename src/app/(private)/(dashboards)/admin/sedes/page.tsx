@@ -5,14 +5,25 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
+import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
+
+interface Sede {
+    id: string;
+    nombre: string;
+    lugar: string;
+    status: string;
+    grupos: string;
+    estudiantes: string;
+}
 
 const SedesAdmin = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('__All__'); // Valor por defecto para mostrar todos
+    const [section, setSection] = useState('__All__');
     const [fadeSec, setFadeSec] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [selectedSede, setSelectedSede] = useState<Sede | null>(null);
 
     const rowsPerPage = 5;
 
@@ -34,14 +45,12 @@ const SedesAdmin = () => {
         { id: '07', nombre: 'ITESM Cuernavaca', lugar: 'Cuernavaca', status: 'Registrada con participantes', grupos: '10', estudiantes: '95' },
     ];
 
-    // Obtener valores únicos de "status" para las opciones del filtro
     const uniqueStatuses = Array.from(new Set(sedesData.map(item => item.status))).map(status => ({
         label: status,
         value: status,
     }));
     const statusOptions = [{ label: 'Todos', value: '__All__' }, ...uniqueStatuses];
 
-    // Filtrar los datos según el valor de búsqueda y el status seleccionado
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
         return sedesData.filter(item => {
@@ -59,7 +68,6 @@ const SedesAdmin = () => {
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
-    // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
     useEffect(() => {
         if (currentPage >= totalPages && totalPages > 0) {
             setCurrentPage(totalPages - 1);
@@ -70,8 +78,18 @@ const SedesAdmin = () => {
 
     const sectionFilterChange = (value: string) => {
         setSection(value);
-        setInputValue(''); // Reiniciar el input de búsqueda al cambiar el filtro
-        setCurrentPage(0); // Reiniciar la página al cambiar el filtro
+        setInputValue('');
+        setCurrentPage(0);
+    };
+
+    const handleRowClick = (sede: Sede) => {
+        setSelectedSede(sede);
+        setIsPopupOpen(true);
+    };
+
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        setSelectedSede(null);
     };
 
     return (
@@ -79,7 +97,6 @@ const SedesAdmin = () => {
             <PageTitle>Sedes</PageTitle>
 
             <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-                {/* Fila de búsqueda, filtro y botón */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-1 gap-4">
                         <div className="basis-2/3">
@@ -104,14 +121,13 @@ const SedesAdmin = () => {
                                 secciones={statusOptions}
                                 seccionActiva={section}
                                 onChangeSeccion={sectionFilterChange}
-                                extraFilters={[]} // Explicitar que no hay filtros adicionales
+                                extraFilters={[]}
                                 fade={fadeSec}
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Tabla */}
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
@@ -127,7 +143,11 @@ const SedesAdmin = () => {
                         </thead>
                         <tbody className="text-gray-700">
                             {paginatedData.map((sede, index) => (
-                                <tr key={index} className="border-t border-gray-300">
+                                <tr
+                                    key={index}
+                                    className="border-t border-gray-300 hover:bg-gray-300 cursor-pointer"
+                                    onClick={() => handleRowClick(sede)}
+                                >
                                     <td className="p-2 text-center">{sede.id}</td>
                                     <td className="p-2 text-center">{sede.nombre}</td>
                                     <td className="p-2 text-center">{sede.lugar}</td>
@@ -135,7 +155,14 @@ const SedesAdmin = () => {
                                     <td className="p-2 text-center">{sede.grupos}</td>
                                     <td className="p-2 text-center">{sede.estudiantes}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
+                                        <Button
+                                            label=''
+                                            variant="error"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Trash}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
                                         <Button
                                             label=''
                                             variant="warning"
@@ -143,6 +170,7 @@ const SedesAdmin = () => {
                                             showLeftIcon
                                             IconLeft={Highlighter}
                                             href={`sedes/editarSedes/editar${sede.lugar}`}
+                                            onClick={(e) => e.stopPropagation()}
                                         />
                                     </td>
                                 </tr>
@@ -151,7 +179,6 @@ const SedesAdmin = () => {
                     </table>
                 </div>
 
-                {/* Paginación */}
                 <div className="mt-auto pt-4 flex justify-center">
                     <Pagination
                         currentPage={currentPage}
@@ -161,6 +188,31 @@ const SedesAdmin = () => {
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
+
+                {isPopupOpen && selectedSede && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 className="text-2xl font-bold mb-4 text-center">Detalles de la Sede</h2>
+                            <div>
+                                <p><strong>ID:</strong> {selectedSede.id}</p>
+                                <p><strong>Nombre:</strong> {selectedSede.nombre}</p>
+                                <p><strong>Lugar:</strong> {selectedSede.lugar}</p>
+                                <p><strong>Status:</strong> {selectedSede.status}</p>
+                                <p><strong>No. de Grupos:</strong> {selectedSede.grupos}</p>
+                                <p><strong>No. de Estudiantes:</strong> {selectedSede.estudiantes}</p>
+                            </div>
+                            <div className="mt-6 flex justify-center">
+                                <Button
+                                    label="Cerrar"
+                                    variant="secondary"
+                                    onClick={handleClosePopup}
+                                    showLeftIcon
+                                    IconLeft={X}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
