@@ -25,19 +25,6 @@ const EstadisticasAdmin = () => {
           <div className='w-full lg:w-3/5 h-[35vmax] min-h-[400px] bg-white rounded-2xl text-primary'></div>
         </div>
 
-<<<<<<< Updated upstream
-        <div className='w-full h-[40vmax] min-h-[500px] text-accent'>
-          <GenericBarChart
-            apiEndpoint='/api/data?page=sedes'
-            dataPath='resumenSedes'
-            xKey='sede'
-            title='Personas Aceptadas por SEDE'
-            labelFormatterPrefix='SEDE: '
-            selectAll = {false}
-            deselectAll = {true}
-            maxItemsSelected={5}
-          />
-=======
         {/* GRÁFICA DE BARRAS */}
         <div>
           <div
@@ -77,7 +64,6 @@ const EstadisticasAdmin = () => {
               </div>
             )}
           </div>
->>>>>>> Stashed changes
         </div>
       </div>
       <div className='flex flex-col w-full lg:w-4/6'></div>
