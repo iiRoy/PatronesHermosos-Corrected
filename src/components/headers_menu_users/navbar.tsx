@@ -1,4 +1,5 @@
 'use client';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/buttons_inputs/Button';
@@ -9,25 +10,14 @@ const navItems = [
     title: 'NAVIGATION',
     items: [
       {
-        icon: '/home.png',
+        icon: 'User',
         label: 'Postúlate',
         href: '/',
-        type: 'link',
-        visible: ['admin', 'teacher', 'student', 'parent'],
       },
       {
-        icon: '/teacher.png',
+        icon: 'Info',
         label: 'Conócenos',
-        href: '/list/teachers',
-        type: 'link',
-        visible: ['admin', 'teacher'],
-      },
-      {
-        icon: '/student.png',
-        label: 'Iniciar Sesión',
-        href: '/list/students',
-        type: 'button',
-        visible: ['admin', 'teacher'],
+        href: 'https://beautifulpatterns.org/',
       },
     ],
   },

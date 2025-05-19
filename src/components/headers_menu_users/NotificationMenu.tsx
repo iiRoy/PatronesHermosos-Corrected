@@ -26,7 +26,7 @@ const NotificationMenu: React.FC<NotificationMenuProps> = ({ open, onClose }) =>
   return (
     <div
       className={`
-        w-full h-full flex flex-col items-center
+        h-full flex flex-col items-center
         bg-[#2e1c31] rounded-xl shadow-xl border border-[#413145]
         transition-all duration-200 ease-out
         ${open ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}
