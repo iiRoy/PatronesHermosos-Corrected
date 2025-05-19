@@ -186,7 +186,7 @@ const VenueRegistrationForm: React.FC = () => {
     const newErrors: string[] = [];
 
     if (!formData.venue.name) newErrors.push('El nombre de la SEDE es obligatorio');
-    if (!formData.venue.country) newErrors.push('El país de la SEDE es obligatorio');
+    //if (!formData.venue.country) newErrors.push('El país de la SEDE es obligatorio');
     if (!formData.venue.state) newErrors.push('El estado/provincia de la SEDE es obligatorio');
     if (!formData.venue.address) newErrors.push('La dirección de la SEDE es obligatoria');
     if (!participationFile) newErrors.push('El archivo de participación es obligatorio');
@@ -472,7 +472,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="ejemplocorreo1@gmail.com"
+                placeholder="correo1@ejemplo.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.generalCoordinator.email}
@@ -483,7 +483,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Celular*"
-                placeholder="+52 222 123 4567"
+                placeholder="+522221234567"
                 variant="accent"
                 icon="Phone"
                 value={formData.generalCoordinator.phone}
@@ -631,7 +631,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="ejemplocorreo1@gmail.com"
+                placeholder="correo1@ejemplo.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.associatedCoordinator.email}
@@ -642,7 +642,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Celular*"
-                placeholder="+52 222 123 4567"
+                placeholder="+522221234567"
                 variant="accent"
                 icon="Phone"
                 value={formData.associatedCoordinator.phone}
@@ -699,7 +699,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="ejemplocorreo1@gmail.com"
+                placeholder="correo1@ejemplo.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.staffCoordinator.email}
@@ -710,7 +710,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Celular*"
-                placeholder="+52 222 123 4567"
+                placeholder="+522221234567"
                 variant="accent"
                 icon="Phone"
                 value={formData.staffCoordinator.phone}
@@ -767,7 +767,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Correo Electrónico*"
-                placeholder="ejemplocorreo1@gmail.com"
+                placeholder="correo1@ejemplo.com"
                 variant="accent"
                 icon="Envelope"
                 value={formData.participantsCoordinator.email}
@@ -778,7 +778,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Celular*"
-                placeholder="+52 222 123 4567"
+                placeholder="+522221234567"
                 variant="accent"
                 icon="Phone"
                 value={formData.participantsCoordinator.phone}
