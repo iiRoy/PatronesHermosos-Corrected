@@ -1,3 +1,10 @@
+## 1.9.0-admin.6 (2025-05-19)
+
+* fix(estadisticas): Correción a opciones de Personalización de gráficas. ([472d861](https://github.com/iiRoy/Patrones-Hermosos/commit/472d861))
+* feat(estadísticas): Opciones de personalización de gráficas. ([4c54ce6](https://github.com/iiRoy/Patrones-Hermosos/commit/4c54ce6))
+* feat(estadisticas): Opciones de Personalización de gráficas. ([c7ac6ca](https://github.com/iiRoy/Patrones-Hermosos/commit/c7ac6ca))
+* feat(estadisticas): Opciones de Personalización de gráficas. ([08ef181](https://github.com/iiRoy/Patrones-Hermosos/commit/08ef181))
+
 ## 1.9.0-admin.5 (2025-05-19)
 
 * feat(pages): Nueva página de inicio implementada ([944ec7d](https://github.com/iiRoy/Patrones-Hermosos/commit/944ec7d))
