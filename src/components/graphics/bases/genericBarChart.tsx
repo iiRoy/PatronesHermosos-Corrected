@@ -24,6 +24,7 @@ interface GenericBarChartProps {
   apiEndpoint: string;
   title?: string;
   dataPath?: string;
+  onMinimize: () => void;
   xKey?: string;
   labelFormatterPrefix?: string;
   filters?: Record<string, string | undefined>;
@@ -40,6 +41,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   apiEndpoint,
   title = 'Gráfica',
   dataPath,
+  onMinimize,
   xKey = 'name',
   labelFormatterPrefix = '',
   filters = {},
@@ -70,8 +72,10 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
         try {
           const res = await fetch(fullUrl, {
             headers: {
-              Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("api_token") : ""}`,
-            },            
+              Authorization: `Bearer ${
+                typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
+              }`,
+            },
           });
 
           const json = await res.json();
@@ -160,9 +164,14 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           <div className='relative flex justify-between items-center'>
             <h1 className='font-bold text-2xl'>{title}</h1>
             <button
-              onClick={() => setShowMenu(!showMenu)}
+              onClick={() => {
+                if (!showMenu) setShowMenu(true);
+              }}
+              disabled={showMenu}
               id='options-button'
-              className='cursor-pointer'
+              className={`cursor-pointer transition-opacity ${
+                showMenu ? 'opacity-50 pointer-events-none' : 'opacity-100'
+              }`}
             >
               <Options
                 fillColor='var(--secondaryColor)'
@@ -175,6 +184,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
             {/* Menú fuera del flujo flex, pero dentro de contenedor relative */}
             <div className='absolute top-full right-0 z-50'>
               <OptionsMenu
+                onMinimize={onMinimize}
                 onMaxItemsChange={setMaxItems}
                 onToggleVisibility={() => setIsVisible(false)}
                 setColors={setColors}
@@ -185,14 +195,14 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 totalItems={data.length}
                 defaultColors={defaultColorPallete}
                 restoreDefaultColors={() => setColors(defaultColorPallete)}
-                // nuevas props necesarias para exportación:
                 filteredData={filteredData}
                 xKey={xKey}
                 seriesKeys={seriesKeys}
                 title={title}
                 colors={colors}
-                onMinimize={() => setIsVisible(false)}
-                elementLabels={options.map(opt => opt.label)}
+                elementLabels={seriesKeys.map(
+                  (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' '),
+                )}
               />
             </div>
           </div>
@@ -280,15 +290,6 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               </ResponsiveContainer>
             )}
           </div>
-        </div>
-      )}
-      {!isVisible && (
-        <div
-          onClick={() => setIsVisible(true)}
-          className='h-6 w-full bg-gray-300 rounded-full cursor-pointer hover:bg-gray-400 transition-all flex items-center justify-center'
-          title='Mostrar gráfica'
-        >
-          <span className='text-xs font-medium text-gray-700'>Expandir</span>
         </div>
       )}
     </>
