@@ -5,7 +5,9 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
+import Dropdown from '@components/buttons_inputs/Dropdown';
 import { Envelope } from '@/components/icons';
+import withIconDecorator from '@/components/decorators/IconDecorator'; // Import withIconDecorator
 import { useState, useMemo, useEffect } from 'react';
 
 const CorreosAdmin = () => {
@@ -14,17 +16,7 @@ const CorreosAdmin = () => {
     const [filterActivaExtra, setFilterActivaExtra] = useState({});
     const [fadeSec, setFadeSec] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-
-    const rowsPerPage = 5;
-
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-    };
-
-    const correosData = [
+    const [correosData, setCorreosData] = useState([
         { id: '01', nombre: 'María González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
         { id: '02', nombre: 'Sofía González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
         { id: '03', nombre: 'Bárbara González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
@@ -39,7 +31,25 @@ const CorreosAdmin = () => {
         { id: '12', nombre: 'Ana González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
         { id: '13', nombre: 'Natalia González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
         { id: '14', nombre: 'Fernanda González', sede: 'ITESM Monterrey', grupo: '07', correo: 'maria@correo.com', asunto: 'aceptado' },
-    ];
+    ]);
+
+    const rowsPerPage = 5;
+
+    const extraHandleFilterChange = (key: string, value: string) => {
+        setFilterActivaExtra((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
+
+    // Function to handle dropdown change for a specific row
+    const handleAsuntoChange = (id: string, newAsunto: string) => {
+        setCorreosData((prevData) =>
+            prevData.map((item) =>
+                item.id === id ? { ...item, asunto: newAsunto.toLowerCase() } : item
+            )
+        );
+    };
 
     // Filtrar los datos según el valor de búsqueda (por las columnas "Nombre", "Sede", "Grupo", "Correo", "Asunto")
     const filteredData = useMemo(() => {
@@ -55,7 +65,7 @@ const CorreosAdmin = () => {
             item.correo.toLowerCase().includes(searchTerm) ||
             item.asunto.toLowerCase().includes(searchTerm)
         );
-    }, [inputValue]);
+    }, [inputValue, correosData]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
@@ -124,27 +134,20 @@ const CorreosAdmin = () => {
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">
-                            {paginatedData.map((diploma, index) => (
-                                <tr key={index} className="border-t border-gray-300">
+                            {paginatedData.map((diploma) => (
+                                <tr key={diploma.id} className="border-t border-gray-300">
                                     <td className="p-2 text-center">{diploma.nombre}</td>
                                     <td className="p-2 text-center">{diploma.sede}</td>
                                     <td className="p-2 text-center">{diploma.grupo}</td>
                                     <td className="p-2 text-center">{diploma.correo}</td>
                                     <td className="p-2 text-center">
-                                        <FiltroEvento
-                                            disableCheckboxes
-                                            label="Filtros"
-                                            showSecciones
-                                            labelSecciones="Secciones"
-                                            secciones={[
-                                                { label: 'ITESM Puebla', value: 'Participantes' },
-                                                { label: 'ITESM Monterrey', value: 'Colaboradoras' },
-                                            ]}
-                                            seccionActiva={section}
-                                            extraFilters={[]}
-                                            filterActiva={filterActivaExtra}
-                                            onExtraFilterChange={extraHandleFilterChange}
-                                            fade={fadeSec}
+                                        <Dropdown
+                                            label=""
+                                            options={['Aceptada', 'Rechazada']}
+                                            value={diploma.asunto.charAt(0).toUpperCase() + diploma.asunto.slice(1)} // Capitalize for display
+                                            onChange={(value: string) => handleAsuntoChange(diploma.id, value)}
+                                            variant="accent"
+                                            Icon={withIconDecorator(Envelope)}
                                         />
                                     </td>
                                     <td className="p-2 justify-center">
