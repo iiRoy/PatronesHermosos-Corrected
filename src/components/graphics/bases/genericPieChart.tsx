@@ -8,6 +8,7 @@ import * as Icons from '../../icons';
 
 export const Options = withIconDecorator(Icons.DotsThree);
 export const Back = withIconDecorator(Icons.ArrowBendUpLeft);
+import OptionsMenu from '../../headers_menu_users/OptionMenu';
 
 interface ConcentricDonutChartProps {
   apiEndpoint: string;
@@ -48,14 +49,22 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
 }) => {
   const [innerData, setInnerData] = useState<any[]>([]);
   const [outerData, setOuterData] = useState<any[]>([]);
+  const [outerColorMap, setOuterColorMap] = useState<Record<string, string>>({});
   const [fade, setFade] = useState(false);
   const [fadeSec, setFadeSec] = useState(false);
   const [selectedRol, setSelectedRol] = useState<string | undefined>(undefined);
   const [rolColor, setRolColor] = useState<string | undefined>(undefined);
   const isFirstRender = useRef(true);
+  const [showMenu, setShowMenu] = useState(false);
+  const [colors, setColors] = useState<string[]>([]); // Inicializa con tus colores
+  const [defaultColors, setDefaultColors] = useState<string[]>([]);
+  const defaultRoleColors = ['#683756', '#97639c', '#B77690']; // Paleta por defecto
   const [animatedInnerFills, setAnimatedInnerFills] = useState<string[]>([]);
   const [animatedOuterFills, setAnimatedOuterFills] = useState<string[]>([]);
   const [interactionsDisabled, setInteractionsDisabled] = useState(true);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const defaultStatusPalette = ['#BBA44BFF', '#488262FF', '#BB4B4BFF', '#aaa'];
+  const [defaultOuterColorMap, setDefaultOuterColorMap] = useState<Record<string, string>>({});
 
     useEffect(() => {
       const steps = 20;
@@ -63,6 +72,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
 
       let step = 0;
 
+<<<<<<< Updated upstream
       const innerInterpolators = innerData.map((entry, index) => {
         const from = animatedInnerFills[index] || entry.fill; // último color mostrado
         const to =
@@ -71,6 +81,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
             : toGrayish(entry.fill); // o hacia gris
         return interpolateRgb(from, to);
       });
+=======
+    const innerInterpolators = innerData.map((entry, index) => {
+      const from = animatedInnerFills[index] || entry.fill;
+      const to = !selectedRol || entry.name === selectedRol ? entry.fill : toGrayish(entry.fill);
+      return interpolateRgb(from, to);
+    });
+>>>>>>> Stashed changes
 
       const outerInterpolators = outerData.map((entry, index) => {
         const from = animatedOuterFills[index] || entry.fill;
@@ -96,39 +113,55 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       try {
         const res = await fetch(apiEndpoint, {
           headers: {
+<<<<<<< Updated upstream
             Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("api_token") : ""}`,
           },          
+=======
+            Authorization: `Bearer ${
+              typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
+            }`,
+          },
+>>>>>>> Stashed changes
         });
 
         const json = await res.json();
         const source = dataPath ? json[dataPath] : json;
+        if (!Array.isArray(source)) return;
 
-        if (!Array.isArray(source)) {
-          console.warn(`⚠️ El formato de ${dataPath} no es un array.`);
-          return;
-        }
+        const parsedPalette = colorPalette ?? defaultRoleColors;
+        const parsedStatusPalette = statusColors ?? defaultStatusPalette;
 
+<<<<<<< Updated upstream
         const defaultPalette = ['#683756', '#97639c', '#B77690', '#A0D2DB', '#FFB86F'];
         const defaultSecondPalette = ['#488262FF', '#BBA44BFF', '#BB4B4BFF', '#aaa',]
         const parsedPalette = colorPalette ?? defaultPalette;
         const parsedSecondPalette = statusColors ?? defaultSecondPalette
+=======
+        const defaultOuterColors = outerLabels.map(
+          (label) => defaultOuterColorMap[label] ?? '#ccc',
+        );
+
+        const allStatuses = Array.from(
+          new Set(source.map((item) => item[areaOuter] ?? 'Desconocido')),
+        );
+        const statusToColorMap = new Map<string, string>();
+        allStatuses.forEach((status, i) => {
+          statusToColorMap.set(status, parsedStatusPalette[i % parsedStatusPalette.length]);
+        });
+>>>>>>> Stashed changes
 
         const innerMap = new Map<string, number>();
-
         const outerCounts: Record<string, Record<string, number>> = {};
 
         source.forEach((item) => {
           const inner = item[areaInner] ?? 'Desconocido';
           const outer = item[areaOuter] ?? 'Desconocido';
           const value = Number(item.total) || 0;
-
           innerMap.set(inner, (innerMap.get(inner) || 0) + value);
-
           if (!outerCounts[inner]) outerCounts[inner] = {};
           outerCounts[inner][outer] = (outerCounts[inner][outer] || 0) + value;
         });
 
-        // Generar innerData y outerData sincronizados
         const innerArray = Array.from(innerMap.entries()).map(([name, total], index) => ({
           name,
           total,
@@ -138,14 +171,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
         const outerArray: any[] = [];
         innerArray.forEach((segment) => {
           const outer = outerCounts[segment.name];
-
-          Object.entries(outer).forEach(([status, value], index) => {
+          Object.entries(outer).forEach(([status, value]) => {
             if (outerFilterValues.length === 0 || outerFilterValues.includes(status)) {
               outerArray.push({
                 name: status,
                 rol: segment.name,
                 total: value,
-                fill: parsedSecondPalette[index % parsedSecondPalette.length],
+                fill: statusToColorMap.get(status) || '#ccc',
               });
             }
           });
@@ -153,6 +185,19 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
 
         setInnerData(innerArray);
         setOuterData(outerArray);
+
+        // Guardar defaultColors para inner
+        setColors(innerArray.map((d) => d.fill));
+        setDefaultColors(innerArray.map((d) => d.fill));
+
+        // Construir y guardar defaultOuterColorMap
+        const outerMap: Record<string, string> = {};
+        outerArray.forEach((d) => {
+          if (!outerMap[d.name]) outerMap[d.name] = d.fill;
+        });
+        setOuterColorMap(outerMap);
+        setDefaultOuterColorMap({ ...outerMap });
+
         setFade(true);
         setFadeSec(true);
         setTimeout(() => {
@@ -164,25 +209,93 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
           setInteractionsDisabled(false);
         }, 2300);
       } catch (err) {
-        console.error('❌ Error al cargar datos:', err);
+        console.error('Error al cargar datos:', err);
       }
     };
 
     fetchData();
   }, []);
 
+  const elementLabels = innerData.map((d) => d.name);
+
+  const outerLabels = Array.from(new Set(outerData.map((d) => d.name)));
+  const outerColors = outerLabels.map((name) => outerColorMap[name] ?? '#ccc');
+  const defaultOuterColors = outerLabels.map((name) => defaultOuterColorMap[name] ?? '#ccc');
+
   return (
     <div className='bg-white rounded-xl w-full h-full p-4 flex flex-col'>
       {/* Título */}
-      <div className='flex justify-between items-center'>
+      <div className='relative flex justify-between items-center'>
         <h1 className='font-bold text-2xl'>{title}</h1>
-        <Options
-          fillColor='var(--secondaryColor)'
-          strokeColor='var(--secondaryColor)'
-          strokeWidth={2.5}
-          width={'3vmax'}
-          height={'3vmax'}
-        />
+        <button
+          onClick={() => {
+            if (!showMenu) setShowMenu(true);
+          }}
+          disabled={showMenu}
+          id='options-button'
+          className={`cursor-pointer transition-opacity ${
+            showMenu ? 'opacity-50 pointer-events-none' : 'opacity-100'
+          }`}
+        >
+          <Options
+            fillColor='var(--secondaryColor)'
+            strokeColor='var(--secondaryColor)'
+            strokeWidth={2.5}
+            width={'3vmax'}
+            height={'3vmax'}
+          />
+        </button>
+        {/* Menú fuera del flujo flex, pero dentro de contenedor relative */}
+        <div className='absolute top-full right-0 z-50'>
+          <OptionsMenu
+            onMinimize={() => setShowMenu(false)}
+            onToggleVisibility={() => {}}
+            onMaxItemsChange={() => {}}
+            maxItemsSelected={undefined}
+            visible={showMenu}
+            setVisible={setShowMenu}
+            chartRef={chartRef}
+            totalItems={innerData.length}
+            defaultColors={defaultColors}
+            filteredData={innerData}
+            outerData={outerData} 
+            xKey='name'
+            seriesKeys={[]} // PieChart
+            title={title}
+            colors={colors}
+            setColors={(newColors) => {
+              setColors(newColors);
+              setInnerData((prev) => prev.map((d, i) => ({ ...d, fill: newColors[i] ?? d.fill })));
+            }}
+            elementLabels={elementLabels}
+            restoreDefaultColors={() => setColors(defaultColors)}
+            outerLabels={outerLabels}
+            outerColors={outerColors}
+            defaultOuterColors={defaultOuterColors}
+            setOuterColors={(newColors) => {
+              const newMap: Record<string, string> = {};
+              outerLabels.forEach((label, i) => {
+                newMap[label] = newColors[i] ?? '#ccc';
+              });
+              setOuterColorMap(newMap);
+              setOuterData((prev) =>
+                prev.map((d) => ({
+                  ...d,
+                  fill: newMap[d.name] ?? d.fill,
+                })),
+              );
+            }}
+            restoreDefaultOuterColors={() => {
+              setOuterColorMap({ ...defaultOuterColorMap });
+              setOuterData((prev) =>
+                prev.map((d) => ({
+                  ...d,
+                  fill: defaultOuterColorMap[d.name] ?? '#ccc',
+                })),
+              );
+            }}
+          />
+        </div>
       </div>
 
       {/* Gráfico */}
@@ -211,6 +324,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
                 >
                   {innerData.map((entry, index) => (
                     <Cell
+<<<<<<< Updated upstream
                     key={`inner-${index}`}
                     fill={
                       isFirstRender.current
@@ -218,6 +332,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
                         : animatedInnerFills[index] ?? entry.fill
                     }
                   />
+=======
+                      key={`inner-${index}`}
+                      fill={
+                        isFirstRender.current ? entry.fill : animatedInnerFills[index] ?? entry.fill
+                      }
+                    />
+>>>>>>> Stashed changes
                   ))}
                 </Pie>
 
@@ -235,6 +356,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
                 >
                   {outerData.map((entry, index) => (
                     <Cell
+<<<<<<< Updated upstream
                     key={`outer-${index}`}
                     fill={
                       isFirstRender.current
@@ -242,6 +364,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
                         : animatedOuterFills[index] ?? entry.fill
                     }
                   />
+=======
+                      key={`outer-${index}`}
+                      fill={
+                        isFirstRender.current ? entry.fill : animatedOuterFills[index] ?? entry.fill
+                      }
+                    />
+>>>>>>> Stashed changes
                   ))}
                 </Pie>
               </PieChart>
@@ -259,9 +388,19 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
 
       {/* Leyendas Interactivas */}
       {innerData.length > 0 ? (
+<<<<<<< Updated upstream
         <div className={`flex ${interactionsDisabled ? 'pointer-events-none' : ''} flex-col items-center gap-3 mt-4 transition-opacity duration-300 ${
           fade ? 'opacity-0' : 'opacity-100'
         }`}>
+=======
+        <div
+          className={`flex ${
+            interactionsDisabled ? 'pointer-events-none' : ''
+          } flex-col items-center gap-3 mt-4 transition-opacity duration-300 ${
+            fade ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
+>>>>>>> Stashed changes
           <div className={`flex flex-row items-center justify-end w-full relative`}>
             {/* Título dinámico */}
             <div className='flex flex-col w-full items-center justify-center'>
