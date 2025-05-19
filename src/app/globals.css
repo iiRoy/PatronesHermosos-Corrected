@@ -80,6 +80,90 @@
   color: var(--primary-shade);
 }
 
+/* Fondo blanco diagonal */
+.bg-diagonal-blanco {
+  background: linear-gradient(115deg, var(--text-color) 50%, transparent 50%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.bg-diagonal-morado {
+  background: linear-gradient(118deg, var(--secondaryColor) 50%, transparent 50%);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Estilo para el contenedor de la descripción con fondo morado y flecha */
+
+.pagina-inicio {
+  background-color: #160D17;
+  min-height: 90.8vh;
+}
+
+
+
+.contenido-inicio h1 {
+  color: var(--text-color);
+}
+
+.contenido-inicio p {
+  color: var(--text-color);
+}
+
+.description-box {
+  position: relative;
+  /* Morado */
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* Flecha apuntando hacia el botón */
+.description-box::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #97639C;
+  /* Morado de la flecha */
+}
+
+.description-box-secondary {
+  position: relative;
+  /* Morado */
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* Flecha apuntando hacia el botón */
+.description-box-secondary::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #683756;
+  /* Morado de la flecha */
+}
+
+/* Ajuste para las sombras de los círculos decorativos */
+.shadow-custom-dark {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
 .custom-button {
   display: inline-flex;
   align-items: center;
