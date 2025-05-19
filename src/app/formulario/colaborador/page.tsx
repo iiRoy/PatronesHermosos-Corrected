@@ -108,6 +108,12 @@ const CollaboratorRegistrationForm: React.FC = () => {
     const [selectedSede, setSelectedSede] = useState<Sedes | null>(null); // Sede seleccionada para eliminar
     const [chosenSede, setChosenSede] = useState<string | null>(null); // Nueva state para la sede elegida
 
+    const DecoratedFlowerLotus = withIconDecorator(FlowerLotus);
+    const DecoratedAddressBook = withIconDecorator(AddressBook);
+    const DecoratedSketchLogo = withIconDecorator(SketchLogo);
+    const DecoratedMegaphone = withIconDecorator(Megaphone);
+    const DecoratedStudent = withIconDecorator(Student);
+
     // Handle input changes
     type GeneralCoordinatorKeys = keyof GeneralCoordinator; // 'name' | 'lastNameP' | 'lastNameM' | 'email' | 'phone' | 'gender' | 'username' | 'password' | 'confirmPassword'
     type CoordinatorKeys = keyof Coordinator; // 'name' | 'lastNameP' | 'lastNameM' | 'email' | 'phone'
@@ -457,7 +463,10 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Section: Datos Personales */}
                     <div className="mb-6">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className=" mr-2"><FlowerLotus></FlowerLotus></span> Datos Personales
+                            <span className="mr-2">
+                                <DecoratedFlowerLotus width={25} height={25} strokeWidth={0} />
+                            </span>
+                            Datos Personales
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
@@ -594,7 +603,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Section: Datos Coordinadora Asociada */}
                     <div className="mt-8">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className="mr-2"><AddressBook></AddressBook></span> Selección de Sede
+                            <span className="mr-2"> <DecoratedAddressBook width={25} height={25} strokeWidth={0} /></span> Selección de Sede
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Selecciona la SEDE que más te llame la atención para apoyar. <br />
@@ -603,7 +612,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     </div>
 
                     <div className='flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 input-secondary text-xs sm:text-base md:text-lg lg:text-xl'>
-                        <Student></Student>
+                        <DecoratedStudent width={25} height={25} strokeWidth={0} />
                         <h2 className='mx-4 font-semibold'>SEDE Elegida: </h2>
                         <p>{chosenSede || 'Ninguna'}</p>
                     </div>
@@ -677,7 +686,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Section: Datos Coordinadora de Informes (Staff) */}
                     <div className="mt-8">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className="mr-2"><SketchLogo></SketchLogo></span> Preferencias
+                            <span className="mr-2"> <DecoratedSketchLogo width={25} height={25} strokeWidth={0} /></span> Preferencias
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Responde con sinceridad sobre tus preferencias durante la participación del taller. <br />
@@ -726,7 +735,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Aviso de Privacidad */}
                     <div className="mt-8">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className="mr-2"><Megaphone></Megaphone></span> Aviso de Privacidad
+                            <span className="mr-2"> <DecoratedMegaphone width={25} height={25} strokeWidth={0} /></span> Aviso de Privacidad
                         </h2>
                         <p className="text-gray-400 text-sm">
                             Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />

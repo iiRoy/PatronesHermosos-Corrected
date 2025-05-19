@@ -53,7 +53,7 @@ interface FormData {
     venue: Venue;
 }
 
-const CollaboratorRegistrationForm: React.FC = () => {
+const ParticipantRegistrationForm: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
         generalCoordinator: {
             name: '',
@@ -110,6 +110,15 @@ const CollaboratorRegistrationForm: React.FC = () => {
     const [chosenSede, setChosenSede] = useState<string | null>(null); // Nueva state para la sede elegida
 
     const [chosenGrupo, setChosenGrupo] = useState<string | null>(null); // Nueva state para la sede elegida
+
+    const DecoratedFlowerLotus = withIconDecorator(FlowerLotus);
+    const DecoratedSealWarning = withIconDecorator(SealWarning);
+    const DecoratedAddressBook = withIconDecorator(AddressBook);
+    const DecoratedStudent = withIconDecorator(Student);
+    const DecoratedBookmarksSimple = withIconDecorator(BookmarksSimple);
+    const DecoratedHeart = withIconDecorator(Heart);
+    const DecoratedFilePdf = withIconDecorator(FilePdf);
+    const DecoratedMegaphone = withIconDecorator(Megaphone);
 
     // Handle input changes
     type GeneralCoordinatorKeys = keyof GeneralCoordinator; // 'name' | 'lastNameP' | 'lastNameM' | 'email' | 'phone' | 'gender' | 'username' | 'password' | 'confirmPassword'
@@ -462,7 +471,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Section: Datos Personales */}
                     <div className="mb-6">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className=" mr-2"><FlowerLotus></FlowerLotus></span> Datos del Participante
+                            <span className=" mr-2"><DecoratedFlowerLotus width={25} height={25} strokeWidth={0} /></span> Datos del Participante
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Responde con sinceridad las siguientes preguntas acerca de tus datos personales y de contacto. <br />
@@ -550,7 +559,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
 
                     <div className="my-12">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className=" mr-2"><SealWarning></SealWarning></span> Datos del Tutor
+                            <span className=" mr-2"><DecoratedSealWarning width={25} height={25} strokeWidth={0} /></span> Datos del Tutor
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Pídele a tu tutor que llene la siguiente parte del formulario con sus datos personales. <br />
@@ -620,7 +629,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Section: Datos Coordinadora Asociada */}
                     <div className="mt-8">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className="mr-2"><AddressBook></AddressBook></span> Selección de Grupo
+                            <span className="mr-2"><DecoratedAddressBook width={25} height={25} strokeWidth={0} /></span> Selección de Grupo
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Selecciona el grupo que más te llame la atención. <br />
@@ -630,13 +639,13 @@ const CollaboratorRegistrationForm: React.FC = () => {
 
                     <div className='flex flex-col gap:4 lg:flex-row lg:gap-24 justify-center items-center mx-auto w-[80%] h-[65px] md:h-[50px] rounded-t-[15px] mt-8 input-secondary text-xs sm:text-base lg:text-xl'>
                         <div className='flex'>
-                            <Student></Student>
+                            <DecoratedStudent width={25} height={25} strokeWidth={0} />
                             <h2 className='mx-4 font-semibold'>SEDE Elegida: </h2>
                             <p>{chosenSede || 'Ninguna'}</p>
                         </div>
 
                         <div className='flex'>
-                            <BookmarksSimple></BookmarksSimple>
+                            <DecoratedBookmarksSimple width={25} height={25} strokeWidth={0} />
                             <h2 className='mx-4 font-semibold'>Grupo Elegido: </h2>
                             <p>{chosenGrupo || 'Ninguno'}</p>
                         </div>
@@ -714,7 +723,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Section: Datos Coordinadora de Informes (Staff) */}
                     <div className="mt-8">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className="mr-2"><Heart></Heart></span> Permiso de participación
+                            <span className="mr-2"><DecoratedHeart width={25} height={25} strokeWidth={0} /></span> Permiso de participación
                         </h2>
                         <p className="text-gray-400 text-sm md:text-base mb-4">
                             Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá de estar firmado por tu tutor. <br />
@@ -724,7 +733,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
 
                     <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
                         <div className="flex items-center titulo-tarjeta-archivo">
-                            <span className=" text-2xl mr-2 icono-tarjeta-archivo"><FilePdf></FilePdf></span>
+                            <span className=" text-2xl mr-2 icono-tarjeta-archivo"><DecoratedFilePdf width={25} height={25} strokeWidth={0} /></span>
                             <h3 className="text-lg font-semibold">Sube tu permiso firmado</h3>
                         </div>
                         <p className="text-sm my-6">
@@ -746,7 +755,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                     {/* Aviso de Privacidad */}
                     <div className="mt-8">
                         <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                            <span className="mr-2"><Megaphone></Megaphone></span> Aviso de Privacidad
+                            <span className="mr-2"><DecoratedMegaphone width={25} height={25} strokeWidth={0} /></span> Aviso de Privacidad
                         </h2>
                         <p className="text-gray-400 text-sm">
                             Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
@@ -780,4 +789,4 @@ const CollaboratorRegistrationForm: React.FC = () => {
     );
 };
 
-export default CollaboratorRegistrationForm;
+export default ParticipantRegistrationForm;
