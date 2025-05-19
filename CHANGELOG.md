@@ -1,3 +1,22 @@
+## 1.13.0-admin.1 (2025-05-19)
+
+* improve(pages): columnas de tabla de sedes actualiazadas ([434b987](https://github.com/iiRoy/Patrones-Hermosos/commit/434b987))
+* improve(pages): columnas de tabla de sedes actualizadas y componente FiltroEvento funcional en págin ([7300ff8](https://github.com/iiRoy/Patrones-Hermosos/commit/7300ff8))
+* improve(pages): componente dropdown funcionando en pages/superuser ([16c3984](https://github.com/iiRoy/Patrones-Hermosos/commit/16c3984))
+* improve(pages): EditarParticipante ya utiliza la información del participante seleccionado en Gestio ([9698bd2](https://github.com/iiRoy/Patrones-Hermosos/commit/9698bd2))
+* improve(pages): gestión de usuarios mejorado para llamar información de la db ([db59032](https://github.com/iiRoy/Patrones-Hermosos/commit/db59032))
+* improve(pages): popup para ver información de sede (superuser) ([9761687](https://github.com/iiRoy/Patrones-Hermosos/commit/9761687))
+* feat(estadísticas): Opciones de personalización de gráficas. ([4c54ce6](https://github.com/iiRoy/Patrones-Hermosos/commit/4c54ce6))
+* Merge desde main ([9292546](https://github.com/iiRoy/Patrones-Hermosos/commit/9292546))
+* chore(release): 1.9.0-admin.4 [skip ci] ([fe450f5](https://github.com/iiRoy/Patrones-Hermosos/commit/fe450f5))
+* chore(release): 1.9.0-admin.5 [skip ci] ([5c6809d](https://github.com/iiRoy/Patrones-Hermosos/commit/5c6809d))
+* chore(release): 1.9.0-admin.6 [skip ci] ([3d0ac89](https://github.com/iiRoy/Patrones-Hermosos/commit/3d0ac89))
+* fix(estadisticas): Correción a opciones de Personalización de gráficas. ([472d861](https://github.com/iiRoy/Patrones-Hermosos/commit/472d861))
+* fix(pages): se corrigió la búsqueda con InputField para que funcione en todas las páginas de paginac ([916b75b](https://github.com/iiRoy/Patrones-Hermosos/commit/916b75b))
+* feat(estadisticas): Opciones de Personalización de gráficas. ([c7ac6ca](https://github.com/iiRoy/Patrones-Hermosos/commit/c7ac6ca))
+* feat(estadisticas): Opciones de Personalización de gráficas. ([08ef181](https://github.com/iiRoy/Patrones-Hermosos/commit/08ef181))
+* feat(pages): Nueva página de inicio implementada ([944ec7d](https://github.com/iiRoy/Patrones-Hermosos/commit/944ec7d))
+
 ## <small>1.12.1 (2025-05-18)</small>
 
 * fix(database): Errores en procedimientos, formateo de documentos y errores en tablas. ([edd2df1](https://github.com/iiRoy/Patrones-Hermosos/commit/edd2df1))
