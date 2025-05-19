@@ -104,7 +104,7 @@ export default function PatronesHermosos() {
                     variant="primary"
                     showLeftIcon
                     IconLeft={Student}
-                    href="/admin/gestion-usuarios/sedes"
+                    href="formulario/sede"
                     className="mb-4"
                   />
                   <div className="description-box bg-[#97639c]">
