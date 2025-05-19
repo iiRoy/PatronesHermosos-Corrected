@@ -1,7 +1,7 @@
 'use client';
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { NotificationProvider } from "@/components/buttons_inputs/Notification";
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { NotificationProvider } from '@/components/buttons_inputs/Notification';
 
 function LoadingScreen({ isVisible }: { isVisible: boolean }) {
   return (
@@ -9,7 +9,7 @@ function LoadingScreen({ isVisible }: { isVisible: boolean }) {
       className={`fixed top-0 left-0 h-screen w-screen flex items-center justify-center bg-[#160D17] 
         transition-opacity duration-1000 ease-in-out z-50 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
-      <span className="text-white text-lg animate-pulse">Cargando...</span>
+      <span className='text-white text-lg animate-pulse'>Cargando...</span>
     </div>
   );
 }
@@ -40,8 +40,8 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         setUserId(storedUserId);
         setIsLoading(false);
         setTimeout(() => {
-          setShowLoader(false); 
-        }, 600); 
+          setShowLoader(false);
+        }, 600);
       } catch (error) {
         console.warn('Token inválido, redirigiendo...');
         localStorage.clear();
@@ -61,9 +61,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       {showLoader && <LoadingScreen isVisible={isLoading} />}
 
       <div>
-        <NotificationProvider userId={userId || ''}>
-          {children}
-        </NotificationProvider>
+        <NotificationProvider userId={userId || ''}>{children}</NotificationProvider>
       </div>
     </>
   );

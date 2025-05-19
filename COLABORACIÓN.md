@@ -30,13 +30,13 @@ main
 
 Usa prefijos según el tipo de trabajo:
 
-| Tipo de rama          | Prefijo          | Ejemplo                       |
-|-----------------------|------------------|-------------------------------|
-| Nueva funcionalidad   | `feature/`       | `feature/rutasAPI`           |
-| Página o componente UI| `pages/`         | `pages/superuser`            |
-| Refactorización       | `refactor/`      | `refactor/sql-depuracion`    |
-| Corrección de bugs    | `fix/` o `bugfix/`| `fix/login-error`            |
-| Pruebas o experimentos| `experiment/`    | `experiment/nueva-api`       |
+| Tipo de rama           | Prefijo            | Ejemplo                   |
+| ---------------------- | ------------------ | ------------------------- |
+| Nueva funcionalidad    | `feature/`         | `feature/rutasAPI`        |
+| Página o componente UI | `pages/`           | `pages/superuser`         |
+| Refactorización        | `refactor/`        | `refactor/sql-depuracion` |
+| Corrección de bugs     | `fix/` o `bugfix/` | `fix/login-error`         |
+| Pruebas o experimentos | `experiment/`      | `experiment/nueva-api`    |
 
 ---
 

@@ -473,10 +473,6 @@
   color: var(--background);
 }
 
-.texto-blanco {
-  color: var(--text-color);
-}
-
 /*Notificaciones*/
 
 .notification {

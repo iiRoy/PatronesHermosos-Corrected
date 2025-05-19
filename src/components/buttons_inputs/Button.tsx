@@ -93,21 +93,23 @@ const Button: React.FC<ButtonProps> = ({
       {showLeftIcon && DecoratedIconL && (
         <div className='ease-in-out duration-300 transition-colors'>
           <DecoratedIconL
-            width="1.5rem"
-            height="1.5rem"
-            fillColor="#ebe6eb"
-            strokeColor="currentColor"
+            width='1.5rem'
+            height='1.5rem'
+            fillColor='#ebe6eb'
+            strokeColor='currentColor'
           />
         </div>
       )}
-      {!round && <span className="option-label text-[var(--text-color)] hidden lg:inline">{label}</span>}
+      {!round && (
+        <span className='option-label text-[var(--text-color)] hidden lg:inline'>{label}</span>
+      )}
       {showRightIcon && DecoratedIconR && (
         <div className='ease-in-out duration-300 transition-colors'>
           <DecoratedIconR
-            width="2rem"
-            height="2rem"
-            fillColor="#ebe6eb"
-            strokeColor="currentColor"
+            width='2rem'
+            height='2rem'
+            fillColor='#ebe6eb'
+            strokeColor='currentColor'
           />
         </div>
       )}

@@ -10,19 +10,19 @@ import { useState, useMemo, useEffect } from 'react';
 
 const SedesAdmin = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('SEDES');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({});
+    const [section, setSection] = useState('__All__'); // Valor por defecto para mostrar todos
     const [fadeSec, setFadeSec] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
     const rowsPerPage = 5;
 
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
-    };
+    const sedes = [
+        { label: 'Puebla', value: 'Puebla' },
+        { label: 'Querétaro', value: 'Querétaro' },
+        { label: 'Monterrey', value: 'Monterrey' },
+        { label: 'Hidalgo', value: 'Hidalgo' },
+        { label: 'Guadalajara', value: 'Guadalajara' },
+    ];
 
     const sedesData = [
         { id: '01', nombre: 'ITESM Puebla', lugar: 'Puebla', status: 'Registrada con participantes', grupos: '07', estudiantes: '63' },
@@ -34,20 +34,27 @@ const SedesAdmin = () => {
         { id: '07', nombre: 'ITESM Cuernavaca', lugar: 'Cuernavaca', status: 'Registrada con participantes', grupos: '10', estudiantes: '95' },
     ];
 
-    // Filtrar los datos según el valor de búsqueda (solo por las columnas "Universidad" y "Campus")
+    // Obtener valores únicos de "status" para las opciones del filtro
+    const uniqueStatuses = Array.from(new Set(sedesData.map(item => item.status))).map(status => ({
+        label: status,
+        value: status,
+    }));
+    const statusOptions = [{ label: 'Todos', value: '__All__' }, ...uniqueStatuses];
+
+    // Filtrar los datos según el valor de búsqueda y el status seleccionado
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
-        if (!searchTerm) {
-            return sedesData;
-        }
-
-        return sedesData.filter(item =>
-            item.id.toLowerCase().includes(searchTerm) ||
-            item.nombre.toLowerCase().includes(searchTerm) ||
-            item.lugar.toLowerCase().includes(searchTerm) ||
-            item.status.toLowerCase().includes(searchTerm)
-        );
-    }, [inputValue]);
+        return sedesData.filter(item => {
+            const matchesSearch =
+                !searchTerm ||
+                item.id.toLowerCase().includes(searchTerm) ||
+                item.nombre.toLowerCase().includes(searchTerm) ||
+                item.lugar.toLowerCase().includes(searchTerm) ||
+                item.status.toLowerCase().includes(searchTerm);
+            const matchesStatus = section === '__All__' || item.status === section;
+            return matchesSearch && matchesStatus;
+        });
+    }, [inputValue, section]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
@@ -60,6 +67,12 @@ const SedesAdmin = () => {
             setCurrentPage(0);
         }
     }, [filteredData.length, currentPage, totalPages]);
+
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue(''); // Reiniciar el input de búsqueda al cambiar el filtro
+        setCurrentPage(0); // Reiniciar la página al cambiar el filtro
+    };
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -87,15 +100,11 @@ const SedesAdmin = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Secciones"
-                                secciones={[
-                                    { label: 'ITESM Puebla', value: 'Participantes' },
-                                    { label: 'ITESM Monterrey', value: 'Colaboradoras' },
-                                ]}
+                                labelSecciones="Status"
+                                secciones={statusOptions}
                                 seccionActiva={section}
-                                extraFilters={[]}
-                                filterActiva={filterActivaExtra}
-                                onExtraFilterChange={extraHandleFilterChange}
+                                onChangeSeccion={sectionFilterChange}
+                                extraFilters={[]} // Explicitar que no hay filtros adicionales
                                 fade={fadeSec}
                             />
                         </div>
@@ -108,8 +117,8 @@ const SedesAdmin = () => {
                         <thead className="text-purple-800 font-bold">
                             <tr className='texto-primary-shade'>
                                 <th className="p-2 text-center">ID</th>
-                                <th className="p-2 text-center">Universidad</th>
-                                <th className="p-2 text-center">Campus</th>
+                                <th className="p-2 text-center">Nombre</th>
+                                <th className="p-2 text-center">Lugar</th>
                                 <th className="p-2 text-center">Status</th>
                                 <th className="p-2 text-center">No. de Grupos</th>
                                 <th className="p-2 text-center">No. de Estudiantes</th>

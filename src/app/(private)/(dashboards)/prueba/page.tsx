@@ -9,7 +9,6 @@ import Checkbox from '@/components/buttons_inputs/Checkbox';
 import MessageCard from '@/components/buttons_inputs/MessageCard';
 import { Acorn, Check, Plus, Star, User, X } from '@/components/icons';
 
-
 const EstadisticasAdmin = () => {
   const [inputValue, setInputValue] = useState('');
 
@@ -54,8 +53,8 @@ const EstadisticasAdmin = () => {
         />
 
         <Button
-          label="Mostrar valor"
-          variant="success"
+          label='Mostrar valor'
+          variant='success'
           onClick={() => alert(`Valor: ${inputValue}`)}
         />
 
@@ -102,25 +101,17 @@ const EstadisticasAdmin = () => {
           IconRight={Plus}
         />
         <Button
-          label="Iniciar sesión"
-          variant="success"
+          label='Iniciar sesión'
+          variant='success'
           onClick={() => console.log('Iniciar sesión')}
           showLeftIcon
           IconLeft={User}
         />
 
-        <Button
-          label="Ir a Home"
-          variant="primary"
-          href="/"
-          IconLeft={User}
-          showLeftIcon
-        />
-
+        <Button label='Ir a Home' variant='primary' href='/' IconLeft={User} showLeftIcon />
 
         <Button label='Add' variant='primary' round showLeftIcon IconLeft={Star} />
         <Button label='Enviar' variant='success' />
-
 
         <Checkbox
           label='Label'
@@ -160,7 +151,6 @@ const EstadisticasAdmin = () => {
           bordered={false}
           onChange={(val) => console.log('New state:', val)}
         />
-
 
         <MessageCard
           color='purple'

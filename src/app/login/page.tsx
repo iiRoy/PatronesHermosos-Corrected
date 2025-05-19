@@ -19,10 +19,10 @@ export default function LoginForm() {
       case 'venue_coordinator':
         return '/coordinador/estadisticas';
       default:
-        return '/login'
+        return '/login';
     }
   }
-  
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -61,31 +61,31 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className='flex flex-col items-center justify-center min-h-screen'>
       <form
         onSubmit={handleLogin}
-        className="flex flex-col gap-6 p-10 rounded-xl bg-[#1f1220] shadow-xl min-w-[340px] w-[90vw] max-w-[380px]"
+        className='flex flex-col gap-6 p-10 rounded-xl bg-[#1f1220] shadow-xl min-w-[340px] w-[90vw] max-w-[380px]'
       >
-        <h2 className="text-3xl font-bold text-center text-[#ede0e8] mb-2">Iniciar Sesión</h2>
+        <h2 className='text-3xl font-bold text-center text-[#ede0e8] mb-2'>Iniciar Sesión</h2>
         <InputField
-          label="Correo o Usuario"
-          placeholder="Ingresa tu correo o usuario"
+          label='Correo o Usuario'
+          placeholder='Ingresa tu correo o usuario'
           value={emailOrUsername}
           onChangeText={setEmailOrUsername}
-          icon="Envelope"
+          icon='Envelope'
         />
         <InputField
-          label="Contraseña"
-          placeholder="Ingresa tu contraseña"
+          label='Contraseña'
+          placeholder='Ingresa tu contraseña'
           value={password}
           onChangeText={setPassword}
-          icon="Lock"
-          type="password"
+          icon='Lock'
+          type='password'
         />
-        {error && <div className="text-center text-red-400">{error}</div>}
+        {error && <div className='text-center text-red-400'>{error}</div>}
         <Button
-          label={loading ? "Entrando..." : "Entrar"}
-          variant="primary"
+          label={loading ? 'Entrando...' : 'Entrar'}
+          variant='primary'
           disabled={loading || !emailOrUsername || !password}
         />
       </form>

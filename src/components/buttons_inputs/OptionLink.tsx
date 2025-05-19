@@ -50,14 +50,14 @@ const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href, forceActive 
         `}
       >
         <DecoratedIcon
-          strokeColor="#2E1C31"
-          fillColor="currentColor"
-          width="2rem"
-          height="2rem"
-          className="transition-colors duration-300 ease-in-out"
+          strokeColor='#2E1C31'
+          fillColor='currentColor'
+          width='2rem'
+          height='2rem'
+          className='transition-colors duration-300 ease-in-out'
         />
       </div>
-      <span className="option-label hidden lg:block">{label}</span>
+      <span className='option-label hidden lg:block'>{label}</span>
     </>
   );
 

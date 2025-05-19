@@ -17,11 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={inter.className}>
-      <TransitionProvider>
-        <ClientLayout>{children}</ClientLayout>
-      </TransitionProvider>
+        <TransitionProvider>
+          <ClientLayout>{children}</ClientLayout>
+        </TransitionProvider>
       </body>
     </html>
   );

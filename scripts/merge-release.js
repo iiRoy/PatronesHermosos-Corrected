@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
-const { execSync } = require("child_process");
-const readline = require("readline");
+const { execSync } = require('child_process');
+const readline = require('readline');
 
 const args = process.argv.slice(2);
 if (args.length < 2) {
-  console.error("❌ Debes proporcionar la rama de origen y la rama de destino.\n👉 Uso: node merge-release.js origen destino");
+  console.error(
+    '❌ Debes proporcionar la rama de origen y la rama de destino.\n👉 Uso: node merge-release.js origen destino',
+  );
   process.exit(1);
 }
 
@@ -14,7 +16,7 @@ const branchTo = args[1];
 
 function run(command, options = {}) {
   try {
-    execSync(command, { stdio: "inherit", ...options });
+    execSync(command, { stdio: 'inherit', ...options });
     return true;
   } catch (error) {
     throw error;
@@ -54,7 +56,10 @@ if (!branchExists(branchTo)) {
 }
 
 // Pull primero en la rama de origen
-console.log(`\x1b[36m%s\x1b[0m`, `Actualizando '${branchFrom}' desde remoto antes de cambiar de rama...`);
+console.log(
+  `\x1b[36m%s\x1b[0m`,
+  `Actualizando '${branchFrom}' desde remoto antes de cambiar de rama...`,
+);
 run(`git checkout ${branchFrom}`);
 run(`git pull origin ${branchFrom}`);
 
@@ -73,7 +78,10 @@ const mergeMessage = `feat(merge): Merge from ${branchFrom} to ${branchTo}`;
 try {
   run(`git merge ${branchFrom} -m "${mergeMessage}"`);
 } catch (error) {
-  console.log('\x1b[33m%s\x1b[0m', '⚠️ Conflictos detectados. Resolviendo automáticamente algunos archivos...');
+  console.log(
+    '\x1b[33m%s\x1b[0m',
+    '⚠️ Conflictos detectados. Resolviendo automáticamente algunos archivos...',
+  );
 
   const autoResolvedFiles = ['package.json', 'package-lock.json', 'CHANGELOG.md'];
   run(`git checkout --theirs ${autoResolvedFiles.join(' ')}`);
@@ -85,15 +93,18 @@ try {
     console.log('\x1b[31m%s\x1b[0m', '🔧 Aún hay conflictos en otros archivos:');
     console.log(result);
 
-    console.log('\x1b[33m%s\x1b[0m', '✋ Por favor, resuélvelos manualmente. Luego presiona ENTER para continuar (se hará git add automáticamente).');
+    console.log(
+      '\x1b[33m%s\x1b[0m',
+      '✋ Por favor, resuélvelos manualmente. Luego presiona ENTER para continuar (se hará git add automáticamente).',
+    );
 
-    waitForUserInput("Presiona ENTER cuando hayas resuelto los conflictos...").then(() => {
+    waitForUserInput('Presiona ENTER cuando hayas resuelto los conflictos...').then(() => {
       try {
         run('git add .');
         run('git commit -m "chore: manual conflict resolution after merge"');
         continueRelease();
       } catch (commitErr) {
-        console.error("❌ Error al hacer commit tras resolver conflictos:", commitErr.message);
+        console.error('❌ Error al hacer commit tras resolver conflictos:', commitErr.message);
         process.exit(1);
       }
     });
@@ -107,8 +118,8 @@ try {
 continueRelease();
 
 function continueRelease() {
-  console.log("\x1b[36m%s\x1b[0m", "✅ Conflictos resueltos. Ejecutando semantic-release...");
-  run("npx semantic-release --no-ci");
+  console.log('\x1b[36m%s\x1b[0m', '✅ Conflictos resueltos. Ejecutando semantic-release...');
+  run('npx semantic-release --no-ci');
 
   console.log(`\x1b[36m%s\x1b[0m`, `📤 Haciendo push de '${branchTo}' con tags...`);
   run(`git push origin ${branchTo} --tags`);
