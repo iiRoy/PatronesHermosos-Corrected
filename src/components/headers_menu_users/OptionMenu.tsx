@@ -125,50 +125,6 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     }, 250);
   };
 
-<<<<<<< Updated upstream
-  // Cambia el color de una sección
-  const handleChangeColor = (i: number, color: string) => {
-    const newColors = [...colors];
-    newColors[i] = color;
-    setColors(newColors);
-    setColorPickerOpenIndex(null);
-    setColorPickerInput('');
-    notify({ variant: 'two', title: 'Colores Cambiados', message: 'El color fue actualizado correctamente', color: 'purple', iconName: 'CheckFat' });
-  };
-
-  // Restaura el color default solo de la sección seleccionada
-  const handleRestoreDefault = (i: number) => {
-    const newColors = [...colors];
-    newColors[i] = defaultColors[i];
-    setColors(newColors);
-    setColorPickerOpenIndex(null);
-    setColorPickerInput('');
-    notify({
-      variant: 'two',
-      title: 'Color Restaurado',
-      message: 'Color restaurado al valor por defecto',
-      color: 'green',
-      iconName: 'CheckCircle'
-    });
-  };
-
-  // Restaura TODOS los colores a default
-  const handleRestoreAllDefaults = () => {
-    setColors([...defaultColors]);
-    notify({
-      variant: 'two',
-      title: 'Colores Restaurados',
-      message: 'Colores restaurados al valor por defecto',
-      color: 'green',
-      iconName: 'CheckCircle'
-    });
-  };
-
-  // ---------------------------------
-  // FUNCIÓN DE DESCARGA INTEGRADA AQUÍ
-  // ---------------------------------
-=======
->>>>>>> Stashed changes
   const handleDownload = async () => {
     const WIDTH = 1200;
     const HEIGHT_BASE = 800;
