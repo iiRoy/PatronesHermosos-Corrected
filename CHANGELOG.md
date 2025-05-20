@@ -1,3 +1,21 @@
+## 1.13.0-admin.2 (2025-05-20)
+
+* fix(css):background color mod ([bb63927](https://github.com/iiRoy/Patrones-Hermosos/commit/bb63927))
+* fix(email):Controoler and routes for email updated ([e2d1066](https://github.com/iiRoy/Patrones-Hermosos/commit/e2d1066))
+* fix(forms):Placeholders changed ([aa0295f](https://github.com/iiRoy/Patrones-Hermosos/commit/aa0295f))
+* Merge branch 'forms/sede' into pages/formularios ([dcc4acd](https://github.com/iiRoy/Patrones-Hermosos/commit/dcc4acd))
+* Merge branch 'pages/formularios' into pages/superuser ([50aea7c](https://github.com/iiRoy/Patrones-Hermosos/commit/50aea7c))
+* improve(pages): corrección de íconos en formularios de colaborador y participante ([c2747ca](https://github.com/iiRoy/Patrones-Hermosos/commit/c2747ca))
+* improve(pages): mejoras en eliminación de participantes en superuser, se muestra una notificación al ([66712c0](https://github.com/iiRoy/Patrones-Hermosos/commit/66712c0))
+* feat(BE): New routes7Controllers/Components ([58a01aa](https://github.com/iiRoy/Patrones-Hermosos/commit/58a01aa))
+* feat(collab): Backend for collab forms/Table Components created ([b22df17](https://github.com/iiRoy/Patrones-Hermosos/commit/b22df17))
+* feat(merge): Venue forms Visual Update and merge with backend ([5be9e88](https://github.com/iiRoy/Patrones-Hermosos/commit/5be9e88))
+* feat(pages): nuevo formulario de registro Colaboradoras ([1e8252d](https://github.com/iiRoy/Patrones-Hermosos/commit/1e8252d))
+* feat(pages): nuevo formulario de registro Participantes ([7574858](https://github.com/iiRoy/Patrones-Hermosos/commit/7574858))
+* fix(components): funcionamiento de FiltroEvento arreglado para formulario colaboradoras ([9cf6354](https://github.com/iiRoy/Patrones-Hermosos/commit/9cf6354))
+* fix(db): Country and Region Var Insert/Form update ([56fa2af](https://github.com/iiRoy/Patrones-Hermosos/commit/56fa2af))
+* Improve(pages): Diseño correcto agregado a formulario de Sedes ([e2fda79](https://github.com/iiRoy/Patrones-Hermosos/commit/e2fda79))
+
 ## 1.13.0-admin.1 (2025-05-19)
 
 * improve(pages): columnas de tabla de sedes actualiazadas ([434b987](https://github.com/iiRoy/Patrones-Hermosos/commit/434b987))
