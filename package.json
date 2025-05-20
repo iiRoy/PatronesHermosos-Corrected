@@ -14,6 +14,7 @@
     "test:open": "cypress open"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.8",
     "@prisma/client": "^6.7.0",
     "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-switch": "^1.2.2",
