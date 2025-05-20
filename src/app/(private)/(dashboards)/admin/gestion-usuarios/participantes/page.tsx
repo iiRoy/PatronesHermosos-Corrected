@@ -8,6 +8,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/components/buttons_inputs/Notification'; // Importar el hook de notificación
 
 interface Participante {
     id_participant: number;
@@ -36,13 +37,14 @@ const GestionParticipantes = () => {
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { notify } = useNotification(); // Usar el hook para mostrar notificaciones
 
     const rowsPerPage = 10;
 
     useEffect(() => {
         const fetchParticipantes = async () => {
             try {
-                const token = typeof window !== "undefined" ? localStorage.getItem("api_token") : "";
+                const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
                 if (!token) {
                     router.push('/login');
                     return;
@@ -102,7 +104,8 @@ const GestionParticipantes = () => {
             const matchesSede = section === '__All__' ? true : participante.sede === section;
             const selectedGrupo = filterActivaExtra['grupo'];
             const matchesGrupo = selectedGrupo === '__All__' ? true : participante.grupo === selectedGrupo;
-            return matchesSearch && matchesSede && matchesGrupo;
+            const isNotCancelled = participante.status !== 'cancelada';
+            return matchesSearch && matchesSede && matchesGrupo && isNotCancelled;
         });
     }, [inputValue, section, filterActivaExtra, participantesData]);
 
@@ -140,33 +143,59 @@ const GestionParticipantes = () => {
     const handleConfirmDelete = async () => {
         if (selectedParticipante) {
             try {
-                const token = typeof window !== "undefined" ? localStorage.getItem("api_token") : "";
+                const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
                 if (!token) {
                     router.push('/login');
                     return;
                 }
 
                 const response = await fetch(`/api/participants/${selectedParticipante.id_participant}`, {
-                    method: 'DELETE',
+                    method: 'PUT',
                     headers: {
+                        'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
                     },
+                    body: JSON.stringify({ status: 'cancelada' }),
                 });
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    if (response.status === 403) {
-                        localStorage.removeItem('api_token');
-                        router.push('/login');
-                        return;
-                    }
-                    throw new Error('Error deleting participant');
+                    throw new Error(`Error updating participant status: ${errorData.message || 'Unknown error'}`);
                 }
 
-                setParticipantesData(participantesData.filter((p) => p.id_participant !== selectedParticipante.id_participant));
+                const updatedParticipant = await response.json();
+                // Actualizar localmente el estado del participante
+                setParticipantesData((prev) =>
+                    prev.map((p) =>
+                        p.id_participant === selectedParticipante.id_participant
+                            ? { ...p, status: updatedParticipant.status }
+                            : p
+                    )
+                );
+
+                // Mostrar notificación de éxito
+                const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
+                notify({
+                    color: 'green',
+                    title: 'Usuario Cancelado',
+                    message: `El usuario ${fullName} ha sido cancelado correctamente`,
+                    duration: 5000,
+                });
+
+                // Cerrar el popup
                 handleClosePopup();
-            } catch (error) {
-                console.error('Error al eliminar participante:', error);
+            } catch (error: any) {
+                console.error('Error al cancelar participante:', error);
+                // Mostrar notificación de error
+                const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: `No se pudo cancelar al usuario ${fullName}: ${error.message}`,
+                    duration: 5000,
+                });
+                // Forzar el cierre del popup en caso de error
+                handleClosePopup();
             }
         }
     };
@@ -265,13 +294,13 @@ const GestionParticipantes = () => {
                 {isPopupOpen && selectedParticipante && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
                             <p className="mt-12 mb-12">
-                                ¿Estás segura de que quieres eliminar a la participante{' '}
+                                ¿Estás segura de que quieres cancelar a la participante{' '}
                                 {`${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`}?
                             </p>
                             <div className="flex justify-center gap-4">
-                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
                                 <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
                             </div>
                         </div>
