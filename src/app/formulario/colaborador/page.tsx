@@ -333,7 +333,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
               <Dropdown
                 label="Sexo*"
-                options={['Mujer', 'Hombre', 'Otro']}
+                options={['Fem,enino', 'Masculino', 'No binario', 'Prefiero no decir', 'Otro']}
                 value={formData.gender}
                 onChange={(value: string) => handleInputChange('gender', value)}
                 variant="accent"
@@ -491,7 +491,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
               <Dropdown
                 label="Dificultad preferida*"
-                options={['Básico', 'Intermedio', 'Avanzado']}
+                options={['Básico','Avanzado']}
                 value={formData.preferred_level}
                 onChange={(value: string) => handleInputChange('preferred_level', value)}
                 variant="primary"
