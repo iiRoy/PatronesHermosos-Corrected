@@ -1289,6 +1289,7 @@ DELIMITER ;
 
 --Proceso para eliminar un grupo, se valida la existencia del grupo, que no tenga participantes, elimina el grupo y registra el log
 --CALL eliminar_grupo(3, 'juan@ejemplo.com', 1);
+--outdated
 DELIMITER $$
 
 CREATE PROCEDURE eliminar_grupo (
@@ -1336,6 +1337,9 @@ END$$
 
 DELIMITER ;
 
+
+
+--cambiar estado grupo
 DELIMITER //
 
 CREATE PROCEDURE cambiar_estado_grupo(
@@ -2067,66 +2071,16 @@ DELIMITER ;
 --JUNTAR LOS BEFORE Y AFTER
 --evitar eliminar un grupo si tiene participantes
 --evento para eliminar los audits logs cada mes y se ejecute cada semana
-DELIMITER $$
-CREATE TRIGGER before_delete_group
-BEFORE DELETE ON groups
-FOR EACH ROW
-BEGIN
- DECLARE participant_count INT;
- SELECT COUNT(*) INTO participant_count
- FROM participants
- WHERE id_group = OLD.id_group;
- IF participant_count > 0 THEN
- SIGNAL SQLSTATE '45000'
- SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
- END IF;
-END;
-$$
-DELIMITER ;
 
---evitar eliminar una sede si tiene grupos
-DELIMITER $$
-CREATE TRIGGER before_delete_venue
-BEFORE DELETE ON venues
-FOR EACH ROW
-BEGIN
- DECLARE group_count INT;
- SELECT COUNT(*) INTO group_count
- FROM groups
- WHERE id_venue = OLD.id_venue;
- IF group_count > 0 THEN
- SIGNAL SQLSTATE '45000'
- SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
- END IF;
-END;
-$$
-DELIMITER ;
+
+
 
 
 --registrar eliminaciones en la tabla de auditoria
-DELIMITER $$
-CREATE TRIGGER after_delete_group
-AFTER DELETE ON groups
-FOR EACH ROW
-BEGIN
- INSERT INTO audit_log (action, table_name, record_id, user)
- VALUES ('DELETE', 'groups', OLD.id_group, USER());
-END;
-$$
-DELIMITER ;
 
 
---registrar eliminaciones en la tabla de auditoria
-DELIMITER $$
-CREATE TRIGGER after_delete_venue
-AFTER DELETE ON venues
-FOR EACH ROW
-BEGIN
- INSERT INTO audit_log (action, table_name, record_id, user)
- VALUES ('DELETE', 'venues', OLD.id_venue, USER());
-END;
-$$
-DELIMITER ;
+
+
 
 --tres tipos de triggers: UPDATE, DELETE, ADD 
 --o hacerlo una función y que se llame desde el metodo (auditlog)
@@ -2141,31 +2095,14 @@ DELIMITER ;
 
 --preguntar si sirve: aqui basicamente cuando se actualiza el rol de un colaborador, se pone como pendiente
 --no
-DELIMITER $$
-CREATE TRIGGER actualizar_estado_colaborador
-AFTER UPDATE ON collaborators
-FOR EACH ROW
-BEGIN
- IF OLD.role != NEW.role THEN
-  UPDATE collaborators
-  SET status = 'Pendiente'
-  WHERE id_collaborator = NEW.id_collaborator;
- END IF;
-END;
-$$
-DELIMITER ;
 
+--se elimino before_delete_venue
+--se elimino before_delete_group
+--se elimino after_delete group
+--se elimino after_delete_venue
+--se elimino actualizar_estado_colaborador
 --registrar cambio de participantes
-DELIMITER $$
-CREATE TRIGGER registrar_cambio_participante
-AFTER UPDATE ON participants
-FOR EACH ROW
-BEGIN
- INSERT INTO audit_log (action, table_name, record_id, user)
- VALUES ('UPDATE', 'participants', NEW.id_participant, USER());
-END;
-$$
-DELIMITER ;
+--se elimino registrar_cambio_participante
 
 
 
