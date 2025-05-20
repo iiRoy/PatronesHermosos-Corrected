@@ -1,111 +1,52 @@
-import { PrismaClient } from '@prisma/client';
+'use client';
+import { useState, useEffect } from 'react';
 import DataTable from './DataTable';
 import Button from '@/components/buttons_inputs/Button';
-import { Eye, Check, X } from '@/components/icons';
-import { useState } from 'react';
-
-const prisma = new PrismaClient();
+import { Eye } from '@phosphor-icons/react';
+import { TableData } from '@/types/tableData';
 
 interface RegistrationTableProps {
   section: 'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES';
 }
 
 const RegistrationTable = ({ section }: RegistrationTableProps) => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<TableData[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<TableData | null>(null);
 
-  // Fetch data based on section
-  const fetchData = async () => {
-    let result;
-    switch (section) {
-      case 'PARTICIPANTES':
-        result = await prisma.participants.findMany({
-          select: {
-            id_participant: true,
-            name: true,
-            paternal_name: true,
-            maternal_name: true,
-            email: true,
-            year: true,
-            venues: {
-              select: { name: true },
-            },
-            created_at: true,
+  // Fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/registrations?section=${section}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // Add token if required
           },
         });
-        setData(
-          result.map((item) => ({
-            id: item.id_participant.toString(),
-            nombre: `${item.name || ''} ${item.paternal_name || ''} ${item.maternal_name || ''}`.trim(),
-            sede: item.venues?.name || '',
-            fecha: item.created_at.toLocaleDateString('es-MX'),
-          }))
-        );
-        break;
-      case 'APOYO & STAFF':
-        result = await prisma.collaborators.findMany({
-          select: {
-            id_collaborator: true,
-            name: true,
-            paternal_name: true,
-            maternal_name: true,
-            email: true,
-            phone_number: true,
-            college: true,
-            created_at: true,
-            venues: {
-              select: { name: true },
-            },
-          },
-        });
-        setData(
-          result.map((item) => ({
-            id: item.id_collaborator.toString(),
-            nombre: `${item.name || ''} ${item.paternal_name || ''} ${item.maternal_name || ''}`.trim(),
-            sede: item.venues?.name || '',
-            fecha: item.created_at.toLocaleDateString('es-MX'),
-          }))
-        );
-        break;
-      case 'SEDES':
-        result = await prisma.venues.findMany({
-          select: {
-            id_venue: true,
-            name: true,
-            state: true,
-            created_at: true,
-          },
-        });
-        setData(
-          result.map((item) => ({
-            id: item.id_venue.toString(),
-            institucion: item.name,
-            lugar: item.state || '',
-            fecha: item.created_at.toLocaleDateString('es-MX'),
-          }))
-        );
-        break;
-    }
-  };
-
-  // Initial fetch
-  fetchData();
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Error fetching data');
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching registrations:', error);
+      }
+    };
+    fetchData();
+  }, [section]);
 
   const columns =
     section === 'SEDES'
       ? [
           { key: 'institucion', label: 'Institución' },
           { key: 'lugar', label: 'Lugar' },
-          { key: 'fecha', label: 'Fecha' },
+          { key: 'actions', label: 'Acciones' },
         ]
       : [
           { key: 'nombre', label: 'Nombre' },
           { key: 'sede', label: 'Sede' },
-          { key: 'fecha', label: 'Fecha' },
+          { key: 'actions', label: 'Acciones' },
         ];
 
-  const openPopup = (item: any) => {
+  const openPopup = (item: TableData) => {
     setSelectedItem(item);
     setIsPopupOpen(true);
   };
@@ -117,49 +58,63 @@ const RegistrationTable = ({ section }: RegistrationTableProps) => {
 
   const handleAccept = async () => {
     if (selectedItem) {
-      // Update status in database (example for participants)
-      if (section === 'PARTICIPANTES') {
-        await prisma.participants.update({
-          where: { id_participant: parseInt(selectedItem.id) },
-          data: { status: 'Aprobada' },
+      try {
+        const response = await fetch(`http://localhost:3001/api/registrations/${selectedItem.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify({ status: 'accept', section }),
         });
-      } else if (section === 'APOYO & STAFF') {
-        await prisma.collaborators.update({
-          where: { id_collaborator: parseInt(selectedItem.id) },
-          data: { status: 'Aprobada' },
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Error accepting registration');
+        const fetchResponse = await fetch(`http://localhost:3001/api/registrations?section=${section}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         });
-      } else if (section === 'SEDES') {
-        await prisma.venues.update({
-          where: { id_venue: parseInt(selectedItem.id) },
-          data: { status: 'Registrada_con_participantes' },
-        });
+        const newData = await fetchResponse.json();
+        setData(newData);
+        closePopup();
+      } catch (error) {
+        console.error('Error accepting registration:', error);
       }
-      fetchData(); // Refresh data
-      closePopup();
     }
   };
 
   const handleReject = async () => {
     if (selectedItem) {
-      if (section === 'PARTICIPANTES') {
-        await prisma.participants.update({
-          where: { id_participant: parseInt(selectedItem.id) },
-          data: { status: 'Rechazada' },
+      try {
+        const response = await fetch(`http://localhost:3001/api/registrations/${selectedItem.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify({ status: 'reject', section }),
         });
-      } else if (section === 'APOYO & STAFF') {
-        await prisma.collaborators.update({
-          where: { id_collaborator: parseInt(selectedItem.id) },
-          data: { status: 'Rechazada' },
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Error rejecting registration');
+        const fetchResponse = await fetch(`http://localhost:3001/api/registrations?section=${section}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         });
-      } else if (section === 'SEDES') {
-        await prisma.venues.update({
-          where: { id_venue: parseInt(selectedItem.id) },
-          data: { status: 'Rechazada' },
-        });
+        const newData = await fetchResponse.json();
+        setData(newData);
+        closePopup();
+      } catch (error) {
+        console.error('Error rejecting registration:', error);
       }
-      fetchData(); // Refresh data
-      closePopup();
     }
+  };
+
+  const formatValue = (value: string | number | Date | undefined): string => {
+    if (value instanceof Date) {
+      return value.toLocaleDateString('es-MX');
+    }
+    return value?.toString() ?? 'N/A';
   };
 
   return (
@@ -170,14 +125,35 @@ const RegistrationTable = ({ section }: RegistrationTableProps) => {
         columns={columns}
         onSearch={() => {}}
         role="admin"
+        renderCell={(item: TableData, columnKey: string) => {
+          if (columnKey === 'actions') {
+            return (
+              <div className="flex gap-2 justify-center">
+                <Button
+                  label=""
+                  variant="primary"
+                  round
+                  showLeftIcon
+                  IconLeft={Eye}
+                  onClick={() => openPopup(item)}
+                />
+              </div>
+            );
+          }
+          return formatValue(item[columnKey as keyof TableData]);
+        }}
       />
       {isPopupOpen && selectedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-black">
             <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
-            {columns.map((col) => (
-              <p key={col.key}><strong>{col.label}:</strong> {selectedItem[col.key]}</p>
-            ))}
+            {columns
+              .filter((col) => col.key !== 'actions')
+              .map((col) => (
+                <p key={col.key}>
+                  <strong>{col.label}:</strong> {formatValue(selectedItem[col.key as keyof TableData])}
+                </p>
+              ))}
             <div className="mt-4 flex justify-center gap-4">
               <Button label="Aceptar" variant="success" onClick={handleAccept} />
               <Button label="Rechazar" variant="error" onClick={handleReject} />

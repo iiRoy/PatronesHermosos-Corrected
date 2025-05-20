@@ -12,6 +12,9 @@ const participantRoutes = require('./routes/participant.routes');
 const superuserRoutes = require('./routes/superuser.routes');
 const collaboratorRoutes = require('./routes/collaborator.routes');
 const dataRoutes = require('./routes/data.routes');
+const groupRoutes = require('./routes/groups.routes');
+const registrationRoutes = require('./routes/registrations.routes');
+const emailRoutes = require('./routes/email.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const appNext = next({ dev, dir: path.join(__dirname, '..') });
@@ -60,6 +63,9 @@ appNext.prepare().then(() => {
   app.use('/api/superusers', superuserRoutes);
   app.use('/api/data', dataRoutes);
   app.use('/api/collaborators', collaboratorRoutes);
+  app.use('/api/groups', groupRoutes);
+  app.use('/api/registrations', registrationRoutes);
+  app.use('/api/emails', emailRoutes);
 
   app.get('/api', (req, res) => {
     res.send('¡API corriendo!');
