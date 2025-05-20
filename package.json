@@ -14,6 +14,7 @@
     "test:open": "cypress open"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.8",
     "@prisma/client": "^6.8.2",
     "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-switch": "^1.2.2",
@@ -36,6 +37,7 @@
     "lucide-react": "^0.488.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2",
+    "mysql2": "^3.14.1",
     "next": "^15.3.1",
     "node-cron": "^4.0.4",
     "pdf-lib": "^1.17.1",
@@ -53,6 +55,7 @@
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/release-notes-generator": "^14.0.3",
+    "@stryker-mutator/core": "^9.0.1",
     "@types/node": "^20.17.30",
     "@types/react": "^18",
     "@types/react-dom": "^18",
