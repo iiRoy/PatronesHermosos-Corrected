@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+
 // Crear una nueva colaboradora
 const createCollaborator = async (req, res) => {
   const {
@@ -54,17 +55,111 @@ const createCollaborator = async (req, res) => {
   }
 };
 
-const update = async (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
-
+// Obtener todos los colaboradores
+const getAllCollaborators = async (req, res) => {
   try {
-    const updated = await prisma.collaborators.update({
-      where: { id_collaborator: parseInt(id) },
-      data,
+    const collaborators = await prisma.collaborators.findMany({
+      include: {
+        groups: {
+          select: {
+            id_group: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    res.json({ message: 'Colaborador actualizado', data: updated });
+    res.json(collaborators);
+  } catch (error) {
+    console.error('Error al obtener colaboradores:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+// Obtener un colaborador por ID
+const getCollaboratorById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: parseInt(id) },
+      include: {
+        groups: {
+          select: {
+            id_group: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!collaborator) {
+      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+    }
+
+    res.json(collaborator);
+  } catch (error) {
+    console.error('Error al obtener colaborador:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+// Actualizar un colaborador (versión completa)
+const updateCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    paternal_name,
+    maternal_name,
+    email,
+    phone_number,
+    college,
+    degree,
+    semester,
+    preferred_role,
+    preferred_language,
+    preferred_level,
+    preferred_group,
+    gender,
+    role,
+    status,
+    level,
+    language,
+  } = req.body;
+
+  try {
+    const updatedCollaborator = await prisma.collaborators.update({
+      where: { id_collaborator: parseInt(id) },
+      data: {
+        name,
+        paternal_name,
+        maternal_name,
+        email,
+        phone_number,
+        college,
+        degree,
+        semester,
+        preferred_role,
+        preferred_language,
+        preferred_level,
+        gender,
+        role,
+        status,
+        level,
+        language,
+        preferred_group: preferred_group ? parseInt(preferred_group) : null,
+      },
+    });
+
+    res.json({ message: 'Colaborador actualizado', data: updatedCollaborator });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
@@ -74,18 +169,49 @@ const update = async (req, res) => {
   }
 };
 
-const remove = async (req, res) => {
-  const id = parseInt(req.params.id);
+// Eliminar un colaborador
+const deleteCollaborator = async (req, res) => {
+  const { id } = req.params;
 
   try {
     await prisma.collaborators.delete({
       where: { id_collaborator: parseInt(id) },
     });
 
-    res.json({ message: 'Colaboradora eliminada correctamente' });
+    res.json({ message: 'Colaborador eliminado correctamente' });
   } catch (error) {
-    console.error('Error deleting collaborator:', error);
-    res.status(500).json({ message: 'Error al eliminar colaboradora' });
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+    }
+    console.error('Error al eliminar colaborador:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+// Actualizar información básica de un colaborador
+const updateCollaboratorBasicInfo = async (req, res) => {
+  const { id } = req.params;
+  const { name, paternal_name, maternal_name, email, phone_number } = req.body;
+
+  try {
+    const updatedCollaborator = await prisma.collaborators.update({
+      where: { id_collaborator: parseInt(id) },
+      data: {
+        name,
+        paternal_name,
+        maternal_name,
+        email,
+        phone_number,
+      },
+    });
+
+    res.json({ message: 'Información básica del colaborador actualizada', data: updatedCollaborator });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+    }
+    console.error('Error al actualizar información básica del colaborador:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
 
@@ -122,10 +248,7 @@ const getCollaboratorsTable = async (req, res) => {
 
     res.json(formatted);
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
-    }
-    console.error('Error al eliminar colaborador:', error);
+    console.error('Error al obtener datos para tabla de colaboradores:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
