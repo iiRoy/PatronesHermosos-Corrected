@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Button from '@/components/buttons_inputs/Button';
-import { FingerprintSimple } from '@/components/icons';
+import { useRouter } from 'next/navigation';
+import OptionLink from '../buttons_inputs/OptionLink';
+import * as Icons from '../icons';
+import Button from '../buttons_inputs/Button';
 
 const navItems = [
   {
@@ -24,43 +26,46 @@ const navItems = [
 ];
 
 const Navbar = () => {
+  const router = useRouter();
   return (
-    <div className='flex item-center justify-between pr-4 pl-4 pb-2 pt-2 bg-[#2E1C31] shadow-md w-full rounded-b-lg'>
-      {/*LOGO*/}
-      <div className='hidden md:block items-center justify-center'>
-        <Image src='/logo.png' alt='logo' width={60} height={60} className='center' />
-      </div>
-      {/*NAVIGATION*/}
-      <div className=''>
-        {navItems.map((i) => (
-          <div key={i.title} className='flex gap-2 items-center justify-center h-full'>
-            {i.items.map((item) =>
-              item.type === 'link' ? (
-                <Link
-                  href={item.href}
+    <div className='min-h-[45px] flex item-center justify-between pr-4 pl-4 pb-2 pt-2 w-full rounded-b-lg'>
+      {/* Logo */}
+      <Link
+        href='/'
+        className='relative h-[7vh] w-[7vh] min-h-[40px] min-w-[40px] flex items-center justify-center'
+      >
+        <Image
+          src='/assets/logo.png'
+          alt='logo'
+          fill
+          style={{ objectFit: 'contain' }}
+          className='transition-all duration-300'
+        />
+      </Link>
+
+      {/* Navegación */}
+      <div className='text-[clamp(1rem,1.5vw,3rem)] items-center flex gap-[1.5vmax]'>
+        {navItems.map((section) => (
+          <div key={section.title} className='flex gap-[3vmax] px-2'>
+            {section.items.map((item) => {
+              const IconComponent = Icons[item.icon as keyof typeof Icons];
+              return (
+                <OptionLink
                   key={item.label}
-                  className='flex items-center justify-center gap-2 p-2 rounded-md transition duration-200 ease-in-out group'
-                >
-                  <div className='center'>
-                    <Image
-                      src={item.icon}
-                      alt=''
-                      width={25}
-                      height={25}
-                      className='group-hover:fill-[#B673BD] transition duration-200 ease-in-out'
-                    />
-                  </div>
-                  <span className='hidden lg:block text-white'>{item.label}</span>
-                </Link>
-              ) : (
-                <Button
-                  label='Perfil'
-                  variant='secondary'
-                  showLeftIcon
-                  IconLeft={FingerprintSimple}
+                  label={item.label}
+                  Icon={IconComponent}
+                  href={item.href}
                 />
-              ),
-            )}
+              );
+            })}
+            <Button
+              label='Iniciar Sesión'
+              variant='secondary'
+              showLeftIcon
+              IconLeft={Icons.FingerprintSimple}
+              onClick={() => router.push('/login')}
+              activeTransition={true}
+            />
           </div>
         ))}
       </div>
