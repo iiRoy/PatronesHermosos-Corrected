@@ -53,7 +53,7 @@ const Button: React.FC<ButtonProps> = ({
   const DecoratedIconL = IconLeft ? withIconDecorator(IconLeft) : null;
   const DecoratedIconR = IconRight ? withIconDecorator(IconRight) : null;
 
-  const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent) => {
     if (disabled) return;
 
     if (href && href !== pathname && activeTransition) {
@@ -67,6 +67,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick(e); // Pasar el evento a la función onClick
     }
   };
+
 
   const buttonClass = round ? 'round-button' : 'custom-button';
   const variantClass = `button-${variant}`;

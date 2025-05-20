@@ -15,6 +15,7 @@ interface InputFieldProps {
   variant?:
   | 'accent'
   | 'primary'
+  | 'secondary'
   | 'secondary-shade'
   | 'text-color'
   | 'warning'

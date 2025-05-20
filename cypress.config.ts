@@ -8,9 +8,9 @@ export default defineConfig({
         async queryDatabase(query) {
           const connection = await mysql.createConnection({
             host: 'localhost',
-            user: 'your_username',
-            password: 'your_password',
-            database: 'your_database_name',
+            user: 'root',
+            password: '',
+            database: 'patrones_hermosos',
           });
           const [rows] = await connection.execute(query);
           await connection.end();
