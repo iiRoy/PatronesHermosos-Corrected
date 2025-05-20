@@ -22,7 +22,8 @@
       "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
       "@app/*": ["./src/app/*"],
-      "@tmp/*": ["./src/upload/tmp/*"]
+      "@tmp/*": ["./src/upload/tmp/*"],
+      "@types/*": ["./src/types/*"]
     },
     "target": "es5"
   },

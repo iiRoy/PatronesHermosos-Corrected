@@ -2,18 +2,15 @@ import Pagination from '@/components/buttons_inputs/Pagination';
 import InputField from '@/components/buttons_inputs/InputField';
 import { MagnifyingGlass } from '@/components/icons';
 import { useState, useMemo } from 'react';
+import { TableData } from '@/types/tableData';
 
-interface TableData {
-  id: string;
-  [key: string]: string | number | Date;
-}
-
-interface DataTableProps<T> {
+interface DataTableProps<T extends TableData> {
   data: T[];
   columns: { key: string; label: string }[];
   onSearch: (term: string) => void;
   rowsPerPage?: number;
   role?: 'admin' | 'user';
+  renderCell?: (item: T, columnKey: string) => React.ReactNode;
 }
 
 const DataTable = <T extends TableData>({
@@ -22,6 +19,7 @@ const DataTable = <T extends TableData>({
   onSearch,
   rowsPerPage = 4,
   role = 'user',
+  renderCell,
 }: DataTableProps<T>) => {
   const [inputValue, setInputValue] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
@@ -78,7 +76,7 @@ const DataTable = <T extends TableData>({
               <tr key={index} className="border-t border-gray-300">
                 {columns.map((col) => (
                   <td key={col.key} className="p-2 text-center">
-                    {String(item[col.key])}
+                    {renderCell ? renderCell(item, col.key) : String(item[col.key])}
                   </td>
                 ))}
               </tr>
