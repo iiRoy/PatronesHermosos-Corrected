@@ -5,7 +5,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { Trash, Highlighter } from '@/components/icons';
+import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,9 @@ interface Coordinadora {
   email: string;
   phone_number: string;
   venue: string; // Nombre de la sede
+  name: string; // Campo separado para el popup
+  paternal_name: string;
+  maternal_name: string;
 }
 
 interface Venue {
@@ -27,7 +30,8 @@ const GestionCoordinadoras = () => {
   const [inputValue, setInputValue] = useState('');
   const [section, setSection] = useState('__All__');
   const [currentPage, setCurrentPage] = useState(0);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
   const [selectedCoordinadora, setSelectedCoordinadora] = useState<Coordinadora | null>(null);
   const [coordinadorasData, setCoordinadorasData] = useState<Coordinadora[]>([]);
   const [venuesMap, setVenuesMap] = useState<Map<number, string>>(new Map());
@@ -104,6 +108,9 @@ const GestionCoordinadoras = () => {
           email: coordinator.email || 'Sin correo',
           phone_number: coordinator.phone_number || 'Sin teléfono',
           venue: venuesMapData.get(coordinator.id_venue) || 'Sede desconocida',
+          name: coordinator.name || 'Sin nombre',
+          paternal_name: coordinator.paternal_name || 'Sin apellido paterno',
+          maternal_name: coordinator.maternal_name || 'Sin apellido materno',
         }));
         setCoordinadorasData(formattedData);
       } catch (error: any) {
@@ -153,18 +160,32 @@ const GestionCoordinadoras = () => {
 
   const handleDeleteClick = (coordinadora: Coordinadora) => {
     setSelectedCoordinadora(coordinadora);
-    setIsPopupOpen(true);
+    setIsDeletePopupOpen(true);
   };
 
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
+  const handleDetailsClick = (coordinadora: Coordinadora) => {
+    setSelectedCoordinadora(coordinadora);
+    setIsDetailsPopupOpen(true);
+  };
+
+  const handleEditClick = (coordinadora: Coordinadora) => {
+    router.push(`/admin/gestion-usuarios/coordinadoras/editarCoordinadora/${coordinadora.id_venue_coord}`);
+  };
+
+  const handleCloseDeletePopup = () => {
+    setIsDeletePopupOpen(false);
+    setSelectedCoordinadora(null);
+  };
+
+  const handleCloseDetailsPopup = () => {
+    setIsDetailsPopupOpen(false);
     setSelectedCoordinadora(null);
   };
 
   const handleConfirmDelete = () => {
     if (selectedCoordinadora) {
       alert(`Eliminando a ${selectedCoordinadora.nombre}`); // Placeholder para la lógica real de eliminación
-      handleClosePopup();
+      handleCloseDeletePopup();
     }
   };
 
@@ -219,14 +240,38 @@ const GestionCoordinadoras = () => {
             </thead>
             <tbody className="text-gray-700">
               {paginatedData.map((coordinadora, index) => (
-                <tr key={index} className="border-t border-gray-300">
+                <tr
+                  key={index}
+                  className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
+                  onClick={() => handleDetailsClick(coordinadora)}
+                >
                   <td className="p-2 text-center">{coordinadora.nombre}</td>
                   <td className="p-2 text-center">{coordinadora.email}</td>
                   <td className="p-2 text-center">{coordinadora.phone_number}</td>
                   <td className="p-2 text-center">{coordinadora.venue}</td>
                   <td className="p-2 flex gap-2 justify-center">
-                    <Button label='' variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(coordinadora)} />
-                    <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
+                    <Button
+                      label=""
+                      variant="error"
+                      round
+                      showLeftIcon
+                      IconLeft={Trash}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Evitar que el clic en el botón dispare el evento de la fila
+                        handleDeleteClick(coordinadora);
+                      }}
+                    />
+                    <Button
+                      label=""
+                      variant="warning"
+                      round
+                      showLeftIcon
+                      IconLeft={Highlighter}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Evitar que el clic en el botón dispare el evento de la fila
+                        handleEditClick(coordinadora);
+                      }}
+                    />
                   </td>
                 </tr>
               ))}
@@ -244,14 +289,36 @@ const GestionCoordinadoras = () => {
           />
         </div>
 
-        {isPopupOpen && selectedCoordinadora && (
+        {/* Popup de eliminación */}
+        {isDeletePopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
               <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
               <p className="my-12">¿Estás seguro de que quieres eliminar a la coordinadora {selectedCoordinadora.nombre}?</p>
               <div className="flex justify-center gap-4">
                 <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Popup de detalles */}
+        {isDetailsPopupOpen && selectedCoordinadora && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
+              <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Coordinadora</h2>
+              <div className="pt-6 pb-6">
+                <p><strong>ID:</strong> {selectedCoordinadora.id_venue_coord}</p>
+                <p><strong>Nombre:</strong> {selectedCoordinadora.name}</p>
+                <p><strong>Apellido Paterno:</strong> {selectedCoordinadora.paternal_name}</p>
+                <p><strong>Apellido Materno:</strong> {selectedCoordinadora.maternal_name}</p>
+                <p><strong>Correo:</strong> {selectedCoordinadora.email}</p>
+                <p><strong>Teléfono:</strong> {selectedCoordinadora.phone_number}</p>
+                <p><strong>Sede:</strong> {selectedCoordinadora.venue}</p>
+              </div>
+              <div className="mt-4 flex justify-center">
+                <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
               </div>
             </div>
           </div>

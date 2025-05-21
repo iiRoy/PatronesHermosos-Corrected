@@ -21,6 +21,14 @@ router.get(
   coordinatorController.getSpecific,
 );
 
+// Nueva ruta para obtener una coordinadora por ID
+router.get(
+  '/:id',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  coordinatorController.getCoordinatorById,
+);
+
 // Ruta para crear un nuevo coordinador
 router.post(
   '/',
@@ -33,7 +41,7 @@ router.post(
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['admin', 'superuser']),
   coordinatorController.updateCoordinator,
 );
 
@@ -41,7 +49,7 @@ router.put(
 router.put(
   '/specific/:id',
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['admin', 'superuser']),
   coordinatorController.updateCoordinatorFields,
 );
 
