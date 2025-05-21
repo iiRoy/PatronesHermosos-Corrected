@@ -5,17 +5,7 @@ const prisma = new PrismaClient();
 const validateCollaborator = [
   body('name').notEmpty().withMessage('El nombre es obligatorio'),
   body('paternal_name').notEmpty().withMessage('El apellido paterno es obligatorio'),
-  body('email')
-    .isEmail()
-    .withMessage('Correo electrónico no válido')
-    .custom(async (email) => {
-      const existing = await prisma.collaborators.findFirst({
-        where: { email },
-      });
-      if (existing) {
-        throw new Error('El correo ya está registrado');
-      }
-    }),
+  body('email').notEmpty().withMessage('El nombre es obligatorio'),
   body('phone_number').notEmpty().withMessage('El celular es obligatorio'),
   body('gender').notEmpty().withMessage('El sexo es obligatorio'),
   body('college').notEmpty().withMessage('La institución académica es obligatoria'),

@@ -43,15 +43,16 @@ const createCollaborator = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       message: 'Colaborador creado',
       data: newCollaborator,
     });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientValidationError) {
-      return res.status(422).json({ message: 'Datos inválidos', error: error.message });
+      return res.status(422).json({ success: false, message: 'Datos inválidos', error: error.message });
     }
     console.error('Error al crear colaborador:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
 
@@ -63,6 +64,7 @@ const getAllCollaborators = async (req, res) => {
         groups: {
           select: {
             id_group: true,
+            name: true,
             venues: {
               select: {
                 name: true,
@@ -73,10 +75,35 @@ const getAllCollaborators = async (req, res) => {
       },
     });
 
-    res.json(collaborators);
+    // Formatear los datos para la tabla
+    const formattedCollaborators = collaborators.map(collab => ({
+      id_collaborator: collab.id_collaborator,
+      name: collab.name || 'Sin nombre',
+      paternal_name: collab.paternal_name || 'Sin apellido',
+      maternal_name: collab.maternal_name || 'Sin apellido',
+      email: collab.email || 'Sin correo',
+      phone_number: collab.phone_number || 'Sin teléfono',
+      role: collab.role || 'Sin rol',
+      level: collab.level || 'Sin nivel',
+      language: collab.language || 'Sin idioma',
+      group: collab.groups?.name || 'Sin grupo',
+      venue: collab.groups?.venues?.name || 'Sin sede',
+      college: collab.college || 'Sin universidad',
+      degree: collab.degree || 'Sin carrera',
+      semester: collab.semester || 'Sin semestre',
+      gender: collab.gender || 'Sin género',
+      status: collab.status || 'Sin estado',
+      preferred_role: collab.preferred_role || 'Sin rol preferido',
+      preferred_language: collab.preferred_language || 'Sin idioma preferido',
+      preferred_level: collab.preferred_level || 'Sin nivel preferido',
+      preferred_group: collab.preferred_group || null,
+    }));
+
+    console.log('Colaboradores formateados:', formattedCollaborators);
+    res.json({ success: true, data: formattedCollaborators });
   } catch (error) {
     console.error('Error al obtener colaboradores:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: `Error interno del servidor: ${error.message}` });
   }
 };
 
@@ -91,6 +118,7 @@ const getCollaboratorById = async (req, res) => {
         groups: {
           select: {
             id_group: true,
+            name: true,
             venues: {
               select: {
                 name: true,
@@ -102,13 +130,13 @@ const getCollaboratorById = async (req, res) => {
     });
 
     if (!collaborator) {
-      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
 
-    res.json(collaborator);
+    res.json({ success: true, data: collaborator });
   } catch (error) {
     console.error('Error al obtener colaborador:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
 
@@ -159,13 +187,13 @@ const updateCollaborator = async (req, res) => {
       },
     });
 
-    res.json({ message: 'Colaborador actualizado', data: updatedCollaborator });
+    res.json({ success: true, message: 'Colaborador actualizado', data: updatedCollaborator });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
     console.error('Error al actualizar colaborador:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
 
@@ -178,13 +206,13 @@ const deleteCollaborator = async (req, res) => {
       where: { id_collaborator: parseInt(id) },
     });
 
-    res.json({ message: 'Colaborador eliminado correctamente' });
+    res.json({ success: true, message: 'Colaborador eliminado correctamente' });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
     console.error('Error al eliminar colaborador:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
 
@@ -205,13 +233,13 @@ const updateCollaboratorBasicInfo = async (req, res) => {
       },
     });
 
-    res.json({ message: 'Información básica del colaborador actualizada', data: updatedCollaborator });
+    res.json({ success: true, message: 'Información básica del colaborador actualizada', data: updatedCollaborator });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ message: `El colaborador con ID ${id} no existe` });
+      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
     console.error('Error al actualizar información básica del colaborador:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
 
@@ -227,6 +255,7 @@ const getCollaboratorsTable = async (req, res) => {
         groups: {
           select: {
             id_group: true,
+            name: true,
             venues: {
               select: {
                 name: true,
@@ -240,16 +269,16 @@ const getCollaboratorsTable = async (req, res) => {
     const formatted = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name,
-      venue: collab.groups?.venues?.name || null,
-      group: collab.groups?.id_group || null,
-      email: collab.email,
-      phone_number: collab.phone_number,
+      venue: collab.groups?.venues?.name || 'Sin sede',
+      group: collab.groups?.name || 'Sin grupo',
+      email: collab.email || 'Sin correo',
+      phone_number: collab.phone_number || 'Sin teléfono',
     }));
 
-    res.json(formatted);
+    res.json({ success: true, data: formatted });
   } catch (error) {
     console.error('Error al obtener datos para tabla de colaboradores:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
 
