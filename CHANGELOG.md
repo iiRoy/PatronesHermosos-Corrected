@@ -1,3 +1,13 @@
+## 1.13.0-admin.3 (2025-05-21)
+
+* improve(pages): páginas de sedes, gestión de coordinadoras y gestión de mentoras ya muestran informa ([484e7c8](https://github.com/iiRoy/Patrones-Hermosos/commit/484e7c8))
+* chore(files):testing files created ([41869e3](https://github.com/iiRoy/Patrones-Hermosos/commit/41869e3))
+* fix(controller):functions renamed and exported ([8f2c885](https://github.com/iiRoy/Patrones-Hermosos/commit/8f2c885))
+* Merge branch 'forms/part' into pages/superuser ([6968e8a](https://github.com/iiRoy/Patrones-Hermosos/commit/6968e8a))
+* fix(controller): Functions created for collaborator ([487d772](https://github.com/iiRoy/Patrones-Hermosos/commit/487d772))
+* fix(form): testing group selection table ([95518e8](https://github.com/iiRoy/Patrones-Hermosos/commit/95518e8))
+* fix(routes): Updated route of collaborator ([fa0dcdc](https://github.com/iiRoy/Patrones-Hermosos/commit/fa0dcdc))
+
 ## 1.13.0-admin.2 (2025-05-20)
 
 * fix(css):background color mod ([bb63927](https://github.com/iiRoy/Patrones-Hermosos/commit/bb63927))
