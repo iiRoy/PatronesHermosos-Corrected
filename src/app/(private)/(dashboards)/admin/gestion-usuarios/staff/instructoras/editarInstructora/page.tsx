@@ -7,7 +7,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Button from '@/components/buttons_inputs/Button';
 import { Plus, Trash, Trash2 } from 'lucide-react';
 
-const EditarInstructora = () => {
+const editarApoyo = () => {
   const [inputValue, setInputValue] = useState('');
   const [section, setSection] = useState('SEDES');
   const [filterActivaExtra, setFilterActivaExtra] = useState({});
@@ -143,4 +143,4 @@ const EditarInstructora = () => {
   );
 };
 
-export default EditarInstructora;
+export default editarApoyo;
