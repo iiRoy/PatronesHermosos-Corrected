@@ -28,6 +28,41 @@ const getAll = async (req, res) => {
   }
 };
 
+// Obtener una mentora por ID
+const getMentorById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const mentor = await prisma.mentors.findUnique({
+      where: { id_mentor: parseInt(id) },
+      include: {
+        venues: true,
+      },
+    });
+
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: 'Mentora no encontrada' });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id_mentor: mentor.id_mentor,
+        name: mentor.name,
+        paternal_name: mentor.paternal_name,
+        maternal_name: mentor.maternal_name,
+        email: mentor.email,
+        phone_number: mentor.phone_number,
+        id_venue: mentor.id_venue,
+        venue: mentor.venues?.name || 'Sede desconocida',
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching mentor by ID:', error);
+    res.status(500).json({ success: false, message: 'Error al obtener la mentora' });
+  }
+};
+
 // Obtener los datos para mostrar en la tabla de gestión de mentoras de superusuario
 const getSpecific = async (req, res) => {
   const { id } = req.params;
@@ -193,6 +228,7 @@ const removeMentorFromGroup = async (req, res) => {
 
 module.exports = {
   getAll,
+  getMentorById,
   getSpecific,
   create,
   update,

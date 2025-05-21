@@ -5,25 +5,29 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { Trash, Highlighter } from '@/components/icons';
+import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Definir el tipo Mentora
 interface Mentora {
   id_mentor: number;
-  name: string; // Nombre completo (name + paternal_name + maternal_name)
+  name: string; // Combinación de name, paternal_name, maternal_name
   email: string;
   phone_number: string;
   venue: string; // Nombre de la sede
+  name_only: string; // Campo separado para el popup
+  paternal_name: string;
+  maternal_name: string;
+  number_of_groups: number;
 }
 
 const GestionMentoras = () => {
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__'); // Inicializar con "Todas"
+  const [section, setSection] = useState('__All__');
   const [currentPage, setCurrentPage] = useState(0);
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para controlar el popup
-  const [selectedMentora, setSelectedMentora] = useState<Mentora | null>(null); // Mentora seleccionada para eliminar
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
+  const [selectedMentora, setSelectedMentora] = useState<Mentora | null>(null);
   const [mentorasData, setMentorasData] = useState<Mentora[]>([]);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -34,9 +38,7 @@ const GestionMentoras = () => {
     const fetchMentoras = async () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        console.log('Token:', token);
         if (!token) {
-          console.log('No token found, redirecting to login');
           router.push('/login');
           return;
         }
@@ -47,13 +49,10 @@ const GestionMentoras = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Mentors response status:', mentorsResponse.status);
 
         const mentorsData = await mentorsResponse.json();
-        console.log('Mentors response body:', mentorsData);
 
         if (!mentorsResponse.ok) {
-          console.log('Mentors error data:', mentorsData);
           if (mentorsResponse.status === 403) {
             setError('No tienes permisos para acceder a las mentoras');
             return;
@@ -61,7 +60,19 @@ const GestionMentoras = () => {
           throw new Error(`Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`);
         }
 
-        setMentorasData(mentorsData.data);
+        // Formatear los datos para incluir los campos separados
+        const formattedData = mentorsData.data.map((mentor: any) => ({
+          id_mentor: mentor.id_mentor,
+          name: mentor.name,
+          email: mentor.email || 'Sin correo',
+          phone_number: mentor.phone_number || 'Sin teléfono',
+          venue: mentor.venue || 'Sede desconocida',
+          name_only: mentor.name || 'Sin nombre',
+          paternal_name: mentor.paternal_name || 'Sin apellido paterno',
+          maternal_name: mentor.maternal_name || 'Sin apellido materno',
+          number_of_groups: mentor.number_of_groups || 0,
+        }));
+        setMentorasData(formattedData);
       } catch (error: any) {
         console.error('Error al obtener mentoras:', error);
         setError(error.message);
@@ -70,36 +81,29 @@ const GestionMentoras = () => {
     fetchMentoras();
   }, [router]);
 
-  // Obtener sedes únicas y convertirlas en opciones para FiltroEvento
-  const uniqueSedes = Array.from(new Set(mentorasData.map(mentora => mentora.venue))).sort();
-  const sedeOptions = [
+  const uniqueVenues = Array.from(new Set(mentorasData.map(mentora => mentora.venue))).sort();
+  const venueOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
+    ...uniqueVenues.map(venue => ({ label: venue, value: venue })),
   ];
 
-  // Filtrar los datos según el valor de búsqueda y la sede seleccionada
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
     return mentorasData.filter(mentora => {
-      // Filtro por nombre, correo o teléfono
       const matchesSearch =
         !searchTerm ||
         mentora.name.toLowerCase().includes(searchTerm) ||
         mentora.email.toLowerCase().includes(searchTerm) ||
         mentora.phone_number.toLowerCase().includes(searchTerm) ||
         mentora.venue.toLowerCase().includes(searchTerm);
-
-      // Filtro por sede
-      const matchesSede = section === '__All__' ? true : mentora.venue === section;
-
-      return matchesSearch && matchesSede;
+      const matchesVenue = section === '__All__' ? true : mentora.venue === section;
+      return matchesSearch && matchesVenue;
     });
   }, [inputValue, section, mentorasData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
-  // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
       setCurrentPage(totalPages - 1);
@@ -110,27 +114,38 @@ const GestionMentoras = () => {
 
   const sectionFilterChange = (value: string) => {
     setSection(value);
-    setInputValue(''); // Resetear búsqueda al cambiar de sección
-    setCurrentPage(0); // Resetear página al cambiar de filtro
+    setInputValue('');
+    setCurrentPage(0);
   };
 
-  // Función para abrir el popup de confirmación
   const handleDeleteClick = (mentora: Mentora) => {
     setSelectedMentora(mentora);
-    setIsPopupOpen(true);
+    setIsDeletePopupOpen(true);
   };
 
-  // Función para cerrar el popup
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
+  const handleDetailsClick = (mentora: Mentora) => {
+    setSelectedMentora(mentora);
+    setIsDetailsPopupOpen(true);
+  };
+
+  const handleEditClick = (mentora: Mentora) => {
+    router.push(`/admin/gestion-usuarios/mentoras/editarMentora/${mentora.id_mentor}`);
+  };
+
+  const handleCloseDeletePopup = () => {
+    setIsDeletePopupOpen(false);
     setSelectedMentora(null);
   };
 
-  // Función para confirmar la eliminación
+  const handleCloseDetailsPopup = () => {
+    setIsDetailsPopupOpen(false);
+    setSelectedMentora(null);
+  };
+
   const handleConfirmDelete = () => {
     if (selectedMentora) {
       alert(`Eliminando a ${selectedMentora.name}`); // Placeholder para la lógica real de eliminación
-      handleClosePopup();
+      handleCloseDeletePopup();
     }
   };
 
@@ -143,7 +158,6 @@ const GestionMentoras = () => {
       <PageTitle>Gestión de Mentoras</PageTitle>
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        {/* Fila de búsqueda, filtro y botón */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-1 gap-4">
             <div className="basis-2/3">
@@ -165,7 +179,7 @@ const GestionMentoras = () => {
                 label="Filtrar por sede"
                 showSecciones
                 labelSecciones="Sedes"
-                secciones={sedeOptions}
+                secciones={venueOptions}
                 seccionActiva={section}
                 onChangeSeccion={sectionFilterChange}
               />
@@ -173,7 +187,6 @@ const GestionMentoras = () => {
           </div>
         </div>
 
-        {/* Tabla */}
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold">
@@ -187,14 +200,38 @@ const GestionMentoras = () => {
             </thead>
             <tbody className="text-gray-700">
               {paginatedData.map((mentora, index) => (
-                <tr key={index} className="border-t border-gray-300">
+                <tr
+                  key={index}
+                  className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
+                  onClick={() => handleDetailsClick(mentora)}
+                >
                   <td className="p-2 text-center">{mentora.name}</td>
                   <td className="p-2 text-center">{mentora.email}</td>
                   <td className="p-2 text-center">{mentora.phone_number}</td>
                   <td className="p-2 text-center">{mentora.venue}</td>
                   <td className="p-2 flex gap-2 justify-center">
-                    <Button label='' variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(mentora)} />
-                    <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
+                    <Button
+                      label=""
+                      variant="error"
+                      round
+                      showLeftIcon
+                      IconLeft={Trash}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(mentora);
+                      }}
+                    />
+                    <Button
+                      label=""
+                      variant="warning"
+                      round
+                      showLeftIcon
+                      IconLeft={Highlighter}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditClick(mentora);
+                      }}
+                    />
                   </td>
                 </tr>
               ))}
@@ -202,7 +239,6 @@ const GestionMentoras = () => {
           </table>
         </div>
 
-        {/* Paginación */}
         <div className="mt-auto pt-4 flex justify-center">
           <Pagination
             currentPage={currentPage}
@@ -213,15 +249,37 @@ const GestionMentoras = () => {
           />
         </div>
 
-        {/* Popup de confirmación */}
-        {isPopupOpen && selectedMentora && (
+        {/* Popup de eliminación */}
+        {isDeletePopupOpen && selectedMentora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
               <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
               <p className="my-12">¿Estás seguro de que quieres eliminar a la mentora {selectedMentora.name}?</p>
               <div className="flex justify-center gap-4">
                 <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Popup de detalles */}
+        {isDetailsPopupOpen && selectedMentora && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
+              <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Mentora</h2>
+              <div className="pt-6 pb-6">
+                <p><strong>ID:</strong> {selectedMentora.id_mentor}</p>
+                <p><strong>Nombre:</strong> {selectedMentora.name_only}</p>
+                <p><strong>Apellido Paterno:</strong> {selectedMentora.paternal_name}</p>
+                <p><strong>Apellido Materno:</strong> {selectedMentora.maternal_name}</p>
+                <p><strong>Correo:</strong> {selectedMentora.email}</p>
+                <p><strong>Teléfono:</strong> {selectedMentora.phone_number}</p>
+                <p><strong>Sede:</strong> {selectedMentora.venue}</p>
+                <p><strong>Número de Grupos:</strong> {selectedMentora.number_of_groups}</p>
+              </div>
+              <div className="mt-4 flex justify-center">
+                <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
               </div>
             </div>
           </div>
