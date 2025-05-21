@@ -134,7 +134,6 @@ const GroupSelectionTable: React.FC<GroupSelectionTableProps> = ({
               <th className="p-2 text-center">Idioma</th>
               <th className="p-2 text-center">Nivel</th>
               <th className="p-2 text-center">Fechas</th>
-              <th className="p-2 text-center">Sede</th>
               <th className="p-2 text-center"></th>
             </tr>
           </thead>
