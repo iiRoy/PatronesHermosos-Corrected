@@ -1,18 +1,16 @@
 'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import InputField from '@components/buttons_inputs/InputField';
-import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Dropdown from '@components/buttons_inputs/Dropdown';
-import PageTitle from '@/components/headers_menu_users/pageTitle';
 import Button from '@components/buttons_inputs/Button';
-import Pagination from '@/components/buttons_inputs/Pagination';
 import Checkbox from '@components/buttons_inputs/Checkbox';
-import { Modal, Toast } from '@/components//buttons_inputs/FormNotification';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student } from '@/components/icons';
+import { Modal, Toast } from '@/components/buttons_inputs/FormNotification';
+import GroupSelectionTable from '@/components/tables/GroupSelectionTable';
+import { FlowerLotus, AddressBook, SketchLogo, Megaphone, X, UserSound, ChatTeardropText, Grains, Student } from '@components/icons';
+import Send from '@components/icons/ArrowFatRight';
 import Navbar from '@/components/headers_menu_users/navbar';
-import Send from '@components/icons/ArrowFatRight'; // For submit button
 
 interface Collaborator {
   name: string;
@@ -30,13 +28,9 @@ interface Collaborator {
   preferred_group?: number;
 }
 
-interface Venue {
-  id_venue: number;
+interface Group {
+  id_group: number;
   name: string;
-  modality: string;
-  groups: number;
-  coordinator: string;
-  dates: string;
 }
 
 const CollaboratorRegistrationForm: React.FC = () => {
@@ -56,84 +50,30 @@ const CollaboratorRegistrationForm: React.FC = () => {
     preferred_level: 'Básico',
     preferred_group: undefined,
   });
-
+  const [groups, setGroups] = useState<Group[]>([]);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [venues, setVenues] = useState<Venue[]>([]);
 
-  const rowsPerPage = 10;
-
-  // Fetch venues
+  // Fetch groups for selected group display
   useEffect(() => {
-    const fetchVenues = async () => {
+    const fetchGroups = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/venues');
+        const response = await fetch('http://localhost:3000/api/groups');
         const data = await response.json();
-        // Transform venue data to match table format
-        const transformedVenues = data.map((venue: any) => ({
-          id_venue: venue.id_venue,
-          name: venue.name,
-          modality: venue.mode || 'Presencial', // Adjust based on your API
-          groups: venue.groups?.length || 0,
-          coordinator: venue.venue_coordinators?.[0]?.name || 'N/A',
-          dates: 'DD/MM - DD/MM', // Adjust based on actual group dates
-        }));
-        setVenues(transformedVenues);
+        setGroups(data.map((group: any) => ({
+          id_group: group.id_group,
+          name: group.name,
+        })));
       } catch (err) {
-        setErrors(['Error al cargar las sedes']);
+        setErrors(['Error al cargar los grupos']);
         setIsErrorModalOpen(true);
       }
     };
-    fetchVenues();
+    fetchGroups();
   }, []);
-
-  // Get unique modalities
-  const uniqueModalidades = Array.from(new Set(venues.map(venue => venue.modality))).sort();
-  const modalidadesOptions = [
-    { label: 'Todas', value: '__All__' },
-    ...uniqueModalidades.map(modality => ({ label: modality, value: modality })),
-  ];
-
-  // Filter venues
-  const filteredData = useMemo(() => {
-    const searchTerm = inputValue.toLowerCase().trim();
-    return venues.filter(venue => {
-      const matchesSearch = !searchTerm || venue.name.toLowerCase().includes(searchTerm);
-      const matchesSede = section === '__All__' ? true : venue.modality === section;
-      return matchesSearch && matchesSede;
-    });
-  }, [inputValue, section, venues]);
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
-
-  // Reset currentPage when filteredData changes
-  useEffect(() => {
-    if (currentPage >= totalPages && totalPages > 0) {
-      setCurrentPage(totalPages - 1);
-    } else if (totalPages === 0) {
-      setCurrentPage(0);
-    }
-  }, [filteredData.length, currentPage, totalPages]);
-
-  const sectionFilterChange = (value: string) => {
-    setSection(value);
-    setInputValue('');
-    setCurrentPage(0);
-  };
-
-  // Handle venue selection
-  const handleVenueSelect = (venue: Venue) => {
-    setFormData(prev => ({ ...prev, preferred_group: venue.id_venue }));
-  };
 
   // Handle input changes
   const handleInputChange = (field: keyof Collaborator, value: string | number) => {
@@ -143,10 +83,14 @@ const CollaboratorRegistrationForm: React.FC = () => {
     }));
   };
 
+  // Handle group selection
+  const handleGroupSelect = (id_group: number) => {
+    handleInputChange('preferred_group', id_group);
+  };
+
   // Client-side validation
   const validateForm = () => {
     const newErrors: string[] = [];
-
     if (!formData.name) newErrors.push('El nombre es obligatorio');
     if (!formData.paternal_name) newErrors.push('El apellido paterno es obligatorio');
     if (!formData.email) newErrors.push('El correo electrónico es obligatorio');
@@ -159,25 +103,20 @@ const CollaboratorRegistrationForm: React.FC = () => {
     if (!formData.semester) newErrors.push('El semestre es obligatorio');
     if (!formData.preferred_role) newErrors.push('El rol preferido es obligatorio');
     if (!formData.preferred_language) newErrors.push('El idioma preferido es obligatorio');
-    if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatoria');
+    if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatorio');
     if (!privacyAccepted) newErrors.push('Debes aceptar el aviso de privacidad');
-
     return newErrors;
   };
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
-      setIsErrorModalOpen(true);
       setSuccess(null);
-      setIsSuccessToastOpen(false);
       return;
     }
-
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
@@ -195,36 +134,25 @@ const CollaboratorRegistrationForm: React.FC = () => {
       if (formData.preferred_group) {
         formDataToSend.append('preferred_group', formData.preferred_group.toString());
       }
-
-      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3000/api/collaborators', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formDataToSend,
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         if (response.status === 422 && data.errors) {
+          // Handle validation errors from the backend
           const backendErrors = data.errors.map((err: any) => err.msg);
-          setErrors(backendErrors);
-          setIsErrorModalOpen(true);
           throw new Error(backendErrors.join(', '));
         }
         setErrors([data.message || 'Error al registrar el colaborador']);
         setIsErrorModalOpen(true);
         throw new Error(data.message || 'Error al registrar el colaborador');
       }
-
       setSuccess(data.message || 'Colaborador registrado exitosamente');
       setIsSuccessToastOpen(true);
       setErrors([]);
       setIsErrorModalOpen(false);
-
-      // Reset form
       setFormData({
         name: '',
         paternal_name: '',
@@ -243,9 +171,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
       setPrivacyAccepted(false);
     } catch (err: any) {
       setErrors([err.message]);
-      setIsErrorModalOpen(true);
       setSuccess(null);
-      setIsSuccessToastOpen(false);
     }
   };
 
@@ -333,7 +259,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
               <Dropdown
                 label="Sexo*"
-                options={['Femenino', 'Masculino', 'No binario', 'Prefiero no decir', 'Otro']}
+                options={['Femenino', 'Masculino', 'No Binario', 'Prefiero no decir','Otro']}
                 value={formData.gender}
                 onChange={(value: string) => handleInputChange('gender', value)}
                 variant="accent"
@@ -367,99 +293,29 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 value={formData.semester}
                 onChangeText={(value: string) => handleInputChange('semester', value)}
               />
-              <InputField
-                label="Locación*"
-                placeholder="Puebla"
-                variant="secondary"
-                icon="MapPin"
-                value={formData.semester} // Temporarily reusing semester; should be a separate field if needed
-                onChangeText={(value: string) => handleInputChange('semester', value)}
-              />
             </div>
 
-            {/* Section: Selección de Sede */}
+            {/* Section: Selección de Grupo */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><AddressBook /></span> Selección de Sede
+                <span className="mr-2"><AddressBook /></span> Selección de Grupo
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
-                Selecciona la SEDE que más te llame la atención para apoyar.<br />
+                Selecciona el grupo que más te llame la atención para apoyar.<br />
                 Puedes ver los detalles del grupo usando los botones del lado derecho.
               </p>
             </div>
 
             <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 input-secondary text-xs sm:text-base md:text-lg lg:text-xl">
               <Student />
-              <h2 className="mx-4 font-semibold">SEDE Elegida: </h2>
-              <p>{venues.find(v => v.id_venue === formData.preferred_group)?.name || 'Ninguna'}</p>
+              <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
+              <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
             </div>
-            <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh]">
-              <div className="flex flex-wrap justify-between gap-4">
-                <div className="flex flex-1 gap-4 top-0">
-                  <div className="basis-2/3">
-                    <InputField
-                      label=""
-                      showDescription={false}
-                      placeholder="Search"
-                      showError={false}
-                      variant="primary"
-                      icon="MagnifyingGlass"
-                      value={inputValue}
-                      onChangeText={(val) => setInputValue(val)}
-                    />
-                  </div>
-                  <div className="basis-1/3">
-                    <FiltroEvento
-                      disableCheckboxes
-                      label="Modalidad"
-                      showSecciones
-                      labelSecciones="Seleccionar"
-                      secciones={modalidadesOptions}
-                      seccionActiva={section}
-                      onChangeSeccion={sectionFilterChange}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="overflow-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead className="sticky top-0 fondo-titulos-tabla text-purple-800 font-bold">
-                    <tr className="texto-primary-shade">
-                      <th className="p-2 text-center">Sede</th>
-                      <th className="p-2 text-center">Modalidad</th>
-                      <th className="p-2 text-center">Grupos</th>
-                      <th className="p-2 text-center">Coordinadora</th>
-                      <th className="p-2 text-center">Fechas</th>
-                      <th className="p-2 text-center"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-700">
-                    {paginatedData.map((venue, index) => (
-                      <tr key={index} className="border-t border-gray-300">
-                        <td className="p-2 text-center">{venue.name}</td>
-                        <td className="p-2 text-center">{venue.modality}</td>
-                        <td className="p-2 text-center">{venue.groups}</td>
-                        <td className="p-2 text-center">{venue.coordinator}</td>
-                        <td className="p-2 text-center">{venue.dates}</td>
-                        <td className="p-2 flex gap-2 justify-center">
-                          <Button
-                            label=""
-                            variant="success"
-                            round
-                            showLeftIcon
-                            IconLeft={Check}
-                            onClick={() => handleVenueSelect(venue)}
-                          />
-                          <Button label="" variant="primary" round showLeftIcon IconLeft={Eye} />
-                          <Button label="" variant="warning" round showLeftIcon IconLeft={Star} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-            </div>
+            <GroupSelectionTable
+              onSelect={handleGroupSelect}
+              selectedGroupId={formData.preferred_group}
+              rowsPerPage={4}
+            />
 
             {/* Section: Preferencias */}
             <div className="mt-8">
@@ -491,7 +347,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
               <Dropdown
                 label="Dificultad preferida*"
-                options={['Básico', 'Intermedio', 'Avanzado']}
+                options={['Básico', 'Avanzado']}
                 value={formData.preferred_level}
                 onChange={(value: string) => handleInputChange('preferred_level', value)}
                 variant="primary"
@@ -543,7 +399,6 @@ const CollaboratorRegistrationForm: React.FC = () => {
         title="Errores en el formulario"
         messages={errors}
       />
-
       <Toast
         isOpen={isSuccessToastOpen}
         onClose={() => setIsSuccessToastOpen(false)}

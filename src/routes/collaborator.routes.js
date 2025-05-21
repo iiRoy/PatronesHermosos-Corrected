@@ -1,27 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const collaboratorsController = require('../controllers/collaborator.controller');
+const { validateCollaborator } = require('../validators/collaboratorValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
-// Get all collaborators (admin only)
-router.get('/', authMiddleware, roleMiddleware(['admin']), collaboratorController.getAll);
+// Get all collaborators (superuser only)
+router.get('/', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.getAllCollaborators);
 
 // Create a new collaborator (public, no auth required)
-router.post('/', validateCollaborator, collaboratorController.create);
+router.post('/', validateCollaborator, collaboratorsController.createCollaborator);
 
-// Get a collaborator by ID (requires auth, e.g., for user profile or admin)
-router.get('/:id', authMiddleware, collaboratorController.getById);
+// Get a collaborator by ID (superuser or venue coordinator)
+router.get('/:id', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getCollaboratorById);
 
-// Update a collaborator (admin only)
+// Update a collaborator (superuser only)
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['superuser']),
   validateCollaborator,
-  collaboratorController.update
+  collaboratorsController.updateCollaborator
 );
 
-// Delete a collaborator (admin only)
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), collaboratorController.remove);
+// Update basic info of a collaborator (superuser only)
+router.patch(
+  '/:id/basic',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  collaboratorsController.updateCollaboratorBasicInfo
+);
+
+// Delete a collaborator (superuser only)
+router.delete('/:id', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.deleteCollaborator);
 
 module.exports = router;
