@@ -17,7 +17,7 @@ router.get(
 router.get(
   '/specific',
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['admin', 'superuser']),
   coordinatorController.getSpecific,
 );
 

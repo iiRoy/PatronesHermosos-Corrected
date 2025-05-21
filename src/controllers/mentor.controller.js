@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-//obtener todas las mentoras
+// Obtener todas las mentoras con los datos necesarios para la tabla
 const getAll = async (req, res) => {
   try {
     const mentors = await prisma.mentors.findMany({
@@ -10,14 +10,25 @@ const getAll = async (req, res) => {
         groups: true,
       },
     });
-    res.json(mentors);
+
+    // Formatear los datos para la tabla
+    const formattedMentors = mentors.map(mentor => ({
+      id_mentor: mentor.id_mentor,
+      name: `${mentor.name} ${mentor.paternal_name || ''} ${mentor.maternal_name || ''}`.trim(),
+      email: mentor.email || 'Sin correo',
+      phone_number: mentor.phone_number || 'Sin teléfono',
+      venue: mentor.venues?.name || 'Sede desconocida',
+      number_of_groups: mentor.groups.length,
+    }));
+
+    res.json({ success: true, data: formattedMentors });
   } catch (error) {
     console.error('Error fetching mentors:', error);
-    res.status(500).json({ message: 'Error al obtener mentoras' });
+    res.status(500).json({ success: false, message: 'Error al obtener mentoras' });
   }
 };
 
-//obtener los datos para mostrar en la tabla de gestión de mentoras de superusuario
+// Obtener los datos para mostrar en la tabla de gestión de mentoras de superusuario
 const getSpecific = async (req, res) => {
   const { id } = req.params;
   try {
@@ -30,24 +41,27 @@ const getSpecific = async (req, res) => {
     });
 
     if (!mentor) {
-      return res.status(404).json({ message: 'Mentora no encontrada' });
+      return res.status(404).json({ success: false, message: 'Mentora no encontrada' });
     }
 
     res.json({
-      id: mentor.id_mentor,
-      name: mentor.name,
-      venue: mentor.venues.name,
-      number_of_groups: mentor.groups.length,
-      email: mentor.email,
-      phone_number: mentor.phone_number,
+      success: true,
+      data: {
+        id: mentor.id_mentor,
+        name: mentor.name,
+        venue: mentor.venues.name,
+        number_of_groups: mentor.groups.length,
+        email: mentor.email,
+        phone_number: mentor.phone_number,
+      },
     });
   } catch (error) {
     console.error('Error fetching mentor:', error);
-    res.status(500).json({ message: 'Error al obtener la mentora' });
+    res.status(500).json({ success: false, message: 'Error al obtener la mentora' });
   }
 };
 
-//crear una nueva mentora
+// Crear una nueva mentora
 const create = async (req, res) => {
   const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
   try {
@@ -61,14 +75,14 @@ const create = async (req, res) => {
         id_venue,
       },
     });
-    res.json({ message: 'Mentora creada', data: newMentor });
+    res.json({ success: true, message: 'Mentora creada', data: newMentor });
   } catch (error) {
     console.error('Error creating mentor:', error);
-    res.status(500).json({ message: 'Error al crear la mentora' });
+    res.status(500).json({ success: false, message: 'Error al crear la mentora' });
   }
 };
 
-//actualizar todos los datos de mentora
+// Actualizar todos los datos de mentora
 const update = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
@@ -84,20 +98,20 @@ const update = async (req, res) => {
         id_venue,
       },
     });
-    res.json({ message: 'Mentora actualizada', data: updatedMentor });
+    res.json({ success: true, message: 'Mentora actualizada', data: updatedMentor });
   } catch (error) {
     console.error('Error updating mentor:', error);
-    res.status(500).json({ message: 'Error al actualizar la mentora' });
+    res.status(500).json({ success: false, message: 'Error al actualizar la mentora' });
   }
 };
 
-//tabla de actualizar mentora (por superuser)
+// Tabla de actualizar mentora (por superuser)
 const updateBasicData = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone_number, id_venue } = req.body;
 
   if (!name || !email || !phone_number || !id_venue) {
-    return res.status(400).json({ message: 'Faltan campos requeridos para actualizar' });
+    return res.status(400).json({ success: false, message: 'Faltan campos requeridos para actualizar' });
   }
 
   try {
@@ -110,32 +124,33 @@ const updateBasicData = async (req, res) => {
         id_venue,
       },
     });
-    res.json({ message: 'Mentora actualizada (datos básicos)', data: updatedMentor });
+    res.json({ success: true, message: 'Mentora actualizada (datos básicos)', data: updatedMentor });
   } catch (error) {
     console.error('Error updating mentor basic data:', error);
-    res.status(500).json({ message: 'Error al actualizar datos básicos de la mentora' });
+    res.status(500).json({ success: false, message: 'Error al actualizar datos básicos de la mentora' });
   }
 };
 
-//eliminar una mentora por ID
+// Eliminar una mentora por ID
 const remove = async (req, res) => {
   const { id } = req.params;
   try {
     await prisma.mentors.delete({
       where: { id_mentor: parseInt(id) },
     });
-    res.json({ message: 'Mentora eliminada' });
+    res.json({ success: true, message: 'Mentora eliminada' });
   } catch (error) {
     console.error('Error deleting mentor:', error);
-    res.status(500).json({ message: 'Error al eliminar la mentora' });
+    res.status(500).json({ success: false, message: 'Error al eliminar la mentora' });
   }
 };
 
+// Obtener los grupos de una mentora
 const getGroupMentor = async (req, res) => {
   const { id_mentor } = req.params;
 
   if (isNaN(parseInt(id_mentor))) {
-    return res.status(400).json({ message: 'ID de mentora inválido' });
+    return res.status(400).json({ success: false, message: 'ID de mentora inválido' });
   }
 
   try {
@@ -144,18 +159,19 @@ const getGroupMentor = async (req, res) => {
         id_mentor: parseInt(id_mentor),
       },
     });
-    res.json(groups);
+    res.json({ success: true, data: groups });
   } catch (error) {
     console.error('Error fetching mentors:', error);
-    res.status(500).json({ message: 'Error al obtener grupos de la mentora' });
+    res.status(500).json({ success: false, message: 'Error al obtener grupos de la mentora' });
   }
 };
 
+// Remover mentora de un grupo
 const removeMentorFromGroup = async (req, res) => {
   const { id_group } = req.params;
 
   if (isNaN(parseInt(id_group))) {
-    return res.status(400).json({ message: 'ID de grupo inválido' });
+    return res.status(400).json({ success: false, message: 'ID de grupo inválido' });
   }
 
   try {
@@ -168,10 +184,10 @@ const removeMentorFromGroup = async (req, res) => {
       },
     });
 
-    res.json({ message: 'Mentora removida del grupo correctamente', updatedGroup });
+    res.json({ success: true, message: 'Mentora removida del grupo correctamente', data: updatedGroup });
   } catch (error) {
     console.error('Error removing mentor from group:', error);
-    res.status(500).json({ message: 'Error al remover mentora del grupo' });
+    res.status(500).json({ success: false, message: 'Error al remover mentora del grupo' });
   }
 };
 

@@ -6,72 +6,138 @@ import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Trash, Highlighter } from '@/components/icons';
-import { useState, useMemo, useEffect } from 'react'; // Añadimos useEffect
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-// Definir el tipo Coordinadora
 interface Coordinadora {
-  id: string;
-  nombre: string;
-  sede: string;
-  correo: string;
-  telefono: string;
+  id_venue_coord: number;
+  nombre: string; // Combinación de name, paternal_name, maternal_name
+  email: string;
+  phone_number: string;
+  venue: string; // Nombre de la sede
+}
+
+interface Venue {
+  id_venue: number;
+  name: string;
+  // Otros campos de venues si son necesarios
 }
 
 const GestionCoordinadoras = () => {
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__'); // Inicializar con "Todas"
+  const [section, setSection] = useState('__All__');
   const [currentPage, setCurrentPage] = useState(0);
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // Estado para controlar el popup
-  const [selectedCoordinadora, setSelectedCoordinadora] = useState<Coordinadora | null>(null); // Coordinadora seleccionada para eliminar
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedCoordinadora, setSelectedCoordinadora] = useState<Coordinadora | null>(null);
+  const [coordinadorasData, setCoordinadorasData] = useState<Coordinadora[]>([]);
+  const [venuesMap, setVenuesMap] = useState<Map<number, string>>(new Map());
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const rowsPerPage = 5;
 
-  const coordinadorasData: Coordinadora[] = [
-    { id: '01', nombre: 'Ana García', sede: 'Puebla', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '02', nombre: 'Beatriz López', sede: 'Querétaro', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '03', nombre: 'Clara Martínez', sede: 'Monterrey', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '04', nombre: 'Diana Pérez', sede: 'Hidalgo', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '05', nombre: 'Elena Rodríguez', sede: 'Guadalajara', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '06', nombre: 'Fabiola Sánchez', sede: 'Saltillo', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '07', nombre: 'Gabriela Torres', sede: 'Ciudad de México', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '08', nombre: 'Hilda Vargas', sede: 'Toluca', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '09', nombre: 'Isabel Ramírez', sede: 'León', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '10', nombre: 'Julia Gómez', sede: 'Chihuahua', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '11', nombre: 'Karla Díaz', sede: 'Culiacán', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '12', nombre: 'Laura Fernández', sede: 'San Luis Potosí', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '13', nombre: 'María Morales', sede: 'Aguascalientes', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '14', nombre: 'Nadia Ortiz', sede: 'Tijuana', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-    { id: '15', nombre: 'Olivia Castro', sede: 'Zacatecas', correo: 'ejemplo@correo.com', telefono: '2222222222' },
-  ];
+  useEffect(() => {
+    const fetchCoordinadoras = async () => {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+        console.log('Token:', token);
+        if (!token) {
+          console.log('No token found, redirecting to login');
+          router.push('/login');
+          return;
+        }
 
-  // Obtener sedes únicas
-  const uniqueSedes = Array.from(new Set(coordinadorasData.map(coordinadora => coordinadora.sede))).sort();
-  const sedeOptions = [
+        // Obtener coordinadoras (con token)
+        const coordResponse = await fetch('/api/venue-coordinators/specific', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('Coordinator response status:', coordResponse.status);
+
+        // Leer el cuerpo de la respuesta una sola vez
+        const coordData = await coordResponse.json();
+        console.log('Coordinator response body:', coordData);
+
+        if (!coordResponse.ok) {
+          console.log('Coordinator error data:', coordData);
+          if (coordResponse.status === 403) {
+            setError('No tienes permisos para acceder a los coordinadores');
+            return;
+          }
+          throw new Error(`Error fetching coordinators: ${coordResponse.status} - ${coordData.message || 'Unknown error'}`);
+        }
+
+        console.log('Coordinator data:', coordData);
+
+        // Obtener sedes (con token)
+        const venuesResponse = await fetch('/api/venues', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('Venues response status:', venuesResponse.status);
+
+        // Leer el cuerpo de la respuesta una sola vez
+        const venuesDataResponse = await venuesResponse.json();
+        console.log('Venues response body:', venuesDataResponse);
+
+        if (!venuesResponse.ok) {
+          console.log('Venues error data:', venuesDataResponse);
+          if (venuesResponse.status === 403) {
+            setError('No tienes permisos para acceder a las sedes');
+            return;
+          }
+          throw new Error(`Error fetching venues: ${venuesResponse.status} - ${venuesDataResponse.message || 'Unknown error'}`);
+        }
+
+        const venuesData = venuesDataResponse as Venue[];
+        console.log('Venues data:', venuesData);
+        const venuesMapData = new Map<number, string>(
+          venuesData.map((venue: Venue) => [venue.id_venue, venue.name || 'Sin nombre'] as const)
+        );
+        setVenuesMap(venuesMapData);
+
+        const formattedData = coordData.data.map((coordinator: any) => ({
+          id_venue_coord: coordinator.id_venue_coord,
+          nombre: `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
+          email: coordinator.email || 'Sin correo',
+          phone_number: coordinator.phone_number || 'Sin teléfono',
+          venue: venuesMapData.get(coordinator.id_venue) || 'Sede desconocida',
+        }));
+        setCoordinadorasData(formattedData);
+      } catch (error: any) {
+        console.error('Error al obtener coordinadoras:', error);
+        setError(error.message);
+      }
+    };
+    fetchCoordinadoras();
+  }, [router]);
+
+  const uniqueVenues = Array.from(new Set(coordinadorasData.map(coordinadora => coordinadora.venue))).sort();
+  const venueOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
+    ...uniqueVenues.map(venue => ({ label: venue, value: venue })),
   ];
 
-  // Filtrar los datos según el valor de búsqueda y sede
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
     return coordinadorasData.filter(coordinadora => {
-      // Filtro por nombre
-      const matchesSearch = !searchTerm || coordinadora.nombre.toLowerCase().includes(searchTerm);
-
-      // Filtro por sede
-      const matchesSede = section === '__All__' ? true : coordinadora.sede === section;
-
-      return matchesSearch && matchesSede;
+      const matchesSearch =
+        !searchTerm ||
+        coordinadora.nombre.toLowerCase().includes(searchTerm) ||
+        coordinadora.email.toLowerCase().includes(searchTerm) ||
+        coordinadora.phone_number.toLowerCase().includes(searchTerm) ||
+        coordinadora.venue.toLowerCase().includes(searchTerm);
+      const matchesVenue = section === '__All__' ? true : coordinadora.venue === section;
+      return matchesSearch && matchesVenue;
     });
-  }, [inputValue, section]);
+  }, [inputValue, section, coordinadorasData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
-  // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
   useEffect(() => {
-    // Si la página actual es mayor o igual al número total de páginas después del filtrado,
-    // ajustamos currentPage para que no exceda el rango válido
     if (currentPage >= totalPages && totalPages > 0) {
       setCurrentPage(totalPages - 1);
     } else if (totalPages === 0) {
@@ -81,23 +147,20 @@ const GestionCoordinadoras = () => {
 
   const sectionFilterChange = (value: string) => {
     setSection(value);
-    setInputValue(''); // Resetear búsqueda al cambiar de sección
-    setCurrentPage(0); // Resetear página al cambiar de filtro
+    setInputValue('');
+    setCurrentPage(0);
   };
 
-  // Función para abrir el popup de confirmación
   const handleDeleteClick = (coordinadora: Coordinadora) => {
     setSelectedCoordinadora(coordinadora);
     setIsPopupOpen(true);
   };
 
-  // Función para cerrar el popup
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedCoordinadora(null);
   };
 
-  // Función para confirmar la eliminación
   const handleConfirmDelete = () => {
     if (selectedCoordinadora) {
       alert(`Eliminando a ${selectedCoordinadora.nombre}`); // Placeholder para la lógica real de eliminación
@@ -105,12 +168,15 @@ const GestionCoordinadoras = () => {
     }
   };
 
+  if (error) {
+    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+  }
+
   return (
     <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
       <PageTitle>Coordinadoras de Sede</PageTitle>
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        {/* Fila de búsqueda, filtro y botón */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-1 gap-4">
             <div className="basis-2/3">
@@ -132,7 +198,7 @@ const GestionCoordinadoras = () => {
                 label="Filtros"
                 showSecciones
                 labelSecciones="Sedes"
-                secciones={sedeOptions}
+                secciones={venueOptions}
                 seccionActiva={section}
                 onChangeSeccion={sectionFilterChange}
               />
@@ -140,27 +206,24 @@ const GestionCoordinadoras = () => {
           </div>
         </div>
 
-        {/* Tabla */}
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold">
               <tr className='texto-primary-shade'>
-                <th className="p-2 text-center">ID</th>
                 <th className="p-2 text-center">Nombre</th>
-                <th className="p-2 text-center">Sede</th>
                 <th className="p-2 text-center">Correo</th>
                 <th className="p-2 text-center">Teléfono</th>
+                <th className="p-2 text-center">Sede</th>
                 <th className="p-2 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               {paginatedData.map((coordinadora, index) => (
                 <tr key={index} className="border-t border-gray-300">
-                  <td className="p-2 text-center">{coordinadora.id}</td>
                   <td className="p-2 text-center">{coordinadora.nombre}</td>
-                  <td className="p-2 text-center">{coordinadora.sede}</td>
-                  <td className="p-2 text-center">{coordinadora.correo}</td>
-                  <td className="p-2 text-center">{coordinadora.telefono}</td>
+                  <td className="p-2 text-center">{coordinadora.email}</td>
+                  <td className="p-2 text-center">{coordinadora.phone_number}</td>
+                  <td className="p-2 text-center">{coordinadora.venue}</td>
                   <td className="p-2 flex gap-2 justify-center">
                     <Button label='' variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(coordinadora)} />
                     <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
@@ -171,7 +234,6 @@ const GestionCoordinadoras = () => {
           </table>
         </div>
 
-        {/* Paginación */}
         <div className="mt-auto pt-4 flex justify-center">
           <Pagination
             currentPage={currentPage}
@@ -182,7 +244,6 @@ const GestionCoordinadoras = () => {
           />
         </div>
 
-        {/* Popup de confirmación */}
         {isPopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">

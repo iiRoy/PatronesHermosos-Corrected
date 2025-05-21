@@ -7,14 +7,14 @@ import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Sede {
-    id: string;
-    nombre: string;
-    lugar: string;
+    id_venue: number;
+    name: string;
+    location: string; // Combinación de country y state
+    address: string;
     status: string;
-    grupos: string;
-    estudiantes: string;
 }
 
 const SedesAdmin = () => {
@@ -24,26 +24,59 @@ const SedesAdmin = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [selectedSede, setSelectedSede] = useState<Sede | null>(null);
+    const [sedesData, setSedesData] = useState<Sede[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const rowsPerPage = 5;
 
-    const sedes = [
-        { label: 'Puebla', value: 'Puebla' },
-        { label: 'Querétaro', value: 'Querétaro' },
-        { label: 'Monterrey', value: 'Monterrey' },
-        { label: 'Hidalgo', value: 'Hidalgo' },
-        { label: 'Guadalajara', value: 'Guadalajara' },
-    ];
+    useEffect(() => {
+        const fetchSedes = async () => {
+            try {
+                const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+                if (!token) {
+                    router.push('/login');
+                    return;
+                }
 
-    const sedesData = [
-        { id: '01', nombre: 'ITESM Puebla', lugar: 'Puebla', status: 'Registrada con participantes', grupos: '07', estudiantes: '63' },
-        { id: '02', nombre: 'ITESM Querétaro', lugar: 'Querétaro', status: 'Registrada con participantes', grupos: '06', estudiantes: '55' },
-        { id: '03', nombre: 'ITESM Monterrey', lugar: 'Monterrey', status: 'Registrada con participantes', grupos: '11', estudiantes: '103' },
-        { id: '04', nombre: 'ITESM Hidalgo', lugar: 'Hidalgo', status: 'Pendiente', grupos: '04', estudiantes: '39' },
-        { id: '05', nombre: 'ITESM Guadalajara', lugar: 'Guadalajara', status: 'Registrada con participantes', grupos: '09', estudiantes: '87' },
-        { id: '06', nombre: 'ITESM Saltillo', lugar: 'Saltillo', status: 'Pendiente', grupos: '08', estudiantes: '72' },
-        { id: '07', nombre: 'ITESM Cuernavaca', lugar: 'Cuernavaca', status: 'Registrada con participantes', grupos: '10', estudiantes: '95' },
-    ];
+                const response = await fetch('/api/venues', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 403) {
+                        localStorage.removeItem('api_token');
+                        router.push('/login');
+                        return;
+                    }
+                    throw new Error(`Error fetching venues: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                // Mapear los datos de la API a la interfaz Sede
+                const formattedData = data.map((venue: any) => ({
+                    id_venue: venue.id_venue,
+                    name: venue.name || 'Sin nombre',
+                    // Combinar country y state para location, con manejo de valores vacíos
+                    location: `${venue.country || ''}${venue.country && venue.state ? ', ' : ''}${venue.state || ''}`.trim() || 'Sin ubicación',
+                    address: venue.address || 'Sin dirección',
+                    // Reemplazar guiones bajos por espacios en el status
+                    status: venue.status ? venue.status.replace(/_/g, ' ') : 'Pendiente',
+                }));
+                setSedesData(formattedData);
+
+                // Depuración: Mostrar los datos crudos en consola para inspeccionar country y state
+                console.log('Datos crudos de la API:', data);
+            } catch (error: any) {
+                console.error('Error al obtener sedes:', error);
+                setError(error.message);
+            }
+        };
+        fetchSedes();
+    }, [router]);
 
     const uniqueStatuses = Array.from(new Set(sedesData.map(item => item.status))).map(status => ({
         label: status,
@@ -56,14 +89,16 @@ const SedesAdmin = () => {
         return sedesData.filter(item => {
             const matchesSearch =
                 !searchTerm ||
-                item.id.toLowerCase().includes(searchTerm) ||
-                item.nombre.toLowerCase().includes(searchTerm) ||
-                item.lugar.toLowerCase().includes(searchTerm) ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.location.toLowerCase().includes(searchTerm) ||
+                item.address.toLowerCase().includes(searchTerm) ||
                 item.status.toLowerCase().includes(searchTerm);
             const matchesStatus = section === '__All__' || item.status === section;
-            return matchesSearch && matchesStatus;
+            // Filtrar solo sedes con status "Registrada con participantes" o "Registrada sin participantes"
+            const isValidStatus = item.status === 'Registrada con participantes' || item.status === 'Registrada sin participantes';
+            return matchesSearch && matchesStatus && isValidStatus;
         });
-    }, [inputValue, section]);
+    }, [inputValue, section, sedesData]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
@@ -91,6 +126,10 @@ const SedesAdmin = () => {
         setIsPopupOpen(false);
         setSelectedSede(null);
     };
+
+    if (error) {
+        return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    }
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -132,12 +171,10 @@ const SedesAdmin = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
                             <tr className='texto-primary-shade'>
-                                <th className="p-2 text-center">ID</th>
                                 <th className="p-2 text-center">Nombre</th>
-                                <th className="p-2 text-center">Lugar</th>
+                                <th className="p-2 text-center">Ubicación</th>
+                                <th className="p-2 text-center">Dirección</th>
                                 <th className="p-2 text-center">Status</th>
-                                <th className="p-2 text-center">No. de Grupos</th>
-                                <th className="p-2 text-center">No. de Estudiantes</th>
                                 <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
@@ -148,12 +185,10 @@ const SedesAdmin = () => {
                                     className="border-t border-gray-300 hover:bg-gray-300 cursor-pointer"
                                     onClick={() => handleRowClick(sede)}
                                 >
-                                    <td className="p-2 text-center">{sede.id}</td>
-                                    <td className="p-2 text-center">{sede.nombre}</td>
-                                    <td className="p-2 text-center">{sede.lugar}</td>
+                                    <td className="p-2 text-center">{sede.name}</td>
+                                    <td className="p-2 text-center">{sede.location}</td>
+                                    <td className="p-2 text-center">{sede.address}</td>
                                     <td className="p-2 text-center">{sede.status}</td>
-                                    <td className="p-2 text-center">{sede.grupos}</td>
-                                    <td className="p-2 text-center">{sede.estudiantes}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button
                                             label=''
@@ -169,7 +204,7 @@ const SedesAdmin = () => {
                                             round
                                             showLeftIcon
                                             IconLeft={Highlighter}
-                                            href={`sedes/editarSedes/editar${sede.lugar}`}
+                                            href={`sedes/editarSedes/editar${sede.id_venue}`}
                                             onClick={(e) => e.stopPropagation()}
                                         />
                                     </td>
@@ -194,12 +229,10 @@ const SedesAdmin = () => {
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                             <h2 className="text-2xl font-bold mb-4 text-center">Detalles de la Sede</h2>
                             <div>
-                                <p><strong>ID:</strong> {selectedSede.id}</p>
-                                <p><strong>Nombre:</strong> {selectedSede.nombre}</p>
-                                <p><strong>Lugar:</strong> {selectedSede.lugar}</p>
+                                <p><strong>Nombre:</strong> {selectedSede.name}</p>
+                                <p><strong>Ubicación:</strong> {selectedSede.location}</p>
+                                <p><strong>Dirección:</strong> {selectedSede.address}</p>
                                 <p><strong>Status:</strong> {selectedSede.status}</p>
-                                <p><strong>No. de Grupos:</strong> {selectedSede.grupos}</p>
-                                <p><strong>No. de Estudiantes:</strong> {selectedSede.estudiantes}</p>
                             </div>
                             <div className="mt-6 flex justify-center">
                                 <Button
