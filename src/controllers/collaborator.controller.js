@@ -56,12 +56,23 @@ const createCollaborator = async (req, res) => {
   }
 };
 
-// Obtener todos los colaboradores
+// Obtener todos los colaboradores (incluye ambos formateos)
 const getAllCollaborators = async (req, res) => {
   try {
     const collaborators = await prisma.collaborators.findMany({
       include: {
-        groups: {
+        groups: { // Grupo asignado (para Gestión de Apoyo)
+          select: {
+            id_group: true,
+            name: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        preferredGroup: { // Grupo preferido (para Solicitudes de Registro)
           select: {
             id_group: true,
             name: true,
@@ -75,7 +86,7 @@ const getAllCollaborators = async (req, res) => {
       },
     });
 
-    // Formatear los datos para la tabla
+    // Formateo original (usando grupo asignado, para Gestión de Apoyo)
     const formattedCollaborators = collaborators.map(collab => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name || 'Sin nombre',
@@ -99,8 +110,40 @@ const getAllCollaborators = async (req, res) => {
       preferred_group: collab.preferred_group || null,
     }));
 
-    console.log('Colaboradores formateados:', formattedCollaborators);
-    res.json({ success: true, data: formattedCollaborators });
+    // Formateo para Solicitudes (usando grupo preferido)
+    const formattedCollaboratorsForRequests = collaborators.map(collab => ({
+      id_collaborator: collab.id_collaborator,
+      name: collab.name || 'Sin nombre',
+      paternal_name: collab.paternal_name || 'Sin apellido',
+      maternal_name: collab.maternal_name || 'Sin apellido',
+      email: collab.email || 'Sin correo',
+      phone_number: collab.phone_number || 'Sin teléfono',
+      role: collab.role || 'Sin rol',
+      level: collab.level || 'Sin nivel',
+      language: collab.language || 'Sin idioma',
+      college: collab.college || 'Sin universidad',
+      degree: collab.degree || 'Sin carrera',
+      semester: collab.semester || 'Sin semestre',
+      gender: collab.gender || 'Sin género',
+      status: collab.status || 'Sin estado',
+      preferred_role: collab.preferred_role || 'Sin rol preferido',
+      preferred_language: collab.preferred_language || 'Sin idioma preferido',
+      preferred_level: collab.preferred_level || 'Sin nivel preferido',
+      preferred_group: collab.preferred_group || null,
+      groups: collab.preferredGroup
+        ? {
+          name: collab.preferredGroup.name || 'No asignado',
+          venues: collab.preferredGroup.venues || { name: 'No asignado' },
+        }
+        : null,
+    }));
+
+    // Devolver ambos formateos en la respuesta
+    res.json({
+      success: true,
+      data: formattedCollaborators, // Para Gestión de Apoyo
+      dataForRequests: formattedCollaboratorsForRequests, // Para Solicitudes de Registro
+    });
   } catch (error) {
     console.error('Error al obtener colaboradores:', error);
     res.status(500).json({ success: false, message: `Error interno del servidor: ${error.message}` });
@@ -126,6 +169,17 @@ const getCollaboratorById = async (req, res) => {
             },
           },
         },
+        preferredGroup: {
+          select: {
+            id_group: true,
+            name: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -133,7 +187,17 @@ const getCollaboratorById = async (req, res) => {
       return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
 
-    res.json({ success: true, data: collaborator });
+    const formattedCollaborator = {
+      ...collaborator,
+      groups: collaborator.preferredGroup
+        ? {
+          name: collaborator.preferredGroup.name || 'No asignado',
+          venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
+        }
+        : null,
+    };
+
+    res.json({ success: true, data: formattedCollaborator });
   } catch (error) {
     console.error('Error al obtener colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
