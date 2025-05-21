@@ -1031,9 +1031,12 @@
   flex-wrap: wrap;
 }
 
+.pagina-sedes {
+  height: 100vh;
+}
+
 .fondo-sedes {
   width: 100%;
-  height: 90%;
   height: 90%;
   background-color: var(--text-color);
   border-radius: 15px;
