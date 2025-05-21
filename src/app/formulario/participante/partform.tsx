@@ -61,7 +61,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             lastNameM: '',
             email: '',
             phone: '',
-            gender: 'Mujer',
+            gender: 'Femenino',
             username: '',
             password: '',
             confirmPassword: '',
