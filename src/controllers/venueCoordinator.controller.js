@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-//crear una nueva coordinadora
+// Crear una nueva coordinadora
 const createCoordinator = async (req, res) => {
   const { name, paternal_name, maternal_name, email, phone_number, username, id_venue } = req.body;
 
@@ -32,7 +32,7 @@ const createCoordinator = async (req, res) => {
   }
 };
 
-//obtener todos las coordinadoras
+// Obtener todos las coordinadoras
 const getAllCoordinators = async (req, res) => {
   try {
     const coordinators = await prisma.venue_coordinators.findMany();
@@ -43,7 +43,7 @@ const getAllCoordinators = async (req, res) => {
   }
 };
 
-//obtener los datos para la tabla de front
+// Obtener los datos para la tabla de front
 const getSpecific = async (req, res) => {
   try {
     const coordinators = await prisma.venue_coordinators.findMany({
@@ -67,7 +67,27 @@ const getSpecific = async (req, res) => {
   }
 };
 
-//actualizar todos los datos de coordinador
+// Obtener una coordinadora por ID
+const getCoordinatorById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const coordinator = await prisma.venue_coordinators.findUnique({
+      where: { id_venue_coord: parseInt(id) },
+    });
+
+    if (!coordinator) {
+      return res.status(404).json({ message: 'Coordinadora no encontrada' });
+    }
+
+    res.json(coordinator);
+  } catch (error) {
+    console.error('Error fetching coordinator by ID:', error);
+    res.status(500).json({ message: 'Error al obtener la coordinadora' });
+  }
+};
+
+// Actualizar todos los datos de coordinador
 const updateCoordinator = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, username, profile_image } =
@@ -101,7 +121,7 @@ const updateCoordinator = async (req, res) => {
   }
 };
 
-//superusuario actualiza datos de coordinadora desde tabla
+// Superusuario actualiza datos de coordinadora desde tabla
 const updateCoordinatorFields = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, username } = req.body;
@@ -134,7 +154,7 @@ const updateCoordinatorFields = async (req, res) => {
   }
 };
 
-//eliminar un coordinador
+// Eliminar un coordinador
 const deleteCoordinator = async (req, res) => {
   const { id } = req.params;
 
@@ -154,6 +174,7 @@ module.exports = {
   createCoordinator,
   getAllCoordinators,
   getSpecific,
+  getCoordinatorById,
   updateCoordinator,
   updateCoordinatorFields,
   deleteCoordinator,

@@ -113,37 +113,7 @@ const EditarMentora = () => {
           </div>
         </div>
 
-        <div className='flex gap-4 justify-between mb-4'>
-          {/* Tabla */}
-          <div className='overflow-x-auto bg-transparent rounded-xl p-4 basis-1/2'>
-            <table className='w-full text-left'>
-              <thead className='text-gray-400 text-sm border-b'>
-                <tr className='mb-2'>
-                  <th className='pb-2 text-center'>Grupo</th>
-                  <Button label='Agregar grupo' variant='primary' showLeftIcon IconLeft={Plus} />
-                </tr>
-              </thead>
-              <tbody className='text-gray-800'>
-                {filteredGroups.map((s) => (
-                  <tr key={s.id} className='border-b last:border-none'>
-                    <td className='py-2 text-center'>{s.id}</td>
-                    <td className='p-2 justify-center'>
-                      <Button
-                        label=''
-                        variant='error'
-                        round
-                        showLeftIcon
-                        IconLeft={Trash2}
-                        href='../sedes'
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className='basis-1/2'></div>
-        </div>
+
 
         {/* Botón Listo */}
         <div className='flex gap-4 justify-between mt-auto'>

@@ -255,7 +255,6 @@ const GestionParticipantes = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
                             <tr className="texto-primary-shade">
-                                <th className="p-2 text-center">ID</th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
@@ -267,7 +266,6 @@ const GestionParticipantes = () => {
                         <tbody className="text-gray-700">
                             {paginatedData.map((participante, index) => (
                                 <tr key={index} className="border-t border-gray-300">
-                                    <td className="p-2 text-center">{participante.id_participant}</td>
                                     <td className="p-2 text-center">
                                         {`${participante.name} ${participante.paternal_name} ${participante.maternal_name}`}
                                     </td>
