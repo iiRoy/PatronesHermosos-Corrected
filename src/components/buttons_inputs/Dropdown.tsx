@@ -56,7 +56,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             </option>
           ))}
         </select>
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2"><CaretDoubleDown></CaretDoubleDown></span>
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2"><CaretDoubleDown height={20} width={20} fillColor='#FFFFFF' strokeWidth={0} /></span>
       </div>
     </div>
   );

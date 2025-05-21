@@ -136,7 +136,7 @@ const GestionApoyo = () => {
       // Filtro por status: solo mostrar aprobadas
       const matchesStatus = apoyo.status.toLowerCase() === 'aprobada';
 
-      // Filtro por nombre completo, correo o grupo
+      // Filtro por nombre, correo o grupo
       const fullName = `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`.toLowerCase().trim();
       const matchesSearch =
         !searchTerm ||

@@ -8,8 +8,9 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useNotification } from '@/components/buttons_inputs/Notification'; // Importar el hook de notificación
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
+// Interfaz ajustada para reflejar la estructura real de los datos
 interface Participante {
     id_participant: number;
     name: string;
@@ -19,12 +20,11 @@ interface Participante {
     year: number;
     education: string;
     participation_file: Buffer | null;
-    preferred_group: string;
+    preferred_group: number | null;
     status: string;
-    id_group: number;
+    id_group: number | null;
     id_tutor: number | null;
-    sede: string;
-    grupo: string;
+    groups?: { name: string; venues?: { name: string } } | null; // Relación para grupo y sede
 }
 
 const GestionParticipantes = () => {
@@ -37,7 +37,7 @@ const GestionParticipantes = () => {
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    const { notify } = useNotification(); // Usar el hook para mostrar notificaciones
+    const { notify } = useNotification();
 
     const rowsPerPage = 10;
 
@@ -67,7 +67,8 @@ const GestionParticipantes = () => {
                 }
 
                 const data = await response.json();
-                setParticipantesData(data);
+                // Acceder a la clave 'data' que contiene formattedParticipants (basado en id_group)
+                setParticipantesData(data.data);
             } catch (error: any) {
                 console.error('Error al obtener participantes:', error);
                 setError(error.message);
@@ -83,8 +84,9 @@ const GestionParticipantes = () => {
         }));
     };
 
-    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede))).sort();
-    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo))).sort();
+    // Extraer sedes y grupos únicos para los filtros
+    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.groups?.venues?.name || 'No asignado'))).sort();
+    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.groups?.name || 'No asignado'))).sort();
 
     const sedeOptions = [
         { label: 'Todas', value: '__All__' },
@@ -101,9 +103,11 @@ const GestionParticipantes = () => {
         return participantesData.filter((participante) => {
             const fullName = `${participante.name} ${participante.paternal_name} ${participante.maternal_name}`.toLowerCase();
             const matchesSearch = !searchTerm || fullName.includes(searchTerm);
-            const matchesSede = section === '__All__' ? true : participante.sede === section;
+            const sede = participante.groups?.venues?.name || 'No asignado';
+            const grupo = participante.groups?.name || 'No asignado';
+            const matchesSede = section === '__All__' ? true : sede === section;
             const selectedGrupo = filterActivaExtra['grupo'];
-            const matchesGrupo = selectedGrupo === '__All__' ? true : participante.grupo === selectedGrupo;
+            const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
             const isNotCancelled = participante.status !== 'cancelada';
             return matchesSearch && matchesSede && matchesGrupo && isNotCancelled;
         });
@@ -267,8 +271,8 @@ const GestionParticipantes = () => {
                                     <td className="p-2 text-center">
                                         {`${participante.name} ${participante.paternal_name} ${participante.maternal_name}`}
                                     </td>
-                                    <td className="p-2 text-center">{participante.sede}</td>
-                                    <td className="p-2 text-center">{participante.grupo}</td>
+                                    <td className="p-2 text-center">{participante.groups?.venues?.name || 'No asignado'}</td>
+                                    <td className="p-2 text-center">{participante.groups?.name || 'No asignado'}</td>
                                     <td className="p-2 text-center">{participante.email}</td>
                                     <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
