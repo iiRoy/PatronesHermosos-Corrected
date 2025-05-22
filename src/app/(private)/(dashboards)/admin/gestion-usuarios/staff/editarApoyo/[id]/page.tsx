@@ -142,22 +142,11 @@ const EditarApoyo = () => {
         maternal_name: maternalName.trim() || null,
         email: email.trim(),
         phone_number: phoneNumber.trim() || null,
-        college: college.trim() || null,
-        degree: degree.trim() || null,
-        semester: semester.trim() || null,
-        preferred_role: preferredRole.trim() || null,
-        preferred_language: preferredLanguage.trim() || null,
-        preferred_level: preferredLevel.trim() || null,
-        gender: gender.trim(),
-        preferred_group: null,
-        role: collaborator?.role || 'Pendiente',
-        status: collaborator?.status || 'Pendiente',
-        level: collaborator?.level || 'Pendiente',
-        language: collaborator?.language || 'Pendiente',
+
       };
 
-      const response = await fetch(`/api/collaborators/${id}`, {
-        method: 'PUT',
+      const response = await fetch(`/api/collaborators/basic/${id}/`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -177,7 +166,7 @@ const EditarApoyo = () => {
         duration: 5000,
       });
 
-      router.push('/admin/gestion-usuarios/apoyo');
+      router.push('/admin/gestion-usuarios/staff');
     } catch (error: any) {
       console.error('Error updating collaborator:', error);
       notify({

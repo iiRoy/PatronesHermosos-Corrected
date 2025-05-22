@@ -242,6 +242,7 @@ const changeParticipantStatus = async (req, res) => {
     if (error.code === '45000') {
       return res.status(400).json({ message: error.message });
     }
+    console.error('Full error details:', JSON.stringify(error, null, 2));
     res.status(500).json({ message: 'Error interno al cambiar estado del participante', error: error.message });
   }
 };
