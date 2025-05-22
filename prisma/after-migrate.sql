@@ -818,7 +818,6 @@ $$
 
 -- 🔹 Registra un nuevo participante si hay capacidad.
 -- 🔸 Definición:
-
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE registrar_part(
     -- Datos del Participante
@@ -829,13 +828,14 @@ CREATE OR REPLACE PROCEDURE registrar_part(
     IN grado_part VARCHAR(255),
     IN escolaridad_part VARCHAR(255),
     IN archivo_permiso BLOB,
+    IN archivo_permiso_path VARCHAR(255),
     IN id_grupo INT,
 
     -- Datos del Tutor
     IN nombre_tutor VARCHAR(255),
     IN paterno_tutor VARCHAR(255),
     IN materno_tutor VARCHAR(255),
-    IN email_tutor VARCHAR(255) COLLATE utf8mb4_general_ci,
+    IN email_tutor VARCHAR(255),
     IN celular_tutor VARCHAR(255)
 )
 BEGIN
@@ -844,6 +844,49 @@ BEGIN
     DECLARE total_aprobadas INT;
     DECLARE total_interesadas INT;
 
+    -- Validate required fields
+    IF nombre_part IS NULL OR nombre_part = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El nombre del participante es obligatorio.';
+    END IF;
+    IF paterno_part IS NULL OR paterno_part = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El apellido paterno del participante es obligatorio.';
+    END IF;
+    IF email_part IS NULL OR email_part = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El correo del participante es obligatorio.';
+    END IF;
+    IF grado_part IS NULL OR grado_part = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El grado del participante es obligatorio.';
+    END IF;
+    IF escolaridad_part IS NULL OR escolaridad_part = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La escolaridad del participante es obligatoria.';
+    END IF;
+    IF archivo_permiso IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El archivo de participación es obligatorio.';
+    END IF;
+    IF nombre_tutor IS NULL OR nombre_tutor = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El nombre del tutor es obligatorio.';
+    END IF;
+    IF paterno_tutor IS NULL OR paterno_tutor = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El apellido paterno del tutor es obligatorio.';
+    END IF;
+    IF email_tutor IS NULL OR email_tutor = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El correo del tutor es obligatorio.';
+    END IF;
+    IF celular_tutor IS NULL OR celular_tutor = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El celular del tutor es obligatorio.';
+    END IF;
+
+    -- Check group existence and capacity
     SELECT max_places INTO cupo_max
     FROM groups
     WHERE id_group = id_grupo;
@@ -861,6 +904,7 @@ BEGIN
         SET MESSAGE_TEXT = 'El grupo ya está lleno con participantes aprobadas.';
     END IF;
 
+    -- Check for existing tutor
     SELECT id_tutor INTO id_tutor_nuevo
     FROM tutors
     WHERE email COLLATE utf8mb4_general_ci = email_tutor
@@ -872,17 +916,20 @@ BEGIN
         SET id_tutor_nuevo = LAST_INSERT_ID();
     END IF;
 
+    -- Insert participant
     INSERT INTO participants (
         name, paternal_name, maternal_name, email,
-        year, education, participation_file, preferred_group, id_tutor, status
+        year, education, participation_file, participation_file_path,
+        preferred_group, id_tutor, status
     )
     VALUES (
         nombre_part, paterno_part, materno_part, email_part,
-        grado_part, escolaridad_part, archivo_permiso,
+        grado_part, escolaridad_part, archivo_permiso, archivo_permiso_path,
         id_grupo, id_tutor_nuevo, 'Pendiente'
     );
 END;
-$$ 
+$$
+DELIMITER ;
 
 -- 🔸 Ejemplo de uso:
 
