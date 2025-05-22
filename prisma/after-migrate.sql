@@ -1534,11 +1534,11 @@ BEGIN
     END IF;
 
     -- Asignar cupo máximo según el rol
-    IF rol = 'Instructora' THEN    --check
+    IF rol = 'Instructora' THEN    
         SET cupoMaximo = 1;
-    ELSEIF rol = 'Facilitadora' THEN  --check
+    ELSEIF rol = 'Facilitadora' THEN  
         SET cupoMaximo = 2;
-    ELSEIF rol = 'Staff' THEN   --check
+    ELSEIF rol = 'Staff' THEN   
         SET cupoMaximo = 1;
     ELSE
         SET cupoMaximo = 0; -- Rol no permitido
@@ -1590,7 +1590,7 @@ BEGIN
 
         IF status_colab != 'Pendiente' THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';  --check
+            SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';  
         END IF;
 
         -- Obtener grupo preferido, rol, nivel y lenguaje preferidos
@@ -1606,7 +1606,7 @@ BEGIN
                 SET status = 'Rechazada'
                 WHERE id_collaborator = id_colab;
 
-                SELECT 'Colaborador sin grupo preferido y sin alternativo. Solicitud rechazada.' AS mensaje; --check
+                SELECT 'Colaborador sin grupo preferido y sin alternativo. Solicitud rechazada.' AS mensaje; 
                 LEAVE main_block;
             ELSE
                 SET grupo_preferido = grupo_alternativo; -- usar el alternativo como único intento
@@ -1624,7 +1624,7 @@ BEGIN
                 SET status = 'Rechazada'
                 WHERE id_collaborator = id_colab;
 
-                SELECT 'Grupo preferido cancelado o no aprobado. Solicitud rechazada.' AS mensaje; --check
+                SELECT 'Grupo preferido cancelado o no aprobado. Solicitud rechazada.' AS mensaje; 
                 LEAVE main_block;
             END IF;
         END IF;
@@ -1640,7 +1640,7 @@ BEGIN
                 language = preferred_language_colab
             WHERE id_collaborator = id_colab;
 
-            SELECT 'Solicitud aceptada en grupo preferido.' AS mensaje; --check
+            SELECT 'Solicitud aceptada en grupo preferido.' AS mensaje; 
             LEAVE main_block;
         END IF;
 
@@ -1650,7 +1650,7 @@ BEGIN
             SET status = 'Rechazada'
             WHERE id_collaborator = id_colab;
 
-            SELECT 'Grupo preferido lleno y sin alternativo. Solicitud rechazada.' AS mensaje;   --check
+            SELECT 'Grupo preferido lleno y sin alternativo. Solicitud rechazada.' AS mensaje;   
             LEAVE main_block;
         END IF;
 
@@ -1661,7 +1661,7 @@ BEGIN
 
         IF status_grupo_alternativo <> 'Aprobada' THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'El grupo alternativo no está aprobado.';   --check
+            SET MESSAGE_TEXT = 'El grupo alternativo no está aprobado.';   
         END IF;
 
         -- Verificar cupo en grupo alternativo
@@ -1675,13 +1675,13 @@ BEGIN
                 language = preferred_language_colab
             WHERE id_collaborator = id_colab;
 
-            SELECT 'Solicitud aceptada en grupo alternativo.' AS mensaje; --check
+            SELECT 'Solicitud aceptada en grupo alternativo.' AS mensaje; 
         ELSE
             UPDATE collaborators
             SET status = 'Rechazada'
             WHERE id_collaborator = id_colab;
 
-            SELECT 'Ambos grupos llenos. Solicitud rechazada.' AS mensaje; --check?
+            SELECT 'Ambos grupos llenos. Solicitud rechazada.' AS mensaje; 
         END IF;
 
     END main_block;
@@ -1709,7 +1709,7 @@ BEGIN
         -- Verifica que el participante esté en estado Pendiente
         IF (SELECT status FROM participants WHERE id_participant = participante_id) != 'Pendiente' THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';  --check
+            SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';  
         END IF;
 
         -- Obtener grupo preferido
@@ -1724,7 +1724,7 @@ BEGIN
                 SET status = 'Rechazada'
                 WHERE id_participant = participante_id;
 
-                SELECT 'Solicitud rechazada. Puede volver a aplicar a otro grupo.' AS mensaje; --check
+                SELECT 'Solicitud rechazada. Puede volver a aplicar a otro grupo.' AS mensaje; 
                 LEAVE main_block;
             ELSE
                 SET grupo_preferido = grupo_alternativo_id;
@@ -1742,7 +1742,7 @@ BEGIN
                 SET status = 'Rechazada'
                 WHERE id_participant = participante_id;
 
-                SELECT 'Grupo preferido cancelado. Solicitud rechazada.' AS mensaje; --check
+                SELECT 'Grupo preferido cancelado. Solicitud rechazada.' AS mensaje; 
                 LEAVE main_block;
             END IF;
         END IF;
@@ -1753,7 +1753,7 @@ BEGIN
                 SET status = 'Rechazada'
                 WHERE id_participant = participante_id;
 
-                SELECT 'Grupo preferido cancelado o lleno. Solicitud rechazada.' AS mensaje;  ---check
+                SELECT 'Grupo preferido cancelado o lleno. Solicitud rechazada.' AS mensaje;  
                 LEAVE main_block;
             ELSE
                 -- Verificar estado y cupo en grupo alternativo
@@ -1763,12 +1763,12 @@ BEGIN
 
                 IF status_grupo_alternativo = 'Cancelada' THEN
                     SIGNAL SQLSTATE '45000'
-                    SET MESSAGE_TEXT = 'El grupo alternativo está cancelado.'; --check
+                    SET MESSAGE_TEXT = 'El grupo alternativo está cancelado.'; 
                 END IF;
 
                 IF ocupados >= cupo_max THEN
                     SIGNAL SQLSTATE '45000'
-                    SET MESSAGE_TEXT = 'El grupo alternativo también está lleno.'; --check
+                    SET MESSAGE_TEXT = 'El grupo alternativo también está lleno.'; 
                 END IF;
 
                 -- Aceptar al grupo alternativo
@@ -1776,7 +1776,7 @@ BEGIN
                 SET status = 'Aprobada', id_group = grupo_alternativo_id
                 WHERE id_participant = participante_id;
 
-                SELECT 'Solicitud aceptada en grupo alternativo.' AS mensaje; --check
+                SELECT 'Solicitud aceptada en grupo alternativo.' AS mensaje; 
                 LEAVE main_block;
             END IF;
         ELSE
@@ -1785,7 +1785,7 @@ BEGIN
             SET status = 'Aprobada', id_group = grupo_preferido
             WHERE id_participant = participante_id;
 
-            SELECT 'Solicitud aceptada en grupo preferido.' AS mensaje; --check
+            SELECT 'Solicitud aceptada en grupo preferido.' AS mensaje; 
             LEAVE main_block;
         END IF;
 
@@ -1942,11 +1942,10 @@ DELIMITER ;
 
 
 
--
 
 
---Proceso para desactivar a un colaborador, se valida la existencia del colaborador, valida su status, lo modifica y registra el log
---CALL desactivar_venue(2, 'admin@ejemplo.com');
+
+
 
 
 
