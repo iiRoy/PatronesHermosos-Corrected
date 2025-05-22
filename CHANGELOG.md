@@ -1,3 +1,19 @@
+## 1.13.0-admin.4 (2025-05-22)
+
+* improve(pages): eliminar participantes ya usa la función de cancelar ([fed2d23](https://github.com/iiRoy/Patrones-Hermosos/commit/fed2d23))
+* improve(pages): página de editar coordinadoras ya actualiza los datos e la base de datos ([c9316b3](https://github.com/iiRoy/Patrones-Hermosos/commit/c9316b3))
+* improve(pages): página de editar mentoras ya actualiza los datos e la base de datos ([6115c42](https://github.com/iiRoy/Patrones-Hermosos/commit/6115c42))
+* improve(pages): página de gestión de apoyo ya utiliza datos de la base de datos y permite la elimina ([822c1b2](https://github.com/iiRoy/Patrones-Hermosos/commit/822c1b2))
+* improve(pages): página de solicitudes ya muestra la información de la base de datos ([bd10369](https://github.com/iiRoy/Patrones-Hermosos/commit/bd10369))
+* cambios en editar colaboradores ([5628d1f](https://github.com/iiRoy/Patrones-Hermosos/commit/5628d1f))
+* fix(sql) se eliminaron 5 metodos ([f5c2613](https://github.com/iiRoy/Patrones-Hermosos/commit/f5c2613))
+* Merge branch 'pages/superuser' into diego_sqlProcedures ([79e2ccd](https://github.com/iiRoy/Patrones-Hermosos/commit/79e2ccd))
+* Merge remote-tracking branch 'origin/diego_sqlProcedures' into pages/superuser ([57d9b99](https://github.com/iiRoy/Patrones-Hermosos/commit/57d9b99))
+* feat(routes): se agregaron rutas para cancelar_sede y cambiar_estado_participant ([33f5a4e](https://github.com/iiRoy/Patrones-Hermosos/commit/33f5a4e))
+* feat(sql): Se terminaron los procedimientos ([81b3b8a](https://github.com/iiRoy/Patrones-Hermosos/commit/81b3b8a))
+* feature(mysql): Se agrego gestionar_solicitud_pendiente , gestionar_solicitud_colab y fun_validar cu ([c7abadf](https://github.com/iiRoy/Patrones-Hermosos/commit/c7abadf))
+* feature(mysql): Se modifico cambiar_estado_grupo, para que si se cancela un grupo, todos sus partici ([a885438](https://github.com/iiRoy/Patrones-Hermosos/commit/a885438))
+
 ## 1.13.0-admin.3 (2025-05-21)
 
 * improve(pages): páginas de sedes, gestión de coordinadoras y gestión de mentoras ya muestran informa ([484e7c8](https://github.com/iiRoy/Patrones-Hermosos/commit/484e7c8))
