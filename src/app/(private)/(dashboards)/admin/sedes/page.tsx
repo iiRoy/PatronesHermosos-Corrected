@@ -5,65 +5,137 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
-import { useState } from 'react';
+import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface Sede {
+    id_venue: number;
+    name: string;
+    location: string; // Combinación de country y state
+    address: string;
+    status: string;
+}
 
 const SedesAdmin = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('SEDES');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({});
+    const [section, setSection] = useState('__All__');
     const [fadeSec, setFadeSec] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [selectedSede, setSelectedSede] = useState<Sede | null>(null);
+    const [sedesData, setSedesData] = useState<Sede[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const rowsPerPage = 5;
 
-    const sedes = [
-        { label: 'Puebla', value: 'Puebla' },
-        { label: 'Querétaro', value: 'Querétaro' },
-        { label: 'Monterrey', value: 'Monterrey' },
-        { label: 'Hidalgo', value: 'Hidalgo' },
-        { label: 'Guadalajara', value: 'Guadalajara' },
-    ];
+    useEffect(() => {
+        const fetchSedes = async () => {
+            try {
+                const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+                if (!token) {
+                    router.push('/login');
+                    return;
+                }
 
-    const sectionFilterChange = (newSection: string) => {
-        setSection(newSection);
-        setFilterActivaExtra({});
+                const response = await fetch('/api/venues', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 403) {
+                        localStorage.removeItem('api_token');
+                        router.push('/login');
+                        return;
+                    }
+                    throw new Error(`Error fetching venues: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                // Mapear los datos de la API a la interfaz Sede
+                const formattedData = data.map((venue: any) => ({
+                    id_venue: venue.id_venue,
+                    name: venue.name || 'Sin nombre',
+                    // Combinar country y state para location, con manejo de valores vacíos
+                    location: `${venue.country || ''}${venue.country && venue.state ? ', ' : ''}${venue.state || ''}`.trim() || 'Sin ubicación',
+                    address: venue.address || 'Sin dirección',
+                    // Reemplazar guiones bajos por espacios en el status
+                    status: venue.status ? venue.status.replace(/_/g, ' ') : 'Pendiente',
+                }));
+                setSedesData(formattedData);
+
+                // Depuración: Mostrar los datos crudos en consola para inspeccionar country y state
+                console.log('Datos crudos de la API:', data);
+            } catch (error: any) {
+                console.error('Error al obtener sedes:', error);
+                setError(error.message);
+            }
+        };
+        fetchSedes();
+    }, [router]);
+
+    const uniqueStatuses = Array.from(new Set(sedesData.map(item => item.status))).map(status => ({
+        label: status,
+        value: status,
+    }));
+    const statusOptions = [{ label: 'Todos', value: '__All__' }, ...uniqueStatuses];
+
+    const filteredData = useMemo(() => {
+        const searchTerm = inputValue.toLowerCase().trim();
+        return sedesData.filter(item => {
+            const matchesSearch =
+                !searchTerm ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.location.toLowerCase().includes(searchTerm) ||
+                item.address.toLowerCase().includes(searchTerm) ||
+                item.status.toLowerCase().includes(searchTerm);
+            const matchesStatus = section === '__All__' || item.status === section;
+            // Filtrar solo sedes con status "Registrada con participantes" o "Registrada sin participantes"
+            const isValidStatus = item.status === 'Registrada con participantes' || item.status === 'Registrada sin participantes';
+            return matchesSearch && matchesStatus && isValidStatus;
+        });
+    }, [inputValue, section, sedesData]);
+
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+
+    useEffect(() => {
+        if (currentPage >= totalPages && totalPages > 0) {
+            setCurrentPage(totalPages - 1);
+        } else if (totalPages === 0) {
+            setCurrentPage(0);
+        }
+    }, [filteredData.length, currentPage, totalPages]);
+
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue('');
+        setCurrentPage(0);
     };
 
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
+    const handleRowClick = (sede: Sede) => {
+        setSelectedSede(sede);
+        setIsPopupOpen(true);
     };
 
-    const sedesData = [
-        { id: '01', universidad: 'ITESM', campus: 'Puebla', coordinador: 'Rosa Paredes', grupos: '07', estudiantes: '63' },
-        { id: '02', universidad: 'ITESM', campus: 'Querétaro', coordinador: 'Beatriz Mendoza', grupos: '06', estudiantes: '55' },
-        { id: '03', universidad: 'ITESM', campus: 'Monterrey', coordinador: 'Carolina Reyes', grupos: '11', estudiantes: '103' },
-        { id: '04', universidad: 'ITESM', campus: 'Hidalgo', coordinador: 'Diana Soto', grupos: '04', estudiantes: '39' },
-        { id: '05', universidad: 'ITESM', campus: 'Guadalajara', coordinador: 'Fabiola Paredes', grupos: '09', estudiantes: '87' },
-        { id: '06', universidad: 'ITESM', campus: 'Saltillo', coordinador: 'Luis Torres', grupos: '08', estudiantes: '72' },
-        { id: '07', universidad: 'ITESM', campus: 'Ciudad de México', coordinador: 'María López', grupos: '10', estudiantes: '95' },
-        { id: '08', universidad: 'ITESM', campus: 'Toluca', coordinador: 'Juan Pérez', grupos: '06', estudiantes: '58' },
-        { id: '09', universidad: 'ITESM', campus: 'León', coordinador: 'Patricia Ramírez', grupos: '07', estudiantes: '64' },
-        { id: '10', universidad: 'ITESM', campus: 'Chihuahua', coordinador: 'Oscar García', grupos: '05', estudiantes: '43' },
-        { id: '11', universidad: 'ITESM', campus: 'Culiacán', coordinador: 'Laura Jiménez', grupos: '09', estudiantes: '88' },
-        { id: '12', universidad: 'ITESM', campus: 'San Luis Potosí', coordinador: 'Antonio Salinas', grupos: '07', estudiantes: '70' },
-        { id: '13', universidad: 'ITESM', campus: 'Aguascalientes', coordinador: 'Isabel Rodríguez', grupos: '08', estudiantes: '74' },
-        { id: '14', universidad: 'ITESM', campus: 'Tijuana', coordinador: 'Miguel Sánchez', grupos: '06', estudiantes: '60' },
-        { id: '15', universidad: 'ITESM', campus: 'Zacatecas', coordinador: 'Fernanda Ortega', grupos: '04', estudiantes: '35' },
-    ];
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        setSelectedSede(null);
+    };
 
-    const totalPages = Math.ceil(sedesData.length / rowsPerPage);
-    const paginatedData = sedesData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+    if (error) {
+        return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    }
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
             <PageTitle>Sedes</PageTitle>
 
             <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-                {/* Fila de búsqueda, filtro y botón */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-1 gap-4">
                         <div className="basis-2/3">
@@ -84,50 +156,57 @@ const SedesAdmin = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Secciones"
-                                secciones={[
-                                    { label: 'ITESM Puebla', value: 'Participantes' },
-                                    { label: 'ITESM Monterrey', value: 'Colaboradoras' },
-                                ]}
+                                labelSecciones="Status"
+                                secciones={statusOptions}
                                 seccionActiva={section}
                                 onChangeSeccion={sectionFilterChange}
                                 extraFilters={[]}
-                                filterActiva={filterActivaExtra}
-                                onExtraFilterChange={extraHandleFilterChange}
                                 fade={fadeSec}
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Tabla */}
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
                             <tr className='texto-primary-shade'>
-                                <th className="p-2 text-center">ID</th>
-                                <th className="p-2 text-center">Universidad</th>
-                                <th className="p-2 text-center">Campus</th>
-                                <th className="p-2 text-center">Coordinador</th>
-                                <th className="p-2 text-center">No. de Grupos</th>
-                                <th className="p-2 text-center">No. de Estudiantes</th>
-                                <th className="p-2 text-center">Acciones</th>
+                                <th className="p-2 text-center">Nombre</th>
+                                <th className="p-2 text-center">Ubicación</th>
+                                <th className="p-2 text-center">Dirección</th>
+                                <th className="p-2 text-center">Status</th>
+                                <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">
                             {paginatedData.map((sede, index) => (
-
-                                <tr key={index} className="border-t border-gray-300">
-                                    <td className="p-2 text-center">{sede.id}</td>
-                                    <td className="p-2 text-center">{sede.universidad}</td>
-                                    <td className="p-2 text-center">{sede.campus}</td>
-                                    <td className="p-2 text-center">{sede.coordinador}</td>
-                                    <td className="p-2 text-center">{sede.grupos}</td>
-                                    <td className="p-2 text-center">{sede.estudiantes}</td>
-
+                                <tr
+                                    key={index}
+                                    className="border-t border-gray-300 hover:bg-gray-300 cursor-pointer"
+                                    onClick={() => handleRowClick(sede)}
+                                >
+                                    <td className="p-2 text-center">{sede.name}</td>
+                                    <td className="p-2 text-center">{sede.location}</td>
+                                    <td className="p-2 text-center">{sede.address}</td>
+                                    <td className="p-2 text-center">{sede.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label='' variant="error" round showLeftIcon IconLeft={Trash} />
-                                        <Button label='' variant="warning" round showLeftIcon IconLeft={Highlighter} />
+                                        <Button
+                                            label=''
+                                            variant="error"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Trash}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                        <Button
+                                            label=''
+                                            variant="warning"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Highlighter}
+                                            href={`sedes/editarSedes/editar${sede.id_venue}`}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
                                     </td>
                                 </tr>
                             ))}
@@ -135,7 +214,6 @@ const SedesAdmin = () => {
                     </table>
                 </div>
 
-                {/* Paginación */}
                 <div className="mt-auto pt-4 flex justify-center">
                     <Pagination
                         currentPage={currentPage}
@@ -145,6 +223,29 @@ const SedesAdmin = () => {
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
+
+                {isPopupOpen && selectedSede && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 className="text-2xl font-bold mb-4 text-center">Detalles de la Sede</h2>
+                            <div>
+                                <p><strong>Nombre:</strong> {selectedSede.name}</p>
+                                <p><strong>Ubicación:</strong> {selectedSede.location}</p>
+                                <p><strong>Dirección:</strong> {selectedSede.address}</p>
+                                <p><strong>Status:</strong> {selectedSede.status}</p>
+                            </div>
+                            <div className="mt-6 flex justify-center">
+                                <Button
+                                    label="Cerrar"
+                                    variant="secondary"
+                                    onClick={handleClosePopup}
+                                    showLeftIcon
+                                    IconLeft={X}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

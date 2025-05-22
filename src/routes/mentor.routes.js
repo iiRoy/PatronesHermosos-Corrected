@@ -1,16 +1,78 @@
 const express = require('express');
 const router = express.Router();
-const mentorController = require('../controllers/mentor.controller');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
+const mentorController = require('../controllers/mentor.controller');
 
-router.get('/', authMiddleware, mentorController.getAll);
-router.get('/:id', authMiddleware, mentorController.getSpecific);
-router.post('/', authMiddleware, roleMiddleware(['superuser']), mentorController.create);
-router.put('/:id', authMiddleware, roleMiddleware(['superuser']), mentorController.update);
-router.put('/update-basic/:id', authMiddleware, roleMiddleware(['superuser']), mentorController.updateBasicData);
-router.delete('/:id', authMiddleware, roleMiddleware(['superuser']), mentorController.remove);
-router.get('/groups/:id_mentor', authMiddleware, mentorController.getGroupMentor);
-router.put('/groups/remove-mentor/:id_group', authMiddleware, roleMiddleware(['superuser']), mentorController.removeMentorFromGroup);
+// Ruta para obtener todas las mentoras
+router.get(
+  '/',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  mentorController.getAll
+);
 
+// Ruta para obtener una mentora por ID
+router.get(
+  '/:id',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  mentorController.getMentorById
+);
+
+// Ruta para obtener datos específicos de una mentora
+router.get(
+  '/specific/:id',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  mentorController.getSpecific
+);
+
+// Ruta para crear una nueva mentora
+router.post(
+  '/',
+  authMiddleware,
+  roleMiddleware(['admin']),
+  mentorController.create
+);
+
+// Ruta para actualizar todos los datos de una mentora
+router.put(
+  '/:id',
+  authMiddleware,
+  roleMiddleware(['admin']),
+  mentorController.update
+);
+
+// Ruta para actualizar datos básicos de una mentora (por superuser)
+router.put(
+  '/specific/:id',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  mentorController.updateBasicData
+);
+
+// Ruta para eliminar una mentora
+router.delete(
+  '/:id',
+  authMiddleware,
+  roleMiddleware(['admin']),
+  mentorController.remove
+);
+
+// Ruta para obtener los grupos de una mentora
+router.get(
+  '/:id_mentor/groups',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  mentorController.getGroupMentor
+);
+
+// Ruta para remover una mentora de un grupo
+router.put(
+  '/groups/:id_group/remove-mentor',
+  authMiddleware,
+  roleMiddleware(['admin']),
+  mentorController.removeMentorFromGroup
+);
 
 module.exports = router;

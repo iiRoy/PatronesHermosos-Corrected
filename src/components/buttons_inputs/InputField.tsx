@@ -11,9 +11,11 @@ interface InputFieldProps {
   placeholder?: string;
   error?: string;
   showError?: boolean;
+  darkText?: boolean;
   variant?:
   | 'accent'
   | 'primary'
+  | 'secondary'
   | 'secondary-shade'
   | 'text-color'
   | 'warning'
@@ -21,7 +23,7 @@ interface InputFieldProps {
   | 'primary-disabled'
   | 'secondary-shade-disabled'
   | 'text-color-disabled';
-  dim?: boolean;
+  disabled?: boolean;
   icon?: keyof typeof Icons;
   value?: string;
   onChangeText?: (value: string) => void;
@@ -35,12 +37,13 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder = 'Text',
   error,
   showError = true,
+  darkText = true,
   variant = 'accent',
-  dim = false,
+  disabled = false,
   icon,
   value,
   onChangeText,
-  type = 'text'
+  type = 'text',
 }) => {
   const [inputValue, setInputValue] = useState(value ?? '');
 
@@ -58,19 +61,16 @@ const InputField: React.FC<InputFieldProps> = ({
     }
   };
 
-  const inputClass = `input input-${variant}${dim ? ' dim' : ''}`;
+  const inputClass = `input input-${variant}${disabled ? ' input-disabled' : ''}${darkText ? ' darkText' : ''}`;
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 
-  const IconComponent =
-    icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
+  const IconComponent = icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
 
   return (
     <div className='container-input'>
       <div className='label-input'>{label}</div>
-      {showDescription && description && (
-        <div className='description-input'>{description}</div>
-      )}
+      {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={inputClass}>
         {IconComponent && (
           <div className='icon-input'>

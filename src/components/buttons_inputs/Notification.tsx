@@ -16,7 +16,6 @@ interface NotificationProps {
   duration?: number;
 }
 
-
 const STORAGE_KEY = (userId: string) => `notifications_${userId}`;
 
 const Notification: React.FC<NotificationProps & { show?: boolean }> = ({
@@ -147,7 +146,6 @@ export const NotificationProvider = ({
   const [toastVisible, setToastVisible] = useState(false);
   const [toastId, setToastId] = useState<number | null>(null);
 
-
   // Cargar notificaciones sólo si userId es válido y no "undefined"
   useEffect(() => {
     if (!userId || userId === 'undefined') return;
@@ -186,7 +184,6 @@ export const NotificationProvider = ({
           <Notification
             {...currentToast}
             show={true}
-
             onClose={dismissToast}
             onManualClose={dismissToast}
           />,
@@ -203,7 +200,6 @@ export const NotificationProvider = ({
     </NotificationContext.Provider>
   );
 };
-// Componente de historial de notificaciones persistentes
 export function NotificationsHistory() {
   const { notifications, dismissFromHistory } = useNotification();
   return (

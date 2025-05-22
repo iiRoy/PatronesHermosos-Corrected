@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import OptionLink from '../buttons_inputs/OptionLink';
 import * as Icons from '../icons';
+import Button from '../buttons_inputs/Button';
 
 const navItems = [
   {
@@ -25,8 +26,9 @@ const navItems = [
 ];
 
 const Navbar = () => {
+  const router = useRouter();
   return (
-    <div className='min-h-[45px] flex item-center justify-between pr-4 pl-4 pb-2 pt-2 w-full rounded-b-lg'>
+    <div className='min-h-[45px] flex item-center justify-between pr-4 pl-4 pb-2 pt-2 w-full rounded-b-lg bg-[#2E1C31]'>
       {/* Logo */}
       <Link
         href='/'
@@ -44,7 +46,7 @@ const Navbar = () => {
       {/* Navegación */}
       <div className='text-[clamp(1rem,1.5vw,3rem)] items-center flex gap-[1.5vmax]'>
         {navItems.map((section) => (
-          <div key={section.title} className='flex gap-[1.5vmax] px-2'>
+          <div key={section.title} className='flex gap-[3vmax] px-2'>
             {section.items.map((item) => {
               const IconComponent = Icons[item.icon as keyof typeof Icons];
               return (
@@ -56,6 +58,14 @@ const Navbar = () => {
                 />
               );
             })}
+            <Button
+              label='Iniciar Sesión'
+              variant='secondary'
+              showLeftIcon
+              IconLeft={Icons.FingerprintSimple}
+              onClick={() => router.push('/login')}
+              activeTransition={true}
+            />
           </div>
         ))}
       </div>

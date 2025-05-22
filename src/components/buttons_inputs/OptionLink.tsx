@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import withIconDecorator from '../decorators/IconDecorator';
+import { useMemo } from 'react';
+import { useTransition } from '../TransitionContext'; // ajusta path
 
 interface OptionLinkProps {
   label: string;
@@ -13,33 +14,59 @@ interface OptionLinkProps {
     fillColor?: string;
     className?: string;
   }>;
-  href: string;
+  href?: string;
+  forceActive?: boolean;
 }
 
-const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href }) => {
+const OptionLink: React.FC<OptionLinkProps> = ({ label, Icon, href, forceActive }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = href ? pathname === href : false;
+  const isHovered = forceActive;
+  const { triggerTransition } = useTransition();
 
-  const DecoratedIcon = withIconDecorator(Icon);
+  const DecoratedIcon = useMemo(() => withIconDecorator(Icon), [Icon]);
 
-  return (
-    <Link
-      href={href}
-      className={`
-        option-link ${isActive ? 'active' : ''}
-        flex justify-center items-center gap-2 items-center
-      `}
-    >
-      <div className={`option-icon ${isActive ? 'active' : ''} flex items-center justify-center`}>
+  const classes = `
+    option-link group
+    ${isActive ? 'active' : ''} ${isHovered ? 'hovered' : ''}
+    transition-colors duration-300 ease-in-out
+    flex justify-center items-center gap-2
+  `;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (href && href !== pathname) {
+      triggerTransition(href);
+    }
+  };
+
+  const content = (
+    <>
+      <div
+        className={`
+          option-icon flex items-center justify-center
+          transition-transform duration-300 ease-in-out
+          ${isActive ? 'active scale-110' : 'scale-100'}
+        `}
+      >
         <DecoratedIcon
-          strokeColor={'#2E1C31'}
-          fillColor={'currentColor'}
-          width={'2rem'}
-          height={'2rem'}
+          strokeColor='#2E1C31'
+          fillColor='currentColor'
+          width='2rem'
+          height='2rem'
+          className='transition-colors duration-300 ease-in-out'
         />
       </div>
       <span className='option-label hidden lg:block'>{label}</span>
-    </Link>
+    </>
+  );
+
+  return href ? (
+    <a href={href} onClick={handleClick} className={classes}>
+      {content}
+    </a>
+  ) : (
+    <span className={classes}>{content}</span>
   );
 };
 
