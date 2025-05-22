@@ -25,7 +25,7 @@ router.delete(
   roleMiddleware(['superuser']),
   participantsController.deleteParticipant,
 );
-router.post(
+router.patch(
   '/:id/status',
   authMiddleware,
   roleMiddleware(['superuser']),
