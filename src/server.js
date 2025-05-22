@@ -13,9 +13,12 @@ const superuserRoutes = require('./routes/superuser.routes');
 const collaboratorRoutes = require('./routes/collaborator.routes');
 const dataRoutes = require('./routes/data.routes');
 const statusRoutes = require('./routes/status.routes');
-const venueCoordinatorRoutes = require('./routes/venueCoordinator.routes'); 
+const venueCoordinatorRoutes = require('./routes/venueCoordinator.routes');
 const mentorRoutes = require('./routes/mentor.routes');
-
+const diplomaRoutes = require('./routes/diploma.routes');
+const groupRoutes = require('./routes/groups.routes');
+const registrationRoutes = require('./routes/registrations.routes');
+//const emailRoutes = require('./routes/email.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const appNext = next({ dev, dir: path.join(__dirname, '..') });
@@ -24,9 +27,36 @@ const handle = appNext.getRequestHandler();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const cron = require('node-cron');
+const fs = require('fs').promises;
+
+const cleanupTmpFiles = async () => {
+  const tmpDir = path.join(__dirname, 'uploads', 'tmp');
+  const files = await fs.readdir(tmpDir);
+  const now = Date.now();
+  const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  for (const file of files) {
+    const filePath = path.join(tmpDir, file);
+    const stats = await fs.stat(filePath);
+    if (now - stats.mtimeMs > maxAge) {
+      await fs.unlink(filePath);
+      console.log(`Deleted old file: ${file}`);
+    }
+  }
+};
+
+// Run cleanup every hour
+cron.schedule('0 * * * *', cleanupTmpFiles);
+
+// Run once on startup
+cleanupTmpFiles();
+
 appNext.prepare().then(() => {
   // Middlewares globales
-  app.use(express.json());
+  app.set('trust proxy', 1);
+  app.use(express.json({ limit: '50mb' })); // Increase JSON payload limit
+  app.use(express.urlencoded({ limit: '50mb', extended: true })); // Optional: for form-urlencoded data
   app.use(morgan('dev'));
   app.use(logRequestMiddleware);
 
@@ -34,13 +64,16 @@ appNext.prepare().then(() => {
   app.use('/api/auth', authRoutes);
   app.use('/api/venues', venueRoutes);
   app.use('/api/participants', participantsRoutes);
+  app.use('/api/diplomas', diplomaRoutes);
   app.use('/api/superusers', superuserRoutes);
   app.use('/api/data', dataRoutes);
   app.use('/api/collaborators', collaboratorRoutes);
   app.use('/api/status', statusRoutes);
-  app.use('/api/venue-coordinators', venueCoordinatorRoutes); 
+  app.use('/api/venue-coordinators', venueCoordinatorRoutes);
   app.use('/api/mentors', mentorRoutes);
-  
+  app.use('/api/groups', groupRoutes);
+  app.use('/api/registrations', registrationRoutes);
+  //app.use('/api/emails', emailRoutes);
 
   app.get('/api', (req, res) => {
     res.send('¡API corriendo!');
@@ -60,5 +93,3 @@ appNext.prepare().then(() => {
     console.log(`Servidor combinado corriendo en http://localhost:${PORT}`);
   });
 });
-
-

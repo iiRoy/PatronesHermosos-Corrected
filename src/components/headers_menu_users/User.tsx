@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import withIconDecorator from '../decorators/IconDecorator';
@@ -21,12 +21,40 @@ const User = ({
   const { notifications } = useNotification();
   const router = useRouter();
 
-  const handleLogout = () => {
+  // Estado para el usuario
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userUsername, setUserUsername] = useState<string | null>(null);
+
+  // Cargar desde localStorage al montar el componente
+  useEffect(() => {
+    const name = localStorage.getItem('user_name');
+    const username = localStorage.getItem('user_username');
+
+    setUserName(name);
+    setUserUsername(username);
+  }, []);
+
+  const handleLogout = async () => {
     if (confirm('¿Seguro que quieres cerrar sesión?')) {
+      const token = localStorage.getItem('api_token');
+
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (err) {
+        console.error('Error al cerrar sesión:', err);
+      }
+
       localStorage.removeItem('api_token');
       localStorage.removeItem('user_id');
       localStorage.removeItem('user_role');
-
+      localStorage.removeItem('user_name');
+      localStorage.removeItem('user_username');
+      localStorage.removeItem('user_image');
       router.push('/login');
     }
   };
@@ -43,18 +71,18 @@ const User = ({
             className='md:min-w-[3.5vw] md:min-h-[3.5vw] min-w-[5vmax] min-h-[5vmax] rounded-full'
           />
           <div className='hidden flex-col text-left lg:block'>
-            <span className='text-sm leading-5 text-[1.51vmax]'>User</span>
+            <span className='text-sm leading-5 text-[1.51vmax]'>{userName ?? 'Usuario'}</span>
             <span className='text-[1vmax] font-medium text-textDim block break-all'>
-              @username_example
+              @{userUsername ?? 'usuario'}
             </span>
           </div>
         </Link>
       </div>
+
       <div className='relative flex flex-col lg:flex-row items-center lg:items-end justify-center lg:justify-end pb-2 pr-1'>
         {/* Botón Notificaciones */}
         <button
-          className={`hidden lg:block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative
-          `}
+          className='hidden lg:block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative'
           onClick={onToggleNotifications}
           aria-label='Abrir notificaciones'
         >
@@ -65,12 +93,16 @@ const User = ({
             </div>
           )}
         </button>
-        {/* ...otras opciones */}
-        <Link href={'/'} className='option-link flex items-center justify-center p-2'>
+
+        <Link
+          href={'https://beautifulpatterns.org/'}
+          className='option-link flex items-center justify-center p-2'
+        >
           <Info width={'1.5rem'} height={'1.5rem'} strokeColor='#2E1C31' strokeWidth={1} />
         </Link>
+
         <button
-          className={`hidden lg:block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative`}
+          className={`block option-link w-auto h-auto items-center justify-center p-2 cursor-pointer relative`}
           onClick={handleLogout}
           aria-label='Cerrar Sesión'
         >

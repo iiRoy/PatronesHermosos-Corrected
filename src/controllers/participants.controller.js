@@ -12,11 +12,68 @@ const createParticipant = async (req, res) => {
   }
 };
 
-// Obtener todos los participantes
+// Obtener todos los participantes (incluye ambos formateos)
 const getAllParticipants = async (req, res) => {
   try {
-    const participants = await prisma.participants.findMany();
-    res.json(participants);
+    const participants = await prisma.participants.findMany({
+      include: {
+        groups: { // Grupo asignado (basado en id_group)
+          select: {
+            id_group: true,
+            name: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        preferredGroup: { // Grupo preferido (basado en preferred_group)
+          select: {
+            id_group: true,
+            name: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        tutors: {
+          select: {
+            phone_number: true,
+          },
+        },
+      },
+    });
+
+    // Formateo original (usando grupo asignado, basado en id_group)
+    const formattedParticipants = participants.map(participant => ({
+      ...participant,
+      groups: participant.groups
+        ? {
+          name: participant.groups.name || 'No asignado',
+          venues: participant.groups.venues || { name: 'No asignado' },
+        }
+        : null,
+    }));
+
+    // Formateo para Solicitudes (usando grupo preferido, basado en preferred_group)
+    const formattedParticipantsForRequests = participants.map(participant => ({
+      ...participant,
+      groups: participant.preferredGroup
+        ? {
+          name: participant.preferredGroup.name || 'No asignado',
+          venues: participant.preferredGroup.venues || { name: 'No asignado' },
+        }
+        : null,
+    }));
+
+    res.json({
+      success: true,
+      data: formattedParticipants, // Para uso general (grupo asignado)
+      dataForRequests: formattedParticipantsForRequests, // Para Solicitudes de Registro (grupo preferido)
+    });
   } catch (error) {
     console.error('Error fetching participants:', error);
     res.status(500).json({ message: 'Error al obtener participantes' });
@@ -29,9 +86,39 @@ const getParticipantById = async (req, res) => {
   try {
     const participant = await prisma.participants.findUnique({
       where: { id_participant: parseInt(id) },
+      include: {
+        preferredGroup: {
+          select: {
+            id_group: true,
+            name: true,
+            venues: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        tutors: {
+          select: {
+            phone_number: true,
+          },
+        },
+      },
     });
     if (!participant) return res.status(404).json({ message: 'Participante no encontrado' });
-    res.json(participant);
+
+    // Formatear el participante
+    const formattedParticipant = {
+      ...participant,
+      groups: participant.preferredGroup
+        ? {
+          name: participant.preferredGroup.name || 'No asignado',
+          venues: participant.preferredGroup.venues || { name: 'No asignado' },
+        }
+        : null,
+    };
+
+    res.json(formattedParticipant);
   } catch (error) {
     console.error('Error fetching participant by ID:', error);
     res.status(500).json({ message: 'Error al obtener participante' });
@@ -79,23 +166,23 @@ const getParticipantsTable = async (req, res) => {
           select: {
             name: true,
             venues: {
-              select: { name: true }
-            }
-          }
+              select: { name: true },
+            },
+          },
         },
         tutors: {
-          select: { phone_number: true }
-        }
-      }
+          select: { phone_number: true },
+        },
+      },
     });
 
-    const formatted = participants.map(p => ({
+    const formatted = participants.map((p) => ({
       id: p.id_participant,
       nombre: `${p.name || ''} ${p.paternal_name || ''} ${p.maternal_name || ''}`.trim(),
       sede: p.groups?.venues?.name || 'No asignado',
       grupo: p.groups?.name || 'No asignado',
       correo: p.email,
-      telefono: p.tutors?.phone_number || 'No asignado'
+      telefono: p.tutors?.phone_number || 'No asignado',
     }));
 
     res.json(formatted);
@@ -116,13 +203,13 @@ const updateParticipantBasicInfo = async (req, res) => {
 
     const updatedParticipant = await prisma.participants.update({
       where: { id_participant: parseInt(id) },
-      data: { name, paternal_name, maternal_name, email, id_group }
+      data: { name, paternal_name, maternal_name, email, id_group },
     });
 
     if (tutor && req.body.phone_number) {
       await prisma.tutors.update({
         where: { id_tutor: tutor.id_tutor },
-        data: { phone_number: req.body.phone_number }
+        data: { phone_number: req.body.phone_number },
       });
     }
 
@@ -140,5 +227,5 @@ module.exports = {
   updateParticipant,
   deleteParticipant,
   getParticipantsTable,
-  updateParticipantBasicInfo
+  updateParticipantBasicInfo,
 };

@@ -1,26 +1,27 @@
 {
-"branches": [
-  "main",
-  "develop",
-  { "name": "feature/sqlProcedures", "prerelease": "sql" },
-  { "name": "feature/components", "prerelease": "com" },
-  { "name": "experiment/correo", "prerelease": "mail" },
-  { "name": "pages/home", "prerelease": "home" },
-  { "name": "pages/forms", "prerelease": "forms" },
-  { "name": "pages/login", "prerelease": "login" },
-  { "name": "pages/superuser", "prerelease": "admin" },
-  { "name": "pages/coordinator", "prerelease": "coord" },
-  { "name": "fix/apiConnection", "prerelease": "apifix" }
-],
+  "branches": [
+    "main",
+    "develop",
+    { "name": "feature/sqlProcedures", "prerelease": "sql" },
+    { "name": "feature/components", "prerelease": "com" },
+    { "name": "experiment/correo", "prerelease": "mail" },
+    { "name": "pages/home", "prerelease": "home" },
+    { "name": "pages/forms", "prerelease": "forms" },
+    { "name": "pages/login", "prerelease": "login" },
+    { "name": "pages/superuser", "prerelease": "admin" },
+    { "name": "pages/coordinator", "prerelease": "coord" },
+    { "name": "fix/apiConnection", "prerelease": "apifix" }
+  ],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    [  
+    [
       "@semantic-release/npm",
-    {
-      "npmPublish": false
-    }],
+      {
+        "npmPublish": false
+      }
+    ],
     [
       "@semantic-release/git",
       {
