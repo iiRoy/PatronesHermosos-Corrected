@@ -241,6 +241,35 @@ const remove = async (req, res) => {
   }
 };
 
+
+// Cancelar una sede
+const cancelVenue = async (req, res) => {
+  const { id } = req.params;
+  const { username } = req.body;
+
+  // Validar que se proporcionó el username
+  if (!username) {
+    return res.status(400).json({ message: 'El campo username es obligatorio' });
+  }
+
+  try {
+    // Llamar al procedimiento almacenado cancelar_sede
+    await prisma.$queryRaw`
+      CALL cancelar_sede(${parseInt(id)}, ${username})
+    `;
+
+    res.status(200).json({ message: `Sede con ID ${id} cancelada exitosamente` });
+  } catch (error) {
+    console.error('Error al cancelar la sede:', error);
+    if (error.code === '45000') {
+      // Manejo de errores personalizados del procedimiento almacenado
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Error interno al cancelar la sede', error: error.message });
+  }
+};
+
+
 module.exports = {
   getAll,
   getSpecificData,
@@ -248,4 +277,5 @@ module.exports = {
   create,
   update,
   remove,
+  cancelVenue,
 };
