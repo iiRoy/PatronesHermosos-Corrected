@@ -1,7 +1,9 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs').promises; // Add fs for file serving
 const participantsController = require('../controllers/participants.controller');
+const { validateParticipant } = require('../validators/participantsValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
 const storage = multer.diskStorage({
@@ -30,8 +32,8 @@ const router = express.Router();
 router.get('/', authMiddleware, participantsController.getAllParticipants);
 router.post(
   '/',
-  authMiddleware,
   upload.single('participation_file'),
+  validateParticipant,
   participantsController.createParticipant
 );
 router.get('/:id', authMiddleware, participantsController.getParticipantById);
@@ -54,5 +56,23 @@ router.delete(
   roleMiddleware(['superuser']),
   participantsController.deleteParticipant
 );
+
+// Serve files from uploads/tmp
+router.get('/files/:filename', async (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, '..', 'uploads', 'tmp', filename);
+
+  try {
+    // Check if file exists
+    await fs.access(filePath);
+    // Set appropriate headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    // Serve the file
+    res.sendFile(filePath);
+  } catch (error) {
+    res.status(404).json({ message: 'Archivo no encontrado' });
+  }
+});
 
 module.exports = router;
