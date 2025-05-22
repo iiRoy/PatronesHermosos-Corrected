@@ -25,5 +25,11 @@ router.delete(
   roleMiddleware(['superuser']),
   participantsController.deleteParticipant,
 );
+router.post(
+  '/:id/status',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  participantsController.changeParticipantStatus,
+);
 
 module.exports = router;
