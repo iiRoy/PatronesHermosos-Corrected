@@ -104,6 +104,7 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
             value={section}
             onChange={sectionFilterChange}
             variant="primary"
+            Icon={MagnifyingGlass}
           />
         </div>
       </div>
