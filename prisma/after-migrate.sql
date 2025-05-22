@@ -1287,56 +1287,87 @@ END$$
 DELIMITER ;
 
 
---Proceso para eliminar un grupo, se valida la existencia del grupo, que no tenga participantes, elimina el grupo y registra el log
---CALL eliminar_grupo(3, 'juan@ejemplo.com', 1);
---outdated
-DELIMITER $$
+DELIMITER //
 
-CREATE PROCEDURE eliminar_grupo (
-  IN p_id_group INT,
-  IN p_username VARCHAR(255),
-  IN p_id_venue INT
+CREATE PROCEDURE cancelar_sede(
+    IN p_id_venue INT,
+    IN p_username VARCHAR(255)
 )
 BEGIN
-  DECLARE existe INT;
-  DECLARE participant_count INT;
+    DECLARE existe INT;
+    DECLARE current_status VARCHAR(255);
+    DECLARE grupo_id INT;
+    DECLARE done INT DEFAULT 0;
+    
+    -- Cursor para recorrer los grupos asociados a la sede
+    DECLARE grupo_cursor CURSOR FOR 
+        SELECT id_group 
+        FROM groups 
+        WHERE id_venue = p_id_venue AND status = 'Aprobada';
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-  -- Verificar si el grupo existe
-  SELECT COUNT(*) INTO existe
-  FROM groups
-  WHERE id_group = p_id_group;
+    -- Verifica si la sede existe
+    SELECT COUNT(*) INTO existe
+    FROM venues
+    WHERE id_venue = p_id_venue;
 
-  IF existe = 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'El grupo no existe.';
-  END IF;
+    IF existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La sede no existe.';
+    END IF;
 
-  -- Verificar si tiene participantes
-  SELECT COUNT(*) INTO participant_count
-  FROM participants
-  WHERE id_group = p_id_group;
+    -- Obtiene el estado actual de la sede
+    SELECT status INTO current_status
+    FROM venues
+    WHERE id_venue = p_id_venue;
 
-  IF participant_count > 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'No se puede eliminar el grupo porque tiene participantes.';
-  END IF;
+    -- Verifica si la sede puede ser cancelada
+    IF current_status NOT IN ('Registrada sin participantes', 'Registrada con participantes') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Solo se pueden cancelar sedes en estado Registrada sin participantes o Registrada con participantes.';
+    END IF;
 
-  -- Eliminar el grupo
-  DELETE FROM groups
-  WHERE id_group = p_id_group;
+    -- Inicia una transacción para asegurar consistencia
+    START TRANSACTION;
 
-  -- Registrar acción en audit_log
-  CALL registrar_log(
-    'DELETE',
-    'groups',
-    CONCAT('Se eliminó el grupo con ID ', p_id_group),
-    p_username,
-    p_id_venue
-  );
-END$$
+    -- Abre el cursor para recorrer los grupos
+    OPEN grupo_cursor;
+
+    read_loop: LOOP
+        FETCH grupo_cursor INTO grupo_id;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Llama al procedimiento existente para cancelar el grupo
+        CALL cambiar_estado_grupo(grupo_id, p_username, p_id_venue, 'desactivar');
+    END LOOP;
+
+    -- Cierra el cursor
+    CLOSE grupo_cursor;
+
+    -- Actualiza el estado de la sede a Cancelada
+    UPDATE venues
+    SET status = 'Cancelada',
+        updated_at = NOW()
+    WHERE id_venue = p_id_venue;
+
+    -- Registra la cancelación de la sede en el log
+    CALL registrar_log(
+        'UPDATE',
+        'venues',
+        CONCAT('Se canceló la sede con ID ', p_id_venue),
+        p_username,
+        p_id_venue
+    );
+
+    -- Confirma la transacción
+    COMMIT;
+
+END //
 
 DELIMITER ;
-
 
 
 --cambiar estado grupo
@@ -1436,63 +1467,7 @@ END //
 
 DELIMITER ;
 
-DELIMITER //
 
-CREATE TRIGGER after_venue_cancellation
-AFTER UPDATE ON venues
-FOR EACH ROW
-BEGIN
-  IF NEW.status = 'Cancelada' AND OLD.status != 'Cancelada' THEN
-
-    -- Cancelar todos los grupos de la venue
-    UPDATE groups
-    SET status = 'Cancelada'
-    WHERE id_venue = NEW.id_venue;
-
-    -- Rechazar colaboradores (si estaban Pendientes o Aceptados) y quitarles el role
-    UPDATE collaborators
-    SET status = 'Rechazado',
-        role = NULL
-    WHERE id_group IN (
-      SELECT id_group FROM groups WHERE id_venue = NEW.id_venue
-    ) AND (status = 'Pendiente' OR status = 'Aceptado');
-
-    -- Rechazar participantes (si estaban Pendientes o Aceptados)
-    UPDATE participants
-    SET status = 'Rechazado'
-    WHERE id_group IN (
-      SELECT id_group FROM groups WHERE id_venue = NEW.id_venue
-    ) AND (status = 'Pendiente' OR status = 'Aceptado');
-
-    -- Logs
-    CALL registrar_log(
-      'UPDATE',
-      'venues',
-      CONCAT('Se canceló la venue con ID ', NEW.id_venue, '. Todos sus grupos fueron cancelados.'),
-      'TRIGGER-after_venue_cancellation',
-      NEW.id_venue
-    );
-
-    CALL registrar_log(
-      'UPDATE',
-      'collaborators',
-      CONCAT('Venue cancelada (ID ', NEW.id_venue, '): todos los colaboradores con status Pendiente o Aceptado fueron rechazados y su rol eliminado.'),
-      'TRIGGER-after_venue_cancellation',
-      NEW.id_venue
-    );
-
-    CALL registrar_log(
-      'UPDATE',
-      'participants',
-      CONCAT('Venue cancelada (ID ', NEW.id_venue, '): todos los participantes con status Pendiente o Aceptado fueron rechazados.'),
-      'TRIGGER-after_venue_cancellation',
-      NEW.id_venue
-    );
-
-  END IF;
-END //
-
-DELIMITER ;
 
 
 
@@ -1518,11 +1493,11 @@ BEGIN
     END IF;
 
     -- Asignar cupo máximo según el rol
-    IF rol = 'Instructora' THEN
+    IF rol = 'Instructora' THEN    --check
         SET cupoMaximo = 1;
-    ELSEIF rol = 'Facilitadora' THEN
+    ELSEIF rol = 'Facilitadora' THEN  --check
         SET cupoMaximo = 2;
-    ELSEIF rol = 'Staff' THEN
+    ELSEIF rol = 'Staff' THEN   --check
         SET cupoMaximo = 1;
     ELSE
         SET cupoMaximo = 0; -- Rol no permitido
@@ -1546,173 +1521,242 @@ END //
 DELIMITER ;
 
 
+
+--gestionar_solicitud_colab (funcional)
 DELIMITER //
 
-CREATE PROCEDURE gestionar_solicitud_colab(IN id_colab INT, IN grupo_alternativo INT)
+CREATE PROCEDURE gestionar_solicitud_colab(
+    IN id_colab INT,
+    IN grupo_alternativo INT -- Puede ser NULL si solo se desea rechazar
+)
 BEGIN
     DECLARE grupo_preferido INT;
     DECLARE rol_colab VARCHAR(255);
+    DECLARE status_colab VARCHAR(255);
+    DECLARE status_grupo_preferido VARCHAR(255);
+    DECLARE status_grupo_alternativo VARCHAR(255);
     DECLARE cupo_disponible_preferido INT;
     DECLARE cupo_disponible_alternativo INT;
+    DECLARE preferred_level_colab VARCHAR(255);
+    DECLARE preferred_language_colab VARCHAR(255);
 
-    -- Obtener grupo preferido y rol
-    SELECT preferred_group, role
-    INTO grupo_preferido, rol_colab
-    FROM collaborators
-    WHERE id_collaborator = id_colab;
+    main_block: BEGIN
 
-    -- Si grupo preferido es NULL, rechazar
-    IF grupo_preferido IS NULL THEN
-        UPDATE collaborators
-        SET status = 'Rechazada'
-        WHERE id_collaborator = id_colab;
-        LEAVE gestionar_solicitud_colab;
-    END IF;
-
-    -- Validar cupo en grupo preferido
-    SET cupo_disponible_preferido = fun_validar_cupo(grupo_preferido, rol_colab);
-
-    -- Si hay cupo en el preferido, aprobar
-    IF cupo_disponible_preferido = 1 THEN
-        UPDATE collaborators
-        SET id_group = grupo_preferido,
-            status = 'Aprobada',
-            level = 'Asignado',
-            language = 'Asignado'
+        -- Validar que el colaborador esté en estado Pendiente
+        SELECT status INTO status_colab
+        FROM collaborators
         WHERE id_collaborator = id_colab;
 
-    -- Si no hay cupo en el preferido, intentar con alternativo
-    ELSE
-        -- Si grupo alternativo es NULL, rechazar
+        IF status_colab != 'Pendiente' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';  --check
+        END IF;
+
+        -- Obtener grupo preferido, rol, nivel y lenguaje preferidos
+        SELECT preferred_group, role, preferred_level, preferred_language
+        INTO grupo_preferido, rol_colab, preferred_level_colab, preferred_language_colab
+        FROM collaborators
+        WHERE id_collaborator = id_colab;
+
+        -- Si no tiene grupo preferido
+        IF grupo_preferido IS NULL THEN
+            IF grupo_alternativo IS NULL THEN
+                UPDATE collaborators
+                SET status = 'Rechazada'
+                WHERE id_collaborator = id_colab;
+
+                SELECT 'Colaborador sin grupo preferido y sin alternativo. Solicitud rechazada.' AS mensaje; --check
+                LEAVE main_block;
+            ELSE
+                SET grupo_preferido = grupo_alternativo; -- usar el alternativo como único intento
+            END IF;
+        END IF;
+
+        -- Verificar estado del grupo preferido
+        SELECT status INTO status_grupo_preferido
+        FROM groups
+        WHERE id_group = grupo_preferido;
+
+        IF status_grupo_preferido <> 'Aprobada' THEN
+            IF grupo_alternativo IS NULL THEN
+                UPDATE collaborators
+                SET status = 'Rechazada'
+                WHERE id_collaborator = id_colab;
+
+                SELECT 'Grupo preferido cancelado o no aprobado. Solicitud rechazada.' AS mensaje; --check
+                LEAVE main_block;
+            END IF;
+        END IF;
+
+        -- Verificar cupo disponible en grupo preferido
+        SET cupo_disponible_preferido = fun_validar_cupo(grupo_preferido, rol_colab);
+
+        IF cupo_disponible_preferido = 1 THEN
+            UPDATE collaborators
+            SET id_group = grupo_preferido,
+                status = 'Aprobada',
+                level = preferred_level_colab,
+                language = preferred_language_colab
+            WHERE id_collaborator = id_colab;
+
+            SELECT 'Solicitud aceptada en grupo preferido.' AS mensaje; --check
+            LEAVE main_block;
+        END IF;
+
+        -- Si no hay cupo en preferido, intentar con alternativo
         IF grupo_alternativo IS NULL THEN
             UPDATE collaborators
             SET status = 'Rechazada'
             WHERE id_collaborator = id_colab;
-            LEAVE gestionar_solicitud_colab;
+
+            SELECT 'Grupo preferido lleno y sin alternativo. Solicitud rechazada.' AS mensaje;   --check
+            LEAVE main_block;
         END IF;
 
-        -- Validar cupo en grupo alternativo
+        -- Verificar estado del grupo alternativo
+        SELECT status INTO status_grupo_alternativo
+        FROM groups
+        WHERE id_group = grupo_alternativo;
+
+        IF status_grupo_alternativo <> 'Aprobada' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El grupo alternativo no está aprobado.';   --check
+        END IF;
+
+        -- Verificar cupo en grupo alternativo
         SET cupo_disponible_alternativo = fun_validar_cupo(grupo_alternativo, rol_colab);
 
         IF cupo_disponible_alternativo = 1 THEN
             UPDATE collaborators
             SET id_group = grupo_alternativo,
                 status = 'Aprobada',
-                level = 'Asignado',
-                language = 'Asignado'
+                level = preferred_level_colab,
+                language = preferred_language_colab
             WHERE id_collaborator = id_colab;
+
+            SELECT 'Solicitud aceptada en grupo alternativo.' AS mensaje; --check
         ELSE
             UPDATE collaborators
             SET status = 'Rechazada'
             WHERE id_collaborator = id_colab;
+
+            SELECT 'Ambos grupos llenos. Solicitud rechazada.' AS mensaje; --check?
         END IF;
-    END IF;
+
+    END main_block;
 END //
 
 DELIMITER ;
 
 
---participantes 
+--gestionar_solicitud_pendiente (funcional)
 DELIMITER $$
 
-CREATE OR REPLACE PROCEDURE gestionar_solicitud_pendiente(
+CREATE PROCEDURE gestionar_solicitud_pendiente(
     IN participante_id INT,
     IN grupo_alternativo_id INT -- Puede ser NULL si solo se quiere rechazar
 )
 BEGIN
     DECLARE grupo_preferido INT;
     DECLARE cupo_max INT;
-    DECLARE total_aprobadas INT;
+    DECLARE ocupados INT;
     DECLARE status_grupo_preferido VARCHAR(20);
     DECLARE status_grupo_alternativo VARCHAR(20);
 
-    -- Verifica que el participante esté en estado Pendiente
-    IF (SELECT status FROM participants WHERE id_participant = participante_id) != 'Pendiente' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';
-    END IF;
+    main_block: BEGIN
 
-    -- Obtener grupo preferido
-    SELECT preferred_group INTO grupo_preferido
-    FROM participants
-    WHERE id_participant = participante_id;
-
-    -- Si no hay grupo preferido, solo se puede rechazar
-    IF grupo_preferido IS NULL THEN
-        IF grupo_alternativo_id IS NULL THEN
-            UPDATE participants
-            SET status = 'Rechazada'
-            WHERE id_participant = participante_id;
-            SELECT 'Solicitud rechazada. Puede volver a aplicar a otro grupo.' AS mensaje;
-            LEAVE gestionar_solicitud_pendiente;
-        ELSE
-            SET grupo_preferido = grupo_alternativo_id;
+        -- Verifica que el participante esté en estado Pendiente
+        IF (SELECT status FROM participants WHERE id_participant = participante_id) != 'Pendiente' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Solo puedes gestionar solicitudes en estado Pendiente.';  --check
         END IF;
-    END IF;
 
-    -- Verificar estado y cupo en grupo preferido
-    SELECT status, max_places INTO status_grupo_preferido, cupo_max FROM groups WHERE id_group = grupo_preferido;
-    IF status_grupo_preferido = 'Cancelada' THEN
-        -- Si grupo preferido cancelado y no hay grupo alternativo, rechazar
-        IF grupo_alternativo_id IS NULL THEN
-            UPDATE participants
-            SET status = 'Rechazada'
-            WHERE id_participant = participante_id;
-            SELECT 'Grupo preferido cancelado. Solicitud rechazada.' AS mensaje;
-            LEAVE gestionar_solicitud_pendiente;
-        END IF;
-    END IF;
-
-    SELECT fun_part_aceptadas(grupo_preferido) INTO total_aprobadas;
-
-    IF status_grupo_preferido = 'Cancelada' OR total_aprobadas >= cupo_max THEN
-        -- Grupo preferido no válido (cancelado o lleno), evaluar grupo alternativo
-        IF grupo_alternativo_id IS NULL THEN
-            UPDATE participants
-            SET status = 'Rechazada'
-            WHERE id_participant = participante_id;
-            SELECT 'Grupo preferido cancelado o lleno. Solicitud rechazada.' AS mensaje;
-        ELSE
-            -- Verificar estado y cupo en grupo alternativo
-            SELECT status, max_places INTO status_grupo_alternativo, cupo_max FROM groups WHERE id_group = grupo_alternativo_id;
-
-            IF status_grupo_alternativo = 'Cancelada' THEN
-                SIGNAL SQLSTATE '45000'
-                SET MESSAGE_TEXT = 'El grupo alternativo está cancelado.';
-            END IF;
-
-            SELECT fun_part_aceptadas(grupo_alternativo_id) INTO total_aprobadas;
-
-            IF total_aprobadas >= cupo_max THEN
-                SIGNAL SQLSTATE '45000'
-                SET MESSAGE_TEXT = 'El grupo alternativo también está lleno.';
-            END IF;
-
-            -- Aprobar participante en grupo alternativo
-            UPDATE participants
-            SET id_group = grupo_alternativo_id,
-                status = 'Aprobada'
-            WHERE id_participant = participante_id;
-
-            SELECT 'Participante aprobado en el grupo alternativo.' AS mensaje;
-        END IF;
-    ELSE
-        -- Grupo preferido válido y con cupo, aprobar participante
-        UPDATE participants
-        SET id_group = grupo_preferido,
-            status = 'Aprobada'
+        -- Obtener grupo preferido
+        SELECT preferred_group INTO grupo_preferido
+        FROM participants
         WHERE id_participant = participante_id;
 
-        SELECT 'Participante aprobado en su grupo preferido.' AS mensaje;
-    END IF;
-END;
-$$
+        -- Si no hay grupo preferido, solo se puede rechazar o aceptar en alternativo
+        IF grupo_preferido IS NULL THEN
+            IF grupo_alternativo_id IS NULL THEN
+                UPDATE participants
+                SET status = 'Rechazada'
+                WHERE id_participant = participante_id;
+
+                SELECT 'Solicitud rechazada. Puede volver a aplicar a otro grupo.' AS mensaje; --check
+                LEAVE main_block;
+            ELSE
+                SET grupo_preferido = grupo_alternativo_id;
+            END IF;
+        END IF;
+
+        -- Verificar estado y cupo en grupo preferido
+        SELECT status, max_places, occupied_places INTO status_grupo_preferido, cupo_max, ocupados
+        FROM groups
+        WHERE id_group = grupo_preferido;
+
+        IF status_grupo_preferido = 'Cancelada' THEN
+            IF grupo_alternativo_id IS NULL THEN
+                UPDATE participants
+                SET status = 'Rechazada'
+                WHERE id_participant = participante_id;
+
+                SELECT 'Grupo preferido cancelado. Solicitud rechazada.' AS mensaje; --check
+                LEAVE main_block;
+            END IF;
+        END IF;
+
+        IF status_grupo_preferido = 'Cancelada' OR ocupados >= cupo_max THEN
+            IF grupo_alternativo_id IS NULL THEN
+                UPDATE participants
+                SET status = 'Rechazada'
+                WHERE id_participant = participante_id;
+
+                SELECT 'Grupo preferido cancelado o lleno. Solicitud rechazada.' AS mensaje;  ---check
+                LEAVE main_block;
+            ELSE
+                -- Verificar estado y cupo en grupo alternativo
+                SELECT status, max_places, occupied_places INTO status_grupo_alternativo, cupo_max, ocupados
+                FROM groups
+                WHERE id_group = grupo_alternativo_id;
+
+                IF status_grupo_alternativo = 'Cancelada' THEN
+                    SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'El grupo alternativo está cancelado.'; --check
+                END IF;
+
+                IF ocupados >= cupo_max THEN
+                    SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'El grupo alternativo también está lleno.'; --check
+                END IF;
+
+                -- Aceptar al grupo alternativo
+                UPDATE participants
+                SET status = 'Aprobada', id_group = grupo_alternativo_id
+                WHERE id_participant = participante_id;
+
+                SELECT 'Solicitud aceptada en grupo alternativo.' AS mensaje; --check
+                LEAVE main_block;
+            END IF;
+        ELSE
+            -- Aceptar al grupo preferido
+            UPDATE participants
+            SET status = 'Aprobada', id_group = grupo_preferido
+            WHERE id_participant = participante_id;
+
+            SELECT 'Solicitud aceptada en grupo preferido.' AS mensaje; --check
+            LEAVE main_block;
+        END IF;
+
+    END main_block;
+
+END$$
 
 DELIMITER ;
 
 
 
-
+--participantes 
 
 
 
@@ -1784,55 +1828,6 @@ END$$
 DELIMITER ;
 
 
---desactivar_grupo función vieja, se sustituyo por la función cambiar_estado_grupo
-DELIMITER $$
-CREATE PROCEDURE desactivar_grupo(
-    IN p_id_group INT,
-    IN p_username VARCHAR(255),
-    IN p_id_venue INT
-)
-BEGIN
- DECLARE existe INT;
- DECLARE p_status VARCHAR(255);
-
-
- SELECT COUNT(*) INTO existe
- FROM groups
- WHERE id_group = p_id_group;
-
- IF existe = 0
-    SIGNAL SQLSTATE "45000"
-    SET MESSAGE_TEXT = "El grupo no existe.";
-END IF;
-
-
-SELECT status INTO p_status
-FROM groups
-WHERE id_group = p_id_group;
-
-IF p_status != "Aprobada" THEN
-  SIGNAL SQLSTATE "45000"
-  SET MESSAGE_TEXT = "Solo se pueden eliminar los grupos aprobados.";
-END IF;
-
-    -- Registrar el log
- CALL registrar_log(
-    'UPDATE',
-    'groups',
-    CONCAT('Se desactivó el grupo con ID ', p_id_group),
-    p_username,
-    p_id_venue
-);
-
-    -- Actualizar el status a Cancelada
-    UPDATE groups
-    SET status = 'Cancelada'
-    WHERE id_group = p_id_group;
-END$$
-
-DELIMITER;
-
-
 --Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
 --CALL cambiar_estado_participant(114, "Diegorl", "activar");
 --CALL cambiar_estado_participant(114, "Diegorl", "desactivar");
@@ -1902,168 +1897,16 @@ DELIMITER ;
 
 
 
---Proceso para desactivar una sede, se valida la existencia de la sede, valida su status, lo modifica y registra el log
---CALL desactivar_venue(2, 'admin@ejemplo.com');
-DELIMITER $$
-
-CREATE PROCEDURE desactivar_venue (
-  IN p_id_venue INT,
-  IN p_username VARCHAR(255)
-)
-BEGIN
-  DECLARE existe INT;
-  DECLARE group_count INT;
-  DECLARE p_status VARCHAR(255);
-
-  -- Verificar si la sede existe
-  SELECT COUNT(*) INTO existe
-  FROM venues
-  WHERE id_venue = p_id_venue;
-
-  IF existe = 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'La sede no existe.';
-  END IF;
-
-  -- Obtener el status actual
-  SELECT status INTO p_status
-  FROM venues
-  WHERE id_venue = p_id_venue;
-
-  -- Validar si puede ser cancelada
-  IF NOT (p_status = 'Registrada sin participantes' OR p_status = 'Registrada con participantes') THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Solo se pueden cancelar las sedes que estén registradas.';
-  END IF;
-
-  -- Registrar acción en audit_log ANTES de modificar el estado de la sede
-  CALL registrar_log(
-    'UPDATE',
-    'venues',
-    CONCAT('Se desactivó la sede con ID ', p_id_venue),
-    p_username,
-    p_id_venue
-  );
-
-  -- Cambiar estado a Cancelada
-  UPDATE venues
-  SET status = 'Cancelada'
-  WHERE id_venue = p_id_venue;
-END$$
-
-DELIMITER ;
 
 
 
 
-
---eliminar_venue procedimiento viejo, ha sido sustituido por desactivar_venue
---Proceso para eliminar una sede, se valida la existencia de la sede, que no tenga grupos, elimina las sede y registra el log
---CALL eliminar_venue(2, 'admin@ejemplo.com');
-DELIMITER $$
-
-CREATE PROCEDURE eliminar_venue (
-  IN p_id_venue INT,
-  IN p_username VARCHAR(255)
-)
-BEGIN
-  DECLARE existe INT;
-  DECLARE group_count INT;
-
-  -- Verificar si la sede existe
-  SELECT COUNT(*) INTO existe
-  FROM venues
-  WHERE id_venue = p_id_venue;
-
-  IF existe = 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'La sede no existe.';
-  END IF;
-
-  -- Verificar si tiene grupos
-  SELECT COUNT(*) INTO group_count
-  FROM groups
-  WHERE id_venue = p_id_venue;
-
-  IF group_count > 0 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'No se puede eliminar la sede porque tiene grupos.';
-  END IF;
-
-  -- Registrar acción en audit_log ANTES de eliminar la sede
-  CALL registrar_log(
-    'DELETE',
-    'venues',
-    CONCAT('Se eliminó la sede con ID ', p_id_venue),
-    p_username,
-    p_id_venue
-  );
-
-  -- Eliminar la sede
-  DELETE FROM venues
-  WHERE id_venue = p_id_venue;
-
-END$$
-
-DELIMITER ;
+-
 
 
 --Proceso para desactivar a un colaborador, se valida la existencia del colaborador, valida su status, lo modifica y registra el log
 --CALL desactivar_venue(2, 'admin@ejemplo.com');
-DELIMITER $$
 
-CREATE PROCEDURE desactivar_colaborador (
-    IN p_id_collaborator INT,
-    IN p_username VARCHAR(255)
-)
-BEGIN
-    DECLARE v_existe INT;
-    DECLARE v_status VARCHAR(255);
-    DECLARE v_id_venue INT;
-
-    -- Verificar si el colaborador existe
-    SELECT COUNT(*) INTO v_existe
-    FROM collaborators
-    WHERE id_collaborator = p_id_collaborator;
-
-    IF v_existe = 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El colaborador no existe.';
-    END IF;
-
-    -- Obtener el status actual
-    SELECT status INTO v_status
-    FROM collaborators
-    WHERE id_collaborator = p_id_collaborator;
-
-    -- Validar si puede ser desactivado
-    IF v_status != 'Aprobada' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Solo se pueden desactivar colaboradores con estatus Aprobada.';
-    END IF;
-
-    -- Obtener el id_venue a partir del grupo del colaborador
-    SELECT g.id_venue INTO v_id_venue
-    FROM collaborators c
-    JOIN groups g ON c.id_group = g.id_group
-    WHERE c.id_collaborator = p_id_collaborator;
-
-    -- Registrar el log
-    CALL registrar_log(
-        'UPDATE',
-        'collaborators',
-        CONCAT('Se desactivó al colaborador con ID ', p_id_collaborator),
-        p_username,
-        v_id_venue
-    );
-
-    -- Actualizar el status a Cancelada
-    UPDATE collaborators
-    SET status = 'Cancelada'
-    WHERE id_collaborator = p_id_collaborator;
-END$$
-
-DELIMITER ;
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
