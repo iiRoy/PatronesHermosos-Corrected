@@ -220,6 +220,32 @@ const updateParticipantBasicInfo = async (req, res) => {
   }
 };
 
+// Cambiar estado del participante (activar/desactivar)
+const changeParticipantStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+  const username = req.user.username; // Usar username del token JWT
+
+  // Validar acción
+  if (!action || !['activar', 'desactivar'].includes(action)) {
+    return res.status(400).json({ message: 'La acción debe ser "activar" o "desactivar"' });
+  }
+
+  try {
+    // Llamar al procedimiento almacenado
+    await prisma.$queryRaw`
+      CALL cambiar_estado_participant(${parseInt(id)}, ${username}, ${action})
+    `;
+    res.status(200).json({ message: `Participante con ID ${id} ${action === 'activar' ? 'activado' : 'desactivado'} exitosamente` });
+  } catch (error) {
+    console.error('Error al cambiar estado del participante:', error);
+    if (error.code === '45000') {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Error interno al cambiar estado del participante', error: error.message });
+  }
+};
+
 module.exports = {
   createParticipant,
   getAllParticipants,
@@ -228,4 +254,5 @@ module.exports = {
   deleteParticipant,
   getParticipantsTable,
   updateParticipantBasicInfo,
+  changeParticipantStatus,
 };
