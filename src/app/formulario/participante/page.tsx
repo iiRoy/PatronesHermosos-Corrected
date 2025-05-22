@@ -258,7 +258,7 @@ const ParticipantRegistrationForm: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <InputField
             label="Nombre(s)*"
-            placeholder="Edna"
+            placeholder="Nombre(s)"
             variant="primary"
             icon="User"
             value={formData.participant.name}
@@ -266,7 +266,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
           <InputField
             label="Apellido Paterno*"
-            placeholder="Moda"
+            placeholder="Apellido Paterno"
             variant="primary"
             icon="User"
             value={formData.participant.paternal_name}
@@ -274,7 +274,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
           <InputField
             label="Apellido Materno"
-            placeholder="Apellido"
+            placeholder="Apellido Materno"
             variant="primary"
             icon="User"
             value={formData.participant.maternal_name}
@@ -282,7 +282,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
           <InputField
             label="Correo Electrónico*"
-            placeholder="ednamoda@disney.com"
+            placeholder="correo1@ejemplo.com"
             variant="accent"
             icon="Envelope"
             value={formData.participant.email}
@@ -319,7 +319,7 @@ const ParticipantRegistrationForm: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <InputField
             label="Nombre(s)*"
-            placeholder="Roberto"
+            placeholder="Nombre(s)"
             variant="primary"
             icon="User"
             value={formData.tutor.name}
@@ -327,7 +327,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
           <InputField
             label="Apellido Paterno*"
-            placeholder="López"
+            placeholder="Apellido Paterno"
             variant="primary"
             icon="User"
             value={formData.tutor.paternal_name}
@@ -335,7 +335,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
           <InputField
             label="Apellido Materno"
-            placeholder="Juárez"
+            placeholder="Apellido Materno"
             variant="primary"
             icon="User"
             value={formData.tutor.maternal_name}
@@ -343,7 +343,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
           <InputField
             label="Correo Electrónico*"
-            placeholder="tutor@example.com"
+            placeholder="correo1@ejemplo.com"
             variant="accent"
             icon="Envelope"
             value={formData.tutor.email}
