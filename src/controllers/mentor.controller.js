@@ -143,17 +143,17 @@ const update = async (req, res) => {
 // Tabla de actualizar mentora (por superuser)
 const updateBasicData = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone_number, id_venue } = req.body;
+  const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
 
-  if (!name || !email || !phone_number || !id_venue) {
-    return res.status(400).json({ success: false, message: 'Faltan campos requeridos para actualizar' });
-  }
+
 
   try {
     const updatedMentor = await prisma.mentors.update({
       where: { id_mentor: parseInt(id) },
       data: {
         name,
+        paternal_name,
+        maternal_name,
         email,
         phone_number,
         id_venue,

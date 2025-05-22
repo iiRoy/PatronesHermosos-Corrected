@@ -122,12 +122,15 @@ const EditarMentora = () => {
 
       const updatedMentora = {
         name,
+        paternalName,
+        maternalName,
         email,
         phone_number: phoneNumber,
         id_venue: selectedVenueData.id_venue,
+
       };
 
-      const response = await fetch(`/api/mentors/specific/${id}`, {
+      const response = await fetch(`/api/mentors/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
