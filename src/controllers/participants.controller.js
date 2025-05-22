@@ -1,16 +1,101 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const fs = require('fs').promises;
+
+// Utility function to transform flat keys into nested objects
+const parseNestedBody = (body) => {
+  const result = {};
+
+  for (const key in body) {
+    const parts = key.split('[');
+    if (parts.length === 1) {
+      result[key] = body[key];
+    } else {
+      let current = result;
+      for (let i = 0; i < parts.length; i++) {
+        let part = parts[i];
+        if (part.endsWith(']')) {
+          part = part.slice(0, -1);
+        }
+        if (i === parts.length - 1) {
+          current[part] = body[key];
+        } else {
+          current[part] = current[part] || {};
+          current = current[part];
+        }
+      }
+    }
+  }
+
+  return result;
+};
 
 // Crear participante
 const createParticipant = async (req, res) => {
-  try {
-    const newParticipant = await prisma.participants.create({ data: req.body });
-    res.status(201).json(newParticipant);
-  } catch (error) {
-    console.error('Error creating participant:', error);
-    res.status(500).json({ message: 'Error al crear participante' });
+  // Transform flat req.body into nested structure
+  const parsedBody = parseNestedBody(req.body);
+
+  // Extract text fields
+  const {
+    name,
+    paternal_name,
+    maternal_name,
+    email,
+    year,
+    education,
+    id_group,
+    tutor = {},
+  } = parsedBody;
+
+  // Extract file
+  const files = req.files || {};
+  let participation_file = null;
+  let participation_file_path = null;
+
+  if (files['participation_file']) {
+    const filePath = files['participation_file'][0].path;
+    participation_file = await fs.readFile(filePath);
+    participation_file_path = files['participation_file'][0].filename;
   }
-};
+
+  // Validate required file
+  if (!participation_file) {
+    return res.status(400).json({ message: 'El archivo de participación es obligatorio' });
+  }
+
+  try {
+    // Call the stored procedure
+    // In createParticipant function, replace the prisma.$queryRaw call with:
+await prisma.$queryRaw`
+  CALL registrar_part(
+    ${name},
+    ${paternal_name},
+    ${maternal_name},
+    ${email},
+    ${year},
+    ${education},
+    ${participation_file},
+    ${participation_file_path},
+    ${parseInt(id_group)},
+    ${tutor.name || null},
+    ${tutor.paternal_name || null},
+    ${tutor.maternal_name || null},
+    ${tutor.email || null},
+    ${tutor.phone_number || null}
+  )
+`;
+
+    res.status(201).json({
+      message: 'Participante creado exitosamente',
+      files: {
+        participation_file: participation_file_path,
+      },
+    });
+  } catch (error) {
+    console.error('Error al crear participante:', error);
+    res.status(500).json({ message: 'Error al crear participante', error: error.message });
+  }
+};  
 
 // Obtener todos los participantes
 const getAllParticipants = async (req, res) => {
