@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@/components/buttons_inputs/Button';
 import InputField from '@/components/buttons_inputs/InputField';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
