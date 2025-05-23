@@ -122,8 +122,8 @@ const EditarMentora = () => {
 
       const updatedMentora = {
         name,
-        paternalName,
-        maternalName,
+        paternal_name: paternalName,
+        maternal_name: maternalName,
         email,
         phone_number: phoneNumber,
         id_venue: selectedVenueData.id_venue,
