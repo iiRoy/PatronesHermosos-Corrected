@@ -90,10 +90,10 @@ const getCoordinatorById = async (req, res) => {
 // Actualizar todos los datos de coordinador
 const updateCoordinator = async (req, res) => {
   const { id } = req.params;
-  const { name, paternal_name, maternal_name, email, phone_number, username, profile_image } =
+  const { name, paternal_name, maternal_name, phone_number, username, profile_image } =
     req.body;
 
-  if (!name || !email || !phone_number || !username || !profile_image) {
+  if (!name || !phone_number || !username || !profile_image) {
     return res.status(400).json({
       message:
         'Faltan datos necesarios: nombre, apellido, correo, teléfono, nombre de usuario y imagen de perfil.',
@@ -107,7 +107,6 @@ const updateCoordinator = async (req, res) => {
         name,
         paternal_name,
         maternal_name,
-        email,
         phone_number,
         username,
         profile_image,
