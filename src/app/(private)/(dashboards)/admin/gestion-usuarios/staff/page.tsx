@@ -5,23 +5,20 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { Trash, Highlighter } from '@/components/icons';
+import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
-// Definir el tipo Apoyo
 interface Apoyo {
   id_collaborator: number;
-  name: string; // Nombre
-  paternal_name: string; // Apellido paterno
-  maternal_name: string; // Apellido materno
+  name: string;
+  paternal_name: string;
+  maternal_name: string;
   email: string;
   role: string;
   level: string;
   language: string;
-  group: string;
-  venue: string; // Nombre de la sede
   college: string;
   degree: string;
   semester: string;
@@ -36,15 +33,13 @@ interface Apoyo {
 
 const GestionApoyo = () => {
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__'); // Inicializar con "Todas" para sedes
-  const [filterActivaExtra, setFilterActivaExtra] = useState({ role: '__All__' }); // Inicializar con "Todas" para roles
+  const [filterActivaExtra, setFilterActivaExtra] = useState({ role: '__All__' });
   const [currentPage, setCurrentPage] = useState(0);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false); // Estado para controlar el popup de eliminación
-  const [isInfoPopupOpen, setIsInfoPopupOpen] = useState(false); // Estado para controlar el popup de información
-  const [selectedApoyo, setSelectedApoyo] = useState<Apoyo | null>(null); // Persona seleccionada para eliminar o mostrar info
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isInfoPopupOpen, setIsInfoPopupOpen] = useState(false);
+  const [selectedApoyo, setSelectedApoyo] = useState<Apoyo | null>(null);
   const [apoyoData, setApoyoData] = useState<Apoyo[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [notification, setNotification] = useState<string | null>(null); // Estado para la notificación
   const router = useRouter();
   const { notify } = useNotification();
 
@@ -54,26 +49,20 @@ const GestionApoyo = () => {
     const fetchApoyo = async () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        console.log('Token:', token);
         if (!token) {
-          console.log('No token found, redirecting to login');
           router.push('/login');
           return;
         }
 
-        // Obtener todos los colaboradores (con token)
         const collaboratorsResponse = await fetch('/api/collaborators', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Collaborators response status:', collaboratorsResponse.status);
 
         const collaboratorsData = await collaboratorsResponse.json();
-        console.log('Collaborators response body:', collaboratorsData);
 
         if (!collaboratorsResponse.ok) {
-          console.log('Collaborators error data:', collaboratorsData);
           if (collaboratorsResponse.status === 403) {
             setError('No tienes permisos para acceder a los colaboradores');
             return;
@@ -81,7 +70,6 @@ const GestionApoyo = () => {
           throw new Error(`Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`);
         }
 
-        // Formatear los datos para incluir las propiedades necesarias para el popup
         const formattedData = collaboratorsData.data.map((collab: any) => ({
           id_collaborator: collab.id_collaborator,
           name: collab.name || 'Sin nombre',
@@ -91,8 +79,6 @@ const GestionApoyo = () => {
           role: collab.role || 'Sin rol',
           level: collab.level || 'Sin nivel',
           language: collab.language || 'Sin idioma',
-          group: collab.group || 'Sin grupo',
-          venue: collab.venue || 'Sin sede',
           college: collab.college || 'Sin universidad',
           degree: collab.degree || 'Sin carrera',
           semester: collab.semester || 'Sin semestre',
@@ -105,7 +91,6 @@ const GestionApoyo = () => {
           preferred_group: collab.preferred_group || null,
         }));
 
-        console.log('Datos formateados:', formattedData);
         setApoyoData(formattedData);
       } catch (error: any) {
         console.error('Error al obtener colaboradores:', error);
@@ -115,51 +100,32 @@ const GestionApoyo = () => {
     fetchApoyo();
   }, [router]);
 
-  // Obtener sedes y roles únicos
-  const uniqueSedes = Array.from(new Set(apoyoData.map(apoyo => apoyo.venue))).sort();
   const uniqueRoles = Array.from(new Set(apoyoData.map(apoyo => apoyo.role))).sort();
-
-  const sedeOptions = [
-    { label: 'Todas', value: '__All__' },
-    ...uniqueSedes.map(sede => ({ label: sede, value: sede })),
-  ];
 
   const rolOptions = [
     { label: 'Todas', value: '__All__' },
     ...uniqueRoles.map(rol => ({ label: rol, value: rol })),
   ];
 
-  // Filtrar los datos según el valor de búsqueda, sede, rol y status
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
     return apoyoData.filter(apoyo => {
-      // Filtro por status: solo mostrar aprobadas
       const matchesStatus = apoyo.status.toLowerCase() === 'aprobada';
-
-      // Filtro por nombre, correo o grupo
       const fullName = `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`.toLowerCase().trim();
       const matchesSearch =
         !searchTerm ||
         fullName.includes(searchTerm) ||
-        apoyo.email.toLowerCase().includes(searchTerm) ||
-        apoyo.group.toLowerCase().includes(searchTerm) ||
-        apoyo.venue.toLowerCase().includes(searchTerm);
-
-      // Filtro por sede
-      const matchesSede = section === '__All__' ? true : apoyo.venue === section;
-
-      // Filtro por rol
+        apoyo.email.toLowerCase().includes(searchTerm);
       const selectedRol = filterActivaExtra['role'];
       const matchesRol = selectedRol === '__All__' ? true : apoyo.role === selectedRol;
 
-      return matchesStatus && matchesSearch && matchesSede && matchesRol;
+      return matchesStatus && matchesSearch && matchesRol;
     });
-  }, [inputValue, section, filterActivaExtra, apoyoData]);
+  }, [inputValue, filterActivaExtra, apoyoData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
-  // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
       setCurrentPage(totalPages - 1);
@@ -168,34 +134,40 @@ const GestionApoyo = () => {
     }
   }, [filteredData.length, currentPage, totalPages]);
 
-  const sectionFilterChange = (value: string) => {
-    setSection(value);
-    setInputValue(''); // Resetear búsqueda al cambiar de sección
-    setCurrentPage(0); // Resetear página al cambiar de filtro
-  };
-
   const extraHandleFilterChange = (key: string, value: string) => {
     setFilterActivaExtra((prev) => ({
       ...prev,
       [key]: value,
     }));
-    setCurrentPage(0); // Resetear página al cambiar de filtro
+    setCurrentPage(0);
   };
 
-  // Función para abrir el popup de eliminación
   const handleDeleteClick = (apoyo: Apoyo, event: React.MouseEvent) => {
-    event.stopPropagation(); // Evitar que el clic en el botón abra el popup de información
+    event.stopPropagation();
     setSelectedApoyo(apoyo);
     setIsDeletePopupOpen(true);
   };
 
-  // Función para cerrar el popup de eliminación
+  const handleInfoClick = (apoyo: Apoyo) => {
+    setSelectedApoyo(apoyo);
+    setIsInfoPopupOpen(true);
+  };
+
+  const handleEditClick = (apoyo: Apoyo, event: React.MouseEvent) => {
+    event.stopPropagation();
+    router.push(`/admin/gestion-usuarios/staff/editarApoyo/${apoyo.id_collaborator}`);
+  };
+
   const handleCloseDeletePopup = () => {
     setIsDeletePopupOpen(false);
     setSelectedApoyo(null);
   };
 
-  // Función para confirmar la eliminación (cambiar status a "Cancelada")
+  const handleCloseInfoPopup = () => {
+    setIsInfoPopupOpen(false);
+    setSelectedApoyo(null);
+  };
+
   const handleConfirmDelete = async () => {
     if (selectedApoyo) {
       try {
@@ -206,7 +178,6 @@ const GestionApoyo = () => {
           return;
         }
 
-        // Obtener los datos originales del colaborador desde el backend
         const collaboratorResponse = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -220,9 +191,7 @@ const GestionApoyo = () => {
 
         const collaboratorData = await collaboratorResponse.json();
         const collaborator = collaboratorData.data;
-        console.log('Datos originales del colaborador:', collaborator);
 
-        // Preparar los datos para la actualización, usando los valores originales
         const updateData = {
           name: collaborator.name,
           paternal_name: collaborator.paternal_name,
@@ -236,17 +205,13 @@ const GestionApoyo = () => {
           preferred_role: collaborator.preferred_role,
           preferred_language: collaborator.preferred_language,
           preferred_level: collaborator.preferred_level,
-          // Omite preferred_group si es null para evitar la validación de sede
           ...(collaborator.preferred_group !== null && { preferred_group: collaborator.preferred_group }),
           role: collaborator.role,
-          status: 'Cancelada', // Solo cambiamos el status
+          status: 'Cancelada',
           level: collaborator.level,
           language: collaborator.language,
         };
 
-        console.log('Datos enviados al servidor para actualización:', updateData);
-
-        // Actualizar el status del colaborador a "Cancelada"
         const response = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}`, {
           method: 'PUT',
           headers: {
@@ -257,18 +222,15 @@ const GestionApoyo = () => {
         });
 
         const responseData = await response.json();
-        console.log('Respuesta del servidor:', responseData);
 
         if (!response.ok) {
           throw new Error(`Error updating collaborator: ${response.status} - ${responseData.message || 'Unknown error'}`);
         }
 
-        // Actualizar el estado local para reflejar el cambio
         setApoyoData(prevData =>
           prevData.filter(apoyo => apoyo.id_collaborator !== selectedApoyo.id_collaborator)
         );
 
-        // Mostrar notificación de éxito
         const fullName = `${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`;
         notify({
           color: 'green',
@@ -285,18 +247,6 @@ const GestionApoyo = () => {
     }
   };
 
-  // Función para abrir el popup de información
-  const handleRowClick = (apoyo: Apoyo) => {
-    setSelectedApoyo(apoyo);
-    setIsInfoPopupOpen(true);
-  };
-
-  // Función para cerrar el popup de información
-  const handleCloseInfoPopup = () => {
-    setIsInfoPopupOpen(false);
-    setSelectedApoyo(null);
-  };
-
   if (error) {
     return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
   }
@@ -306,14 +256,6 @@ const GestionApoyo = () => {
       <PageTitle>Gestión de Apoyo</PageTitle>
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        {/* Notificación de éxito */}
-        {notification && (
-          <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
-            {notification}
-          </div>
-        )}
-
-        {/* Fila de búsqueda, filtro y botón */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-1 gap-4">
             <div className="basis-2/3">
@@ -333,11 +275,7 @@ const GestionApoyo = () => {
               <FiltroEvento
                 disableCheckboxes
                 label="Filtros"
-                showSecciones
-                labelSecciones="Sedes"
-                secciones={sedeOptions}
-                seccionActiva={section}
-                onChangeSeccion={sectionFilterChange}
+                showSecciones={false}
                 extraFilters={[
                   {
                     label: 'Roles',
@@ -352,7 +290,6 @@ const GestionApoyo = () => {
           </div>
         </div>
 
-        {/* Tabla */}
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold">
@@ -362,8 +299,6 @@ const GestionApoyo = () => {
                 <th className="p-2 text-center">Rol</th>
                 <th className="p-2 text-center">Level</th>
                 <th className="p-2 text-center">Language</th>
-                <th className="p-2 text-center">Grupo</th>
-                <th className="p-2 text-center">Sede</th>
                 <th className="p-2 text-center">Acciones</th>
               </tr>
             </thead>
@@ -374,15 +309,13 @@ const GestionApoyo = () => {
                   <tr
                     key={index}
                     className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
-                    onClick={() => handleRowClick(apoyo)}
+                    onClick={() => handleInfoClick(apoyo)}
                   >
                     <td className="p-2 text-center">{fullName}</td>
                     <td className="p-2 text-center">{apoyo.email}</td>
                     <td className="p-2 text-center">{apoyo.role}</td>
                     <td className="p-2 text-center">{apoyo.level}</td>
                     <td className="p-2 text-center">{apoyo.language}</td>
-                    <td className="p-2 text-center">{apoyo.group}</td>
-                    <td className="p-2 text-center">{apoyo.venue}</td>
                     <td className="p-2 flex gap-2 justify-center">
                       <Button
                         label=''
@@ -398,7 +331,7 @@ const GestionApoyo = () => {
                         round
                         showLeftIcon
                         IconLeft={Highlighter}
-                        onClick={(event: React.MouseEvent) => event.stopPropagation()} // Evitar abrir el popup de info
+                        onClick={(event: React.MouseEvent) => handleEditClick(apoyo, event)}
                       />
                     </td>
                   </tr>
@@ -408,7 +341,6 @@ const GestionApoyo = () => {
           </table>
         </div>
 
-        {/* Paginación */}
         <div className="mt-auto pt-4 flex justify-center">
           <Pagination
             currentPage={currentPage}
@@ -419,7 +351,6 @@ const GestionApoyo = () => {
           />
         </div>
 
-        {/* Popup de eliminación */}
         {isDeletePopupOpen && selectedApoyo && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -435,14 +366,15 @@ const GestionApoyo = () => {
           </div>
         )}
 
-        {/* Popup de información */}
         {isInfoPopupOpen && selectedApoyo && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto">
               <h2 className="text-3xl font-bold mb-4 text-center">Información del Colaborador</h2>
               <div className="space-y-2">
                 <p><strong>ID:</strong> {selectedApoyo.id_collaborator}</p>
-                <p><strong>Nombre completo:</strong> {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}</p>
+                <p><strong>Nombre:</strong> {selectedApoyo.name}</p>
+                <p><strong>Apellido Paterno:</strong> {selectedApoyo.paternal_name}</p>
+                <p><strong>Apellido Materno:</strong> {selectedApoyo.maternal_name}</p>
                 <p><strong>Correo:</strong> {selectedApoyo.email}</p>
                 <p><strong>Teléfono:</strong> {selectedApoyo.phone_number}</p>
                 <p><strong>Universidad:</strong> {selectedApoyo.college}</p>
@@ -453,8 +385,6 @@ const GestionApoyo = () => {
                 <p><strong>Estado:</strong> {selectedApoyo.status}</p>
                 <p><strong>Nivel:</strong> {selectedApoyo.level}</p>
                 <p><strong>Idioma:</strong> {selectedApoyo.language}</p>
-                <p><strong>Grupo:</strong> {selectedApoyo.group}</p>
-                <p><strong>Sede:</strong> {selectedApoyo.venue}</p>
                 <p><strong>Rol preferido:</strong> {selectedApoyo.preferred_role}</p>
                 <p><strong>Idioma preferido:</strong> {selectedApoyo.preferred_language}</p>
                 <p><strong>Nivel preferido:</strong> {selectedApoyo.preferred_level}</p>

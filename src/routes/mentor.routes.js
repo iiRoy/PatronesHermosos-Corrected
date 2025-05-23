@@ -39,7 +39,7 @@ router.post(
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['admin', 'superuser']),
   mentorController.update
 );
 
