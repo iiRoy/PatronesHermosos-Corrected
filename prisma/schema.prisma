@@ -34,7 +34,7 @@ model collaborators {
   preferred_role     String?                @db.VarChar(255)
   preferred_language String?                @db.VarChar(255)
   preferred_level    String?                @db.VarChar(255)
-  preferred_group    Int?                   @db.UnsignedInt
+  preferred_venue    Int?                   @db.UnsignedInt
   gender             String?                @db.VarChar(255)
   role               collaborators_role     @default(Pendiente)
   status             collaborators_status   @default(Pendiente)
@@ -42,10 +42,9 @@ model collaborators {
   language           collaborators_language @default(Pendiente)
   id_group           Int?                   @db.UnsignedInt
   groups             groups?                @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "collaborators_ibfk_1")
-  preferredGroup     groups?                @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
-
+  preferredVenue     venues?                @relation("preferred_venue_fk", fields: [preferred_venue], references: [id_venue])
   @@index([id_group], map: "id_group")
-  @@index([preferred_group], map: "collaborators_preferred_group_fkey")
+  @@index([preferred_venue], map: "collaborators_preferred_venue_fkey")
 }
 
 model audit_log {

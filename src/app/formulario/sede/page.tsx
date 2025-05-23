@@ -358,7 +358,7 @@ const VenueRegistrationForm: React.FC = () => {
           lastNameM: '',
           email: '',
           phone: '',
-          gender: 'Femenino',
+          gender: '',
           username: '',
           password: '',
           confirmPassword: '',

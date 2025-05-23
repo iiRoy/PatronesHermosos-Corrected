@@ -967,7 +967,7 @@ CREATE OR REPLACE PROCEDURE registrar_colab(
     IN rol_preferido VARCHAR(255),
     IN idioma_preferido VARCHAR(255),
     IN nivel_preferido VARCHAR(255),
-    IN id_grupo_preferido INT,
+    IN id_venue_preferido INT,
     IN genero VARCHAR(255)
 )
 BEGIN
@@ -987,16 +987,16 @@ BEGIN
         name, paternal_name, maternal_name, email, phone_number,
         college, degree, semester,
         preferred_role, preferred_language, preferred_level,
-        preferred_group, gender
+        preferred_venue, gender
     )
     VALUES (
         nombre, paterno, materno, email, telefono,
         universidad, carrera, semestre,
         rol_preferido, idioma_preferido, nivel_preferido,
-        id_grupo_preferido, genero
+        id_venue_preferido, genero
     );
 END;
-$$ 
+$$
 
 -- 🔸 Ejemplo de uso:
 
