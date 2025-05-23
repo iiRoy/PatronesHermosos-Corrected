@@ -18,7 +18,7 @@ const submenuLinks = [
 ];
 
 const submenuLinksCoordinadora = [
-  { label: 'Mentoras', icon: 'GraduationCap', href: '/coordinador/gestion-usuarios/mentoras' },
+  { label: 'Mentoras', icon: 'GraduationCap', href: '/coordinador/gestion-usuarios-coordinadora/mentoras' },
   { label: 'Apoyo y Staff', icon: 'Users', href: '/coordinador/gestion-usuarios/staff' },
   { label: 'Participantes', icon: 'User', href: '/coordinador/gestion-usuarios/participantes' },
 ];

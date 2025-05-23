@@ -11,7 +11,7 @@ import { jwtDecode } from 'jwt-decode';
 
 interface Mentora {
     id_mentor: number;
-    id_venue: number; // Assuming id_venue is a number
+    id_venue: number;
     name: string;
     email: string;
     phone_number: string;
@@ -51,7 +51,7 @@ const GestionMentoras = () => {
                 const decoded: DecodedToken = jwtDecode(token);
                 console.log('Decoded token:', decoded);
                 if (decoded.role === 'venue_coordinator') {
-                    setCoordinatorVenueId(decoded.userId); // userId is id_venue_coord, matching id_venue
+                    setCoordinatorVenueId(decoded.userId); // userId es id_venue_coord, que coincide con id_venue
                 } else {
                     setError('Este dashboard es solo para coordinadores de sede');
                     router.push('/login');
@@ -94,17 +94,8 @@ const GestionMentoras = () => {
                     throw new Error(`Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`);
                 }
 
-                // Debug the id_venue values from the API
-                mentorsData.data.forEach((mentor: any, index: number) => {
-                    console.log(`Mentor ${index + 1} id_venue:`, mentor.id_venue);
-                });
-
                 const formattedData = mentorsData.data
-                    .filter((mentor: any) => {
-                        const mentorVenueId = typeof mentor.id_venue === 'number' ? mentor.id_venue : null;
-                        console.log(`Filtering mentor with id_venue: ${mentor.id_venue}, coordinatorVenueId: ${coordinatorVenueId}`);
-                        return mentorVenueId === coordinatorVenueId;
-                    })
+                    .filter((mentor: any) => coordinatorVenueId === null || mentor.id_venue === coordinatorVenueId)
                     .map((mentor: any) => ({
                         id_mentor: mentor.id_mentor,
                         id_venue: mentor.id_venue,
@@ -165,7 +156,7 @@ const GestionMentoras = () => {
     };
 
     const handleEditClick = (mentora: Mentora) => {
-        router.push(`/admin/gestion-usuarios/mentoras/editarMentora/${mentora.id_mentor}`);
+        router.push(`/coordinador/gestion-usuarios-coordinadora/mentoras/editarMentora/${mentora.id_mentor}`);
     };
 
     const handleCloseDeletePopup = () => {
@@ -288,7 +279,7 @@ const GestionMentoras = () => {
 
                 {isDetailsPopupOpen && selectedMentora && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h[80vh] overflow-y-auto">
+                        <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
                             <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Mentora</h2>
                             <div className="pt-6 pb-6">
                                 <p><strong>ID:</strong> {selectedMentora.id_mentor}</p>

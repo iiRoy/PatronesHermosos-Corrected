@@ -18,6 +18,7 @@ const getAll = async (req, res) => {
       email: mentor.email || 'Sin correo',
       phone_number: mentor.phone_number || 'Sin teléfono',
       venue: mentor.venues?.name || 'Sede desconocida',
+      id_venue: mentor.id_venue,
       number_of_groups: mentor.groups.length,
     }));
 
