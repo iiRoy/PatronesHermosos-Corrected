@@ -40,6 +40,20 @@ CREATE TABLE `collaborators` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `audit_log` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `action` ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+    `table_name` VARCHAR(50) NOT NULL,
+    `id_venue` INTEGER UNSIGNED NULL,
+    `username` VARCHAR(255) NOT NULL,
+    `message` TEXT NOT NULL,
+    `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+
+    INDEX `id_venue`(`id_venue`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `groups` (
     `id_group` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NULL,
@@ -53,6 +67,7 @@ CREATE TABLE `groups` (
     `end_date` DATE NULL,
     `start_hour` TIME(0) NULL,
     `end_hour` TIME(0) NULL,
+    `status` ENUM('Aprobada', 'Cancelada') NOT NULL DEFAULT 'Aprobada',
     `id_mentor` INTEGER UNSIGNED NULL,
     `id_venue` INTEGER UNSIGNED NOT NULL,
 
@@ -171,6 +186,9 @@ ALTER TABLE `collaborators` ADD CONSTRAINT `collaborators_ibfk_1` FOREIGN KEY (`
 
 -- AddForeignKey
 ALTER TABLE `collaborators` ADD CONSTRAINT `collaborators_preferred_group_fkey` FOREIGN KEY (`preferred_group`) REFERENCES `groups`(`id_group`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `audit_log` ADD CONSTRAINT `audit_log_id_venue_fkey` FOREIGN KEY (`id_venue`) REFERENCES `venues`(`id_venue`) ON DELETE NO ACTION ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `groups` ADD CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`id_mentor`) REFERENCES `mentors`(`id_mentor`) ON DELETE SET NULL ON UPDATE RESTRICT;

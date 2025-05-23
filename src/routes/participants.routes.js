@@ -56,6 +56,12 @@ router.delete(
   roleMiddleware(['superuser']),
   participantsController.deleteParticipant
 );
+router.patch(
+  '/:id/status',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  participantsController.changeParticipantStatus,
+);
 
 // Serve files from uploads/tmp
 router.get('/files/:filename', async (req, res) => {

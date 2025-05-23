@@ -64,6 +64,7 @@ router.put(
   venueController.update,
 );
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController.remove);
+router.post('/:id/cancel', authMiddleware, roleMiddleware(['admin']), venueController.cancelVenue);
 
 // Serve files from uploads/tmp
 router.get('/files/:filename', (req, res) => {
