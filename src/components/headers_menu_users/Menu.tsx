@@ -17,6 +17,12 @@ const submenuLinks = [
   { label: 'Participantes', icon: 'User', href: '/admin/gestion-usuarios/participantes' },
 ];
 
+const submenuLinksCoordinadora = [
+  { label: 'Mentoras', icon: 'GraduationCap', href: '/coordinador/gestion-usuarios/mentoras' },
+  { label: 'Apoyo y Staff', icon: 'Users', href: '/coordinador/gestion-usuarios/staff' },
+  { label: 'Participantes', icon: 'User', href: '/coordinador/gestion-usuarios/participantes' },
+];
+
 const Menu: React.FC = () => {
   const [role, setRole] = useState<string | null>(null);
   const [submenuVisible, setSubmenuVisible] = useState(false);
@@ -108,6 +114,7 @@ const Menu: React.FC = () => {
           { icon: 'Bank', label: 'SEDES', href: '/sedes', visible: ['superuser'] },
           { icon: 'Bank', label: 'Mi SEDE', href: '/mi-sede', visible: ['venue_coordinator'] },
           { icon: 'Users', label: 'Gestionar Usuarios', visible: ['superuser'] },
+          { icon: 'Users', label: 'Gestion de Usuarios', visible: ['venue_coordinator'] },
           {
             icon: 'PaperPlaneTilt',
             label: 'Solicitudes',
@@ -157,17 +164,14 @@ const Menu: React.FC = () => {
                       >
                         {/* submenú real */}
                         <div
-                          className={`absolute left-[200px] ${
-                            submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
-                          } transition-opacity duration-200 ${
-                            fadeSubmenu ? 'opacity-100' : 'opacity-0'
-                          }`}
+                          className={`absolute left-[200px] ${submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
+                            } transition-opacity duration-200 ${fadeSubmenu ? 'opacity-100' : 'opacity-0'
+                            }`}
                         >
                           {/* flechita */}
                           <div
-                            className={`absolute -left-3 ${
-                              submenuDirection === 'down' ? 'top-4' : 'top-20'
-                            } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
+                            className={`absolute -left-3 ${submenuDirection === 'down' ? 'top-4' : 'top-20'
+                              } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
                           />
                           <div
                             className='bg-[var(--primaryColor)] rounded-lg shadow-custom-dark w-60 p-2 flex flex-col border border-transparent overflow-y-auto scrollbar-hide'
@@ -176,6 +180,66 @@ const Menu: React.FC = () => {
                             }}
                           >
                             {submenuLinks.map(({ label, href, icon }) => {
+                              const SubIcon = Icons[icon as keyof typeof Icons];
+                              return (
+                                <SubmenuLink key={label} label={label} Icon={SubIcon} href={href} />
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>,
+                      document.body,
+                    )}
+                </div>
+              );
+            }
+
+            if (item.label === 'Gestion de Usuarios') {
+              return (
+                <div
+                  key={item.label}
+                  className='relative group'
+                  onMouseEnter={triggerOpenSubmenu}
+                  ref={triggerRef}
+                >
+                  <OptionLink label={item.label} Icon={IconComponent} forceActive={fadeSubmenu} />
+
+                  {submenuVisible &&
+                    createPortal(
+                      <div
+                        ref={hoverAreaRef}
+                        className='fixed z-30'
+                        style={{
+                          top:
+                            submenuDirection === 'down'
+                              ? submenuCoords.top
+                              : submenuCoords.top + 80,
+                          left: submenuCoords.left - 200,
+                          width: 260,
+                          height:
+                            submenuDirection === 'down' ? submenuHeight / 14 : submenuHeight / 3, // zona de hover
+                        }}
+                        onMouseEnter={triggerOpenSubmenu}
+                        onMouseLeave={triggerCloseSubmenu}
+                      >
+                        {/* submenú real */}
+                        <div
+                          className={`absolute left-[200px] ${submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
+                            } transition-opacity duration-200 ${fadeSubmenu ? 'opacity-100' : 'opacity-0'
+                            }`}
+                        >
+                          {/* flechita */}
+                          <div
+                            className={`absolute -left-3 ${submenuDirection === 'down' ? 'top-4' : 'top-20'
+                              } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
+                          />
+                          <div
+                            className='bg-[var(--primaryColor)] rounded-lg shadow-custom-dark w-60 p-2 flex flex-col border border-transparent overflow-y-auto scrollbar-hide'
+                            style={{
+                              maxHeight: submenuHeight,
+                            }}
+                          >
+                            {submenuLinksCoordinadora.map(({ label, href, icon }) => {
                               const SubIcon = Icons[icon as keyof typeof Icons];
                               return (
                                 <SubmenuLink key={label} label={label} Icon={SubIcon} href={href} />
