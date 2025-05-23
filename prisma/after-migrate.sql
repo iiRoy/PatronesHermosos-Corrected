@@ -1240,7 +1240,7 @@ BEGIN
         direccion_sede, 
         logo, 
         convocatoria, 
-        logo_path, 
+        logo_path,
         convocatoria_path, 
         'Pendiente'
     );
