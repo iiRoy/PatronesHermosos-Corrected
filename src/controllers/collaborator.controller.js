@@ -15,32 +15,28 @@ const createCollaborator = async (req, res) => {
     preferred_role,
     preferred_language,
     preferred_level,
-    preferred_group,
+    preferred_venue,
     gender,
   } = req.body;
 
   try {
-    const newCollaborator = await prisma.collaborators.create({
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        college,
-        degree,
-        semester,
-        preferred_role,
-        preferred_language,
-        preferred_level,
-        gender,
-        role: 'Pendiente',
-        status: 'Pendiente',
-        level: 'Pendiente',
-        language: 'Pendiente',
-        preferred_group: preferred_group ? parseInt(preferred_group) : null,
-      },
-    });
+    await prisma.$queryRaw`
+      CALL registrar_colab(
+        ${name}, 
+        ${paternal_name}, 
+        ${maternal_name}, 
+        ${email}, 
+        ${phone_number},
+        ${college}, 
+        ${degree}, 
+        ${semester},
+        ${preferred_role}, 
+        ${preferred_language}, 
+        ${preferred_level},
+        ${preferred_venue}, 
+        ${gender}
+      );
+    `;
 
     res.status(201).json({
       success: true,
@@ -48,8 +44,8 @@ const createCollaborator = async (req, res) => {
       data: newCollaborator,
     });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientValidationError) {
-      return res.status(422).json({ success: false, message: 'Datos inválidos', error: error.message });
+    if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
+      return res.status(422).json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
     }
     console.error('Error al crear colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
@@ -61,26 +57,22 @@ const getAllCollaborators = async (req, res) => {
   try {
     const collaborators = await prisma.collaborators.findMany({
       include: {
-        groups: { // Grupo asignado (para Gestión de Apoyo)
+        groups: {
           select: {
             id_group: true,
             name: true,
             venues: {
               select: {
+                id_venue: true,
                 name: true,
               },
             },
           },
         },
-        preferredGroup: { // Grupo preferido (para Solicitudes de Registro)
+        preferredVenue: { // Changed from preferredGroup
           select: {
-            id_group: true,
+            id_venue: true,
             name: true,
-            venues: {
-              select: {
-                name: true,
-              },
-            },
           },
         },
       },
@@ -99,6 +91,7 @@ const getAllCollaborators = async (req, res) => {
       language: collab.language || 'Sin idioma',
       group: collab.groups?.name || 'Sin grupo',
       venue: collab.groups?.venues?.name || 'Sin sede',
+      venue_id: collab.groups?.venues?.id_venue || null,
       college: collab.college || 'Sin universidad',
       degree: collab.degree || 'Sin carrera',
       semester: collab.semester || 'Sin semestre',
@@ -107,10 +100,10 @@ const getAllCollaborators = async (req, res) => {
       preferred_role: collab.preferred_role || 'Sin rol preferido',
       preferred_language: collab.preferred_language || 'Sin idioma preferido',
       preferred_level: collab.preferred_level || 'Sin nivel preferido',
-      preferred_group: collab.preferred_group || null,
+      preferred_venue: collab.preferred_venue || null,
     }));
 
-    // Formateo para Solicitudes (usando grupo preferido)
+    // Formateo para Solicitudes (usando sede preferida)
     const formattedCollaboratorsForRequests = collaborators.map(collab => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name || 'Sin nombre',
@@ -129,16 +122,15 @@ const getAllCollaborators = async (req, res) => {
       preferred_role: collab.preferred_role || 'Sin rol preferido',
       preferred_language: collab.preferred_language || 'Sin idioma preferido',
       preferred_level: collab.preferred_level || 'Sin nivel preferido',
-      preferred_group: collab.preferred_group || null,
-      groups: collab.preferredGroup
+      preferred_venue: collab.preferred_venue || null,
+      venue: collab.preferredVenue
         ? {
-          name: collab.preferredGroup.name || 'No asignado',
-          venues: collab.preferredGroup.venues || { name: 'No asignado' },
-        }
+            id_venue: collab.preferredVenue.id_venue || null,
+            name: collab.preferredVenue.name || 'No asignado',
+          }
         : null,
     }));
 
-    // Devolver ambos formateos en la respuesta
     res.json({
       success: true,
       data: formattedCollaborators, // Para Gestión de Apoyo
@@ -164,20 +156,16 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true,
                 name: true,
               },
             },
           },
         },
-        preferredGroup: {
+        preferredVenue: {
           select: {
-            id_group: true,
+            id_venue: true,
             name: true,
-            venues: {
-              select: {
-                name: true,
-              },
-            },
           },
         },
       },
@@ -189,11 +177,11 @@ const getCollaboratorById = async (req, res) => {
 
     const formattedCollaborator = {
       ...collaborator,
-      groups: collaborator.preferredGroup
+      venue: collaborator.preferredVenue
         ? {
-          name: collaborator.preferredGroup.name || 'No asignado',
-          venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
-        }
+            id_venue: collaborator.preferredVenue.id_venue || null,
+            name: collaborator.preferredVenue.name || 'No asignado',
+          }
         : null,
     };
 
@@ -219,7 +207,7 @@ const updateCollaborator = async (req, res) => {
     preferred_role,
     preferred_language,
     preferred_level,
-    preferred_group,
+    preferred_venue,
     gender,
     role,
     status,
@@ -247,7 +235,7 @@ const updateCollaborator = async (req, res) => {
         status,
         level,
         language,
-        preferred_group: preferred_group ? parseInt(preferred_group) : null,
+        preferred_venue: preferred_venue ? parseInt(preferred_venue) : null,
       },
     });
 
@@ -322,9 +310,16 @@ const getCollaboratorsTable = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true,
                 name: true,
               },
             },
+          },
+        },
+        preferredVenue: {
+          select: {
+            id_venue: true,
+            name: true,
           },
         },
       },
@@ -333,7 +328,8 @@ const getCollaboratorsTable = async (req, res) => {
     const formatted = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name,
-      venue: collab.groups?.venues?.name || 'Sin sede',
+      venue: collab.preferredVenue?.name || collab.groups?.venues?.name || 'Sin sede',
+      venue_id: collab.preferredVenue?.id_venue || collab.groups?.venues?.id_venue || null,
       group: collab.groups?.name || 'Sin grupo',
       email: collab.email || 'Sin correo',
       phone_number: collab.phone_number || 'Sin teléfono',
