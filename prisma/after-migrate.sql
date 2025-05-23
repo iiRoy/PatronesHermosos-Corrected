@@ -1177,7 +1177,8 @@ DELIMITER $$
 CREATE OR REPLACE PROCEDURE registrar_sede(
     -- Datos de la sede
     IN nombre_sede VARCHAR(255),
-    IN ubicacion_sede VARCHAR(255),
+    IN pais_sede VARCHAR(255),
+    IN region_sede VARCHAR(255),
     IN direccion_sede VARCHAR(255),
     IN logo BLOB,
     IN convocatoria BLOB,
@@ -1223,7 +1224,8 @@ BEGIN
     -- Insert into venues with file paths
     INSERT INTO venues (
         name, 
-        location, 
+        country,
+        state,
         address, 
         logo, 
         participation_file, 
@@ -1233,7 +1235,8 @@ BEGIN
     )
     VALUES (
         nombre_sede, 
-        ubicacion_sede, 
+        pais_sede,
+        region_sede, 
         direccion_sede, 
         logo, 
         convocatoria, 
