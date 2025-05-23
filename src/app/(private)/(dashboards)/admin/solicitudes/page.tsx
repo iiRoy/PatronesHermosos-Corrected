@@ -7,6 +7,7 @@ import PageTitle from '@/components/headers_menu_users/pageTitle';
 import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/components/buttons_inputs/Notification'; // Add notification hook
 
 // Interfaces para los datos de cada sección
 interface Participante {
@@ -16,7 +17,7 @@ interface Participante {
   maternal_name: string;
   email: string;
   preferred_group: number | null;
-  groups?: { name: string; venues?: { name: string } } | null; // Relación para obtener nombre del grupo y sede
+  groups?: { name: string; venues?: { name: string } } | null;
   status: string;
   tutors?: { phone_number: string };
 }
@@ -37,7 +38,7 @@ interface ApoyoStaff {
   preferred_language: string;
   preferred_level: string;
   preferred_group: number | null;
-  groups?: { name: string; venues?: { name: string } } | null; // Relación para obtener nombre del grupo y sede
+  groups?: { name: string; venues?: { name: string } } | null;
   role: string;
   level: string;
   language: string;
@@ -52,6 +53,12 @@ interface Sede {
   status: string;
 }
 
+interface GroupOption {
+  id_group: number;
+  name: string;
+  available_places: number;
+}
+
 const SolicitudesRegistroAdmin = () => {
   const [inputValue, setInputValue] = useState('');
   const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES'>('PARTICIPANTES');
@@ -60,14 +67,62 @@ const SolicitudesRegistroAdmin = () => {
   const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
   const [isRejectPopupOpen, setIsRejectPopupOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Participante | ApoyoStaff | Sede | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<string>('Grupo 03');
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // For Participants
+  const [selectedGroup, setSelectedGroup] = useState<string>(''); // For Apoyo & Staff
+  const [selectedRole, setSelectedRole] = useState<string>(''); // For Apoyo & Staff roles
+  const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
+  const [venueName, setVenueName] = useState('');
   const [participantesData, setParticipantesData] = useState<Participante[]>([]);
   const [apoyoStaffData, setApoyoStaffData] = useState<ApoyoStaff[]>([]);
   const [sedesData, setSedesData] = useState<Sede[]>([]);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { notify } = useNotification(); // Initialize notification
 
   const rowsPerPage = 20;
+
+  // Fetch available groups for a participant
+  const fetchAvailableGroups = async (participantId: number) => {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/participants/${participantId}/available-groups`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al obtener grupos disponibles');
+      }
+
+      const data = await response.json();
+      setAvailableGroups(data.groups || []);
+      setVenueName(data.venue || 'No asignado');
+      // Set default group to preferred group if available
+      const participant = participantesData.find(p => p.id_participant === participantId);
+      const preferredGroupId = participant?.preferred_group;
+      const defaultGroup = data.groups.find((g: GroupOption) => g.id_group === preferredGroupId);
+      setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
+    } catch (error: any) {
+      console.error('Error fetching available groups:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudieron cargar los grupos disponibles: ${error.message}`,
+        duration: 5000,
+      });
+    }
+  };
 
   // Obtener datos de la base de datos
   useEffect(() => {
@@ -80,11 +135,9 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        // Obtener participantes (usando la clave dataForRequests para el formato basado en preferred_group)
+        // Obtener participantes
         const participantsResponse = await fetch('/api/participants', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (!participantsResponse.ok) {
           const errorData = await participantsResponse.json();
@@ -94,11 +147,9 @@ const SolicitudesRegistroAdmin = () => {
         const pendingParticipants = participantsData.dataForRequests.filter((p: Participante) => p.status === 'Pendiente');
         setParticipantesData(pendingParticipants);
 
-        // Obtener colaboradores (usando la clave dataForRequests para el formato basado en preferred_group)
+        // Obtener colaboradores
         const collaboratorsResponse = await fetch('/api/collaborators', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (!collaboratorsResponse.ok) {
           const errorData = await collaboratorsResponse.json();
@@ -110,9 +161,7 @@ const SolicitudesRegistroAdmin = () => {
 
         // Obtener sedes
         const venuesResponse = await fetch('/api/venues', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (!venuesResponse.ok) {
           const errorData = await venuesResponse.json();
@@ -169,14 +218,13 @@ const SolicitudesRegistroAdmin = () => {
 
   const sectionFilterChange = (newSection: 'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES') => {
     setSection(newSection);
-    setCurrentPage(0); // Reset page when switching sections
-    setInputValue(''); // Resetear la barra de búsqueda al cambiar de sección
+    setCurrentPage(0);
+    setInputValue('');
   };
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
-  // Añadimos un useEffect para reiniciar currentPage cuando filteredData cambie
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
       setCurrentPage(totalPages - 1);
@@ -197,13 +245,23 @@ const SolicitudesRegistroAdmin = () => {
 
   const openConfirmPopup = (item: Participante | ApoyoStaff | Sede) => {
     setSelectedItem(item);
+    if (section === 'PARTICIPANTES') {
+      fetchAvailableGroups((item as Participante).id_participant);
+    } else if (section === 'APOYO & STAFF') {
+      setSelectedRole((item as ApoyoStaff).preferred_role || 'Instructora');
+      setSelectedGroup((item as ApoyoStaff).groups?.name || 'Luna');
+    }
     setIsConfirmPopupOpen(true);
   };
 
   const closeConfirmPopup = () => {
     setIsConfirmPopupOpen(false);
     setSelectedItem(null);
-    setSelectedGroup('Grupo 03');
+    setSelectedGroupId(null);
+    setSelectedGroup('');
+    setSelectedRole('');
+    setAvailableGroups([]);
+    setVenueName('');
   };
 
   const openRejectPopup = (item: Participante | ApoyoStaff | Sede) => {
@@ -216,14 +274,174 @@ const SolicitudesRegistroAdmin = () => {
     setSelectedItem(null);
   };
 
-  const handleAccept = () => {
-    console.log('Solicitud aceptada para:', selectedItem, 'Grupo:', selectedGroup);
-    closeConfirmPopup();
+  const handleAccept = async () => {
+    if (!selectedItem) {
+      closeConfirmPopup();
+      return;
+    }
+
+    if (section === 'PARTICIPANTES') {
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        if (!selectedGroupId) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Por favor selecciona un grupo',
+            duration: 5000,
+          });
+          return;
+        }
+
+        const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/approve`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ groupId: selectedGroupId }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al aprobar participante');
+        }
+
+        // Remove participant from list
+        setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
+
+        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        notify({
+          color: 'green',
+          title: 'Éxito',
+          message: `Participante ${fullName} aprobado exitosamente`,
+          duration: 5000,
+        });
+
+        closeConfirmPopup();
+      } catch (error: any) {
+        console.error('Error approving participant:', error);
+        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo aprobar al participante ${fullName}: ${error.message}`,
+          duration: 5000,
+        });
+      }
+    } else if (section === 'APOYO & STAFF') {
+      // Placeholder for Apoyo & Staff approval
+      console.log('Solicitud aceptada para:', selectedItem, 'Rol:', selectedRole, 'Grupo:', selectedGroup);
+      const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Colaborador ${fullName} aprobado (rol: ${selectedRole}, grupo: ${selectedGroup})`,
+        duration: 5000,
+      });
+      closeConfirmPopup();
+    } else {
+      // Placeholder for Sedes
+      console.log('Solicitud aceptada para:', selectedItem);
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Sede ${(selectedItem as Sede).name} aprobada`,
+        duration: 5000,
+      });
+      closeConfirmPopup();
+    }
   };
 
-  const handleReject = () => {
-    console.log('Solicitud rechazada para:', selectedItem);
-    closeRejectPopup();
+  const handleReject = async () => {
+    if (!selectedItem) {
+      closeRejectPopup();
+      return;
+    }
+
+    if (section === 'PARTICIPANTES') {
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: 'Rechazada' }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al rechazar participante');
+        }
+
+        // Remove participant from list
+        setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
+
+        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        notify({
+          color: 'green',
+          title: 'Éxito',
+          message: `Participante ${fullName} rechazado exitosamente`,
+          duration: 5000,
+        });
+
+        closeRejectPopup();
+      } catch (error: any) {
+        console.error('Error rejecting participant:', error);
+        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo rechazar al participante ${fullName}: ${error.message}`,
+          duration: 5000,
+        });
+      }
+    } else if (section === 'APOYO & STAFF') {
+      // Placeholder for Apoyo & Staff rejection
+      console.log('Solicitud rechazada para:', selectedItem);
+      const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Colaborador ${fullName} rechazado`,
+        duration: 5000,
+      });
+      closeRejectPopup();
+    } else {
+      // Placeholder for Sedes
+      console.log('Solicitud rechazada para:', selectedItem);
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Sede ${(selectedItem as Sede).name} rechazada`,
+        duration: 5000,
+      });
+      closeRejectPopup();
+    }
   };
 
   if (error) {
@@ -448,19 +666,31 @@ const SolicitudesRegistroAdmin = () => {
               <div className="pt-6 pb-6">
                 {section === 'PARTICIPANTES' && selectedItem && (
                   <>
-                    <p><strong>Sede:</strong> {(selectedItem as Participante).groups?.venues?.name || 'No asignado'}</p>
+                    <p><strong>Sede:</strong> {venueName}</p>
                     <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).groups?.name || 'No asignado'}</p>
                     <p className="mt-4"><strong>Asignar a un grupo</strong></p>
                     <select
                       className="w-full p-2 border rounded mt-2 bg-purple-100"
-                      value={selectedGroup}
-                      onChange={(e) => setSelectedGroup(e.target.value)}
+                      value={selectedGroupId || ''}
+                      onChange={(e) => setSelectedGroupId(parseInt(e.target.value))}
+                      disabled={availableGroups.length === 0}
                     >
-                      <option>Luna</option>
-                      <option>Sol</option>
-                      <option>Mar</option>
-                      <option>Montaña</option>
+                      {availableGroups.length === 0 ? (
+                        <option value="">No hay grupos disponibles</option>
+                      ) : (
+                        availableGroups.map(group => (
+                          <option key={group.id_group} value={group.id_group}>
+                            {group.name}
+                          </option>
+                        ))
+                      )}
                     </select>
+                    {selectedGroupId && (
+                      <p className="mt-2">
+                        <strong>Cupo disponible:</strong>{' '}
+                        {availableGroups.find(g => g.id_group === selectedGroupId)?.available_places || 0}
+                      </p>
+                    )}
                   </>
                 )}
                 {section === 'APOYO & STAFF' && selectedItem && (
@@ -470,8 +700,8 @@ const SolicitudesRegistroAdmin = () => {
                     <p className="mt-4"><strong>Asignar un rol</strong></p>
                     <select
                       className="w-full p-2 border rounded mt-2 bg-purple-100"
-                      value={selectedGroup}
-                      onChange={(e) => setSelectedGroup(e.target.value)}
+                      value={selectedRole}
+                      onChange={(e) => setSelectedRole(e.target.value)}
                     >
                       <option>Instructora</option>
                       <option>Staff</option>
@@ -499,7 +729,7 @@ const SolicitudesRegistroAdmin = () => {
                 )}
               </div>
               <div className="mt-4 flex justify-center gap-4">
-                <Button label="Aceptar" variant="success" onClick={handleAccept} />
+                <Button label="Aceptar" variant="success" onClick={handleAccept} disabled={section === 'PARTICIPANTES' && !selectedGroupId} />
                 <Button label="Cancelar" variant="error" onClick={closeConfirmPopup} />
               </div>
             </div>
