@@ -45,7 +45,27 @@ model collaborators {
   preferredGroup     groups?                @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
 
   @@index([id_group], map: "id_group")
-  @@index([preferred_group], map: "collaborators_preferred_group_fkey")
+}
+
+
+model audit_log {
+  id         Int         @id @default(autoincrement())
+  action     AuditAction
+  table_name String      @db.VarChar(50)
+  id_venue   Int?        @db.UnsignedInt  
+  username   String      @db.VarChar(255)
+  message    String      @db.Text
+  created_at DateTime    @default(now()) @db.Timestamp(0)
+
+  venues     venues?     @relation(fields: [id_venue], references: [id_venue], onDelete: NoAction, onUpdate: Restrict)
+
+  @@index([id_venue], map: "id_venue")
+}
+
+enum AuditAction {
+  INSERT
+  UPDATE
+  DELETE
 }
 
 model groups {
