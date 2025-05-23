@@ -1304,7 +1304,6 @@ END;
 $$
 
 
---proceso global para registrar los logs
 DELIMITER $$
 
 CREATE PROCEDURE registrar_log (
