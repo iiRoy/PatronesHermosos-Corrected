@@ -30,9 +30,10 @@ const parseNestedBody = (body) => {
 
 const validateVenue = [
   // Venue fields
-  body('name').notEmpty().withMessage('El nombre del venue es obligatorio'),
-  body('location').notEmpty().withMessage('La localización del venue es obligatoria'),
-  body('address').notEmpty().withMessage('La dirección del venue es obligatoria'),
+  body('name').notEmpty().withMessage('El nombre de la sede es obligatorio'),
+  body('country').notEmpty().withMessage('El país de la sede es obligatoria'),
+  body('state').notEmpty().withMessage('La región de la sede es obligatoria'),
+  body('address').notEmpty().withMessage('La dirección de la sede es obligatoria'),
 
   // General Coordinator fields
   body('generalCoordinator[name]')

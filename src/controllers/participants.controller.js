@@ -33,10 +33,9 @@ const parseNestedBody = (body) => {
 // Crear participante
 const createParticipant = async (req, res) => {
   console.log('Received files:', req.files);
-  // Transform flat req.body into nested structure
+  console.log('Parsed body:', req.body); // Add this to debug
   const parsedBody = parseNestedBody(req.body);
 
-  // Extract text fields
   const {
     name,
     paternal_name,
@@ -48,7 +47,6 @@ const createParticipant = async (req, res) => {
     tutor = {},
   } = parsedBody;
 
-  // Extract file
   const files = req.files || {};
   let participation_file = null;
   let participation_file_path = null;
@@ -57,11 +55,6 @@ const createParticipant = async (req, res) => {
     const filePath = files['participation_file'][0].path;
     participation_file = await fs.readFile(filePath);
     participation_file_path = files['participation_file'][0].filename;
-  }
-
-  // Validate required file
-  if (!files['participation_file']) {
-    return res.status(400).json({ message: 'El archivo de participación es obligatorio' });
   }
 
   try {

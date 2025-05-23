@@ -253,7 +253,6 @@ const ParticipantRegistrationForm: React.FC = () => {
             className="px-4 py-2 rounded-full flex items-center"
           />
         </div>
-
         {/* Datos del Participante */}
         <div className="mb-6">
           <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">

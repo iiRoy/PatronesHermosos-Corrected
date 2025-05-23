@@ -53,7 +53,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-10 py-2 bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer z-30"
+          className="w-full pl-10 pr-10 py-2 bg-inherit rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer z-30"
           disabled={variant.includes('disabled')}
         >
           {options.map((option, index) => {
