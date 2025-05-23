@@ -34,7 +34,7 @@ router.post(
   '/',
   upload.fields([{ name: 'participation_file', maxCount: 1 }]),
   validateParticipant,
-  participantsController.createParticipant
+  participantsController.createParticipant,
 );
 router.get('/:id', authMiddleware, participantsController.getParticipantById);
 router.get('/table', authMiddleware, participantsController.getParticipantsTable);

@@ -27,7 +27,7 @@ const parseNestedBody = (body) => {
     }
   }
 
-  return phenols;
+  return result;
 };
 
 const validateParticipant = [
@@ -50,18 +50,19 @@ const validateParticipant = [
   body('year').notEmpty().withMessage('El grado del participante es obligatorio'),
   body('education').notEmpty().withMessage('La escolaridad del participante es obligatoria'),
   body('id_group')
-    .notEmpty()
-    .withMessage('El grupo es obligatorio')
-    .isInt()
-    .withMessage('El ID del grupo debe ser un número entero')
-    .custom(async (id_group) => {
+  .optional() // Make the field optional
+  .isInt()
+  .withMessage('El ID del grupo debe ser un número entero')
+  .custom(async (id_group) => {
+    if (id_group) { // Only validate if id_group is provided
       const group = await prisma.groups.findUnique({
         where: { id_group: parseInt(id_group) },
       });
       if (!group) {
         throw new Error('El grupo especificado no existe');
       }
-    }),
+    }
+  }),
 
   // Tutor fields
   body('tutor[name]').notEmpty().withMessage('El nombre del tutor es obligatorio'),
