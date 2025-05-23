@@ -31,25 +31,31 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/groups');
-        const data = await response.json();
-        const transformedGroups = data.map((group: any) => ({
-          id_group: group.id_group,
-          name: group.name,
-          mode: group.mode || 'Presencial',
-          sede: group.venues?.name || 'N/A',
-          cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
-          horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
-        }));
-        setGroups(transformedGroups);
-      } catch (err) {
-        console.error('Error fetching groups:', err);
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/groups');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
-    fetchGroups();
-  }, []);
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
+      }
+      const transformedGroups = data.map((group: any) => ({
+        id_group: group.id_group,
+        name: group.name,
+        mode: group.mode || 'Presencial',
+        sede: group.venues?.name || 'N/A',
+        cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
+        horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
+      }));
+      setGroups(transformedGroups);
+    } catch (err) {
+      console.error('Error fetching groups:', err);
+    }
+  };
+  fetchGroups();
+}, []);
 
   const uniqueModes = Array.from(new Set(groups.map(group => group.mode))).sort();
   const modeOptions = [

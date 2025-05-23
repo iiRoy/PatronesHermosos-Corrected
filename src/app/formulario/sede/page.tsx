@@ -406,11 +406,8 @@ const VenueRegistrationForm: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <Navbar />
-      <form onSubmit={handleSubmit}>
-        <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+      {/* Header */}
+            <div className="flex justify-evenly items-center mb-6">
               <div className="flex items-center">
                 <div className="w-2 h-12 bg-purple-600 mr-4"></div>
                 <h1 className="text-2xl md:text-3xl font-bold">Formulario de Registro<br />SEDE</h1>
@@ -420,11 +417,13 @@ const VenueRegistrationForm: React.FC = () => {
                 variant="error"
                 showRightIcon
                 IconRight={() => <span className="text-white">✕</span>}
-                onClick={() => router.push('/')}
+                href='../inicio'
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
-
+      <form onSubmit={handleSubmit}>
+        <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
+          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
             {/* Section: Datos Coordinadora General */}
             <div className="mb-6">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
@@ -537,6 +536,7 @@ const VenueRegistrationForm: React.FC = () => {
               <div>
                 <InputField
                   label="Confirmar Contraseña*"
+                  description="Confirma de manera correcta e identica la contraseña previamente registrada"
                   placeholder="********"
                   variant="secondary"
                   icon="Lock"

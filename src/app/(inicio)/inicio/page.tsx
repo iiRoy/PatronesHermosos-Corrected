@@ -64,7 +64,7 @@ export default function PatronesHermosos() {
                     variant="primary"
                     showLeftIcon
                     IconLeft={BookBookmark}
-                    href="/admin/gestion-usuarios/participantes"
+                    href="/formulario//participante"
                     className="mb-4"
                   />
                   <div className="description-box bg-[#97639c]">
@@ -84,7 +84,7 @@ export default function PatronesHermosos() {
                     variant="secondary"
                     showLeftIcon
                     IconLeft={Medal}
-                    href="/admin/gestion-usuarios/colaboradoras"
+                    href="/formulario/colaborador"
                     className="mb-4"
                   />
                   <div className="description-box-secondary bg-[#683756]">
