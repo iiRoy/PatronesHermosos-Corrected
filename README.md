@@ -98,5 +98,4 @@ Consulta la [Guía de Contribución](./COLABORACIÓN.md) para más detalles.
 Para dudas o sugerencias, contacta a los responsables del repositorio o abre un [issue](https://github.com/iiRoy/Patrones-Hermosos/issues).
 
 ---
-
-🚀 ¡Gracias por contribuir y ser parte de este proyecto!
+🚀 ¡Gracias por contribuir y ser parte de este proyecto! 
