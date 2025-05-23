@@ -24,7 +24,7 @@ router.put(
 
 // Update basic info of a collaborator (superuser only)
 router.patch(
-  '/:id/basic',
+  '/basic/:id/',
   authMiddleware,
   roleMiddleware(['superuser']),
   collaboratorsController.updateCollaboratorBasicInfo

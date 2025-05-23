@@ -4,7 +4,17 @@ const validateCoordinator = [
   body('name').notEmpty().withMessage('El nombre es obligatorio'),
   body('paternal_name').notEmpty().withMessage('El apellido paterno es obligatorio'),
   body('maternal_name').notEmpty().withMessage('El apellido materno es obligatorio'),
-  body('email').isEmail().withMessage('Correo inválido'),
+  body('email')
+    .isEmail()
+    .withMessage('Correo electrónico no válido')
+    .custom(async (email) => {
+      const existing = await prisma.collaborators.findFirst({
+        where: { email },
+      });
+      if (existing) {
+        throw new Error('El correo ya está registrado');
+      }
+    }),
   body('phone_number').isString().withMessage('Número de teléfono obligatorio'),
   body('gender').notEmpty().withMessage('El género es obligatorio'),
   body('username').notEmpty().withMessage('El usuario es obligatorio'),
