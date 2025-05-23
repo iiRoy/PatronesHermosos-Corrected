@@ -27,7 +27,7 @@ const login = async (req, res) => {
           OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
         },
       });
-
+      console.log('Coordinator user data:', user); // Add logging to verify id_venue
       if (user && (await bcrypt.compare(password, user.password))) {
         role = 'venue_coordinator';
         user.id = user.id_venue_coord;
@@ -46,9 +46,10 @@ const login = async (req, res) => {
         username: user.username,
         role,
         tokenVersion,
+        id_venue: role === 'venue_coordinator' ? user.id_venue : undefined,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' }, // corto y seguro
+      { expiresIn: '1d' },
     );
 
     return res.json({
@@ -59,7 +60,6 @@ const login = async (req, res) => {
         name: user.name,
         id: user.id,
         email: user.email,
-        name: user.name,
         username: user.username,
         image: user.profile_image,
       },

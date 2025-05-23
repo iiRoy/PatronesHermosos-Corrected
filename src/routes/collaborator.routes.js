@@ -5,7 +5,7 @@ const { validateCollaborator } = require('../validators/collaboratorValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
 // Get all collaborators (superuser only)
-router.get('/', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.getAllCollaborators);
+router.get('/', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getAllCollaborators);
 
 // Create a new collaborator (public, no auth required)
 router.post('/', validateCollaborator, collaboratorsController.createCollaborator);
