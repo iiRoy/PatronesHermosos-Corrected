@@ -818,6 +818,7 @@ $$
 
 -- 🔹 Registra un nuevo participante si hay capacidad.
 -- 🔸 Definición:
+
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE registrar_part(
     -- Datos del Participante
@@ -835,7 +836,7 @@ CREATE OR REPLACE PROCEDURE registrar_part(
     IN nombre_tutor VARCHAR(255),
     IN paterno_tutor VARCHAR(255),
     IN materno_tutor VARCHAR(255),
-    IN email_tutor VARCHAR(255),
+    IN email_tutor VARCHAR(255) COLLATE utf8mb4_general_ci,
     IN celular_tutor VARCHAR(255)
 )
 BEGIN
@@ -844,49 +845,6 @@ BEGIN
     DECLARE total_aprobadas INT;
     DECLARE total_interesadas INT;
 
-    -- Validate required fields
-    IF nombre_part IS NULL OR nombre_part = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El nombre del participante es obligatorio.';
-    END IF;
-    IF paterno_part IS NULL OR paterno_part = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El apellido paterno del participante es obligatorio.';
-    END IF;
-    IF email_part IS NULL OR email_part = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El correo del participante es obligatorio.';
-    END IF;
-    IF grado_part IS NULL OR grado_part = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El grado del participante es obligatorio.';
-    END IF;
-    IF escolaridad_part IS NULL OR escolaridad_part = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La escolaridad del participante es obligatoria.';
-    END IF;
-    IF archivo_permiso IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El archivo de participación es obligatorio.';
-    END IF;
-    IF nombre_tutor IS NULL OR nombre_tutor = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El nombre del tutor es obligatorio.';
-    END IF;
-    IF paterno_tutor IS NULL OR paterno_tutor = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El apellido paterno del tutor es obligatorio.';
-    END IF;
-    IF email_tutor IS NULL OR email_tutor = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El correo del tutor es obligatorio.';
-    END IF;
-    IF celular_tutor IS NULL OR celular_tutor = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El celular del tutor es obligatorio.';
-    END IF;
-
-    -- Check group existence and capacity
     SELECT max_places INTO cupo_max
     FROM groups
     WHERE id_group = id_grupo;
@@ -904,7 +862,6 @@ BEGIN
         SET MESSAGE_TEXT = 'El grupo ya está lleno con participantes aprobadas.';
     END IF;
 
-    -- Check for existing tutor
     SELECT id_tutor INTO id_tutor_nuevo
     FROM tutors
     WHERE email COLLATE utf8mb4_general_ci = email_tutor
@@ -916,11 +873,9 @@ BEGIN
         SET id_tutor_nuevo = LAST_INSERT_ID();
     END IF;
 
-    -- Insert participant
     INSERT INTO participants (
         name, paternal_name, maternal_name, email,
-        year, education, participation_file, participation_file_path,
-        preferred_group, id_tutor, status
+        year, education, participation_file, participation_file_path, preferred_group, id_tutor, status
     )
     VALUES (
         nombre_part, paterno_part, materno_part, email_part,
@@ -928,8 +883,7 @@ BEGIN
         id_grupo, id_tutor_nuevo, 'Pendiente'
     );
 END;
-$$
-DELIMITER ;
+$$ 
 
 -- 🔸 Ejemplo de uso:
 
@@ -1223,8 +1177,7 @@ DELIMITER $$
 CREATE OR REPLACE PROCEDURE registrar_sede(
     -- Datos de la sede
     IN nombre_sede VARCHAR(255),
-    IN pais_sede VARCHAR(255),
-    IN region_sede VARCHAR(255),
+    IN ubicacion_sede VARCHAR(255),
     IN direccion_sede VARCHAR(255),
     IN logo BLOB,
     IN convocatoria BLOB,
@@ -1270,8 +1223,7 @@ BEGIN
     -- Insert into venues with file paths
     INSERT INTO venues (
         name, 
-        country,
-        state, 
+        location, 
         address, 
         logo, 
         participation_file, 
@@ -1281,8 +1233,7 @@ BEGIN
     )
     VALUES (
         nombre_sede, 
-        pais_sede,
-        region_sede, 
+        ubicacion_sede, 
         direccion_sede, 
         logo, 
         convocatoria, 
@@ -1354,7 +1305,6 @@ END;
 $$
 
 
---proceso global para registrar los logs
 DELIMITER $$
 
 CREATE PROCEDURE registrar_log (
@@ -1461,7 +1411,6 @@ END //
 DELIMITER ;
 
 
---cambiar estado grupo
 DELIMITER //
 
 CREATE PROCEDURE cambiar_estado_grupo(
@@ -1613,7 +1562,6 @@ DELIMITER ;
 
 
 
---gestionar_solicitud_colab (funcional)
 DELIMITER //
 
 CREATE PROCEDURE gestionar_solicitud_colab(
@@ -1740,7 +1688,6 @@ END //
 DELIMITER ;
 
 
---gestionar_solicitud_pendiente (funcional)
 DELIMITER $$
 
 CREATE PROCEDURE gestionar_solicitud_pendiente(
@@ -1847,13 +1794,11 @@ DELIMITER ;
 
 
 
---participantes 
 
 
 
 
---CALL cambiar_estado_colaborador(1, 'Diegorl', 'activar');
---Se cambia el estado del colaborador, de aprobada a cancelada, y viceversa.
+
 DELIMITER $$
 
 CREATE PROCEDURE cambiar_estado_colaborador(
@@ -1919,9 +1864,7 @@ END$$
 DELIMITER ;
 
 
---Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
---CALL cambiar_estado_participant(114, 'Diegorl', 'activar');
---CALL cambiar_estado_participant(114, 'Diegorl', 'desactivar');
+
 DELIMITER $$
 
 CREATE PROCEDURE cambiar_estado_participant(
@@ -1998,14 +1941,7 @@ DELIMITER ;
 
 
 
-
---------------------------------------------------------------------------------------------------------------------------------------
-
---JUNTAR LOS BEFORE Y AFTER
---evitar eliminar un grupo si tiene participantes
---evento para eliminar los audits logs cada mes y se ejecute cada semana
-
-
+/*
 
 
 
@@ -2077,3 +2013,4 @@ DELIMITER ;
 -- 🔸 Se cambió el valor de los 'prefered_groups' en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
 -- 🔸 Se puso como valor predeterminado de 'occupied_places' en la tabla 'groups' como 0.
 -- 🔸 Se agregaron las columnas de 'level' y 'language' a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.
+*/

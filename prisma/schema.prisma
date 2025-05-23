@@ -45,27 +45,20 @@ model collaborators {
   preferredGroup     groups?                @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
 
   @@index([id_group], map: "id_group")
+  @@index([preferred_group], map: "collaborators_preferred_group_fkey")
 }
-
 
 model audit_log {
   id         Int         @id @default(autoincrement())
   action     AuditAction
   table_name String      @db.VarChar(50)
-  id_venue   Int?        @db.UnsignedInt  
+  id_venue   Int?        @db.UnsignedInt
   username   String      @db.VarChar(255)
   message    String      @db.Text
   created_at DateTime    @default(now()) @db.Timestamp(0)
-
   venues     venues?     @relation(fields: [id_venue], references: [id_venue], onDelete: NoAction, onUpdate: Restrict)
 
   @@index([id_venue], map: "id_venue")
-}
-
-enum AuditAction {
-  INSERT
-  UPDATE
-  DELETE
 }
 
 model groups {
@@ -83,6 +76,7 @@ model groups {
   end_hour                      DateTime?       @db.Time(0)
   id_mentor                     Int?            @db.UnsignedInt
   id_venue                      Int             @db.UnsignedInt
+  status                        groups_status   @default(Aprobada)
   collaborators                 collaborators[]
   preferred_group_collaborators collaborators[] @relation("preferred_group_fk")
   excluded_days                 excluded_days[]
@@ -121,21 +115,22 @@ model mentors {
 }
 
 model participants {
-  id_participant     Int                 @id @default(autoincrement()) @db.UnsignedInt
-  name               String?             @db.VarChar(255)
-  paternal_name      String?             @db.VarChar(255)
-  maternal_name      String?             @db.VarChar(255)
-  email              String?             @db.VarChar(255)
-  year               String?             @db.VarChar(255)
-  education          String?             @db.VarChar(255)
-  participation_file Bytes               @db.Blob
-  preferred_group    Int?                @db.UnsignedInt
-  status             participants_status @default(Pendiente)
-  id_group           Int?                @db.UnsignedInt
-  id_tutor           Int?                @db.UnsignedInt
-  groups             groups?             @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "participants_ibfk_1")
-  tutors             tutors?             @relation(fields: [id_tutor], references: [id_tutor], onUpdate: Restrict, map: "participants_ibfk_2")
-  preferredGroup     groups?             @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
+  id_participant          Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name                    String?             @db.VarChar(255)
+  paternal_name           String?             @db.VarChar(255)
+  maternal_name           String?             @db.VarChar(255)
+  email                   String?             @db.VarChar(255)
+  year                    String?             @db.VarChar(255)
+  education               String?             @db.VarChar(255)
+  participation_file      Bytes               @db.Blob
+  participation_file_path String?             @db.VarChar(255)
+  preferred_group         Int?                @db.UnsignedInt
+  status                  participants_status @default(Pendiente)
+  id_group                Int?                @db.UnsignedInt
+  id_tutor                Int?                @db.UnsignedInt
+  groups                  groups?             @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "participants_ibfk_1")
+  tutors                  tutors?             @relation(fields: [id_tutor], references: [id_tutor], onUpdate: Restrict, map: "participants_ibfk_2")
+  preferredGroup          groups?             @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
 
   @@index([id_group], map: "id_group")
   @@index([id_tutor], map: "id_tutor")
@@ -143,12 +138,17 @@ model participants {
 }
 
 model superusers {
-  id_superuser Int      @id @default(autoincrement()) @db.UnsignedInt
-  username     String   @db.VarChar(255)
-  email        String   @unique(map: "email") @db.VarChar(255)
-  password     String   @db.VarChar(255)
-  created_at   DateTime @default(now()) @db.Timestamp(0)
-  updated_at   DateTime @default(now()) @db.Timestamp(0)
+  id_superuser  Int      @id @default(autoincrement()) @db.UnsignedInt
+  username      String   @db.VarChar(255)
+  email         String   @unique(map: "email") @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  updated_at    DateTime @default(now()) @db.Timestamp(0)
+  maternal_name String?  @db.VarChar(255)
+  name          String?  @db.VarChar(255)
+  paternal_name String?  @db.VarChar(255)
+  profile_image Bytes?   @db.Blob
+  tokenVersion  Int      @default(0)
 }
 
 model tutors {
@@ -172,8 +172,9 @@ model venue_coordinators {
   username           String  @db.VarChar(255)
   password           String  @db.VarChar(255)
   profile_image      Bytes?  @db.Blob
-  id_venue           Int     @db.UnsignedInt
   profile_image_path String? @db.VarChar(255)
+  id_venue           Int     @db.UnsignedInt
+  tokenVersion       Int     @default(0)
   venues             venues  @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "venue_coordinators_ibfk_1")
 
   @@index([id_venue], map: "id_venue")
@@ -182,20 +183,28 @@ model venue_coordinators {
 model venues {
   id_venue                Int                      @id @default(autoincrement()) @db.UnsignedInt
   name                    String                   @db.VarChar(255)
+  country                 String?                  @db.VarChar(255)
+  state                   String?                  @db.VarChar(255)
   address                 String?                  @db.VarChar(255)
   logo                    Bytes?                   @db.Blob
   participation_file      Bytes                    @db.Blob
+  logo_path               String?                  @db.VarChar(255)
+  participation_file_path String?                  @db.VarChar(255)
   status                  venues_status            @default(Pendiente)
   created_at              DateTime                 @default(now()) @db.Timestamp(0)
   updated_at              DateTime                 @default(now()) @db.Timestamp(0)
-  participation_file_path String?                  @db.VarChar(255)
-  logo_path               String?                  @db.VarChar(255)
-  country                 String                   @db.VarChar(255)
-  state                   String                   @db.VarChar(255)
+  location                String?                  @db.VarChar(255)
   assistant_coordinators  assistant_coordinators[]
+  audit_log               audit_log[]
   groups                  groups[]
   mentors                 mentors[]
   venue_coordinators      venue_coordinators[]
+}
+
+enum AuditAction {
+  INSERT
+  UPDATE
+  DELETE
 }
 
 enum venues_status {
@@ -235,12 +244,17 @@ enum collaborators_status {
 
 enum collaborators_language {
   Pendiente
-  // Inglés
-  // Español
+  Inglés
+  Español
+}
+
+enum groups_status {
+  Aprobada
+  Cancelada
 }
 
 enum collaborators_level {
   Pendiente
-  // Básico
+  Básico
   Avanzado
 }
