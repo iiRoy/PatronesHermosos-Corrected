@@ -196,12 +196,8 @@ const CollaboratorRegistrationForm: React.FC = () => {
         formDataToSend.append('preferred_group', formData.preferred_group.toString());
       }
 
-      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3000/api/collaborators', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formDataToSend,
       });
 
@@ -270,7 +266,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 showLeftIcon
                 round
                 IconLeft={X}
-                onClick={() => router.push('/')}
+                href='../inicio'
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>

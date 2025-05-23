@@ -32,7 +32,7 @@ const router = express.Router();
 router.get('/', authMiddleware, participantsController.getAllParticipants);
 router.post(
   '/',
-  upload.single('participation_file'),
+  upload.fields([{ name: 'participation_file', maxCount: 1 }]),
   validateParticipant,
   participantsController.createParticipant
 );

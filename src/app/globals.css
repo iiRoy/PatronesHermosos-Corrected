@@ -271,7 +271,8 @@
 
 .label-input {
   font-size: 18px;
-  color: var(--background);
+  color: white;
+  font-weight: bold;
 }
 
 .description {

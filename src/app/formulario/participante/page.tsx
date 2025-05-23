@@ -6,11 +6,11 @@ import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { Modal, Toast } from '@/components/buttons_inputs/FormNotification';
+import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
 import { FlowerLotus, AddressBook, X, User, Phone, Envelope, GraduationCap, Flag } from '@components/icons';
 import Send from '@components/icons/ArrowFatRight';
-import Navbar from '@/components/headers_menu_users/navbar';
-import ParticipantGroupSelectionTable from '@/components/tables/GroupSelectionTable';
+import Navbar from '@components/headers_menu_users/navbar';
+import ParticipantGroupSelectionTable from '@components/tables/GroupSelectionTable';
 
 interface Group {
   id_group: number;
@@ -86,7 +86,13 @@ const ParticipantRegistrationForm: React.FC = () => {
     const fetchGroups = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/groups');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
+        }
         const transformedGroups = data.map((group: any) => ({
           id_group: group.id_group,
           name: group.name,
@@ -98,7 +104,8 @@ const ParticipantRegistrationForm: React.FC = () => {
         }));
         setGroups(transformedGroups);
       } catch (err) {
-        setErrors(['Error al cargar los grupos']);
+        console.error('Error fetching groups:', err);
+        setErrors(['Error al cargar los grupos: ' + (err instanceof Error ? err.message : 'Unknown error')]);
         setIsErrorModalOpen(true);
       }
     };
@@ -182,13 +189,15 @@ const ParticipantRegistrationForm: React.FC = () => {
       formDataToSend.append('participation_file', formData.participation_file);
     }
 
-    const token = localStorage.getItem('token');
+    // Debug FormData
+    console.log('FormData contents:');
+    for (let pair of formDataToSend.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+
     try {
       const response = await fetch('http://localhost:3000/api/participants', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formDataToSend,
       });
 
@@ -240,7 +249,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             round
             showLeftIcon
             IconLeft={X}
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/inicio')}
             className="px-4 py-2 rounded-full flex items-center"
           />
         </div>
@@ -374,7 +383,9 @@ const ParticipantRegistrationForm: React.FC = () => {
           <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
         </div>
         <ParticipantGroupSelectionTable
-          onSelect={handleGroupSelect}
+          onSelect={(id_group) => {
+            handleGroupSelect(id_group);
+          }}
           selectedGroupId={formData.preferred_group ?? undefined}
           rowsPerPage={4}
         />

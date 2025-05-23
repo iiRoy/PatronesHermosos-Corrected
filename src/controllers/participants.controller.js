@@ -32,6 +32,7 @@ const parseNestedBody = (body) => {
 
 // Crear participante
 const createParticipant = async (req, res) => {
+  console.log('Received files:', req.files);
   // Transform flat req.body into nested structure
   const parsedBody = parseNestedBody(req.body);
 
@@ -43,7 +44,7 @@ const createParticipant = async (req, res) => {
     email,
     year,
     education,
-    id_group,
+    preferred_group: id_group,
     tutor = {},
   } = parsedBody;
 
@@ -59,31 +60,29 @@ const createParticipant = async (req, res) => {
   }
 
   // Validate required file
-  if (!participation_file) {
+  if (!files['participation_file']) {
     return res.status(400).json({ message: 'El archivo de participación es obligatorio' });
   }
 
   try {
-    // Call the stored procedure
-    // In createParticipant function, replace the prisma.$queryRaw call with:
-await prisma.$queryRaw`
-  CALL registrar_part(
-    ${name},
-    ${paternal_name},
-    ${maternal_name},
-    ${email},
-    ${year},
-    ${education},
-    ${participation_file},
-    ${participation_file_path},
-    ${parseInt(id_group)},
-    ${tutor.name || null},
-    ${tutor.paternal_name || null},
-    ${tutor.maternal_name || null},
-    ${tutor.email || null},
-    ${tutor.phone_number || null}
-  )
-`;
+    await prisma.$queryRaw`
+      CALL registrar_part(
+        ${name},
+        ${paternal_name},
+        ${maternal_name},
+        ${email},
+        ${year},
+        ${education},
+        ${participation_file},
+        ${participation_file_path},
+        ${parseInt(id_group) || null},
+        ${tutor.name || null},
+        ${tutor.paternal_name || null},
+        ${tutor.maternal_name || null},
+        ${tutor.email || null},
+        ${tutor.phone_number || null}
+      )
+    `;
 
     res.status(201).json({
       message: 'Participante creado exitosamente',
@@ -95,7 +94,7 @@ await prisma.$queryRaw`
     console.error('Error al crear participante:', error);
     res.status(500).json({ message: 'Error al crear participante', error: error.message });
   }
-};  
+};
 
 // Obtener todos los participantes (incluye ambos formateos)
 const getAllParticipants = async (req, res) => {
