@@ -61,23 +61,25 @@ const getAllCollaborators = async (req, res) => {
   try {
     const collaborators = await prisma.collaborators.findMany({
       include: {
-        groups: { // Grupo asignado (para Gestión de Apoyo)
+        groups: {
           select: {
             id_group: true,
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
           },
         },
-        preferredGroup: { // Grupo preferido (para Solicitudes de Registro)
+        preferredGroup: {
           select: {
             id_group: true,
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -87,28 +89,34 @@ const getAllCollaborators = async (req, res) => {
     });
 
     // Formateo original (usando grupo asignado, para Gestión de Apoyo)
-    const formattedCollaborators = collaborators.map(collab => ({
-      id_collaborator: collab.id_collaborator,
-      name: collab.name || 'Sin nombre',
-      paternal_name: collab.paternal_name || 'Sin apellido',
-      maternal_name: collab.maternal_name || 'Sin apellido',
-      email: collab.email || 'Sin correo',
-      phone_number: collab.phone_number || 'Sin teléfono',
-      role: collab.role || 'Sin rol',
-      level: collab.level || 'Sin nivel',
-      language: collab.language || 'Sin idioma',
-      group: collab.groups?.name || 'Sin grupo',
-      venue: collab.groups?.venues?.name || 'Sin sede',
-      college: collab.college || 'Sin universidad',
-      degree: collab.degree || 'Sin carrera',
-      semester: collab.semester || 'Sin semestre',
-      gender: collab.gender || 'Sin género',
-      status: collab.status || 'Sin estado',
-      preferred_role: collab.preferred_role || 'Sin rol preferido',
-      preferred_language: collab.preferred_language || 'Sin idioma preferido',
-      preferred_level: collab.preferred_level || 'Sin nivel preferido',
-      preferred_group: collab.preferred_group || null,
-    }));
+    const formattedCollaborators = collaborators.map(collab => {
+      const venueId = collab.groups?.venues?.id_venue || null;
+      const venueName = collab.groups?.venues?.name || 'Sin sede';
+      console.log(`Collaborator ${collab.id_collaborator} - venueId: ${venueId}, venueName: ${venueName}`); // Depuración
+      return {
+        id_collaborator: collab.id_collaborator,
+        name: collab.name || 'Sin nombre',
+        paternal_name: collab.paternal_name || 'Sin apellido',
+        maternal_name: collab.maternal_name || 'Sin apellido',
+        email: collab.email || 'Sin correo',
+        phone_number: collab.phone_number || 'Sin teléfono',
+        role: collab.role || 'Sin rol',
+        level: collab.level || 'Sin nivel',
+        language: collab.language || 'Sin idioma',
+        group: collab.groups?.name || 'Sin grupo',
+        id_venue: venueId, // Usar el ID de la sede como número
+        venue: venueName, // Usar el nombre de la sede
+        college: collab.college || 'Sin universidad',
+        degree: collab.degree || 'Sin carrera',
+        semester: collab.semester || 'Sin semestre',
+        gender: collab.gender || 'Sin género',
+        status: collab.status || 'Sin estado',
+        preferred_role: collab.preferred_role || 'Sin rol preferido',
+        preferred_language: collab.preferred_language || 'Sin idioma preferido',
+        preferred_level: collab.preferred_level || 'Sin nivel preferido',
+        preferred_group: collab.preferred_group || null,
+      };
+    });
 
     // Formateo para Solicitudes (usando grupo preferido)
     const formattedCollaboratorsForRequests = collaborators.map(collab => ({
@@ -164,6 +172,7 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -175,6 +184,7 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
