@@ -10,24 +10,17 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
-// Interfaz ajustada para reflejar la estructura real de los datos
+// Interfaz ajustada para reflejar la estructura real de los datos devueltos por getAllParticipants
 interface Participante {
-    id_participant: number;
-    name: string;
-    paternal_name: string;
-    maternal_name: string;
-    email: string;
-    year: number;
-    education: string;
-    participation_file: Buffer | null;
-    preferred_group: number | null;
+    id: number; // Cambiado de id_participant a id
+    nombre: string; // Cambiado para usar el campo combinado
+    sede: string; // Campo preformateado
+    grupo: string; // Campo preformateado
+    correo: string; // Cambiado de email a correo
     status: string;
-    id_group: number | null;
-    id_tutor: number | null;
-    groups?: { name: string; venues?: { name: string } } | null; // Relación para grupo y sede
 }
 
-const GestionParticipantes = () => {
+const gestionParticipantes = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__');
     const [filterActivaExtra, setFilterActivaExtra] = useState({ grupo: '__All__' });
@@ -85,8 +78,8 @@ const GestionParticipantes = () => {
     };
 
     // Extraer sedes y grupos únicos para los filtros
-    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.groups?.venues?.name || 'No asignado'))).sort();
-    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.groups?.name || 'No asignado'))).sort();
+    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede || 'No asignado'))).sort();
+    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado'))).sort();
 
     const sedeOptions = [
         { label: 'Todas', value: '__All__' },
@@ -101,10 +94,9 @@ const GestionParticipantes = () => {
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
         return participantesData.filter((participante) => {
-            const fullName = `${participante.name} ${participante.paternal_name} ${participante.maternal_name}`.toLowerCase();
-            const matchesSearch = !searchTerm || fullName.includes(searchTerm);
-            const sede = participante.groups?.venues?.name || 'No asignado';
-            const grupo = participante.groups?.name || 'No asignado';
+            const matchesSearch = !searchTerm || participante.nombre.toLowerCase().includes(searchTerm);
+            const sede = participante.sede || 'No asignado';
+            const grupo = participante.grupo || 'No asignado';
             const matchesSede = section === '__All__' ? true : sede === section;
             const selectedGrupo = filterActivaExtra['grupo'];
             const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
@@ -136,7 +128,7 @@ const GestionParticipantes = () => {
     };
 
     const handleEditClick = (participante: Participante) => {
-        router.push(`/admin/gestion-usuarios/participantes/editarParticipante/${participante.id_participant}`);
+        router.push(`/admin/gestion-usuarios/participantes/editarParticipante/${participante.id}`);
     };
 
     const handleClosePopup = () => {
@@ -153,7 +145,7 @@ const GestionParticipantes = () => {
                     return;
                 }
 
-                const response = await fetch(`/api/participants/${selectedParticipante.id_participant}/status`, {
+                const response = await fetch(`/api/participants/${selectedParticipante.id}/status`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -171,18 +163,17 @@ const GestionParticipantes = () => {
                 // Actualizar localmente el estado del participante
                 setParticipantesData((prev) =>
                     prev.map((p) =>
-                        p.id_participant === selectedParticipante.id_participant
+                        p.id === selectedParticipante.id
                             ? { ...p, status: updatedParticipant.status }
                             : p
                     )
                 );
 
                 // Mostrar notificación de éxito
-                const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
                 notify({
                     color: 'green',
                     title: 'Usuario Cancelado',
-                    message: `El usuario ${fullName} ha sido cancelado correctamente`,
+                    message: `El usuario ${selectedParticipante.nombre} ha sido cancelado correctamente`,
                     duration: 5000,
                 });
 
@@ -191,11 +182,10 @@ const GestionParticipantes = () => {
             } catch (error: any) {
                 console.error('Error al cancelar participante:', error);
                 // Mostrar notificación de error
-                const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
                 notify({
                     color: 'red',
                     title: 'Error',
-                    message: `No se pudo cancelar al usuario ${fullName}: ${error.message}`,
+                    message: `No se pudo cancelar al usuario ${selectedParticipante.nombre}: ${error.message}`,
                     duration: 5000,
                 });
                 // Forzar el cierre del popup en caso de error
@@ -266,12 +256,10 @@ const GestionParticipantes = () => {
                         <tbody className="text-gray-700">
                             {paginatedData.map((participante, index) => (
                                 <tr key={index} className="border-t border-gray-300">
-                                    <td className="p-2 text-center">
-                                        {`${participante.name} ${participante.paternal_name} ${participante.maternal_name}`}
-                                    </td>
-                                    <td className="p-2 text-center">{participante.groups?.venues?.name || 'No asignado'}</td>
-                                    <td className="p-2 text-center">{participante.groups?.name || 'No asignado'}</td>
-                                    <td className="p-2 text-center">{participante.email}</td>
+                                    <td className="p-2 text-center">{participante.nombre}</td>
+                                    <td className="p-2 text-center">{participante.sede}</td>
+                                    <td className="p-2 text-center">{participante.grupo}</td>
+                                    <td className="p-2 text-center">{participante.correo}</td>
                                     <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button label="" variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(participante)} />
@@ -299,7 +287,7 @@ const GestionParticipantes = () => {
                             <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
                             <p className="mt-12 mb-12">
                                 ¿Estás segura de que quieres cancelar a la participante{' '}
-                                {`${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`}?
+                                {selectedParticipante.nombre}?
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
@@ -313,4 +301,4 @@ const GestionParticipantes = () => {
     );
 };
 
-export default GestionParticipantes;
+export default gestionParticipantes;

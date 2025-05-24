@@ -99,7 +99,7 @@ const Menu: React.FC = () => {
   }, [fadeSubmenu]);
 
   if (!role) return null;
-  const basePath = role === 'superuser' ? '/admin' : '/coordinator';
+  const basePath = role === 'superuser' ? '/admin' : '/coordinador';
 
   return (
     <div className='text-[clamp(1rem,1.5vw,3rem)] relative z-20'>

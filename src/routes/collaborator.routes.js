@@ -26,11 +26,11 @@ router.put(
 router.patch(
   '/basic/:id/',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   collaboratorsController.updateCollaboratorBasicInfo
 );
 
 // Delete a collaborator (superuser only)
-router.delete('/:id', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.deleteCollaborator);
+router.delete('/:id', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.deleteCollaborator);
 
 module.exports = router;
