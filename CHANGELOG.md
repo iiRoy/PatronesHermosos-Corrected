@@ -1,3 +1,7 @@
+## 1.13.0-coord.3 (2025-05-24)
+
+* feat(pages): nueva página de solicitudes para coordinadora, ya muestra solo las solicitudes en las q ([a916f3c](https://github.com/iiRoy/Patrones-Hermosos/commit/a916f3c))
+
 ## 1.13.0-coord.2 (2025-05-24)
 
 * feat(pages): nueva página mi-sede, ya muestra solo los participantes y grupos de la coordinadora esp ([16964b8](https://github.com/iiRoy/Patrones-Hermosos/commit/16964b8))
