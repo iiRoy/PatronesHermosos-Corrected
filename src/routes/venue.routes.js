@@ -39,7 +39,7 @@ const upload = multer({
 const router = express.Router();
 
 // Routes
-router.get('/', authMiddleware, venueController.getAll);
+router.get('/',venueController.getAll);
 router.post(
   '/',
   upload.fields([

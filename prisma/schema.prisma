@@ -40,10 +40,10 @@ model collaborators {
   status             collaborators_status   @default(Pendiente)
   level              collaborators_level    @default(Pendiente)
   language           collaborators_language @default(Pendiente)
-  id_group           Int?                   @db.UnsignedInt
+  id_group           Int?                   @db.UnsignedInt // Replace id_venue with id_group
   groups             groups?                @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "collaborators_ibfk_1")
   preferredVenue     venues?                @relation("preferred_venue_fk", fields: [preferred_venue], references: [id_venue])
-  @@index([id_group], map: "id_group")
+  @@index([id_group], map: "id_group") // Update index
   @@index([preferred_venue], map: "collaborators_preferred_venue_fkey")
 }
 
@@ -77,7 +77,6 @@ model groups {
   id_venue                      Int             @db.UnsignedInt
   status                        groups_status   @default(Aprobada)
   collaborators                 collaborators[]
-  preferred_group_collaborators collaborators[] @relation("preferred_group_fk")
   excluded_days                 excluded_days[]
   mentors                       mentors?        @relation(fields: [id_mentor], references: [id_mentor], onUpdate: Restrict, map: "groups_ibfk_1")
   venues                        venues          @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "groups_ibfk_2")
@@ -198,6 +197,7 @@ model venues {
   groups                  groups[]
   mentors                 mentors[]
   venue_coordinators      venue_coordinators[]
+  preferred_venue_collaborators collaborators[] @relation("preferred_venue_fk") // Inverse relation
 }
 
 enum AuditAction {

@@ -41,7 +41,6 @@ const createCollaborator = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Colaborador creado',
-      data: newCollaborator,
     });
   } catch (error) {
     if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
