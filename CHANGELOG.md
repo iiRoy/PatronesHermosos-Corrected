@@ -1,3 +1,9 @@
+## 1.13.0-coord.2 (2025-05-24)
+
+* feat(pages): nueva página mi-sede, ya muestra solo los participantes y grupos de la coordinadora esp ([16964b8](https://github.com/iiRoy/Patrones-Hermosos/commit/16964b8))
+* improve(pages): ya se muestran solo las colaboradoras que pertenecen a la sede de la coordinadora es ([3022dd5](https://github.com/iiRoy/Patrones-Hermosos/commit/3022dd5))
+* improve(pages): ya se muestran solo las mentoras que pertenecen a la sede de la coordinadora específ ([78cc0c4](https://github.com/iiRoy/Patrones-Hermosos/commit/78cc0c4))
+
 ## 1.13.0-coord.1 (2025-05-23)
 
 * feat(BE): New routes7Controllers/Components ([58a01aa](https://github.com/iiRoy/Patrones-Hermosos/commit/58a01aa))
