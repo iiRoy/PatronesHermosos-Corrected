@@ -166,7 +166,7 @@ const EditarApoyo = () => {
                 duration: 5000,
             });
 
-            router.push('/coordinador/gestion-usuarios-coordinador/staff');
+            router.push('/coordinador/gestion-usuarios-coordinadora/staff');
         } catch (error: any) {
             console.error('Error updating collaborator:', error);
             notify({

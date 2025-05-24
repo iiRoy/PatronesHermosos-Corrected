@@ -4,13 +4,6 @@ const prisma = new PrismaClient();
 const getAll = async (req, res) => {
   try {
     const groups = await prisma.groups.findMany({
-      include: {
-        venues: {
-          select: {
-            name: true,
-          },
-        },
-      },
       select: {
         id_group: true,
         name: true,
@@ -25,6 +18,11 @@ const getAll = async (req, res) => {
         end_hour: true,
         location: true,
         id_venue: true,
+        venues: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
     res.json(groups);
