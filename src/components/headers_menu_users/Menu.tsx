@@ -19,8 +19,8 @@ const submenuLinks = [
 
 const submenuLinksCoordinadora = [
   { label: 'Mentoras', icon: 'GraduationCap', href: '/coordinador/gestion-usuarios-coordinadora/mentoras' },
-  { label: 'Apoyo y Staff', icon: 'Users', href: '/coordinador/gestion-usuarios/staff' },
-  { label: 'Participantes', icon: 'User', href: '/coordinador/gestion-usuarios/participantes' },
+  { label: 'Apoyo y Staff', icon: 'Users', href: '/coordinador/gestion-usuarios-coordinadora/staff' },
+  { label: 'Participantes', icon: 'User', href: '/coordinador/gestion-usuarios-coordinadora/participantes' },
 ];
 
 const Menu: React.FC = () => {

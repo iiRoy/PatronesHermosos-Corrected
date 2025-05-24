@@ -9,6 +9,7 @@ import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
+import { jwtDecode } from 'jwt-decode';
 
 interface Apoyo {
     id_collaborator: number;
@@ -29,6 +30,16 @@ interface Apoyo {
     preferred_language: string;
     preferred_level: string;
     preferred_group: number | null;
+    venue: string;
+    id_venue: number | null; // Añadido para reflejar el cambio en los datos
+}
+
+interface DecodedToken {
+    userId: number;
+    email: string;
+    username: string;
+    role: string;
+    tokenVersion: number;
 }
 
 const GestionApoyo = () => {
@@ -39,11 +50,36 @@ const GestionApoyo = () => {
     const [isInfoPopupOpen, setIsInfoPopupOpen] = useState(false);
     const [selectedApoyo, setSelectedApoyo] = useState<Apoyo | null>(null);
     const [apoyoData, setApoyoData] = useState<Apoyo[]>([]);
+    const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const { notify } = useNotification();
 
     const rowsPerPage = 10;
+
+    // Decodificar el token para obtener el userId, que corresponde al id_venue
+    useEffect(() => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
+        if (token) {
+            try {
+                const decoded: DecodedToken = jwtDecode(token);
+                console.log('Decoded token:', decoded);
+                if (decoded.role === 'venue_coordinator') {
+                    setCoordinatorVenueId(decoded.userId); // userId es id_venue_coord, que coincide con id_venue
+                } else {
+                    setError('Este dashboard es solo para coordinadores de sede');
+                    router.push('/login');
+                }
+            } catch (err) {
+                console.error('Error al decodificar el token:', err);
+                setError('Token inválido');
+                router.push('/login');
+            }
+        } else {
+            setError('No se encontró el token, por favor inicia sesión');
+            router.push('/login');
+        }
+    }, [router]);
 
     useEffect(() => {
         const fetchApoyo = async () => {
@@ -61,6 +97,7 @@ const GestionApoyo = () => {
                 });
 
                 const collaboratorsData = await collaboratorsResponse.json();
+                console.log('Collaborators data from API:', collaboratorsData);
 
                 if (!collaboratorsResponse.ok) {
                     if (collaboratorsResponse.status === 403) {
@@ -70,35 +107,51 @@ const GestionApoyo = () => {
                     throw new Error(`Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`);
                 }
 
-                const formattedData = collaboratorsData.data.map((collab: any) => ({
-                    id_collaborator: collab.id_collaborator,
-                    name: collab.name || 'Sin nombre',
-                    paternal_name: collab.paternal_name || 'Sin apellido',
-                    maternal_name: collab.maternal_name || 'Sin apellido',
-                    email: collab.email || 'Sin correo',
-                    role: collab.role || 'Sin rol',
-                    level: collab.level || 'Sin nivel',
-                    language: collab.language || 'Sin idioma',
-                    college: collab.college || 'Sin universidad',
-                    degree: collab.degree || 'Sin carrera',
-                    semester: collab.semester || 'Sin semestre',
-                    gender: collab.gender || 'Sin género',
-                    status: collab.status || 'Sin estado',
-                    phone_number: collab.phone_number || 'Sin teléfono',
-                    preferred_role: collab.preferred_role || 'Sin rol preferido',
-                    preferred_language: collab.preferred_language || 'Sin idioma preferido',
-                    preferred_level: collab.preferred_level || 'Sin nivel preferido',
-                    preferred_group: collab.preferred_group || null,
-                }));
+                // Depuración de id_venue
+                collaboratorsData.data.forEach((collab: any, index: number) => {
+                    console.log(`Collaborator ${index + 1} id_venue:`, collab.id_venue);
+                });
+
+                const formattedData = collaboratorsData.data
+                    .filter((collab: any) => {
+                        const collabVenueId = typeof collab.id_venue === 'number' ? collab.id_venue : null;
+                        console.log(`Filtering collaborator with id_venue: ${collab.id_venue}, coordinatorVenueId: ${coordinatorVenueId}`);
+                        return collabVenueId === coordinatorVenueId;
+                    })
+                    .map((collab: any) => ({
+                        id_collaborator: collab.id_collaborator,
+                        name: collab.name || 'Sin nombre',
+                        paternal_name: collab.paternal_name || 'Sin apellido',
+                        maternal_name: collab.maternal_name || 'Sin apellido',
+                        email: collab.email || 'Sin correo',
+                        role: collab.role || 'Sin rol',
+                        level: collab.level || 'Sin nivel',
+                        language: collab.language || 'Sin idioma',
+                        college: collab.college || 'Sin universidad',
+                        degree: collab.degree || 'Sin carrera',
+                        semester: collab.semester || 'Sin semestre',
+                        gender: collab.gender || 'Sin género',
+                        status: collab.status || 'Sin estado',
+                        phone_number: collab.phone_number || 'Sin teléfono',
+                        preferred_role: collab.preferred_role || 'Sin rol preferido',
+                        preferred_language: collab.preferred_language || 'Sin idioma preferido',
+                        preferred_level: collab.preferred_level || 'Sin nivel preferido',
+                        preferred_group: collab.preferred_group || null,
+                        venue: collab.venue || 'Sin sede',
+                        id_venue: collab.id_venue, // Asegurar que id_venue se incluya
+                    }));
 
                 setApoyoData(formattedData);
+                console.log('Formatted apoyo data:', formattedData);
             } catch (error: any) {
                 console.error('Error al obtener colaboradores:', error);
                 setError(error.message);
             }
         };
-        fetchApoyo();
-    }, [router]);
+        if (coordinatorVenueId !== null) {
+            fetchApoyo();
+        }
+    }, [router, coordinatorVenueId]);
 
     const uniqueRoles = Array.from(new Set(apoyoData.map(apoyo => apoyo.role))).sort();
 
@@ -155,7 +208,7 @@ const GestionApoyo = () => {
 
     const handleEditClick = (apoyo: Apoyo, event: React.MouseEvent) => {
         event.stopPropagation();
-        router.push(`/admin/gestion-usuarios/staff/editarApoyo/${apoyo.id_collaborator}`);
+        router.push(`/coordinador/gestion-usuarios-coordinadora/staff/editarApoyo/${apoyo.id_collaborator}`);
     };
 
     const handleCloseDeletePopup = () => {
@@ -389,6 +442,7 @@ const GestionApoyo = () => {
                                 <p><strong>Idioma preferido:</strong> {selectedApoyo.preferred_language}</p>
                                 <p><strong>Nivel preferido:</strong> {selectedApoyo.preferred_level}</p>
                                 <p><strong>Grupo preferido:</strong> {selectedApoyo.preferred_group || 'Sin grupo preferido'}</p>
+                                <p><strong>Sede:</strong> {selectedApoyo.venue}</p>
                             </div>
                             <div className="flex justify-center mt-6">
                                 <Button label="Cerrar" variant="secondary" onClick={handleCloseInfoPopup} />
