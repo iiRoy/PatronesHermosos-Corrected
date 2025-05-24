@@ -21,7 +21,7 @@ const getAllParticipants = async (req, res) => {
           select: {
             id_group: true,
             name: true,
-            id_venue: true, // Añadido para obtener id_venue
+            id_venue: true,
             venues: {
               select: {
                 name: true,
@@ -35,6 +35,7 @@ const getAllParticipants = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Añadido para permitir el filtrado por sede
                 name: true,
               },
             },
@@ -53,7 +54,7 @@ const getAllParticipants = async (req, res) => {
       id: participant.id_participant,
       nombre: `${participant.name || ''} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
       sede: participant.groups?.venues?.name || 'No asignado',
-      id_venue: participant.groups?.id_venue || null, // Añadido para el filtrado
+      id_venue: participant.groups?.id_venue || null,
       grupo: participant.groups?.name || 'No asignado',
       correo: participant.email,
       status: participant.status || 'Pendiente',
@@ -95,6 +96,7 @@ const getParticipantById = async (req, res) => {
             venues: {
               select: {
                 name: true,
+                id_venue: true, // Añadido para consistencia
               },
             },
           },

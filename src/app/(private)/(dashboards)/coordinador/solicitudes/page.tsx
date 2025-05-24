@@ -7,6 +7,7 @@ import PageTitle from '@/components/headers_menu_users/pageTitle';
 import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 
 // Interfaces para los datos de cada sección
 interface Participante {
@@ -16,7 +17,7 @@ interface Participante {
     maternal_name: string;
     email: string;
     preferred_group: number | null;
-    groups?: { name: string; venues?: { name: string } } | null; // Relación para obtener nombre del grupo y sede
+    groups?: { name: string; venues?: { name: string; id_venue?: number } } | null; // Añadido id_venue
     status: string;
     tutors?: { phone_number: string };
 }
@@ -37,7 +38,7 @@ interface ApoyoStaff {
     preferred_language: string;
     preferred_level: string;
     preferred_group: number | null;
-    groups?: { name: string; venues?: { name: string } } | null; // Relación para obtener nombre del grupo y sede
+    groups?: { name: string; venues?: { name: string; id_venue?: number } } | null; // Añadido id_venue
     role: string;
     level: string;
     language: string;
@@ -52,6 +53,14 @@ interface Sede {
     status: string;
 }
 
+interface DecodedToken {
+    userId: number;
+    email: string;
+    username: string;
+    role: string;
+    tokenVersion: number;
+}
+
 const SolicitudesRegistroAdmin = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF'>('PARTICIPANTES');
@@ -64,12 +73,13 @@ const SolicitudesRegistroAdmin = () => {
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [apoyoStaffData, setApoyoStaffData] = useState<ApoyoStaff[]>([]);
     const [sedesData, setSedesData] = useState<Sede[]>([]);
+    const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null); // Estado para el id_venue de la coordinadora
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     const rowsPerPage = 20;
 
-    // Obtener datos de la base de datos
+    // Obtener datos de la base de datos y el id_venue de la coordinadora
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -80,11 +90,28 @@ const SolicitudesRegistroAdmin = () => {
                     return;
                 }
 
+                // Decodificar el token para obtener el userId y el rol
+                const decoded: DecodedToken = jwtDecode(token);
+                if (decoded.role !== 'venue_coordinator') {
+                    setError('Este dashboard es solo para coordinadores de sede');
+                    router.push('/login');
+                    return;
+                }
+
+                // Obtener el id_venue de la coordinadora
+                const venueResponse = await fetch(`/api/venues/${decoded.userId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!venueResponse.ok) {
+                    const errorData = await venueResponse.json();
+                    throw new Error(`Error fetching venue: ${venueResponse.status} - ${errorData.message || 'Unknown error'}`);
+                }
+                const venueData = await venueResponse.json();
+                setCoordinatorVenueId(venueData.id_venue || null);
+
                 // Obtener participantes (usando la clave dataForRequests para el formato basado en preferred_group)
                 const participantsResponse = await fetch('/api/participants', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!participantsResponse.ok) {
                     const errorData = await participantsResponse.json();
@@ -92,13 +119,15 @@ const SolicitudesRegistroAdmin = () => {
                 }
                 const participantsData = await participantsResponse.json();
                 const pendingParticipants = participantsData.dataForRequests.filter((p: Participante) => p.status === 'Pendiente');
-                setParticipantesData(pendingParticipants);
+                // Filtrar participantes según el id_venue de la coordinadora
+                const filteredParticipants = coordinatorVenueId !== null
+                    ? pendingParticipants.filter((p: Participante) => p.groups?.venues?.id_venue === coordinatorVenueId)
+                    : pendingParticipants;
+                setParticipantesData(filteredParticipants);
 
                 // Obtener colaboradores (usando la clave dataForRequests para el formato basado en preferred_group)
                 const collaboratorsResponse = await fetch('/api/collaborators', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!collaboratorsResponse.ok) {
                     const errorData = await collaboratorsResponse.json();
@@ -106,13 +135,15 @@ const SolicitudesRegistroAdmin = () => {
                 }
                 const collaboratorsData = await collaboratorsResponse.json();
                 const pendingCollaborators = collaboratorsData.dataForRequests.filter((c: ApoyoStaff) => c.status === 'Pendiente');
-                setApoyoStaffData(pendingCollaborators);
+                // Filtrar colaboradores según el id_venue de la coordinadora
+                const filteredCollaborators = coordinatorVenueId !== null
+                    ? pendingCollaborators.filter((c: ApoyoStaff) => c.groups?.venues?.id_venue === coordinatorVenueId)
+                    : pendingCollaborators;
+                setApoyoStaffData(filteredCollaborators);
 
                 // Obtener sedes
                 const venuesResponse = await fetch('/api/venues', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!venuesResponse.ok) {
                     const errorData = await venuesResponse.json();
@@ -128,7 +159,7 @@ const SolicitudesRegistroAdmin = () => {
         };
 
         fetchData();
-    }, [router]);
+    }, [router, coordinatorVenueId]);
 
     // Filtrar los datos según el valor de búsqueda y la sección activa
     const filteredData = useMemo(() => {
@@ -389,6 +420,9 @@ const SolicitudesRegistroAdmin = () => {
                                     <p><strong>Estado:</strong> {(selectedItem as ApoyoStaff).status}</p>
                                 </div>
                             )}
+                            <div className="mt-4 flex justify-center">
+                                <Button label="Cerrar" variant="primary" onClick={closePopup} />
+                            </div>
                         </div>
                     </div>
                 )}
