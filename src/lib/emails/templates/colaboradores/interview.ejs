@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <body style="margin: 0; padding: 0; font-family: 'Asap', sans-serif; background-color: #2e1c31">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center" style="padding: 40px 0">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="background-color: #ffffff; border-radius: 12px; padding: 32px"
+          >
+            <tr>
+              <td
+                align="center"
+                style="background-color: #7c4d8c; padding: 30px 20px; border-radius: 12px 12px 0 0"
+              >
+                <h1 style="color: #fff; margin: 0; font-size: 28px">¡Agenda tu entrevista!</h1>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="padding: 16px 0 1px 0">
+                <span
+                  style="
+                    display: inline-block;
+                    width: 14px;
+                    height: 14px;
+                    background: #d1a8df;
+                    border-radius: 50%;
+                    margin: 4px;
+                  "
+                ></span>
+                <span
+                  style="
+                    display: inline-block;
+                    width: 14px;
+                    height: 14px;
+                    background: #ad7abeff;
+                    border-radius: 50%;
+                    margin: 4px;
+                  "
+                ></span>
+                <span
+                  style="
+                    display: inline-block;
+                    width: 14px;
+                    height: 14px;
+                    background: #7a2f93ff;
+                    border-radius: 50%;
+                    margin: 4px;
+                  "
+                ></span>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center">
+                <p style="font-size: 16px; color: #333">
+                  Estimado(a) <strong><%= cName %></strong>, estás a punto de ser parte del equipo
+                  de <strong>Patrones Hermosos</strong>.
+                </p>
+                <p style="font-size: 14px; color: #555">
+                  Ahora es tiempo de agendar una entrevista para conocerte mejor. Por favor ingresa
+                  a la siguiente agenda y reserva un espacio para hablar contigo. La fecha límite
+                  para agendar es el <%= lDate %>
+                </p>
+                <tr>
+                  <td align="center" style="padding: 4px 0 20px 0">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td bgcolor="#7A4D8CFF" style="border-radius: 6px">
+                          <a
+                            href="<%= platformLink %>"
+                            target="_blank"
+                            style="
+                              display: inline-block;
+                              padding: 12px 24px;
+                              font-size: 16px;
+                              font-weight: bold;
+                              font-family: sans-serif;
+                              color: #ffffff;
+                              background-color: #7a4d8cff;
+                              text-decoration: none;
+                              border-radius: 6px;
+                            "
+                          >
+                            Agendar mi entrevista
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                    <br />
+                    <p style="font-size: 14px; color: #555">
+                      Si tienes cualquier duda puedes comunicarte al correo:
+                      <strong><a href="mailto:<%= iEmail %>"><%= iEmail %></a></strong
+                      ><br />¡Te esperamos pronto!
+                    </p>
+                  </td>
+                </tr>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="font-size: 12px; color: #999">
+                © 2025 Patrones Hermosos – Comité Organizador
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

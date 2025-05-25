@@ -58,10 +58,9 @@
 
             <tr>
               <td style="color: #333333FF; font-size: 18px; text-align: center">
-                <p>Hola <strong><%= name %></strong>,</p>
+                <p>Hola <strong><%= pName %></strong>,</p>
                 <p>
-                  Lamentamos informarte que la solicitud de registo para tu sede, <strong><%= venue %></strong>, ha sido 
-rechazada por los siguientes motivos: 
+                  Lamentamos informarte que tu solicitud para participar en la SEDE <strong><%= venue %></strong> como <strong><%= role %></strong> ha sido rechazada por los siguientes motivos:
                 </p>
                 <p><strong><%= reason %></strong></p>
                 <p style="font-size: 14px;">
@@ -71,7 +70,7 @@ expuestos y llenar nuevamente el formulario de registro haciendo uso del siguien
                 <p style="font-size: 25px; color: #932F2FFF"><strong><%= code %></p></strong></p>
                 <p style="font-size: 14px; color: #6E6E6EFF">
                   Si tienes cualquier duda puedes comunicarte al correo: <strong>
-                    <a href="mailto:rgparedes@tec.mx">rgparedes@tec.mx</a>
+                    <a href="mailto:<%= iEmail %>"><%= iEmail %></a>
                   </strong><br />
                   Gracias por tu interés en Patrones Hermosos. 
               </td>

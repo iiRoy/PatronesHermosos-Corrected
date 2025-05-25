@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <body style="margin: 0; padding: 0; font-family: 'Asap', sans-serif; background-color: #311C1CFF">
+  <body style="margin: 0; padding: 0; font-family: 'Asap', sans-serif; background-color: #1E311CFF">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center" style="padding: 40px 0">
@@ -13,7 +13,7 @@
             <tr>
               <td
                 align="center"
-                style="background-color: #8C4D4DFF; padding: 30px 20px; border-radius: 12px 12px 0 0"
+                style="background-color: #4D8C56FF; padding: 30px 20px; border-radius: 12px 12px 0 0"
               >
                 <h1 style="color: #fff; font-size: 28px; margin: 0">
                   Resultados de la postulación
@@ -28,7 +28,7 @@
                     display: inline-block;
                     width: 14px;
                     height: 14px;
-                    background: #DFA8A8FF;
+                    background: #A8DFACFF;
                     border-radius: 50%;
                     margin: 4px;
                   "
@@ -38,7 +38,7 @@
                     display: inline-block;
                     width: 14px;
                     height: 14px;
-                    background: #BE7A7AFF;
+                    background: #7ABE83FF;
                     border-radius: 50%;
                     margin: 4px;
                   "
@@ -48,7 +48,7 @@
                     display: inline-block;
                     width: 14px;
                     height: 14px;
-                    background: #932F2FFF;
+                    background: #31932FFF;
                     border-radius: 50%;
                     margin: 4px;
                   "
@@ -57,23 +57,26 @@
             </tr>
 
             <tr>
-              <td style="color: #333333FF; font-size: 18px; text-align: center">
-                <p>Hola <strong><%= name %></strong>,</p>
+              <td style="color: #333333FF; font-size: 16px; text-align: center">
+                <p>Hola <strong><%= pName %></strong>,</p>
                 <p>
-                  Lamentamos informarte que la solicitud de registo para tu sede, <strong><%= venue %></strong>, ha sido 
-rechazada por los siguientes motivos: 
+                  Nos alegra informarte que has sido aceptada como <strong>Participante</strong> en
+                  el programa de <strong>Patrones Hermosos</strong>.
                 </p>
-                <p><strong><%= reason %></strong></p>
-                <p style="font-size: 14px;">
-                  Si deseas volver a relizar el registro, te pedimos dar solución a los motivos anteriormente 
-expuestos y llenar nuevamente el formulario de registro haciendo uso del siguiente código:
+                <p>Tu asignación quedó de la siguiente forma:</p>
+                <p style="font-size: 14px">
+                  <strong>SEDE:</strong> <%= sede %><br />
+                  <strong>Grupo:</strong> <%= grupo %><br />
+                  <strong>Dirección:</strong> <%= direccion %><br />
+                  <br/>
+                  <strong>Mentora:</strong> <%= mName %><br />
+                  <strong>Correo:</strong> <%= mEmail %><br />
                 </p>
-                <p style="font-size: 25px; color: #932F2FFF"><strong><%= code %></p></strong></p>
-                <p style="font-size: 14px; color: #6E6E6EFF">
-                  Si tienes cualquier duda puedes comunicarte al correo: <strong>
-                    <a href="mailto:rgparedes@tec.mx">rgparedes@tec.mx</a>
-                  </strong><br />
-                  Gracias por tu interés en Patrones Hermosos. 
+              <p style="font-size: 14px; color: #555;">
+              Para cualquier duda del evento, por favor ponte en contacto con <%= iName %> al siguiente correo: <strong>
+              <a href="mailto:<%= iEmail %>"><%= iEmail %></a>
+              </strong><br/><br/> ¡Nos vemos pronto en el evento!
+            </p>
               </td>
             </tr>
 
