@@ -59,7 +59,7 @@ router.put(
     { name: 'logo', maxCount: 1 },
   ]),
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['admin', 'superuser']),
   validateVenue,
   venueController.update,
 );
