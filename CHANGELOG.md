@@ -1,3 +1,7 @@
+## 1.13.0-coord.4 (2025-05-25)
+
+* feat(pages): nueva página de editarParticipantes coordinadora ([412a49c](https://github.com/iiRoy/Patrones-Hermosos/commit/412a49c))
+
 ## 1.13.0-coord.3 (2025-05-24)
 
 * feat(pages): nueva página de solicitudes para coordinadora, ya muestra solo las solicitudes en las q ([a916f3c](https://github.com/iiRoy/Patrones-Hermosos/commit/a916f3c))
