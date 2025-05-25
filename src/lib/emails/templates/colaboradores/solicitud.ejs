@@ -9,7 +9,7 @@
             <tr>
               <td align="center" style="background-color: #7c4d8c; padding: 30px 20px; border-radius: 12px 12px 0 0;">
                 <h1 style="color: #fff; margin: 0; font-size: 28px;">
-                  ¡Gracias por tu postulación como Sede!
+                  ¡Gracias por tu postulación como Colaborador!
                 </h1>
               </td>
             </tr>
@@ -52,20 +52,25 @@
             <tr>
               <td align="center">
                 <p style="font-size: 16px; color: #333;">
-                  Estimado(a) <strong><%= representativeName %></strong>, tu solicitud para registrar la sede <strong><%= venueName %></strong> ha sido recibida exitosamente.
+                  Estimado(a) <strong><%= cName %></strong>, tu solicitud para participar en la sede <strong><%= venueName %></strong> como <strong><%= role %></strong> ha sido recibida exitosamente.
                 </p>
                 <p style="font-size: 14px; color: #555;">
                   Nuestro equipo está evaluando tu postulación. Aquí los detalles que enviaste:
                 </p>
                 <ul style="font-size: 14px; color: #555; list-style: none; padding: 0;">
-                  <li><strong>Nombre del representante:</strong> <%= representativeName %></li>
-                  <li><strong>Correo:</strong> <%= email %></li>
-                  <li><strong>Ubicación:</strong> <%= location %></li>
-                  <li><strong>¿Participación previa?:</strong> <%= previousExperience %></li>
+                  <li><strong>Nombre:</strong> <%= cName %></li>
+                  <li><strong>Correo:</strong> <%= cEmail %></li>
+                  <br/>
+                  <li><strong>Rol:</strong> <%= role %></li>
+                  <li><strong>Idioma:</strong> <%= language %></li>
+                  <li><strong>Nivel:</strong> <%= level %></li>
+                  <li><strong>Modalidad:</strong> <%= mode %></li>
+                  <br/>
+                  <li><strong>SEDE Aplicada:</strong> <%= venue %></li>
+                  <li><strong>Grupo Aplicado:</strong> <%= group %></li>
                 </ul>
                 <p style="font-size: 14px; color: #555;">
-                  Si está es la primera vez que participas como sede del evento, por favor envía un correo a <strong><a href="mailto:rgparedes@tec.mx">rgparedes@tec.mx</a></strong> con las imágenes necesarias para demostrar que la sede cuenta con las 
-comodidades necesarias para albergar el evento.
+                  Por favor, mantente al tanto de tu correo y/o celular para recibir notificaciones alrededor de la evaluación de tu postulación. Si tienes cualquier duda puedes comunicarte al correo: <strong><a href="mailto:<%= iEmail %>"><%= iEmail %></a></strong><br /><br />¡Estamos alegres de poder conocerte pronto!
                 </p>
               </td>
             </tr>

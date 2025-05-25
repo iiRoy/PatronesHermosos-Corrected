@@ -58,45 +58,25 @@
 
             <tr>
               <td style="color: #333333FF; font-size: 16px; text-align: center">
-                <p>Hola <strong><%= name %></strong>,</p>
+                <p>Hola <strong><%= pName %></strong>,</p>
                 <p>
                   Nos alegra informarte que has sido aceptada como <strong><%= role %></strong> en
-                  la sede <strong><%= venue %></strong>.
+                  el programa de <strong>Patrones Hermosos</strong>.
                 </p>
-                <p>Puedes ingresar a la plataforma con los siguientes datos:</p>
+                <p>Tu asignación quedó de la siguiente forma:</p>
                 <p style="font-size: 14px">
-                  <strong>Usuario:</strong> <%= username %><br />
-                  <strong>Correo:</strong> <%= email %><br />
-                  <strong>Contraseña:</strong> <%= password %>
+                  <strong>SEDE:</strong> <%= sede %><br />
+                  <strong>Grupo:</strong> <%= grupo %><br />
+                  <strong>Dirección:</strong> <%= direccion %><br />
+                  <br/>
+                  <strong>Mentora:</strong> <%= mName %><br />
+                  <strong>Correo:</strong> <%= mEmail %><br />
                 </p>
-              </td>
-            </tr>
-
-            <tr>
-              <td align="center" style="padding: 4px 0 20px 0">
-                <table cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td bgcolor="#4D8C5AFF" style="border-radius: 6px">
-                      <a
-                        href="<%= platformLink %>"
-                        target="_blank"
-                        style="
-                          display: inline-block;
-                          padding: 12px 24px;
-                          font-size: 16px;
-                          font-weight: bold;
-                          font-family: sans-serif;
-                          color: #ffffff;
-                          background-color: #4D8C53FF;
-                          text-decoration: none;
-                          border-radius: 6px;
-                        "
-                      >
-                        Ir a la plataforma
-                      </a>
-                    </td>
-                  </tr>
-                </table>
+              <p style="font-size: 14px; color: #555;">
+              Para cualquier duda del evento, por favor ponte en contacto con <%= iName %> al siguiente correo: <strong>
+              <a href="mailto:<%= iEmail %>"><%= iEmail %></a>
+              </strong><br/><br/> ¡Nos vemos pronto en el evento!
+            </p>
               </td>
             </tr>
 
