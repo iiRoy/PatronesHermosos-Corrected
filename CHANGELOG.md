@@ -1,3 +1,8 @@
+## 1.13.0-mail.2 (2025-05-25)
+
+* fix(correos): Templates creados y terminados. ([b48c47d](https://github.com/iiRoy/Patrones-Hermosos/commit/b48c47d))
+* chore(formats): Changes pending. Small advance. ([123f653](https://github.com/iiRoy/Patrones-Hermosos/commit/123f653))
+
 ## 1.13.0-mail.1 (2025-05-19)
 
 * feat(notifications): Sistema de Correos Funcional ([4642c26](https://github.com/iiRoy/Patrones-Hermosos/commit/4642c26))
