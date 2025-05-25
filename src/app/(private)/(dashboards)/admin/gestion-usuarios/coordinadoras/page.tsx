@@ -306,7 +306,7 @@ const GestionCoordinadoras = () => {
         {/* Popup de detalles */}
         {isDetailsPopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Coordinadora</h2>
               <div className="pt-6 pb-6">
                 <p><strong>ID:</strong> {selectedCoordinadora.id_venue_coord}</p>

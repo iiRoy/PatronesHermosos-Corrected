@@ -749,11 +749,10 @@ const SolicitudesRegistroAdmin = () => {
         {/* Pop-up de información */}
         {isPopupOpen && selectedItem && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto">
+            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
               {section === 'PARTICIPANTES' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>ID:</strong> {(selectedItem as Participante).id_participant}</p>
                   <p><strong>Nombre:</strong> {`${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim()}</p>
                   <p><strong>Correo:</strong> {(selectedItem as Participante).email}</p>
                   <p><strong>Teléfono del tutor:</strong> {(selectedItem as Participante).tutors?.phone_number || 'No asignado'}</p>
@@ -764,7 +763,6 @@ const SolicitudesRegistroAdmin = () => {
               )}
               {section === 'APOYO & STAFF' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>ID:</strong> {(selectedItem as ApoyoStaff).id_collaborator}</p>
                   <p><strong>Nombre:</strong> {`${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}</p>
                   <p><strong>Correo:</strong> {(selectedItem as ApoyoStaff).email}</p>
                   <p><strong>Teléfono:</strong> {(selectedItem as ApoyoStaff).phone_number}</p>
@@ -785,7 +783,6 @@ const SolicitudesRegistroAdmin = () => {
               )}
               {section === 'SEDES' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>ID:</strong> {(selectedItem as Sede).id_venue}</p>
                   <p><strong>Nombre:</strong> {(selectedItem as Sede).name}</p>
                   <p><strong>País:</strong> {(selectedItem as Sede).country}</p>
                   <p><strong>Ubicación:</strong> {(selectedItem as Sede).state}</p>
@@ -803,7 +800,7 @@ const SolicitudesRegistroAdmin = () => {
         {/* Pop-up de confirmación (Aceptar) */}
         {isConfirmPopupOpen && selectedItem && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-700">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">
                 ¿Aceptar a {section === 'SEDES' ? (selectedItem as Sede).name : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}?
               </h2>
@@ -908,7 +905,7 @@ const SolicitudesRegistroAdmin = () => {
         {/* Pop-up de rechazo */}
         {isRejectPopupOpen && selectedItem && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-700">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-800">
               <h2 className="text-2xl font-bold mx-4 mt-6 mb-12 text-center">
                 ¿Seguro que quieres rechazar la solicitud de {section === 'SEDES' ? (selectedItem as Sede).name : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}?
               </h2>
