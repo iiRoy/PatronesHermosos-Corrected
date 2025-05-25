@@ -44,6 +44,8 @@ const getSpecificData = async (req, res) => {
       select: {
         id_venue: true,
         universidad: true,
+        pais: true,
+        estado: true,
         campus: true,
         coordinador: true,
         no_grupos: true,
