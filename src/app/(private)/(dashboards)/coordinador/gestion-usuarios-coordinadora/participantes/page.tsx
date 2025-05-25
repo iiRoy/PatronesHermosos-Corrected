@@ -128,7 +128,7 @@ const gestionParticipantes = () => {
     };
 
     const handleEditClick = (participante: Participante) => {
-        router.push(`/admin/gestion-usuarios/participantes/editarParticipante/${participante.id}`);
+        router.push(`/coordinador/gestion-usuarios-coordinadora/participantes/editarParticipante/${participante.id}`);
     };
 
     const handleClosePopup = () => {
