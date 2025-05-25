@@ -1,3 +1,8 @@
+## 1.13.0-admin.5 (2025-05-25)
+
+* feat(pages): nueva página de editar sede superuser ([85dd02d](https://github.com/iiRoy/Patrones-Hermosos/commit/85dd02d))
+* chore(estadísticas): Fixed merge mistakes for Graphs ([47e7027](https://github.com/iiRoy/Patrones-Hermosos/commit/47e7027))
+
 ## 1.13.0-admin.4 (2025-05-22)
 
 * improve(pages): eliminar participantes ya usa la función de cancelar ([fed2d23](https://github.com/iiRoy/Patrones-Hermosos/commit/fed2d23))
