@@ -7,7 +7,7 @@ import PageTitle from '@/components/headers_menu_users/pageTitle';
 import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useNotification } from '@/components/buttons_inputs/Notification'; // Add notification hook
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 // Interfaces para los datos de cada sección
 interface Participante {
@@ -57,6 +57,11 @@ interface GroupOption {
   id_group: number;
   name: string;
   available_places: number;
+  role_availability?: {
+    Instructora: number;
+    Facilitadora: number;
+    Staff: number;
+  };
 }
 
 const SolicitudesRegistroAdmin = () => {
@@ -67,8 +72,7 @@ const SolicitudesRegistroAdmin = () => {
   const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
   const [isRejectPopupOpen, setIsRejectPopupOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Participante | ApoyoStaff | Sede | null>(null);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // For Participants
-  const [selectedGroup, setSelectedGroup] = useState<string>(''); // For Apoyo & Staff
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // For both Participants and Apoyo & Staff
   const [selectedRole, setSelectedRole] = useState<string>(''); // For Apoyo & Staff roles
   const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
   const [venueName, setVenueName] = useState('');
@@ -77,7 +81,7 @@ const SolicitudesRegistroAdmin = () => {
   const [sedesData, setSedesData] = useState<Sede[]>([]);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { notify } = useNotification(); // Initialize notification
+  const { notify } = useNotification();
 
   const rowsPerPage = 20;
 
@@ -115,6 +119,49 @@ const SolicitudesRegistroAdmin = () => {
       setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
     } catch (error: any) {
       console.error('Error fetching available groups:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudieron cargar los grupos disponibles: ${error.message}`,
+        duration: 5000,
+      });
+    }
+  };
+
+  // Fetch available groups for a collaborator
+  const fetchAvailableGroupsForCollaborator = async (collaboratorId: number) => {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/collaborators/${collaboratorId}/available-groups`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al obtener grupos disponibles');
+      }
+
+      const data = await response.json();
+      setAvailableGroups(data.groups || []);
+      setVenueName(data.venue || 'No asignado');
+      // Set default group to preferred group if available
+      const collaborator = apoyoStaffData.find(c => c.id_collaborator === collaboratorId);
+      const preferredGroupId = collaborator?.preferred_group;
+      const defaultGroup = data.groups.find((g: GroupOption) => g.id_group === preferredGroupId);
+      setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
+    } catch (error: any) {
+      console.error('Error fetching available groups for collaborator:', error);
       notify({
         color: 'red',
         title: 'Error',
@@ -248,8 +295,9 @@ const SolicitudesRegistroAdmin = () => {
     if (section === 'PARTICIPANTES') {
       fetchAvailableGroups((item as Participante).id_participant);
     } else if (section === 'APOYO & STAFF') {
-      setSelectedRole((item as ApoyoStaff).preferred_role || 'Instructora');
-      setSelectedGroup((item as ApoyoStaff).groups?.name || 'Luna');
+      const collaborator = item as ApoyoStaff;
+      fetchAvailableGroupsForCollaborator(collaborator.id_collaborator);
+      setSelectedRole(collaborator.preferred_role !== 'Pendiente' ? collaborator.preferred_role : 'Instructora');
     }
     setIsConfirmPopupOpen(true);
   };
@@ -258,7 +306,6 @@ const SolicitudesRegistroAdmin = () => {
     setIsConfirmPopupOpen(false);
     setSelectedItem(null);
     setSelectedGroupId(null);
-    setSelectedGroup('');
     setSelectedRole('');
     setAvailableGroups([]);
     setVenueName('');
@@ -341,26 +388,123 @@ const SolicitudesRegistroAdmin = () => {
         });
       }
     } else if (section === 'APOYO & STAFF') {
-      // Placeholder for Apoyo & Staff approval
-      console.log('Solicitud aceptada para:', selectedItem, 'Rol:', selectedRole, 'Grupo:', selectedGroup);
-      const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
-      notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `Colaborador ${fullName} aprobado (rol: ${selectedRole}, grupo: ${selectedGroup})`,
-        duration: 5000,
-      });
-      closeConfirmPopup();
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        if (!selectedGroupId) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Por favor selecciona un grupo',
+            duration: 5000,
+          });
+          return;
+        }
+
+        if (!selectedRole) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Por favor selecciona un rol',
+            duration: 5000,
+          });
+          return;
+        }
+
+        const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/approve`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ role: selectedRole, groupId: selectedGroupId }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al aprobar colaborador');
+        }
+
+        // Remove collaborator from list
+        setApoyoStaffData(prev => prev.filter(c => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
+
+        const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const groupName = availableGroups.find(g => g.id_group === selectedGroupId)?.name || 'Desconocido';
+        notify({
+          color: 'green',
+          title: 'Éxito',
+          message: `Colaborador ${fullName} aprobado exitosamente (rol: ${selectedRole}, grupo: ${groupName})`,
+          duration: 5000,
+        });
+
+        closeConfirmPopup();
+      } catch (error: any) {
+        console.error('Error approving collaborator:', error);
+        const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo aprobar al colaborador ${fullName}: ${error.message}`,
+          duration: 5000,
+        });
+      }
     } else {
-      // Placeholder for Sedes
-      console.log('Solicitud aceptada para:', selectedItem);
-      notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `Sede ${(selectedItem as Sede).name} aprobada`,
-        duration: 5000,
-      });
-      closeConfirmPopup();
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/venues/${(selectedItem as Sede).id_venue}/approve`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al aprobar la sede');
+        }
+
+        // Remove venue from list
+        setSedesData(prev => prev.filter(v => v.id_venue !== (selectedItem as Sede).id_venue));
+
+        notify({
+          color: 'green',
+          title: 'Éxito',
+          message: `Sede ${(selectedItem as Sede).name} aprobada exitosamente`,
+          duration: 5000,
+        });
+
+        closeConfirmPopup();
+      } catch (error: any) {
+        console.error('Error approving venue:', error);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo aprobar la sede ${(selectedItem as Sede).name}: ${error.message}`,
+          duration: 5000,
+        });
+      }
     }
   };
 
@@ -695,7 +839,7 @@ const SolicitudesRegistroAdmin = () => {
                 )}
                 {section === 'APOYO & STAFF' && selectedItem && (
                   <>
-                    <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).groups?.venues?.name || 'No asignado'}</p>
+                    <p><strong>Sede:</strong> {venueName}</p>
                     <p><strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).preferred_role}</p>
                     <p className="mt-4"><strong>Asignar un rol</strong></p>
                     <select
@@ -703,21 +847,41 @@ const SolicitudesRegistroAdmin = () => {
                       value={selectedRole}
                       onChange={(e) => setSelectedRole(e.target.value)}
                     >
-                      <option>Instructora</option>
-                      <option>Staff</option>
-                      <option>Facilitadora</option>
+                      <option value="Instructora">Instructora</option>
+                      <option value="Facilitadora">Facilitadora</option>
+                      <option value="Staff">Staff</option>
                     </select>
                     <p className="mt-4"><strong>Asignar a un grupo</strong></p>
                     <select
                       className="w-full p-2 border rounded mt-2 bg-purple-100"
-                      value={selectedGroup}
-                      onChange={(e) => setSelectedGroup(e.target.value)}
+                      value={selectedGroupId || ''}
+                      onChange={(e) => setSelectedGroupId(parseInt(e.target.value))}
+                      disabled={availableGroups.length === 0}
                     >
-                      <option>Luna</option>
-                      <option>Sol</option>
-                      <option>Mar</option>
-                      <option>Montaña</option>
+                      {availableGroups.length === 0 ? (
+                        <option value="">No hay grupos disponibles</option>
+                      ) : (
+                        availableGroups.map(group => (
+                          <option key={group.id_group} value={group.id_group}>
+                            {group.name}
+                          </option>
+                        ))
+                      )}
                     </select>
+                    {selectedGroupId && (
+                      <div className="mt-2">
+                        <p>
+                          <strong>Cupo disponible:</strong>{' '}
+                          {availableGroups.find(g => g.id_group === selectedGroupId)?.available_places || 0}
+                        </p>
+                        <p className="mt-1"><strong>Disponibilidad por rol:</strong></p>
+                        {Object.entries(availableGroups.find(g => g.id_group === selectedGroupId)?.role_availability || {}).map(([role, count]) => (
+                          <p key={role} className="ml-2">
+                            {role}: {count}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </>
                 )}
                 {section === 'SEDES' && selectedItem && (
@@ -729,7 +893,12 @@ const SolicitudesRegistroAdmin = () => {
                 )}
               </div>
               <div className="mt-4 flex justify-center gap-4">
-                <Button label="Aceptar" variant="success" onClick={handleAccept} disabled={section === 'PARTICIPANTES' && !selectedGroupId} />
+                <Button
+                  label="Aceptar"
+                  variant="success"
+                  onClick={handleAccept}
+                  disabled={(section === 'PARTICIPANTES' || section === 'APOYO & STAFF') && !selectedGroupId}
+                />
                 <Button label="Cancelar" variant="error" onClick={closeConfirmPopup} />
               </div>
             </div>
