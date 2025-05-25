@@ -94,4 +94,6 @@ router.get('/files/:filename', (req, res) => {
     });
 });
 
+router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
+
 module.exports = router;

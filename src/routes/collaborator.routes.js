@@ -24,7 +24,7 @@ router.put(
 
 // Update basic info of a collaborator (superuser only)
 router.patch(
-  '/basic/:id/',
+  '/basic/:id',
   authMiddleware,
   roleMiddleware(['superuser']),
   collaboratorsController.updateCollaboratorBasicInfo
@@ -32,5 +32,8 @@ router.patch(
 
 // Delete a collaborator (superuser only)
 router.delete('/:id', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.deleteCollaborator);
+
+router.get('/:collaboratorId/available-groups', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.getAvailableGroups);
+router.patch('/:collaboratorId/approve', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.approveCollaborator);
 
 module.exports = router;

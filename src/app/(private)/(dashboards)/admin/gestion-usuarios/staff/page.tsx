@@ -29,6 +29,7 @@ interface Apoyo {
   preferred_language: string;
   preferred_level: string;
   preferred_group: number | null;
+  groupName?: string; // Añadido para almacenar el nombre del grupo
 }
 
 const GestionApoyo = () => {
@@ -89,6 +90,7 @@ const GestionApoyo = () => {
           preferred_language: collab.preferred_language || 'Sin idioma preferido',
           preferred_level: collab.preferred_level || 'Sin nivel preferido',
           preferred_group: collab.preferred_group || null,
+          groupName: collab.groups?.name || undefined, // Intentar obtener el nombre del grupo
         }));
 
         setApoyoData(formattedData);
@@ -148,9 +150,48 @@ const GestionApoyo = () => {
     setIsDeletePopupOpen(true);
   };
 
-  const handleInfoClick = (apoyo: Apoyo) => {
-    setSelectedApoyo(apoyo);
-    setIsInfoPopupOpen(true);
+  const handleInfoClick = async (apoyo: Apoyo) => {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      let groupName = apoyo.groupName;
+      if (apoyo.preferred_group && !groupName) {
+        // Intentar obtener el nombre del grupo
+        const response = await fetch(`/api/collaborators/${apoyo.id_collaborator}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          console.error('Error fetching collaborator details:', await response.json());
+        } else {
+          const data = await response.json();
+          groupName = data.data.groups?.name || undefined;
+        }
+      }
+
+      setSelectedApoyo({ ...apoyo, groupName });
+      setIsInfoPopupOpen(true);
+    } catch (error: any) {
+      console.error('Error fetching group name:', error);
+      setSelectedApoyo(apoyo); // Fallback sin groupName
+      setIsInfoPopupOpen(true);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: 'No se pudo obtener el nombre del grupo',
+        duration: 5000,
+      });
+    }
   };
 
   const handleEditClick = (apoyo: Apoyo, event: React.MouseEvent) => {
@@ -385,10 +426,7 @@ const GestionApoyo = () => {
                 <p><strong>Estado:</strong> {selectedApoyo.status}</p>
                 <p><strong>Nivel:</strong> {selectedApoyo.level}</p>
                 <p><strong>Idioma:</strong> {selectedApoyo.language}</p>
-                <p><strong>Rol preferido:</strong> {selectedApoyo.preferred_role}</p>
-                <p><strong>Idioma preferido:</strong> {selectedApoyo.preferred_language}</p>
-                <p><strong>Nivel preferido:</strong> {selectedApoyo.preferred_level}</p>
-                <p><strong>Grupo preferido:</strong> {selectedApoyo.preferred_group || 'Sin grupo preferido'}</p>
+                <p><strong>Grupo asignado:</strong> {selectedApoyo.groupName || selectedApoyo.preferred_group || 'Sin grupo asignado'}</p>
               </div>
               <div className="flex justify-center mt-6">
                 <Button label="Cerrar" variant="secondary" onClick={handleCloseInfoPopup} />

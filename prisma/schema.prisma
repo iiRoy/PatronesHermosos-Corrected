@@ -47,6 +47,7 @@ model collaborators {
   @@index([id_group], map: "id_group")
 }
 
+
 model audit_log {
   id         Int         @id @default(autoincrement())
   action     AuditAction
