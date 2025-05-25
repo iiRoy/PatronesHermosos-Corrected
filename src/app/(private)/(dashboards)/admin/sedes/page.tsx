@@ -221,7 +221,7 @@ const SedesAdmin = () => {
 
                 {isPopupOpen && selectedSede && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
                             <h2 className="text-2xl font-bold mb-4 text-center">Detalles de la Sede</h2>
                             <div>
                                 <p><strong>Nombre:</strong> {selectedSede.name}</p>

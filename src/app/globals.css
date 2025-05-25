@@ -1058,11 +1058,6 @@
   padding-right: 60px;
 }
 
-/* Solicitudes de registro */
-.texto-popup {
-  color: var(--background);
-}
-
 .fondo-tabla-forms {
   background-color: var(--text-color);
   border-radius: 15px;
