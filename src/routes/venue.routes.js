@@ -59,9 +59,15 @@ router.put(
     { name: 'logo', maxCount: 1 },
   ]),
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin']),
   validateVenue,
   venueController.update,
+);
+router.put(
+  '/basic/:id',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  venueController.updateBasic // Nueva ruta para actualización básica
 );
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController.remove);
 router.post('/:id/cancel', authMiddleware, roleMiddleware(['admin']), venueController.cancelVenue);

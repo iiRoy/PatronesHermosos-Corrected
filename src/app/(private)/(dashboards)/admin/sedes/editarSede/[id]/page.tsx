@@ -13,7 +13,7 @@ interface Sede {
     country: string;
     state: string;
     address: string;
-    location: string;
+    status: string;
 }
 
 const EditarSede = () => {
@@ -27,6 +27,7 @@ const EditarSede = () => {
     const [country, setCountry] = useState('');
     const [state, setState] = useState('');
     const [address, setAddress] = useState('');
+    const [status, setStatus] = useState('');
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -38,7 +39,6 @@ const EditarSede = () => {
                     return;
                 }
 
-                // Obtener datos de la sede
                 const venueResponse = await fetch(`/api/venues/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -57,6 +57,7 @@ const EditarSede = () => {
                 setCountry(venueData.country || '');
                 setState(venueData.state || '');
                 setAddress(venueData.address || '');
+                setStatus(venueData.status || 'Pendiente');
             } catch (error: any) {
                 console.error('Error fetching data:', error);
                 setError(error.message);
@@ -81,9 +82,12 @@ const EditarSede = () => {
                 country,
                 state,
                 address,
+                status,
             };
 
-            const response = await fetch(`/api/venues/${id}`, {
+            console.log('Datos enviados:', updatedSede); // Depuración
+
+            const response = await fetch(`/api/venues/basic/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,7 +108,7 @@ const EditarSede = () => {
                 duration: 5000,
             });
 
-            router.push('/sedes');
+            router.push('/admin/sedes');
         } catch (error: any) {
             console.error('Error updating venue:', error);
             notify({
@@ -192,6 +196,21 @@ const EditarSede = () => {
                             variant='accent'
                             value={address}
                             onChangeText={(val) => setAddress(val)}
+                        />
+                    </div>
+                </div>
+
+                <div className='flex gap-4 justify-between mb-4'>
+                    <div className='basis-1/2'>
+                        <InputField
+                            label='Status'
+                            darkText={true}
+                            showDescription={false}
+                            placeholder={sede.status || 'Pendiente'}
+                            showError={false}
+                            variant='accent'
+                            value={status}
+                            onChangeText={(val) => setStatus(val)}
                         />
                     </div>
                 </div>
