@@ -114,7 +114,7 @@ const Menu: React.FC = () => {
           { icon: 'Bank', label: 'SEDES', href: '/sedes', visible: ['superuser'] },
           { icon: 'Bank', label: 'Mi SEDE', href: '/mi-sede', visible: ['venue_coordinator'] },
           { icon: 'Users', label: 'Gestionar Usuarios', visible: ['superuser'] },
-          { icon: 'Users', label: 'Gestion de Usuarios', visible: ['venue_coordinator'] },
+          { icon: 'Users', label: 'Gestion Usuarios', visible: ['venue_coordinator'] },
           {
             icon: 'PaperPlaneTilt',
             label: 'Solicitudes',
@@ -127,7 +127,7 @@ const Menu: React.FC = () => {
             href: '/diplomas',
             visible: ['superuser', 'venue_coordinator'],
           },
-          { icon: 'Envelope', label: 'Correos', href: '/correos', visible: ['superuser'] },
+          { icon: 'Envelope', label: 'Correos', href: '/correos', visible: ['superuser', 'venue_coordinator'] },
         ]
           .filter((item) => item.visible.includes(role))
           .map((item) => {
@@ -194,7 +194,7 @@ const Menu: React.FC = () => {
               );
             }
 
-            if (item.label === 'Gestion de Usuarios') {
+            if (item.label === 'Gestion Usuarios') {
               return (
                 <div
                   key={item.label}
