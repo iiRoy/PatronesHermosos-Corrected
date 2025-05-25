@@ -357,6 +357,7 @@ module.exports = {
   getById,
   create,
   update,
+  updateBasic,
   remove,
   cancelVenue,
   approveVenue,

@@ -33,7 +33,7 @@ const GestionParticipantes = () => {
     const [filterActivaExtra, setFilterActivaExtra] = useState({ grupo: '__All__' });
     const [currentPage, setCurrentPage] = useState(0);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false); // Nuevo estado para el popup de detalles
+    const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
     const [selectedParticipante, setSelectedParticipante] = useState<Participante | null>(null);
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -68,7 +68,6 @@ const GestionParticipantes = () => {
                 }
 
                 const data = await response.json();
-                // Acceder a la clave 'data' que contiene formattedParticipants (basado en id_group)
                 setParticipantesData(data.data);
             } catch (error: any) {
                 console.error('Error al obtener participantes:', error);
@@ -85,7 +84,6 @@ const GestionParticipantes = () => {
         }));
     };
 
-    // Extraer sedes y grupos únicos para los filtros
     const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.groups?.venues?.name || 'No asignado'))).sort();
     const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.groups?.name || 'No asignado'))).sort();
 
@@ -110,7 +108,8 @@ const GestionParticipantes = () => {
             const selectedGrupo = filterActivaExtra['grupo'];
             const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
             const isNotCancelled = participante.status !== 'cancelada';
-            return matchesSearch && matchesSede && matchesGrupo && isNotCancelled;
+            const isApproved = participante.status === 'Aprobada'; // Nueva condición
+            return matchesSearch && matchesSede && matchesGrupo && isNotCancelled && isApproved;
         });
     }, [inputValue, section, filterActivaExtra, participantesData]);
 
@@ -169,7 +168,6 @@ const GestionParticipantes = () => {
                 }
 
                 const updatedParticipant = await response.json();
-                // Actualizar localmente el estado del participante
                 setParticipantesData((prev) =>
                     prev.map((p) =>
                         p.id_participant === selectedParticipante.id_participant
@@ -178,7 +176,6 @@ const GestionParticipantes = () => {
                     )
                 );
 
-                // Mostrar notificación de éxito
                 const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
                 notify({
                     color: 'green',
@@ -187,11 +184,9 @@ const GestionParticipantes = () => {
                     duration: 5000,
                 });
 
-                // Cerrar el popup
                 handleClosePopup();
             } catch (error: any) {
                 console.error('Error al cancelar participante:', error);
-                // Mostrar notificación de error
                 const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
                 notify({
                     color: 'red',
@@ -199,14 +194,12 @@ const GestionParticipantes = () => {
                     message: `No se pudo cancelar al usuario ${fullName}: ${error.message}`,
                     duration: 5000,
                 });
-                // Forzar el cierre del popup en caso de error
                 handleClosePopup();
             }
         }
     };
 
     const handleRowClick = (participante: Participante, event: React.MouseEvent<HTMLTableRowElement>) => {
-        // Evitar que el clic en los botones active el popup
         const isButtonClick = (event.target as HTMLElement).closest('button');
         if (!isButtonClick) {
             setSelectedParticipante(participante);
