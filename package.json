@@ -1,6 +1,6 @@
 {
   "name": "patrones-hermosos",
-  "version": "1.13.0-coord.3",
+  "version": "1.13.0-coord.4",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",
