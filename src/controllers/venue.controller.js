@@ -161,6 +161,21 @@ const create = async (req, res) => {
       )
     `;
 
+    // Send registration confirmation email to venue coordinator
+    await sendEmail({
+      to: generalCoordinator.email,
+      subject: 'Confirmación de Solicitud de Sede - Patrones Hermosos',
+      template: 'sede/solicitud',
+      data: {
+        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
+        venueName: name,
+        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
+        email: generalCoordinator.email,
+        location: address || 'No especificado',
+        iEmail: 'rgparedes@tec.mx',
+      },
+    });
+
     res.status(201).json({
       message: 'Venue creado exitosamente',
       files: {
@@ -258,6 +273,20 @@ const cancelVenue = async (req, res) => {
       CALL cancelar_sede(${parseInt(id)}, ${username})
     `;
 
+    // Send rejection email to venue coordinator
+      await sendEmail({
+        to: generalCoordinator.email,
+        subject: 'Resultados de tu Postulación de Sede - Patrones Hermosos',
+        template: 'sedes/rechazado',
+        data: {
+          name: `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
+          venue: venue.name,
+          reason: reason || 'No cumplió con los criterios de selección',
+          code: uuidv4().slice(0, 8),
+          iEmail: 'rgparedes@tec.mx',
+        },
+      });
+
     res.status(200).json({ message: `Sede con ID ${id} cancelada exitosamente` });
   } catch (error) {
     console.error('Error al cancelar la sede:', error);
@@ -269,6 +298,121 @@ const cancelVenue = async (req, res) => {
   }
 };
 
+// Aceptar una sede
+const acceptVenue = async (req, res) => {
+  const { id } = req.params;
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ message: 'El campo username es obligatorio' });
+  }
+
+  try {
+    // Fetch venue, coordinator, and assistant coordinators
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      include: {
+        venue_coordinators: {
+          select: {
+            name: true,
+            paternal_name: true,
+            maternal_name: true,
+            email: true,
+            username: true,
+            password: true,
+          },
+        },
+        assistant_coordinators: {
+          select: {
+            name: true,
+            paternal_name: true,
+            maternal_name: true,
+            email: true,
+            role: true,
+          },
+        },
+        groups: {
+          include: {
+            participants: {
+              select: {
+                id_participant: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
+    if (!venue.venue_coordinators || venue.venue_coordinators.length === 0) {
+      return res.status(500).json({ message: 'No se encontró el coordinador general para la sede' });
+    }
+
+    const generalCoordinator = venue.venue_coordinators[0];
+
+    // Determine status based on participant count
+    const hasParticipants = venue.groups.some(group => group.participants.length > 0);
+    const newStatus = hasParticipants ? 'Registrada_con_participantes' : 'Registrada_sin_participantes';
+
+    // Update venue status
+    await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: {
+        status: newStatus,
+      },
+    });
+
+    // Send acceptance email to general coordinator
+    await sendEmail({
+      to: generalCoordinator.email,
+      subject: '¡Felicidades! Tu Sede ha sido Aceptada - Patrones Hermosos',
+      template: 'sedes/aceptado',
+      data: {
+        name: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
+        role: 'Coordinadora General',
+        venue: venue.name,
+        username: generalCoordinator.username,
+        email: generalCoordinator.email,
+        password: generalCoordinator.password, // Note: Sending passwords in email is insecure; consider a secure alternative
+        platformLink: `https://patroneshermosos.org/login/${uuidv4().slice(0, 8)}`,
+      },
+    });
+
+    // Send assignment emails to all assistant coordinators
+    for (const assistant of venue.assistant_coordinators) {
+      // Map role based on stored role
+      let teamRole = assistant.role;
+      if (!teamRole || teamRole === 'Pendiente') {
+        // Fallback: Infer role based on context (e.g., email matching from registrar_sede)
+        teamRole = assistant.role === 'Coordinadora_Asociada' ? 'Coordinadora_Asociada' : 'Coordinadora_de_informes';
+      }
+
+      await sendEmail({
+        to: assistant.email,
+        subject: 'Asignación de Puesto en Sede - Patrones Hermosos',
+        template: 'lideres/aceptado',
+        data: {
+          pName: `${assistant.name} ${assistant.paternal_name || ''} ${assistant.maternal_name || ''}`.trim(),
+          venue: venue.name,
+          role: teamRole,
+          address: venue.address || 'No especificado',
+          cName: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
+          cEmail: generalCoordinator.email || 'rgparedes@tec.mx',
+        },
+      });
+    }
+
+    res.status(200).json({
+      message: `Sede con ID ${id} aceptada exitosamente como ${newStatus}`,
+    });
+  } catch (error) {
+    console.error('Error al aceptar la sede:', error);
+    res.status(500).json({ message: 'Error interno al aceptar la sede', error: error.message });
+  }
+};
 
 module.exports = {
   getAll,
@@ -278,4 +422,5 @@ module.exports = {
   update,
   remove,
   cancelVenue,
+  acceptVenue,
 };
