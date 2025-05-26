@@ -13,7 +13,7 @@ import { useNotification } from '@/components/buttons_inputs/Notification';
 interface Sede {
     id_venue: number;
     name: string;
-    location: string; // Combinación de country y state
+    location: string;
     address: string;
     status: string;
 }
@@ -48,7 +48,7 @@ const SedesAdmin = () => {
                     return;
                 }
 
-                const response = await fetch('/api/venues', {
+                const response = await fetch('/api/venues/', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -71,19 +71,15 @@ const SedesAdmin = () => {
                 }
 
                 const data = await response.json();
-                // Mapear los datos de la API a la interfaz Sede
                 const formattedData = data.map((venue: any) => ({
                     id_venue: venue.id_venue,
                     name: venue.name || 'Sin nombre',
-                    // Combinar country y state para location, con manejo de valores vacíos
-                    location: `${venue.country || ''}${venue.country && venue.state ? ', ' : ''}${venue.state || ''}`.trim() || 'Sin ubicación',
+                    location: venue.location || 'Sin ubicación',
                     address: venue.address || 'Sin dirección',
-                    // Reemplazar guiones bajos por espacios en el status
                     status: venue.status ? venue.status.replace(/_/g, ' ') : 'Pendiente',
                 }));
                 setSedesData(formattedData);
 
-                // Depuración: Mostrar los datos crudos en consola para inspeccionar country y state
                 console.log('Datos crudos de la API:', data);
             } catch (error: any) {
                 console.error('Error al obtener sedes:', error);
@@ -115,7 +111,6 @@ const SedesAdmin = () => {
                 item.address.toLowerCase().includes(searchTerm) ||
                 item.status.toLowerCase().includes(searchTerm);
             const matchesStatus = section === '__All__' || item.status === section;
-            // Filtrar solo sedes con status "Registrada con participantes" o "Registrada sin participantes"
             const isValidStatus = item.status === 'Registrada con participantes' || item.status === 'Registrada sin participantes';
             return matchesSearch && matchesStatus && isValidStatus;
         });
@@ -290,7 +285,7 @@ const SedesAdmin = () => {
                                             round
                                             showLeftIcon
                                             IconLeft={Highlighter}
-                                            href={`sedes/editarSedes/editar${sede.id_venue}`}
+                                            href={`sedes/editarSede/${sede.id_venue}`}
                                             onClick={(e) => e.stopPropagation()}
                                         />
                                     </td>
@@ -312,7 +307,7 @@ const SedesAdmin = () => {
 
                 {isPopupOpen && selectedSede && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
                             <h2 className="text-2xl font-bold mb-4 text-center">Detalles de la Sede</h2>
                             <div>
                                 <p><strong>Nombre:</strong> {selectedSede.name}</p>
