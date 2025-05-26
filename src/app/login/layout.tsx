@@ -84,7 +84,7 @@ export default function LoginLayout({
         <div className='absolute bottom-[3vw] right-[27vw] w-[3.5vw] h-[3.5vw] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
         <div className='absolute bottom-[6vw] right-[13vw] w-[2vw] h-[2vw] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
       </div>
-      <div className='h-fit w-full flex items-center justify-center align-middle relative z-0 overflow-y-visible overflow-x-hidden'>
+      <div className='h-fit w-full flex items-center justify-center align-middle relative z-0 overflow-y-visible overflow-x-hidden custom-scrollbar'>
         <div className='flex flex-col justify-center items-center w-full h-full'>{children}</div>
       </div>
     </div>
