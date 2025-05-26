@@ -45,8 +45,8 @@ const CardSection = () => {
     try {
       const res = await fetch(`/api/data?page=${page}&${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("api_token") : ""}`,
-        }        
+          Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''}`,
+        },
       });
       return await res.json();
     } catch (error) {
@@ -178,16 +178,16 @@ const CardSection = () => {
   const extraHandleFilterChange = (key: string, value: string) => {
     const normalizedValue = normalizeFilterValue(key, value);
     const animateSetter = setFadeSec;
-  
+
     animateSetter(true);
     setTimeout(() => {
       setFilters((prev) => ({ ...prev, [key]: normalizedValue }));
       setFilterActivaExtra((prev) => ({ ...prev, [key]: normalizedValue }));
-    }, 250)
+    }, 250);
     setTimeout(() => {
       animateSetter(false);
     }, 300);
-  };  
+  };
 
   const sectionFilterChange = (value: string) => {
     setFadeSec(true);
@@ -204,7 +204,9 @@ const CardSection = () => {
       <div className='flex justify-between w-full items-center'>
         <div className='flex flex-col md:flex-row items-center justify-center w-full relative gap-2 md:gap-9'>
           <div>
-            <div className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}>
+            <div
+              className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}
+            >
               <IconComponent
                 fillColor='var(--text-color)'
                 strokeColor='var(--background)'

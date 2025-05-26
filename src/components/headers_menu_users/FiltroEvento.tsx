@@ -30,8 +30,8 @@ interface FiltroEventoProps {
   labelOptions?: string;
   iconName?: keyof typeof Icons;
   maxSelectableOptions?: number;
-  selectAll?: boolean,
-  deselectAll?: boolean,
+  selectAll?: boolean;
+  deselectAll?: boolean;
   showSecciones?: boolean;
   labelSecciones?: string;
   secciones?: Option[];
@@ -102,7 +102,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
 
   const handleDeselectAll = () => {
     onChange([]);
-  };  
+  };
 
   useEffect(() => {
     if (fade) {
@@ -135,19 +135,21 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!wasManuallyCleared && selected.length === 0 && options.length > 0 && maxSelectableOptions > 0) {
-      const initialSelected = options
-        .slice(0, maxSelectableOptions)
-        .map((opt) => opt.value);
+    if (
+      !wasManuallyCleared &&
+      selected.length === 0 &&
+      options.length > 0 &&
+      maxSelectableOptions > 0
+    ) {
+      const initialSelected = options.slice(0, maxSelectableOptions).map((opt) => opt.value);
       onChange(initialSelected);
     }
-  
+
     if (selected.length > maxSelectableOptions) {
       onChange(selected.slice(0, maxSelectableOptions));
     }
     setWasManuallyCleared(true);
   }, [options, maxSelectableOptions, selected.length, wasManuallyCleared]);
-  
 
   const IconComponent = withIconDecorator(
     iconName && Icons[iconName] ? Icons[iconName] : Icons.CaretDoubleDown,
@@ -295,7 +297,11 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
               >
                 Seleccionar todo
               </button>
-              <button onClick={handleDeselectAll} className='text-purple-600 hover:underline' hidden={!deselectAll}>
+              <button
+                onClick={handleDeselectAll}
+                className='text-purple-600 hover:underline'
+                hidden={!deselectAll}
+              >
                 Deseleccionar todo
               </button>
             </div>
