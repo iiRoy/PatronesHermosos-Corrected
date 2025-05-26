@@ -5,6 +5,6 @@ const authController = require('../controllers/auth.controller');
 const authMiddleware = require('../middlewares/authMiddleware').authMiddleware;
 
 router.post('/login', validateLogin, authController.login);
-router.post('/logout', authMiddleware, authController.logout); 
+router.post('/logout', authMiddleware, authController.logout);
 
 module.exports = router;

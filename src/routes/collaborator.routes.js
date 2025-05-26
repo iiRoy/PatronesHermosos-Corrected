@@ -1,19 +1,39 @@
 const express = require('express');
 const router = express.Router();
+const collaboratorsController = require('../controllers/collaborator.controller');
 const { validateCollaborator } = require('../validators/collaboratorValidator');
-const collaboratorController = require('../controllers/collaborator.controller');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
 
-router.get('/', authMiddleware, roleMiddleware(['admin']), collaboratorController.getAll);
-router.post('/', validateCollaborator, collaboratorController.create);
-router.get('/:id', authMiddleware, collaboratorController.getById);
+// Get all collaborators (superuser only)
+router.get('/', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.getAllCollaborators);
+
+// Create a new collaborator (public, no auth required)
+router.post('/', validateCollaborator, collaboratorsController.createCollaborator);
+
+// Get a collaborator by ID (superuser or venue coordinator)
+router.get('/:id', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getCollaboratorById);
+
+// Update a collaborator (superuser only)
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin']),
+  roleMiddleware(['superuser']),
   validateCollaborator,
-  collaboratorController.update,
+  collaboratorsController.updateCollaborator
 );
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), collaboratorController.remove);
+
+// Update basic info of a collaborator (superuser only)
+router.patch(
+  '/basic/:id',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  collaboratorsController.updateCollaboratorBasicInfo
+);
+
+// Delete a collaborator (superuser only)
+router.delete('/:id', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.deleteCollaborator);
+
+router.get('/:collaboratorId/available-groups', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.getAvailableGroups);
+router.patch('/:collaboratorId/approve', authMiddleware, roleMiddleware(['superuser']), collaboratorsController.approveCollaborator);
 
 module.exports = router;

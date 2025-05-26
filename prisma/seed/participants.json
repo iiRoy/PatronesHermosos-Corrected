@@ -6,10 +6,11 @@
     "email": "ybarramario@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 1,
     "id_tutor": 1,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Camila",
@@ -18,10 +19,11 @@
     "email": "pantojagenaro@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 1,
     "id_tutor": 2,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Antonia",
@@ -30,10 +32,11 @@
     "email": "benjamin26@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 1,
     "id_tutor": 3,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Jorge",
@@ -42,10 +45,11 @@
     "email": "lopezpedro@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 1,
     "id_tutor": 4,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Dulce María",
@@ -54,10 +58,11 @@
     "email": "lilia60@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 1,
     "id_tutor": 5,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Nelly",
@@ -66,10 +71,11 @@
     "email": "jcisneros@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 6,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Leticia",
@@ -78,10 +84,11 @@
     "email": "laratrinidad@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 7,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "María del Carmen",
@@ -90,10 +97,11 @@
     "email": "dmadrid@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 8,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Delia",
@@ -102,10 +110,11 @@
     "email": "casarezleonor@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 9,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Ricardo",
@@ -114,10 +123,11 @@
     "email": "celiarolon@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 10,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Abigail",
@@ -126,10 +136,11 @@
     "email": "alicia01@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 11,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Daniel",
@@ -138,10 +149,11 @@
     "email": "veronicasoliz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 2,
     "id_tutor": 12,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Lucas",
@@ -150,10 +162,11 @@
     "email": "veronicacortes@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 13,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Eva",
@@ -162,10 +175,11 @@
     "email": "jaquelinearce@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 14,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Ofelia",
@@ -174,10 +188,11 @@
     "email": "xpantoja@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 15,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Camilo",
@@ -186,10 +201,11 @@
     "email": "marisol56@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 16,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Rodolfo",
@@ -198,10 +214,11 @@
     "email": "wsolorzano@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 17,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Leonel",
@@ -210,10 +227,11 @@
     "email": "pascual13@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 18,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Marco Antonio",
@@ -222,10 +240,11 @@
     "email": "maria-del-carmengurule@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 19,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Octavio",
@@ -234,10 +253,11 @@
     "email": "angelsarabia@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 3,
     "id_tutor": 20,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Catalina",
@@ -246,10 +266,11 @@
     "email": "ortegahumberto@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 4,
     "id_tutor": 21,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Raquel",
@@ -258,10 +279,11 @@
     "email": "xcorrea@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 4,
     "id_tutor": 22,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Reynaldo",
@@ -270,10 +292,11 @@
     "email": "tbravo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 4,
     "id_tutor": 23,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Luis",
@@ -282,10 +305,11 @@
     "email": "gnaranjo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 4,
     "id_tutor": 24,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Mariana",
@@ -294,10 +318,11 @@
     "email": "amadorluz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 4,
     "id_tutor": 25,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Eloy",
@@ -306,10 +331,11 @@
     "email": "ana-luisaraya@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 26,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Fidel",
@@ -318,10 +344,11 @@
     "email": "julia92@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 27,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Federico",
@@ -330,10 +357,11 @@
     "email": "castanedalorena@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 28,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Paulina",
@@ -342,10 +370,11 @@
     "email": "marisol37@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 29,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Teodoro",
@@ -354,10 +383,11 @@
     "email": "noemi20@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 30,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Miguel",
@@ -366,10 +396,11 @@
     "email": "gastelumjacobo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 31,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Fidel",
@@ -378,10 +409,11 @@
     "email": "fquintero@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 5,
     "id_tutor": 32,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Trinidad",
@@ -390,10 +422,11 @@
     "email": "guzmanmanuel@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 6,
     "id_tutor": 33,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Marcela",
@@ -402,10 +435,11 @@
     "email": "vnavarrete@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 6,
     "id_tutor": 34,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Alejandra",
@@ -414,10 +448,11 @@
     "email": "farevalo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 6,
     "id_tutor": 35,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Eloy",
@@ -426,10 +461,11 @@
     "email": "gerardo13@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 6,
     "id_tutor": 36,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Adriana",
@@ -438,10 +474,11 @@
     "email": "vanesaparedes@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 6,
     "id_tutor": 37,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Bianca",
@@ -450,10 +487,11 @@
     "email": "hernan82@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 38,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Roberto",
@@ -462,10 +500,11 @@
     "email": "galvanbenjamin@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 39,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Amanda",
@@ -474,10 +513,11 @@
     "email": "sanchezreynaldo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 40,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Graciela",
@@ -486,10 +526,11 @@
     "email": "cisnerosalfonso@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 41,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Bianca",
@@ -498,10 +539,11 @@
     "email": "trinidadsantacruz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 42,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Manuel",
@@ -510,10 +552,11 @@
     "email": "nevarezhector@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 43,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Pilar",
@@ -522,10 +565,11 @@
     "email": "lcastillo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 7,
     "id_tutor": 44,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Lilia",
@@ -534,10 +578,11 @@
     "email": "gracielaruelas@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 8,
     "id_tutor": 45,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Ilse",
@@ -546,10 +591,11 @@
     "email": "uriasvirginia@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 8,
     "id_tutor": 46,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "José Carlos",
@@ -558,10 +604,11 @@
     "email": "vbaeza@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 8,
     "id_tutor": 47,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Nelly",
@@ -570,10 +617,11 @@
     "email": "barretoadela@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 8,
     "id_tutor": 48,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Juan",
@@ -582,10 +630,11 @@
     "email": "alta-gracia50@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 8,
     "id_tutor": 49,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Dulce María",
@@ -594,10 +643,11 @@
     "email": "oaragon@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 8,
     "id_tutor": 50,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Karla",
@@ -606,10 +656,11 @@
     "email": "adan04@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 51,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Florencia",
@@ -618,10 +669,11 @@
     "email": "alfonsoolivas@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 52,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Amanda",
@@ -630,10 +682,11 @@
     "email": "ialcaraz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 53,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Marco Antonio",
@@ -642,10 +695,11 @@
     "email": "maytegamboa@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 54,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Israel",
@@ -654,10 +708,11 @@
     "email": "fveliz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 55,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Felipe",
@@ -666,10 +721,11 @@
     "email": "gonzalolozano@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 56,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Diego",
@@ -678,10 +734,11 @@
     "email": "cbrito@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 57,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Leonel",
@@ -690,10 +747,11 @@
     "email": "maytedelgado@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 9,
     "id_tutor": 58,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Nayeli",
@@ -702,10 +760,11 @@
     "email": "ymunoz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 10,
     "id_tutor": 59,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Elvira",
@@ -714,10 +773,11 @@
     "email": "csantillan@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 10,
     "id_tutor": 60,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Ilse",
@@ -726,10 +786,11 @@
     "email": "ameliabecerra@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 10,
     "id_tutor": 61,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Gonzalo",
@@ -738,10 +799,11 @@
     "email": "olivoesteban@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 10,
     "id_tutor": 62,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Timoteo",
@@ -750,10 +812,11 @@
     "email": "albertocornejo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 10,
     "id_tutor": 63,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Gustavo",
@@ -762,10 +825,11 @@
     "email": "gabinogriego@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 64,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Alejandro",
@@ -774,10 +838,11 @@
     "email": "lemusantonio@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 65,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Carlos",
@@ -786,10 +851,11 @@
     "email": "andrea46@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 66,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Sara",
@@ -798,10 +864,11 @@
     "email": "gregoriosaavedra@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 67,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Juan",
@@ -810,10 +877,11 @@
     "email": "maria-elenacalvillo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 68,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Sara",
@@ -822,10 +890,11 @@
     "email": "ullamas@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 69,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Francisco Javier",
@@ -834,10 +903,11 @@
     "email": "harias@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 70,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Gilberto",
@@ -846,10 +916,11 @@
     "email": "rolandogalvan@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 11,
     "id_tutor": 71,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Cynthia",
@@ -858,10 +929,11 @@
     "email": "octavio89@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 12,
     "id_tutor": 72,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Socorro",
@@ -870,10 +942,11 @@
     "email": "xulibarri@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 12,
     "id_tutor": 73,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Amelia",
@@ -882,10 +955,11 @@
     "email": "morenoruben@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 12,
     "id_tutor": 74,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Marisol",
@@ -894,10 +968,11 @@
     "email": "ksoliz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 12,
     "id_tutor": 75,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Mitzy",
@@ -906,10 +981,11 @@
     "email": "luzpena@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 12,
     "id_tutor": 76,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Jacinto",
@@ -918,10 +994,11 @@
     "email": "tamezporfirio@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 12,
     "id_tutor": 77,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Claudia",
@@ -930,10 +1007,11 @@
     "email": "yolanda98@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 78,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Hernán",
@@ -942,10 +1020,11 @@
     "email": "arreolaabigail@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 79,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Socorro",
@@ -954,10 +1033,11 @@
     "email": "holguinsalma@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 80,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Pascual",
@@ -966,10 +1046,11 @@
     "email": "eloy41@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 81,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Marcela",
@@ -978,10 +1059,11 @@
     "email": "catalinaalonzo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 82,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Elena",
@@ -990,10 +1072,11 @@
     "email": "ocepeda@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 83,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Noelia",
@@ -1002,10 +1085,11 @@
     "email": "aaponte@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 84,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Jaqueline",
@@ -1014,10 +1098,11 @@
     "email": "jose-luis37@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 13,
     "id_tutor": 85,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Gregorio",
@@ -1026,10 +1111,11 @@
     "email": "zunigacecilia@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 14,
     "id_tutor": 86,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Marco Antonio",
@@ -1038,10 +1124,11 @@
     "email": "carlotasaiz@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 14,
     "id_tutor": 87,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Lucía",
@@ -1050,10 +1137,11 @@
     "email": "elvia99@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 14,
     "id_tutor": 88,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Maximiliano",
@@ -1062,10 +1150,11 @@
     "email": "espartacoceja@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 14,
     "id_tutor": 89,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Felipe",
@@ -1074,10 +1163,11 @@
     "email": "alejandra86@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 14,
     "id_tutor": 90,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Felix",
@@ -1086,10 +1176,11 @@
     "email": "tde-jesus@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 14,
     "id_tutor": 91,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "José Eduardo",
@@ -1098,10 +1189,11 @@
     "email": "wflorez@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 92,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Horacio",
@@ -1110,10 +1202,11 @@
     "email": "tellolourdes@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 93,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Francisco",
@@ -1122,10 +1215,11 @@
     "email": "blancaburgos@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 94,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Alejandra",
@@ -1134,10 +1228,11 @@
     "email": "leonardo93@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 95,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Julio César",
@@ -1146,10 +1241,11 @@
     "email": "alfredo02@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 96,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Clara",
@@ -1158,10 +1254,11 @@
     "email": "carolinagarcia@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 97,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Margarita",
@@ -1170,10 +1267,11 @@
     "email": "mateolorena@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 98,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Araceli",
@@ -1182,10 +1280,11 @@
     "email": "ncastillo@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 15,
     "id_tutor": 99,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Alejandra",
@@ -1194,10 +1293,11 @@
     "email": "alonso16@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 16,
     "id_tutor": 100,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Concepción",
@@ -1206,10 +1306,11 @@
     "email": "sergiobarajas@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 16,
     "id_tutor": 101,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Víctor",
@@ -1218,10 +1319,11 @@
     "email": "juarezlourdes@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 16,
     "id_tutor": 102,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Arturo",
@@ -1230,10 +1332,11 @@
     "email": "qpadron@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 16,
     "id_tutor": 103,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Esteban",
@@ -1242,10 +1345,11 @@
     "email": "franciscapena@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 16,
     "id_tutor": 104,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Joaquín",
@@ -1254,10 +1358,11 @@
     "email": "wcardona@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 17,
     "id_tutor": 105,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Rebeca",
@@ -1266,10 +1371,11 @@
     "email": "pilar33@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 17,
     "id_tutor": 106,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Ramón",
@@ -1278,10 +1384,11 @@
     "email": "hmontez@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 17,
     "id_tutor": 107,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Israel",
@@ -1290,10 +1397,11 @@
     "email": "faguilera@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 17,
     "id_tutor": 108,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Bernardo",
@@ -1302,10 +1410,11 @@
     "email": "villacarlos@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 17,
     "id_tutor": 109,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   },
   {
     "name": "Evelio",
@@ -1314,9 +1423,10 @@
     "email": "eugenio45@tec.mx",
     "year": "2025",
     "education": "Preparatoria",
-    "participation_file": "",
+    "participation_file": null,
     "preferred_group": 17,
     "id_tutor": 110,
-    "status": "Pendiente"
+    "status": "Pendiente",
+    "id_group": null
   }
 ]
