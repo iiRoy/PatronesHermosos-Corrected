@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## 1.13.0-coord.4 (2025-05-25)
 
 * feat(pages): nueva página de editarParticipantes coordinadora ([412a49c](https://github.com/iiRoy/Patrones-Hermosos/commit/412a49c))
@@ -70,6 +71,27 @@
 * Improve(pages): Diseño correcto agregado a formulario de Sedes ([e2fda79](https://github.com/iiRoy/Patrones-Hermosos/commit/e2fda79))
 * feature(mysql): Se agrego gestionar_solicitud_pendiente , gestionar_solicitud_colab y fun_validar cu ([c7abadf](https://github.com/iiRoy/Patrones-Hermosos/commit/c7abadf))
 * feature(mysql): Se modifico cambiar_estado_grupo, para que si se cancela un grupo, todos sus partici ([a885438](https://github.com/iiRoy/Patrones-Hermosos/commit/a885438))
+=======
+## 1.13.0-admin.6 (2025-05-26)
+
+* feat(login): Login page attempts function + design complete ([54f569e](https://github.com/iiRoy/Patrones-Hermosos/commit/54f569e))
+* improve(pages): corrección color de textos en pop-ups de información ([b480dbf](https://github.com/iiRoy/Patrones-Hermosos/commit/b480dbf))
+* improve(pages): editar participantes ya funciona correctamente ([b48450f](https://github.com/iiRoy/Patrones-Hermosos/commit/b48450f))
+* improve(pages): editarSede actualizado para editar información básica de sede ([98e9e67](https://github.com/iiRoy/Patrones-Hermosos/commit/98e9e67))
+* improve(pages): gestion de participantes ya muestra solo las participantes aprobadas ([7ca9969](https://github.com/iiRoy/Patrones-Hermosos/commit/7ca9969))
+* feat(solicitudes) Pagina de solicitudes lista ([ec365e0](https://github.com/iiRoy/Patrones-Hermosos/commit/ec365e0))
+* feat(solicitudes) Se agregaron dos controladores de participants, con sus rutas respectivas. Se pued ([df587b4](https://github.com/iiRoy/Patrones-Hermosos/commit/df587b4))
+* fix(backend) se arreglo una ruta de participants ([927f7e9](https://github.com/iiRoy/Patrones-Hermosos/commit/927f7e9))
+* fix(migrate) se corrigio el formato de los procedimientos ([6a32e9d](https://github.com/iiRoy/Patrones-Hermosos/commit/6a32e9d))
+* fix(migrate) se eliminaron comentarios erroneos ([e207db4](https://github.com/iiRoy/Patrones-Hermosos/commit/e207db4))
+* Merge branch 'pages/superuser' into diego_sqlProcedures ([caddfeb](https://github.com/iiRoy/Patrones-Hermosos/commit/caddfeb))
+* Merge desde diego_sqlProcedures ([6b0dd8c](https://github.com/iiRoy/Patrones-Hermosos/commit/6b0dd8c))
+
+## 1.13.0-admin.5 (2025-05-25)
+
+* feat(pages): nueva página de editar sede superuser ([85dd02d](https://github.com/iiRoy/Patrones-Hermosos/commit/85dd02d))
+* chore(estadísticas): Fixed merge mistakes for Graphs ([47e7027](https://github.com/iiRoy/Patrones-Hermosos/commit/47e7027))
+>>>>>>> origin/pages/superuser
 
 ## 1.13.0-admin.4 (2025-05-22)
 

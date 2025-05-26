@@ -7,6 +7,19 @@ router.get('/', authMiddleware, participantsController.getAllParticipants);
 router.post('/', authMiddleware, participantsController.createParticipant);
 router.get('/:id', authMiddleware, participantsController.getParticipantById);
 router.get('/table', authMiddleware, participantsController.getParticipantsTable);
+router.get(
+  '/:participantId/available-groups',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  participantsController.getAvailableGroups
+);
+router.patch(
+  '/:participantId/approve',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  participantsController.approveParticipant
+);
+
 router.put(
   '/:id',
   authMiddleware,

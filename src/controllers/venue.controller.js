@@ -44,6 +44,8 @@ const getSpecificData = async (req, res) => {
       select: {
         id_venue: true,
         universidad: true,
+        pais: true,
+        estado: true,
         campus: true,
         coordinador: true,
         no_grupos: true,
@@ -224,6 +226,38 @@ const update = async (req, res) => {
   }
 };
 
+//nuevo controlador para actualizar campos básicos
+const updateBasic = async (req, res) => {
+  const { id } = req.params;
+  const { name, country, state, address, status } = req.body;
+
+  try {
+    const venueExists = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+    });
+
+    if (!venueExists) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
+    const updatedVenue = await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: {
+        name,
+        country,
+        state,
+        address,
+        status,
+      },
+    });
+
+    res.json({ message: 'Venue actualizado con éxito', data: updatedVenue });
+  } catch (error) {
+    console.error('Error al actualizar venue:', error);
+    res.status(500).json({ message: 'Error al actualizar venue', error: error.message });
+  }
+};
+
 //eliminar una sede por id
 const remove = async (req, res) => {
   const id = parseInt(req.params.id);
@@ -240,7 +274,6 @@ const remove = async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
-
 
 // Cancelar una sede
 const cancelVenue = async (req, res) => {
@@ -269,6 +302,54 @@ const cancelVenue = async (req, res) => {
   }
 };
 
+const approveVenue = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user?.username; // Asumiendo que el username viene del token JWT
+
+  try {
+    // Verificar si la sede existe
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'La sede no existe.' });
+    }
+
+    // Validar que el estado actual sea Pendiente
+    if (venue.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
+    }
+
+    // Actualizar el estado a Registrada sin participantes
+    const updatedVenue = await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: {
+        status: 'Registrada_sin_participantes',
+        updated_at: new Date(),
+      },
+    });
+
+    // Registrar el log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'venues',
+        message: `Se aprobó la sede con ID ${id}`,
+        username: username || 'unknown',
+        id_venue: parseInt(id),
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Sede aprobada exitosamente.',
+      data: updatedVenue,
+    });
+  } catch (error) {
+    console.error('Error al aprobar la sede:', error);
+    return res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
 
 module.exports = {
   getAll,
@@ -276,6 +357,8 @@ module.exports = {
   getById,
   create,
   update,
+  updateBasic,
   remove,
   cancelVenue,
+  approveVenue,
 };

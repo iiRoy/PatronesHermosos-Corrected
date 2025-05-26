@@ -250,12 +250,191 @@ const changeParticipantStatus = async (req, res) => {
   }
 };
 
+// Get available groups for a participant's venue
+const getAvailableGroups = async (req, res) => {
+  try {
+    const { participantId } = req.params;
+
+    // Get participant’s venue via preferred_group
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(participantId) },
+      include: {
+        preferredGroup: {
+          select: {
+            id_venue: true,
+            venues: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    const venueId = participant.preferredGroup?.id_venue;
+    if (!venueId) {
+      return res.status(400).json({ message: 'El participante no tiene una sede asignada' });
+    }
+
+    // Get all groups in the venue with capacity info
+    const groups = await prisma.groups.findMany({
+      where: {
+        id_venue: venueId,
+        status: 'Aprobada', // Only active groups
+      },
+      select: {
+        id_group: true,
+        name: true,
+        max_places: true,
+        occupied_places: true,
+      },
+    });
+
+    // Calculate available capacity for each group
+    const availableGroups = [];
+    for (const group of groups) {
+      // Use fun_part_aceptadas equivalent
+      const approvedCount = await prisma.participants.count({
+        where: {
+          id_group: group.id_group,
+          status: 'Aprobada',
+        },
+      });
+
+      const availablePlaces = (group.max_places || 0) - approvedCount;
+      if (availablePlaces > 0) {
+        availableGroups.push({
+          id_group: group.id_group,
+          name: group.name || 'Sin nombre',
+          available_places: availablePlaces,
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      venue: participant.preferredGroup?.venues?.name || 'Sin sede',
+      groups: availableGroups,
+    });
+  } catch (error) {
+    console.error('Error fetching available groups:', JSON.stringify(error, null, 2));
+    res.status(500).json({ message: 'Error al obtener grupos disponibles', error: error.message });
+  }
+};
+
+const approveParticipant = async (req, res) => {
+  const { participantId } = req.params;
+  const { groupId } = req.body;
+
+  try {
+    // Validate input
+    if (!groupId || isNaN(parseInt(groupId))) {
+      return res.status(400).json({ message: 'groupId es requerido y debe ser un número válido' });
+    }
+
+    // Validate participant
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(participantId) },
+      include: {
+        preferredGroup: { select: { id_venue: true } },
+        groups: { select: { id_venue: true } },
+      },
+    });
+
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    if (participant.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'El participante no está en estado Pendiente' });
+    }
+
+    // Validate group
+    const group = await prisma.groups.findUnique({
+      where: { id_group: parseInt(groupId) },
+      select: {
+        id_group: true, // Explicitly select id_group
+        id_venue: true,
+        max_places: true,
+        status: true,
+      },
+    });
+
+    if (!group) {
+      return res.status(404).json({ message: 'Grupo no encontrado' });
+    }
+
+    if (group.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'El grupo no está activo' });
+    }
+
+    // Verify group is in the same venue
+    const participantVenueId = participant.preferredGroup?.id_venue || participant.groups?.id_venue;
+    if (group.id_venue !== participantVenueId) {
+      return res.status(400).json({ message: 'El grupo no pertenece a la sede del participante' });
+    }
+
+    // Check group capacity
+    const approvedCount = await prisma.participants.count({
+      where: {
+        id_group: group.id_group,
+        status: 'Aprobada',
+      },
+    });
+
+    const availablePlaces = (group.max_places || 0) - approvedCount;
+    if (availablePlaces <= 0) {
+      return res.status(400).json({ message: 'El grupo seleccionado está lleno' });
+    }
+
+    // Log groupId for debugging
+    console.log(`Assigning participant ${participantId} to group ${group.id_group}`);
+
+    // Approve participant
+    const updatedParticipant = await prisma.participants.update({
+      where: { id_participant: parseInt(participantId) },
+      data: {
+        id_group: parseInt(group.id_group), // Ensure integer
+        status: 'Aprobada',
+      },
+      select: {
+        id_participant: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        email: true,
+        year: true,
+        education: true,
+        participation_file: true,
+        preferred_group: true,
+        status: true,
+        id_group: true,
+        id_tutor: true,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: 'Participante aprobado exitosamente',
+      participant: updatedParticipant,
+      assignedGroupId: group.id_group, // Include for confirmation
+    });
+  } catch (error) {
+    console.error('Error approving participant:', JSON.stringify(error, null, 2));
+    res.status(500).json({ message: 'Error al aprobar participante', error: error.message });
+  }
+};
+
+
 module.exports = {
   createParticipant,
   getAllParticipants,
   getParticipantById,
   updateParticipant,
   deleteParticipant,
+  getAvailableGroups,
+  approveParticipant,
   getParticipantsTable,
   updateParticipantBasicInfo,
   changeParticipantStatus,
