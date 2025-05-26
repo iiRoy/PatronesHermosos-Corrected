@@ -44,7 +44,7 @@ export default function PatronesHermosos() {
           {/* Contenido principal */}
           <div className='flex w-full justify-center'>
             <div className='lg:basis-1/4'></div>
-            <div className="relative z-10 text-center contenido-inicio lg:basis-3/4">
+            <div className="relative z-20 text-center contenido-inicio lg:basis-3/4">
               <div className='flex justify-end pb-16'>
                 <h1 className="text-4xl mb-4 text-[#2E1C31]  titulo-inicio text-end">
                   <span className='text-xl md:text-2xl lg:text-3xl italic'>¡Nos alegra verte en</span><br /> <span className='text-2xl md:text-3xl lg:text-4xl font-semibold'>Patrones Hermosos!</span>
