@@ -99,6 +99,7 @@ const getAllCollaborators = async (req, res) => {
       level: collab.level || 'Sin nivel',
       language: collab.language || 'Sin idioma',
       group: collab.groups?.name || 'Sin grupo',
+      id_venue: collab.groups?.venues?.id_venue || null,
       venue: collab.groups?.venues?.name || 'Sin sede',
       college: collab.college || 'Sin universidad',
       degree: collab.degree || 'Sin carrera',

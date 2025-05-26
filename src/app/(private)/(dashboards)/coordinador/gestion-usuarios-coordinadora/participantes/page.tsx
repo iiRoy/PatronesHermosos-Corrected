@@ -5,19 +5,28 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
+import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
+import { jwtDecode } from 'jwt-decode';
 
-// Interfaz ajustada para reflejar la estructura real de los datos devueltos por getAllParticipants
 interface Participante {
-    id: number; // Cambiado de id_participant a id
-    nombre: string; // Cambiado para usar el campo combinado
-    sede: string; // Campo preformateado
-    grupo: string; // Campo preformateado
-    correo: string; // Cambiado de email a correo
+    id: number;
+    nombre: string;
+    sede: string;
+    id_venue: number | null;
+    grupo: string;
+    correo: string;
     status: string;
+}
+
+interface DecodedToken {
+    userId: number;
+    email: string;
+    username: string;
+    role: string;
+    tokenVersion: number;
 }
 
 const gestionParticipantes = () => {
@@ -25,10 +34,12 @@ const gestionParticipantes = () => {
     const [section, setSection] = useState('__All__');
     const [filterActivaExtra, setFilterActivaExtra] = useState({ grupo: '__All__' });
     const [currentPage, setCurrentPage] = useState(0);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+    const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
     const [selectedParticipante, setSelectedParticipante] = useState<Participante | null>(null);
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
     const router = useRouter();
     const { notify } = useNotification();
 
@@ -60,15 +71,40 @@ const gestionParticipantes = () => {
                 }
 
                 const data = await response.json();
-                // Acceder a la clave 'data' que contiene formattedParticipants (basado en id_group)
                 setParticipantesData(data.data);
             } catch (error: any) {
                 console.error('Error al obtener participantes:', error);
                 setError(error.message);
             }
         };
-        fetchParticipantes();
-    }, [router]);
+
+        const fetchCoordinatorVenue = () => {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
+            if (token) {
+                try {
+                    const decoded: DecodedToken = jwtDecode(token);
+                    if (decoded.role === 'venue_coordinator') {
+                        setCoordinatorVenueId(decoded.userId);
+                    } else {
+                        setError('Este dashboard es solo para coordinadores de sede');
+                        router.push('/login');
+                    }
+                } catch (err) {
+                    console.error('Error al decodificar el token:', err);
+                    setError('Token inválido');
+                    router.push('/login');
+                }
+            } else {
+                setError('No se encontró el token, por favor inicia sesión');
+                router.push('/login');
+            }
+        };
+
+        fetchCoordinatorVenue();
+        if (coordinatorVenueId !== null) {
+            fetchParticipantes();
+        }
+    }, [router, coordinatorVenueId]);
 
     const extraHandleFilterChange = (key: string, value: string) => {
         setFilterActivaExtra((prev) => ({
@@ -100,10 +136,11 @@ const gestionParticipantes = () => {
             const matchesSede = section === '__All__' ? true : sede === section;
             const selectedGrupo = filterActivaExtra['grupo'];
             const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
-            const isNotCancelled = participante.status !== 'cancelada';
-            return matchesSearch && matchesSede && matchesGrupo && isNotCancelled;
+            const isApproved = participante.status.toLowerCase() === 'aprobada';
+            const matchesVenue = coordinatorVenueId === null || participante.id_venue === coordinatorVenueId;
+            return matchesSearch && matchesSede && matchesGrupo && isApproved && matchesVenue;
         });
-    }, [inputValue, section, filterActivaExtra, participantesData]);
+    }, [inputValue, section, filterActivaExtra, participantesData, coordinatorVenueId]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
@@ -124,16 +161,22 @@ const gestionParticipantes = () => {
 
     const handleDeleteClick = (participante: Participante) => {
         setSelectedParticipante(participante);
-        setIsPopupOpen(true);
+        setIsDeletePopupOpen(true);
     };
 
     const handleEditClick = (participante: Participante) => {
         router.push(`/coordinador/gestion-usuarios-coordinadora/participantes/editarParticipante/${participante.id}`);
     };
 
-    const handleClosePopup = () => {
-        setIsPopupOpen(false);
+    const handleClosePopup = (type: 'delete' | 'details') => {
+        if (type === 'delete') setIsDeletePopupOpen(false);
+        if (type === 'details') setIsDetailsPopupOpen(false);
         setSelectedParticipante(null);
+    };
+
+    const handleRowClick = (participante: Participante) => {
+        setSelectedParticipante(participante);
+        setIsDetailsPopupOpen(true);
     };
 
     const handleConfirmDelete = async () => {
@@ -160,7 +203,6 @@ const gestionParticipantes = () => {
                 }
 
                 const updatedParticipant = await response.json();
-                // Actualizar localmente el estado del participante
                 setParticipantesData((prev) =>
                     prev.map((p) =>
                         p.id === selectedParticipante.id
@@ -169,7 +211,6 @@ const gestionParticipantes = () => {
                     )
                 );
 
-                // Mostrar notificación de éxito
                 notify({
                     color: 'green',
                     title: 'Usuario Cancelado',
@@ -177,19 +218,16 @@ const gestionParticipantes = () => {
                     duration: 5000,
                 });
 
-                // Cerrar el popup
-                handleClosePopup();
+                handleClosePopup('delete');
             } catch (error: any) {
                 console.error('Error al cancelar participante:', error);
-                // Mostrar notificación de error
                 notify({
                     color: 'red',
                     title: 'Error',
                     message: `No se pudo cancelar al usuario ${selectedParticipante.nombre}: ${error.message}`,
                     duration: 5000,
                 });
-                // Forzar el cierre del popup en caso de error
-                handleClosePopup();
+                handleClosePopup('delete');
             }
         }
     };
@@ -255,15 +293,19 @@ const gestionParticipantes = () => {
                         </thead>
                         <tbody className="text-gray-700">
                             {paginatedData.map((participante, index) => (
-                                <tr key={index} className="border-t border-gray-300">
+                                <tr
+                                    key={index}
+                                    className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
+                                    onClick={() => handleRowClick(participante)}
+                                >
                                     <td className="p-2 text-center">{participante.nombre}</td>
                                     <td className="p-2 text-center">{participante.sede}</td>
                                     <td className="p-2 text-center">{participante.grupo}</td>
                                     <td className="p-2 text-center">{participante.correo}</td>
                                     <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label="" variant="error" round showLeftIcon IconLeft={Trash} onClick={() => handleDeleteClick(participante)} />
-                                        <Button label="" variant="warning" round showLeftIcon IconLeft={Highlighter} onClick={() => handleEditClick(participante)} />
+                                        <Button label="" variant="error" round showLeftIcon IconLeft={Trash} onClick={(e) => { e.stopPropagation(); handleDeleteClick(participante); }} />
+                                        <Button label="" variant="warning" round showLeftIcon IconLeft={Highlighter} onClick={(e) => { e.stopPropagation(); handleEditClick(participante); }} />
                                     </td>
                                 </tr>
                             ))}
@@ -281,7 +323,7 @@ const gestionParticipantes = () => {
                     />
                 </div>
 
-                {isPopupOpen && selectedParticipante && (
+                {isDeletePopupOpen && selectedParticipante && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                             <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
@@ -291,7 +333,26 @@ const gestionParticipantes = () => {
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
-                                <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                                <Button label="Cancelar" variant="secondary" onClick={() => handleClosePopup('delete')} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {isDetailsPopupOpen && selectedParticipante && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Participante</h2>
+                            <div className="pt-6 pb-6">
+                                <p><strong>ID:</strong> {selectedParticipante.id}</p>
+                                <p><strong>Nombre:</strong> {selectedParticipante.nombre}</p>
+                                <p><strong>Sede:</strong> {selectedParticipante.sede}</p>
+                                <p><strong>Grupo:</strong> {selectedParticipante.grupo}</p>
+                                <p><strong>Correo:</strong> {selectedParticipante.correo}</p>
+                                <p><strong>Estatus:</strong> {selectedParticipante.status}</p>
+                            </div>
+                            <div className="mt-4 flex justify-center">
+                                <Button label="Cerrar" variant="primary" onClick={() => handleClosePopup('details')} />
                             </div>
                         </div>
                     </div>
