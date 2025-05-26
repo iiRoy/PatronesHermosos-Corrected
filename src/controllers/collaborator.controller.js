@@ -67,6 +67,7 @@ const getAllCollaborators = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -78,6 +79,7 @@ const getAllCollaborators = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -97,6 +99,7 @@ const getAllCollaborators = async (req, res) => {
       level: collab.level || 'Sin nivel',
       language: collab.language || 'Sin idioma',
       group: collab.groups?.name || 'Sin grupo',
+      id_venue: collab.groups?.venues?.id_venue || null,
       venue: collab.groups?.venues?.name || 'Sin sede',
       college: collab.college || 'Sin universidad',
       degree: collab.degree || 'Sin carrera',
@@ -130,9 +133,9 @@ const getAllCollaborators = async (req, res) => {
       preferred_group: collab.preferred_group || null,
       groups: collab.preferredGroup
         ? {
-            name: collab.preferredGroup.name || 'No asignado',
-            venues: collab.preferredGroup.venues || { name: 'No asignado' },
-          }
+          name: collab.preferredGroup.name || 'No asignado',
+          venues: collab.preferredGroup.venues || { name: 'No asignado' },
+        }
         : null,
     }));
 
@@ -161,6 +164,7 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -172,6 +176,7 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -188,9 +193,9 @@ const getCollaboratorById = async (req, res) => {
       ...collaborator,
       groups: collaborator.preferredGroup
         ? {
-            name: collaborator.preferredGroup.name || 'No asignado',
-            venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
-          }
+          name: collaborator.preferredGroup.name || 'No asignado',
+          venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
+        }
         : null,
     };
 

@@ -21,6 +21,7 @@ const getAllParticipants = async (req, res) => {
           select: {
             id_group: true,
             name: true,
+            id_venue: true,
             venues: {
               select: {
                 name: true,
@@ -34,6 +35,7 @@ const getAllParticipants = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Añadido para permitir el filtrado por sede
                 name: true,
               },
             },
@@ -47,15 +49,15 @@ const getAllParticipants = async (req, res) => {
       },
     });
 
-    // Formateo original (usando grupo asignado, basado en id_group)
+    // Formateo para el frontend (compatible con la interfaz Participant)
     const formattedParticipants = participants.map(participant => ({
-      ...participant,
-      groups: participant.groups
-        ? {
-          name: participant.groups.name || 'No asignado',
-          venues: participant.groups.venues || { name: 'No asignado' },
-        }
-        : null,
+      id: participant.id_participant,
+      nombre: `${participant.name || ''} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
+      sede: participant.groups?.venues?.name || 'No asignado',
+      id_venue: participant.groups?.id_venue || null,
+      grupo: participant.groups?.name || 'No asignado',
+      correo: participant.email,
+      status: participant.status || 'Pendiente',
     }));
 
     // Formateo para Solicitudes (usando grupo preferido, basado en preferred_group)
@@ -71,7 +73,7 @@ const getAllParticipants = async (req, res) => {
 
     res.json({
       success: true,
-      data: formattedParticipants, // Para uso general (grupo asignado)
+      data: formattedParticipants, // Para uso general (formato para frontend)
       dataForRequests: formattedParticipantsForRequests, // Para Solicitudes de Registro (grupo preferido)
     });
   } catch (error) {
@@ -94,6 +96,7 @@ const getParticipantById = async (req, res) => {
             venues: {
               select: {
                 name: true,
+                id_venue: true, // Añadido para consistencia
               },
             },
           },
