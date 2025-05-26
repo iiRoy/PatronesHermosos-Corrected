@@ -133,9 +133,8 @@ export default function LoginForm() {
         duration: 4000,
       });
     } finally {
-      setLoading(false);
+      setError('');
     }
-    setError('');
   };
 
   return (
