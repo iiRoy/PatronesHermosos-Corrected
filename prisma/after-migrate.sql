@@ -1304,7 +1304,6 @@ END;
 $$
 
 
---proceso global para registrar los logs
 DELIMITER $$
 
 CREATE PROCEDURE registrar_log (
@@ -1690,7 +1689,52 @@ END //
 DELIMITER ;
 
 
---gestionar_solicitud_pendiente (funcional)
+DELIMITER //
+
+CREATE FUNCTION fun_validar_cupo_roles(idGrupo INT)
+RETURNS JSON
+DETERMINISTIC
+BEGIN
+    DECLARE grupoStatus VARCHAR(255);
+    DECLARE instructoraCount INT;
+    DECLARE facilitadoraCount INT;
+    DECLARE staffCount INT;
+    DECLARE availableRoles JSON;
+
+    -- Verificar estado del grupo
+    SELECT status INTO grupoStatus FROM groups WHERE id_group = idGrupo;
+    IF grupoStatus <> 'Aprobada' THEN
+        RETURN JSON_OBJECT(
+            'Instructora', 0,
+            'Facilitadora', 0,
+            'Staff', 0
+        );
+    END IF;
+
+    -- Contar colaboradores aprobados por rol en el grupo
+    SELECT 
+        SUM(CASE WHEN role = 'Instructora' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN role = 'Facilitadora' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN role = 'Staff' THEN 1 ELSE 0 END)
+    INTO instructoraCount, facilitadoraCount, staffCount
+    FROM collaborators
+    WHERE id_group = idGrupo AND status = 'Aprobada';
+
+    -- Calcular cupos disponibles
+    SET availableRoles = JSON_OBJECT(
+        'Instructora', GREATEST(1 - COALESCE(instructoraCount, 0), 0),
+        'Facilitadora', GREATEST(2 - COALESCE(facilitadoraCount, 0), 0),
+        'Staff', GREATEST(1 - COALESCE(staffCount, 0), 0)
+    );
+
+    RETURN availableRoles;
+END //
+
+DELIMITER ;
+
+
+
+
 DELIMITER $$
 
 CREATE PROCEDURE gestionar_solicitud_pendiente(

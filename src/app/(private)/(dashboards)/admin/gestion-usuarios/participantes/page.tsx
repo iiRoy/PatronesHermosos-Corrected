@@ -33,6 +33,7 @@ const GestionParticipantes = () => {
     const [filterActivaExtra, setFilterActivaExtra] = useState({ grupo: '__All__' });
     const [currentPage, setCurrentPage] = useState(0);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
     const [selectedParticipante, setSelectedParticipante] = useState<Participante | null>(null);
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -67,7 +68,6 @@ const GestionParticipantes = () => {
                 }
 
                 const data = await response.json();
-                // Acceder a la clave 'data' que contiene formattedParticipants (basado en id_group)
                 setParticipantesData(data.data);
             } catch (error: any) {
                 console.error('Error al obtener participantes:', error);
@@ -84,7 +84,6 @@ const GestionParticipantes = () => {
         }));
     };
 
-    // Extraer sedes y grupos únicos para los filtros
     const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.groups?.venues?.name || 'No asignado'))).sort();
     const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.groups?.name || 'No asignado'))).sort();
 
@@ -109,7 +108,8 @@ const GestionParticipantes = () => {
             const selectedGrupo = filterActivaExtra['grupo'];
             const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
             const isNotCancelled = participante.status !== 'cancelada';
-            return matchesSearch && matchesSede && matchesGrupo && isNotCancelled;
+            const isApproved = participante.status === 'Aprobada'; // Nueva condición
+            return matchesSearch && matchesSede && matchesGrupo && isNotCancelled && isApproved;
         });
     }, [inputValue, section, filterActivaExtra, participantesData]);
 
@@ -168,7 +168,6 @@ const GestionParticipantes = () => {
                 }
 
                 const updatedParticipant = await response.json();
-                // Actualizar localmente el estado del participante
                 setParticipantesData((prev) =>
                     prev.map((p) =>
                         p.id_participant === selectedParticipante.id_participant
@@ -177,7 +176,6 @@ const GestionParticipantes = () => {
                     )
                 );
 
-                // Mostrar notificación de éxito
                 const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
                 notify({
                     color: 'green',
@@ -186,11 +184,9 @@ const GestionParticipantes = () => {
                     duration: 5000,
                 });
 
-                // Cerrar el popup
                 handleClosePopup();
             } catch (error: any) {
                 console.error('Error al cancelar participante:', error);
-                // Mostrar notificación de error
                 const fullName = `${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`;
                 notify({
                     color: 'red',
@@ -198,9 +194,16 @@ const GestionParticipantes = () => {
                     message: `No se pudo cancelar al usuario ${fullName}: ${error.message}`,
                     duration: 5000,
                 });
-                // Forzar el cierre del popup en caso de error
                 handleClosePopup();
             }
+        }
+    };
+
+    const handleRowClick = (participante: Participante, event: React.MouseEvent<HTMLTableRowElement>) => {
+        const isButtonClick = (event.target as HTMLElement).closest('button');
+        if (!isButtonClick) {
+            setSelectedParticipante(participante);
+            setIsDetailsPopupOpen(true);
         }
     };
 
@@ -265,7 +268,11 @@ const GestionParticipantes = () => {
                         </thead>
                         <tbody className="text-gray-700">
                             {paginatedData.map((participante, index) => (
-                                <tr key={index} className="border-t border-gray-300">
+                                <tr
+                                    key={index}
+                                    className="border-t border-gray-300 hover:bg-gray-300 cursor-pointer"
+                                    onClick={(event) => handleRowClick(participante, event)}
+                                >
                                     <td className="p-2 text-center">
                                         {`${participante.name} ${participante.paternal_name} ${participante.maternal_name}`}
                                     </td>
@@ -304,6 +311,30 @@ const GestionParticipantes = () => {
                             <div className="flex justify-center gap-4">
                                 <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
                                 <Button label="Cancelar" variant="secondary" onClick={handleClosePopup} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {isDetailsPopupOpen && selectedParticipante && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Detalles del Participante</h2>
+                            <div className="pt-6 pb-6">
+                                <p><strong>ID:</strong> {selectedParticipante.id_participant}</p>
+                                <p><strong>Nombre Completo:</strong> {`${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`}</p>
+                                <p><strong>Correo:</strong> {selectedParticipante.email}</p>
+                                <p><strong>Año:</strong> {selectedParticipante.year}</p>
+                                <p><strong>Educación:</strong> {selectedParticipante.education || 'No asignado'}</p>
+                                <p><strong>Archivo de Participación:</strong> {selectedParticipante.participation_file ? 'Disponible' : 'No disponible'}</p>
+                                <p><strong>Grupo Preferido:</strong> {selectedParticipante.groups?.name || 'No asignado'}</p>
+                                <p><strong>Sede:</strong> {selectedParticipante.groups?.venues?.name || 'No asignado'}</p>
+                                <p><strong>Estado:</strong> {selectedParticipante.status}</p>
+                                <p><strong>ID Grupo:</strong> {selectedParticipante.id_group || 'No asignado'}</p>
+                                <p><strong>ID Tutor:</strong> {selectedParticipante.id_tutor || 'No asignado'}</p>
+                            </div>
+                            <div className="mt-4 flex justify-center">
+                                <Button label="Cerrar" variant="primary" onClick={() => setIsDetailsPopupOpen(false)} />
                             </div>
                         </div>
                     </div>

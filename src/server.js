@@ -32,6 +32,7 @@ const fs = require('fs').promises;
 
 const cleanupTmpFiles = async () => {
   const tmpDir = path.join(__dirname, 'uploads', 'tmp');
+  await fs.mkdir(tmpDir, { recursive: true });
   const files = await fs.readdir(tmpDir);
   const now = Date.now();
   const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds

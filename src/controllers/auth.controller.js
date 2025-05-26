@@ -36,7 +36,7 @@ const login = async (req, res) => {
     }
 
     if (!role) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ message: 'Los datos ingresados son incorrectos. Intenta de nuevo.' });
     }
 
     const token = jwt.sign(
@@ -49,7 +49,7 @@ const login = async (req, res) => {
         id_venue: role === 'venue_coordinator' ? user.id_venue : undefined,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' },
+      { expiresIn: '15m' } // corto y seguro
     );
 
     return res.json({
@@ -61,7 +61,7 @@ const login = async (req, res) => {
         id: user.id,
         email: user.email,
         username: user.username,
-        image: user.profile_image,
+        image: user.profile_image
       },
     });
   } catch (error) {

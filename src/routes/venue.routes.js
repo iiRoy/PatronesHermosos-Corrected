@@ -63,6 +63,12 @@ router.put(
   validateVenue,
   venueController.update,
 );
+router.put(
+  '/basic/:id',
+  authMiddleware,
+  roleMiddleware(['admin', 'superuser']),
+  venueController.updateBasic // Nueva ruta para actualización básica
+);
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController.remove);
 router.post('/:id/cancel', authMiddleware, roleMiddleware(['admin']), venueController.cancelVenue);
 
@@ -87,5 +93,7 @@ router.get('/files/:filename', (req, res) => {
       res.status(404).json({ message: 'Archivo no encontrado' });
     });
 });
+
+router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
 
 module.exports = router;
