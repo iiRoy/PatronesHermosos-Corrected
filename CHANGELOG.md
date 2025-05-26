@@ -1,3 +1,9 @@
+## 1.13.0-coord.6 (2025-05-26)
+
+* feat(pages): nueva página de estadísticas coordinadora ([a4d4a3e](https://github.com/iiRoy/Patrones-Hermosos/commit/a4d4a3e))
+* improve(pages): gestión de participantes y gestión de colaboradoras ya muestra solo la información d ([14c6db8](https://github.com/iiRoy/Patrones-Hermosos/commit/14c6db8))
+* improve(pages): se pueden eliminar participantes desde gestión de participantes ([28b86ef](https://github.com/iiRoy/Patrones-Hermosos/commit/28b86ef))
+
 ## 1.13.0-coord.5 (2025-05-26)
 
 * improve(pages): corrección color de textos en pop-ups de información ([b480dbf](https://github.com/iiRoy/Patrones-Hermosos/commit/b480dbf))
