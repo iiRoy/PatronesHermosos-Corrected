@@ -271,7 +271,7 @@
 
 .label-input {
   font-size: 18px;
-  color: var(--background);
+  color: var(--text-color);
 }
 
 .description {
@@ -311,6 +311,54 @@
   color: var(--text-color);
   font-size: 16px;
   width: 90%;
+}
+
+.input-accent input::placeholder {
+  color: rgb(214, 169, 185);
+}
+
+.input-accent-disabled .icon-input {
+  color: #483e48;
+}
+
+.input-primary-disabled .icon-input {
+  color: #44363b;
+}
+
+.input-primary-disabled input {
+  color: #44363b; 
+}
+
+.input-accent-disabled input {
+  color: #483e48; 
+}
+
+.input-accent-disabled input::placeholder {
+  color: #483e48;
+}
+
+.input-primary-disabled input::placeholder {
+  color: #44363b;
+}
+
+.input-primary input::placeholder {
+  color: rgb(199, 161, 202); 
+}
+
+.input-secondary input::placeholder {
+  color: rgb(211, 203, 208);
+}
+
+.input-secondary-shade input::placeholder {
+  color: rgb(197, 169, 187);
+}
+
+.input-text-color input::placeholder {
+  color: rgba(235, 230, 235);
+}
+
+.input-warning input::placeholder {
+  color: rgb(194, 171, 148); 
 }
 
 .error-text {
@@ -1056,6 +1104,11 @@
   width: 50%;
   padding-left: 60px;
   padding-right: 60px;
+}
+
+/* Solicitudes de registro */
+.texto-popup {
+  color: var(--background);
 }
 
 .fondo-tabla-forms {

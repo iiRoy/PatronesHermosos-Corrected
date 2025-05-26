@@ -36,7 +36,7 @@ const login = async (req, res) => {
     }
 
     if (!role) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ message: 'Los datos ingresados son incorrectos. Intenta de nuevo.' });
     }
 
     const token = jwt.sign(
@@ -48,7 +48,7 @@ const login = async (req, res) => {
         tokenVersion,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' }, // corto y seguro
+      { expiresIn: '15m' } // corto y seguro
     );
 
     return res.json({
@@ -61,7 +61,7 @@ const login = async (req, res) => {
         email: user.email,
         name: user.name,
         username: user.username,
-        image: user.profile_image,
+        image: user.profile_image
       },
     });
   } catch (error) {
