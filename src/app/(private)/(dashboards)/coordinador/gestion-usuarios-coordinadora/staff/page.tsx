@@ -31,7 +31,7 @@ interface Apoyo {
     preferred_level: string;
     preferred_group: number | null;
     venue: string;
-    id_venue: number | null; // Añadido para reflejar el cambio en los datos
+    id_venue: number | null;
 }
 
 interface DecodedToken {
@@ -57,7 +57,6 @@ const GestionApoyo = () => {
 
     const rowsPerPage = 10;
 
-    // Decodificar el token para obtener el userId, que corresponde al id_venue
     useEffect(() => {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
         if (token) {
@@ -65,7 +64,7 @@ const GestionApoyo = () => {
                 const decoded: DecodedToken = jwtDecode(token);
                 console.log('Decoded token:', decoded);
                 if (decoded.role === 'venue_coordinator') {
-                    setCoordinatorVenueId(decoded.userId); // userId es id_venue_coord, que coincide con id_venue
+                    setCoordinatorVenueId(decoded.userId);
                 } else {
                     setError('Este dashboard es solo para coordinadores de sede');
                     router.push('/login');
@@ -107,7 +106,6 @@ const GestionApoyo = () => {
                     throw new Error(`Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`);
                 }
 
-                // Depuración de id_venue
                 collaboratorsData.data.forEach((collab: any, index: number) => {
                     console.log(`Collaborator ${index + 1} id_venue:`, collab.id_venue);
                 });
@@ -138,7 +136,7 @@ const GestionApoyo = () => {
                         preferred_level: collab.preferred_level || 'Sin nivel preferido',
                         preferred_group: collab.preferred_group || null,
                         venue: collab.venue || 'Sin sede',
-                        id_venue: collab.id_venue, // Asegurar que id_venue se incluya
+                        id_venue: collab.id_venue,
                     }));
 
                 setApoyoData(formattedData);
@@ -163,7 +161,7 @@ const GestionApoyo = () => {
     const filteredData = useMemo(() => {
         const searchTerm = inputValue.toLowerCase().trim();
         return apoyoData.filter(apoyo => {
-            const matchesStatus = apoyo.status.toLowerCase() === 'aprobada';
+            const matchesStatus = (apoyo.status || 'Sin estado').toLowerCase() === 'aprobada';
             const fullName = `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`.toLowerCase().trim();
             const matchesSearch =
                 !searchTerm ||
@@ -281,21 +279,32 @@ const GestionApoyo = () => {
                 }
 
                 setApoyoData(prevData =>
-                    prevData.filter(apoyo => apoyo.id_collaborator !== selectedApoyo.id_collaborator)
+                    prevData.map(apoyo =>
+                        apoyo.id_collaborator === selectedApoyo.id_collaborator
+                            ? { ...apoyo, status: 'Cancelada' }
+                            : apoyo
+                    )
                 );
 
                 const fullName = `${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`;
                 notify({
                     color: 'green',
                     title: 'Usuario Cancelado',
-                    message: `El usuario ${fullName} ha sido eliminado correctamente`,
+                    message: `El usuario ${fullName} ha sido cancelado correctamente`,
                     duration: 5000,
                 });
 
                 handleCloseDeletePopup();
             } catch (error: any) {
                 console.error('Error al actualizar el status del colaborador:', error);
-                setError(error.message);
+                const fullName = `${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`;
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: `No se pudo cancelar al usuario ${fullName}: ${error.message}`,
+                    duration: 5000,
+                });
+                handleCloseDeletePopup();
             }
         }
     };
@@ -307,7 +316,6 @@ const GestionApoyo = () => {
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
             <PageTitle>Gestión de Apoyo</PageTitle>
-
             <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-1 gap-4">
@@ -323,36 +331,28 @@ const GestionApoyo = () => {
                                 onChangeText={(val) => setInputValue(val)}
                             />
                         </div>
-
                         <div className="basis-1/3">
                             <FiltroEvento
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones={false}
-                                extraFilters={[
-                                    {
-                                        label: 'Roles',
-                                        key: 'role',
-                                        options: rolOptions,
-                                    },
-                                ]}
+                                extraFilters={[{ label: 'Roles', key: 'role', options: rolOptions }]}
                                 filterActiva={filterActivaExtra}
                                 onExtraFilterChange={extraHandleFilterChange}
                             />
                         </div>
                     </div>
                 </div>
-
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
-                            <tr className='texto-primary-shade'>
+                            <tr className="texto-primary-shade">
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Correo</th>
                                 <th className="p-2 text-center">Rol</th>
-                                <th className="p-2 text-center">Level</th>
-                                <th className="p-2 text-center">Language</th>
-                                <th className="p-2 text-center">Acciones</th>
+                                <th className="p-2 text-center">Nivel</th>
+                                <th className="p-2 text-center">Idioma</th>
+                                <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">
@@ -371,7 +371,7 @@ const GestionApoyo = () => {
                                         <td className="p-2 text-center">{apoyo.language}</td>
                                         <td className="p-2 flex gap-2 justify-center">
                                             <Button
-                                                label=''
+                                                label=""
                                                 variant="error"
                                                 round
                                                 showLeftIcon
@@ -379,7 +379,7 @@ const GestionApoyo = () => {
                                                 onClick={(event: React.MouseEvent) => handleDeleteClick(apoyo, event)}
                                             />
                                             <Button
-                                                label=''
+                                                label=""
                                                 variant="warning"
                                                 round
                                                 showLeftIcon
@@ -393,7 +393,6 @@ const GestionApoyo = () => {
                         </tbody>
                     </table>
                 </div>
-
                 <div className="mt-auto pt-4 flex justify-center">
                     <Pagination
                         currentPage={currentPage}
@@ -403,28 +402,26 @@ const GestionApoyo = () => {
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
-
                 {isDeletePopupOpen && selectedApoyo && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
                             <p className="my-12">
-                                ¿Segura que quieres eliminar a la {selectedApoyo.role.toLowerCase()} {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
+                                ¿Segura que quieres cancelar a la {selectedApoyo.role.toLowerCase()}{' '}
+                                {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
                             </p>
                             <div className="flex justify-center gap-4">
-                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
                                 <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
                             </div>
                         </div>
                     </div>
                 )}
-
                 {isInfoPopupOpen && selectedApoyo && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
                             <h2 className="text-3xl font-bold mb-4 text-center">Información del Colaborador</h2>
                             <div className="space-y-2">
-                                <p><strong>ID:</strong> {selectedApoyo.id_collaborator}</p>
                                 <p><strong>Nombre:</strong> {selectedApoyo.name}</p>
                                 <p><strong>Apellido Paterno:</strong> {selectedApoyo.paternal_name}</p>
                                 <p><strong>Apellido Materno:</strong> {selectedApoyo.maternal_name}</p>
@@ -435,7 +432,6 @@ const GestionApoyo = () => {
                                 <p><strong>Semestre:</strong> {selectedApoyo.semester}</p>
                                 <p><strong>Género:</strong> {selectedApoyo.gender}</p>
                                 <p><strong>Rol:</strong> {selectedApoyo.role}</p>
-                                <p><strong>Estado:</strong> {selectedApoyo.status}</p>
                                 <p><strong>Nivel:</strong> {selectedApoyo.level}</p>
                                 <p><strong>Idioma:</strong> {selectedApoyo.language}</p>
                                 <p><strong>Rol preferido:</strong> {selectedApoyo.preferred_role}</p>
