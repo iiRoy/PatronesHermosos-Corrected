@@ -88,6 +88,14 @@ router.get('/files/:filename', (req, res) => {
     });
 });
 
+// Cancelar una sede
+router.patch(
+  '/:id/cancelar',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  venueController.cancelarVenue
+);
+
 router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
 
 module.exports = router;
