@@ -61,7 +61,7 @@ const InputField: React.FC<InputFieldProps> = ({
     }
   };
 
-  const inputClass = `input input-${variant}${disabled ? ' input-disabled' : ''}${darkText ? ' darkText' : ''}`;
+  const inputClass = `input input-${variant}${disabled ? ' input-disabled' : ''}${darkText ? ' darkText' : ''} transition-all duration-500 ease-in-out`;
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 
