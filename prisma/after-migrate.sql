@@ -530,19 +530,44 @@ BEGIN
         WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
     END IF;
 
+    -- Tabla temporal de resultados
     DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
     CREATE TEMPORARY TABLE temp_colab_resumen (
-        status VARCHAR(255),
-        rol VARCHAR(255),
+        status VARCHAR(255) COLLATE utf8mb4_unicode_ci,
+        rol VARCHAR(255) COLLATE utf8mb4_unicode_ci,
         total INT
     );
-    DELETE FROM temp_colab_resumen;
 
-    INSERT INTO temp_colab_resumen (status, rol, total)
+    -- Tabla temporal de roles únicos (Aprobada usa role, otras usan preferred_role)
+    DROP TEMPORARY TABLE IF EXISTS temp_roles;
+    CREATE TEMPORARY TABLE temp_roles AS
+    SELECT DISTINCT
+    CAST(
+        CASE
+            WHEN c.status = 'Aprobada' THEN c.role
+            ELSE c.preferred_role
+        END AS CHAR CHARACTER SET utf8mb4
+    ) COLLATE utf8mb4_unicode_ci AS rol
+    FROM collaborators c;
+
+    -- Tabla temporal de estados
+    DROP TEMPORARY TABLE IF EXISTS temp_statuses;
+    CREATE TEMPORARY TABLE temp_statuses (status VARCHAR(255) COLLATE utf8mb4_unicode_ci);
+    INSERT INTO temp_statuses (status) VALUES ('Aprobada'), ('Pendiente'), ('Rechazada');
+
+    -- Tabla real de conteos
+    DROP TEMPORARY TABLE IF EXISTS temp_real_counts;
+    CREATE TEMPORARY TABLE temp_real_counts (
+        status VARCHAR(255) COLLATE utf8mb4_unicode_ci,
+        rol VARCHAR(255) COLLATE utf8mb4_unicode_ci,
+        total INT
+    );
+
+    INSERT INTO temp_real_counts (status, rol, total)
     SELECT
         CASE
-          WHEN c.status = 'Cancelada' THEN 'Rechazada'
-          ELSE c.status
+            WHEN c.status = 'Cancelada' THEN 'Rechazada'
+            ELSE c.status
         END AS status,
         CASE
             WHEN c.status = 'Aprobada' THEN c.role
@@ -550,7 +575,11 @@ BEGIN
         END AS rol,
         COUNT(*) AS total
     FROM collaborators c
-    LEFT JOIN groups g ON c.id_group = g.id_group
+    LEFT JOIN groups g ON 
+        CASE
+            WHEN c.id_group IS NULL THEN c.preferred_group
+            ELSE c.id_group
+        END = g.id_group
     LEFT JOIN venues v ON g.id_venue = v.id_venue
     WHERE (
         tipo_usuario = 'superuser'
@@ -560,12 +589,19 @@ BEGIN
         id_sede_param IS NULL
         OR v.id_venue = id_sede_param
     )
-    GROUP BY c.status,
-        CASE
-            WHEN c.status = 'Aprobada' THEN c.role
-            ELSE c.preferred_role
-        END;
+    GROUP BY status, rol;
 
+    -- Producto cruzado y merge
+    INSERT INTO temp_colab_resumen (status, rol, total)
+    SELECT
+        s.status,
+        r.rol,
+        IFNULL(rc.total, 0) AS total
+    FROM temp_roles r
+    CROSS JOIN temp_statuses s
+    LEFT JOIN temp_real_counts rc ON rc.status = s.status AND rc.rol = r.rol;
+
+    -- Salida final como JSON
     SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
             'status', status,
@@ -574,8 +610,12 @@ BEGIN
         )
     ) AS resumen
     FROM temp_colab_resumen;
-    DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
 
+    -- Limpieza
+    DROP TEMPORARY TABLE IF EXISTS temp_colab_resumen;
+    DROP TEMPORARY TABLE IF EXISTS temp_roles;
+    DROP TEMPORARY TABLE IF EXISTS temp_statuses;
+    DROP TEMPORARY TABLE IF EXISTS temp_real_counts;
 END;
 $$
 

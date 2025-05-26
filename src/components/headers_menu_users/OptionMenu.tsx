@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { useNotification } from '../buttons_inputs/Notification';
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar, Rectangle } from 'recharts';
 import html2canvas from 'html2canvas';
@@ -13,6 +13,7 @@ import DownloadButton from './options/DownloadButton';
 import MinimizeButton from './options/MinimizeButton';
 import { PieChart as RePieChart, Pie, Cell, LabelList } from 'recharts';
 import type { OptionsMenuProps } from './options/types';
+import FiltroEvento from '../headers_menu_users/FiltroEvento';
 
 interface ExtendedOptionsMenuProps extends OptionsMenuProps {
   outerLabels?: string[];
@@ -21,6 +22,8 @@ interface ExtendedOptionsMenuProps extends OptionsMenuProps {
   defaultOuterColors?: string[];
   restoreDefaultOuterColors?: () => void;
   setOuterColors?: (colors: string[]) => void;
+  selectedFilters?: { [key: string]: string };
+  setSelectedFilters?: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
 }
 
 const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
@@ -45,9 +48,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     restoreDefaultOuterColors,
     outerLabels = [],
     outerColors = [],
-    setOuterColors = () => { },
+    setOuterColors = () => {},
   } = props;
 
+  const fallbackFilters = useMemo(
+    () => props.selectedFilters ?? { sede: '__all__' },
+    [props.selectedFilters],
+  );
   const [format, setFormat] = useState<'png' | 'jpg' | 'pdf'>('png');
   const [includeTable, setIncludeTable] = useState(true);
   const [currentView, setCurrentView] = useState<'customization' | 'download'>('customization');
@@ -55,6 +62,60 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   const [transitionPhase, setTransitionPhase] = useState<'fadeOut' | 'fadeIn' | null>(null);
   const [isCustomizingColors, setIsCustomizingColors] = useState(false);
   const [customizingOuter, setCustomizingOuter] = useState(false);
+  const [resetPickerSignal, setResetPickerSignal] = useState<number>(0);
+
+  const [sedes, setSedes] = useState<{ label: string; value: string }[]>([]);
+
+  const fetchDashboardData = async (filters: {
+    page: string;
+    sede?: string;
+    colab?: string;
+  }): Promise<any> => {
+    const { page, sede, colab } = filters;
+    const params = new URLSearchParams();
+    if (sede) params.append('id', sede);
+    if (colab) params.append('colab', colab);
+
+    try {
+      const res = await fetch(`/api/data?page=${page}&${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${
+            typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
+          }`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error('Error cargando resumenEvento:', error);
+      return null;
+    }
+  };
+
+  const loadSedes = useCallback(async () => {
+    try {
+      const res = await fetchDashboardData({ page: 'venues' });
+
+      if (res?.venues && Array.isArray(res.venues)) {
+        const opciones = res.venues
+          .filter((venues: any) => venues.status === 'Registrada con participantes')
+          .map((sede: any) => ({
+            value: sede.id.toString(),
+            label: sede.name,
+          }));
+
+        setSedes([{ value: '__all__', label: 'Todas las sedes' }, ...opciones]);
+      } else {
+        console.warn('No se encontraron sedes o el formato de respuesta es incorrecto:', res);
+      }
+    } catch (error) {
+      console.error('Error al cargar las sedes:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSedes();
+  }, [loadSedes]);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const { notify } = useNotification();
@@ -71,18 +132,18 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     const b = parseInt(parsed.substring(4, 6), 16);
 
     // Luminosidad relativa: fórmula perceptual
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
 
     if (luminance > 170) {
       // Si es brillante, oscurece
-      return `#${[r * 0.6, g * 0.6, b * 0.6].map((c) =>
-        Math.round(Math.min(255, c)).toString(16).padStart(2, '0')
-      ).join('')}`;
+      return `#${[r * 0.6, g * 0.6, b * 0.6]
+        .map((c) => Math.round(Math.min(255, c)).toString(16).padStart(2, '0'))
+        .join('')}`;
     } else {
       // Si es oscuro, aclara
-      return `#${[r + (255 - r) * 0.5, g + (255 - g) * 0.5, b + (255 - b) * 0.5].map((c) =>
-        Math.round(c).toString(16).padStart(2, '0')
-      ).join('')}`;
+      return `#${[r + (255 - r) * 0.5, g + (255 - g) * 0.5, b + (255 - b) * 0.5]
+        .map((c) => Math.round(c).toString(16).padStart(2, '0'))
+        .join('')}`;
     }
   }
 
@@ -144,9 +205,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     const tempRoot = document.createElement('div');
     const legendHtml = isBarChart
       ? seriesKeys
-        .map((key, i) => {
-          const label = key.charAt(0).toUpperCase() + key.slice(1);
-          return `
+          .map((key, i) => {
+            const label = key.charAt(0).toUpperCase() + key.slice(1);
+            return `
             <div style="
               display: flex;
               flex-direction: column;
@@ -175,16 +236,16 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
               ">${label}</span>
             </div>
           `;
-        })
-        .join('')
+          })
+          .join('')
       : outerLabels
-        .map((label, i) => {
-          const color = outerColors[i];
-          const total = (outerData ?? [])
-            .filter((d) => d.name === label)
-            .reduce((sum, d) => sum + (d.total ?? 0), 0);
+          .map((label, i) => {
+            const color = outerColors[i];
+            const total = (outerData ?? [])
+              .filter((d) => d.name === label)
+              .reduce((sum, d) => sum + (d.total ?? 0), 0);
 
-          return `
+            return `
         <div style="
           display: flex;
           flex-direction: column;
@@ -213,8 +274,8 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
           ">${total}</span>
         </div>
       `;
-        })
-        .join('');
+          })
+          .join('');
 
     const innerLegendHtml =
       !isBarChart &&
@@ -265,15 +326,16 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             ${xKey.charAt(0).toUpperCase() + xKey.slice(1)}
           </th>
           ${seriesKeys
-          .map(
-            (key, i) => `
-            <th style="border-bottom:2px solid #ddd; padding: 0 60px 16px 16px; text-align:center; font-size:17px; color:${defaultColors[i] || colors[i % colors.length]
-              }; background:#f5f0f7;">
+            .map(
+              (key, i) => `
+            <th style="border-bottom:2px solid #ddd; padding: 0 60px 16px 16px; text-align:center; font-size:17px; color:${
+              defaultColors[i] || colors[i % colors.length]
+            }; background:#f5f0f7;">
               ${key.charAt(0).toUpperCase() + key.slice(1)}
             </th>
           `,
-          )
-          .join('')}
+            )
+            .join('')}
         </tr>
       `;
       const tableRowsHtml = filteredData
@@ -284,15 +346,16 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             ${item[xKey]}
           </td>
           ${seriesKeys
-              .map(
-                (key, i) => `
-            <td style="border-bottom:1px solid #f0e6f5; padding: 0 60px 16px 16px; text-align:center; font-size:16px; color: ${defaultColors[i] || colors[i % colors.length]
-                  }; font-weight: 500; background: #fdfafd;">
+            .map(
+              (key, i) => `
+            <td style="border-bottom:1px solid #f0e6f5; padding: 0 60px 16px 16px; text-align:center; font-size:16px; color: ${
+              defaultColors[i] || colors[i % colors.length]
+            }; font-weight: 500; background: #fdfafd;">
               ${item[key]}
             </td>
           `,
-              )
-              .join('')}
+            )
+            .join('')}
         </tr>
       `,
         )
@@ -394,28 +457,30 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                 <Cell key={`outer-${index}`} fill={outerColorMap[entry.name] ?? '#ccc'} />
               ))}
               <LabelList
-                dataKey="total"
+                dataKey='total'
                 content={(props: any) => {
                   const RADIAN = Math.PI / 180;
                   const midAngle = (props.viewBox.startAngle + props.viewBox.endAngle) / 2;
-                  const radius = props.viewBox.innerRadius + (props.viewBox.outerRadius - props.viewBox.innerRadius) * 1.3;
+                  const radius =
+                    props.viewBox.innerRadius +
+                    (props.viewBox.outerRadius - props.viewBox.innerRadius) * 1.3;
                   const x = props.viewBox.cx + radius * Math.cos(-midAngle * RADIAN);
                   const y = props.viewBox.cy + radius * Math.sin(-midAngle * RADIAN);
-                  console.log(props)
+                  console.log(props);
 
                   const entry = outerData?.[props.index];
-                  const baseColor = entry ? (outerColorMap[entry.name] ?? '#999') : '#999';
+                  const baseColor = entry ? outerColorMap[entry.name] ?? '#999' : '#999';
                   const textColor = adjustTextColor(baseColor);
 
                   return (
                     <text
                       x={x}
                       y={y}
-                      textAnchor="middle"
-                      dominantBaseline="central"
+                      textAnchor='middle'
+                      dominantBaseline='central'
                       fill={textColor}
                       fontSize={16}
-                      fontWeight="bold"
+                      fontWeight='bold'
                     >
                       {props.value}
                     </text>
@@ -494,19 +559,21 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
 
       <div className='flex justify-between mb-4'>
         <button
-          className={`flex-1 py-1 rounded-l ${currentView === 'customization'
+          className={`flex-1 py-1 rounded-l ${
+            currentView === 'customization'
               ? 'bg-[var(--secondaryColor)] text-white'
               : 'bg-gray-200 text-gray-800'
-            }`}
+          }`}
           onClick={() => handleViewChange('customization')}
         >
           Personalizar
         </button>
         <button
-          className={`flex-1 py-1 rounded-r ${currentView === 'download'
+          className={`flex-1 py-1 rounded-r ${
+            currentView === 'download'
               ? 'bg-[var(--secondaryColor)] text-white'
               : 'bg-gray-200 text-gray-800'
-            }`}
+          }`}
           onClick={() => handleViewChange('download')}
         >
           Descargar
@@ -516,12 +583,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
       <div
         key={displayedView}
         className={`transition-all duration-300 ease-in-out transform
-        ${transitionPhase === 'fadeOut'
+        ${
+          transitionPhase === 'fadeOut'
             ? 'opacity-0 -translate-x-3 pointer-events-none'
             : transitionPhase === 'fadeIn'
-              ? 'opacity-0 translate-x-3'
-              : 'opacity-100 translate-x-0'
-          }`}
+            ? 'opacity-0 translate-x-3'
+            : 'opacity-100 translate-x-0'
+        }`}
       >
         {displayedView === 'customization' && (
           <>
@@ -532,21 +600,43 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                 onChange={onMaxItemsChange}
               />
             )}
+            {!isBarChart && !isCustomizingColors && (
+              <div className='mb-2'>
+                <FiltroEvento
+                  disableCheckboxes
+                  label='Filtros'
+                  extraFilters={[{ label: 'SEDE', key: 'sede', options: sedes }]}
+                  filterActiva={fallbackFilters}
+                  onExtraFilterChange={(key, value) =>
+                    props.setSelectedFilters?.((prev) => ({ ...prev, [key]: value }))
+                  }
+                  fade={false}
+                />
+              </div>
+            )}
             {!isBarChart && (
               <div>
                 {isCustomizingColors && (
                   <div className='flex gap-2 mb-2'>
                     <button
-                      onClick={() => setCustomizingOuter(false)}
-                      className={`flex-1 text-sm py-1 rounded ${!customizingOuter ? 'bg-purple-200 text-purple-900' : 'bg-gray-200'
-                        }`}
+                      onClick={() => {
+                        setCustomizingOuter(false);
+                        setResetPickerSignal((prev) => prev - 1);
+                      }}
+                      className={`flex-1 text-sm py-1 rounded ${
+                        !customizingOuter ? 'bg-purple-200 text-purple-900' : 'bg-gray-200'
+                      }`}
                     >
                       Colores Internos
                     </button>
                     <button
-                      onClick={() => setCustomizingOuter(true)}
-                      className={`flex-1 text-sm py-1 rounded ${customizingOuter ? 'bg-purple-200 text-purple-900' : 'bg-gray-200'
-                        }`}
+                      onClick={() => {
+                        setCustomizingOuter(true);
+                        setResetPickerSignal((prev) => prev - 1);
+                      }}
+                      className={`flex-1 text-sm py-1 rounded ${
+                        customizingOuter ? 'bg-purple-200 text-purple-900' : 'bg-gray-200'
+                      }`}
                     >
                       Colores Externos
                     </button>
@@ -561,6 +651,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
               notify={notify}
               elementLabels={customizingOuter ? outerLabels : elementLabels}
               onIsCustomizingChange={setIsCustomizingColors}
+              resetModeSignal={resetPickerSignal}
               restoreDefaultColors={() => {
                 if (customizingOuter && restoreDefaultOuterColors) {
                   restoreDefaultOuterColors();
@@ -581,8 +672,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
           </>
         )}
         <div
-          className={`transition-opacity duration-300 ease-in-out ${transitionPhase ? 'opacity-0 pointer-events-none' : 'opacity-100'
-            }`}
+          className={`transition-opacity duration-300 ease-in-out ${
+            transitionPhase ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
         >
           <MinimizeButton
             onMinimize={() => {
