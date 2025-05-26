@@ -75,4 +75,13 @@ router.put(
   mentorController.removeMentorFromGroup
 );
 
+
+// Cancelar una mentora
+router.patch(
+  '/:id/cancel',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  mentorController.cancelMentor
+);
+
 module.exports = router;
