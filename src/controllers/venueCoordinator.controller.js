@@ -55,6 +55,7 @@ const getSpecific = async (req, res) => {
         email: true,
         phone_number: true,
         id_venue: true,
+        status: true,
       },
     });
 
@@ -169,6 +170,52 @@ const deleteCoordinator = async (req, res) => {
   }
 };
 
+// Cancelar una coordinadora (cambiar status de Aprobada a Cancelada)
+const cancelVenueCoordinator = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username; // Usar username del token JWT
+
+  try {
+    // Verificar si la coordinadora existe y está Aprobada
+    const coordinator = await prisma.venue_coordinators.findUnique({
+      where: { id_venue_coord: parseInt(id) },
+      select: { id_venue_coord: true, status: true, name: true, paternal_name: true, maternal_name: true, id_venue: true },
+    });
+
+    if (!coordinator) {
+      return res.status(404).json({ message: 'La coordinadora no existe.' });
+    }
+
+    if (coordinator.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'Solo se pueden cancelar coordinadoras con status Aprobada.' });
+    }
+
+    // Actualizar el status a Cancelada
+    await prisma.venue_coordinators.update({
+      where: { id_venue_coord: parseInt(id) },
+      data: { status: 'Cancelada' },
+    });
+
+    // Registrar en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'venue_coordinators',
+        message: `Se canceló la coordinadora con ID ${id} (${coordinator.name || ''} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''})`,
+        username,
+        id_venue: coordinator.id_venue,
+      },
+    });
+
+    res.status(200).json({
+      message: `Coordinadora con ID ${id} cancelada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al cancelar la coordinadora:', error);
+    res.status(500).json({ message: 'Error interno al cancelar la coordinadora', error: error.message });
+  }
+};
+
 module.exports = {
   createCoordinator,
   getAllCoordinators,
@@ -177,4 +224,5 @@ module.exports = {
   updateCoordinator,
   updateCoordinatorFields,
   deleteCoordinator,
+  cancelVenueCoordinator,
 };
