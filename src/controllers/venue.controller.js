@@ -44,6 +44,8 @@ const getSpecificData = async (req, res) => {
       select: {
         id_venue: true,
         universidad: true,
+        pais: true,
+        estado: true,
         campus: true,
         coordinador: true,
         no_grupos: true,
@@ -224,6 +226,38 @@ const update = async (req, res) => {
   }
 };
 
+//nuevo controlador para actualizar campos básicos
+const updateBasic = async (req, res) => {
+  const { id } = req.params;
+  const { name, country, state, address, status } = req.body;
+
+  try {
+    const venueExists = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+    });
+
+    if (!venueExists) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
+    const updatedVenue = await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: {
+        name,
+        country,
+        state,
+        address,
+        status,
+      },
+    });
+
+    res.json({ message: 'Venue actualizado con éxito', data: updatedVenue });
+  } catch (error) {
+    console.error('Error al actualizar venue:', error);
+    res.status(500).json({ message: 'Error al actualizar venue', error: error.message });
+  }
+};
+
 //eliminar una sede por id
 const remove = async (req, res) => {
   const id = parseInt(req.params.id);
@@ -240,7 +274,6 @@ const remove = async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
-
 
 // Cancelar una sede
 const cancelVenue = async (req, res) => {
@@ -348,6 +381,7 @@ module.exports = {
   getById,
   create,
   update,
+  updateBasic,
   remove,
   cancelVenue,
   approveVenue,
