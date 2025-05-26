@@ -261,19 +261,9 @@ const gestionParticipantes = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Sedes"
-                                secciones={sedeOptions}
+                                labelSecciones="Grupo"
+                                secciones={grupoOptions}
                                 seccionActiva={section}
-                                onChangeSeccion={sectionFilterChange}
-                                extraFilters={[
-                                    {
-                                        label: 'Grupos',
-                                        key: 'grupo',
-                                        options: grupoOptions,
-                                    },
-                                ]}
-                                filterActiva={filterActivaExtra}
-                                onExtraFilterChange={extraHandleFilterChange}
                             />
                         </div>
                     </div>
