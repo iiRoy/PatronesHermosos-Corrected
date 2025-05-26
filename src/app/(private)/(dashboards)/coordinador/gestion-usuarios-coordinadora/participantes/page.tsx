@@ -136,7 +136,7 @@ const gestionParticipantes = () => {
             const matchesSede = section === '__All__' ? true : sede === section;
             const selectedGrupo = filterActivaExtra['grupo'];
             const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
-            const isApproved = participante.status.toLowerCase() === 'aprobada';
+            const isApproved = (participante.status || 'Pendiente').toLowerCase() === 'aprobada'; // Añadido valor por defecto
             const matchesVenue = coordinatorVenueId === null || participante.id_venue === coordinatorVenueId;
             return matchesSearch && matchesSede && matchesGrupo && isApproved && matchesVenue;
         });
@@ -202,11 +202,11 @@ const gestionParticipantes = () => {
                     throw new Error(`Error updating participant status: ${errorData.message || 'Unknown error'}`);
                 }
 
-                const updatedParticipant = await response.json();
+                // Se actualiza manualmente el estado a "Cancelada"
                 setParticipantesData((prev) =>
                     prev.map((p) =>
                         p.id === selectedParticipante.id
-                            ? { ...p, status: updatedParticipant.status }
+                            ? { ...p, status: 'Cancelada' }
                             : p
                     )
                 );
@@ -344,7 +344,6 @@ const gestionParticipantes = () => {
                         <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
                             <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Participante</h2>
                             <div className="pt-6 pb-6">
-                                <p><strong>ID:</strong> {selectedParticipante.id}</p>
                                 <p><strong>Nombre:</strong> {selectedParticipante.nombre}</p>
                                 <p><strong>Sede:</strong> {selectedParticipante.sede}</p>
                                 <p><strong>Grupo:</strong> {selectedParticipante.grupo}</p>

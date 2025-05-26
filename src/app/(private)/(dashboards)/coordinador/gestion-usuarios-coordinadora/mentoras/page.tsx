@@ -282,7 +282,6 @@ const GestionMentoras = () => {
                         <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
                             <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Mentora</h2>
                             <div className="pt-6 pb-6">
-                                <p><strong>ID:</strong> {selectedMentora.id_mentor}</p>
                                 <p><strong>Nombre:</strong> {selectedMentora.name_only}</p>
                                 <p><strong>Apellido Paterno:</strong> {selectedMentora.paternal_name}</p>
                                 <p><strong>Apellido Materno:</strong> {selectedMentora.maternal_name}</p>
