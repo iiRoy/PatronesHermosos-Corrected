@@ -61,4 +61,12 @@ router.delete(
   coordinatorController.deleteCoordinator,
 );
 
+// Cancelar una coordinadora
+router.patch(
+  '/:id/cancel',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  coordinatorController.cancelVenueCoordinator
+);
+
 module.exports = router;

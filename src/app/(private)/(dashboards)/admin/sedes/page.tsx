@@ -8,6 +8,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Sede {
     id_venue: number;
@@ -23,10 +24,12 @@ const SedesAdmin = () => {
     const [fadeSec, setFadeSec] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false);
     const [selectedSede, setSelectedSede] = useState<Sede | null>(null);
     const [sedesData, setSedesData] = useState<Sede[]>([]);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { notify } = useNotification();
 
     const rowsPerPage = 5;
 
@@ -35,6 +38,12 @@ const SedesAdmin = () => {
             try {
                 const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
                 if (!token) {
+                    notify({
+                        color: 'red',
+                        title: 'Error',
+                        message: 'No se encontró el token, redirigiendo al login',
+                        duration: 5000,
+                    });
                     router.push('/login');
                     return;
                 }
@@ -49,6 +58,12 @@ const SedesAdmin = () => {
                     const errorData = await response.json();
                     if (response.status === 403) {
                         localStorage.removeItem('api_token');
+                        notify({
+                            color: 'red',
+                            title: 'Error',
+                            message: 'Sesión expirada, redirigiendo al login',
+                            duration: 5000,
+                        });
                         router.push('/login');
                         return;
                     }
@@ -69,10 +84,16 @@ const SedesAdmin = () => {
             } catch (error: any) {
                 console.error('Error al obtener sedes:', error);
                 setError(error.message);
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: `No se pudieron cargar las sedes: ${error.message}`,
+                    duration: 5000,
+                });
             }
         };
         fetchSedes();
-    }, [router]);
+    }, [router, notify]);
 
     const uniqueStatuses = Array.from(new Set(sedesData.map(item => item.status))).map(status => ({
         label: status,
@@ -120,6 +141,71 @@ const SedesAdmin = () => {
     const handleClosePopup = () => {
         setIsPopupOpen(false);
         setSelectedSede(null);
+    };
+
+    const handleOpenCancelPopup = (sede: Sede, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedSede(sede);
+        setIsCancelPopupOpen(true);
+    };
+
+    const handleCloseCancelPopup = () => {
+        setIsCancelPopupOpen(false);
+        setSelectedSede(null);
+    };
+
+    const handleCancelVenue = async () => {
+        if (!selectedSede) {
+            handleCloseCancelPopup();
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('api_token');
+            if (!token) {
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: 'No se encontró el token, redirigiendo al login',
+                    duration: 5000,
+                });
+                router.push('/login');
+                return;
+            }
+
+            const response = await fetch(`/api/venues/${selectedSede.id_venue}/cancelar`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al cancelar la sede');
+            }
+
+            // Remover la sede de la lista (ya que cambia a Cancelada y no cumple el filtro)
+            setSedesData(prev => prev.filter(v => v.id_venue !== selectedSede.id_venue));
+
+            notify({
+                color: 'green',
+                title: 'Éxito',
+                message: `Sede ${selectedSede.name} cancelada exitosamente`,
+                duration: 5000,
+            });
+
+            handleCloseCancelPopup();
+        } catch (error: any) {
+            console.error('Error al cancelar la sede:', error);
+            notify({
+                color: 'red',
+                title: 'Error',
+                message: `No se pudo cancelar la sede ${selectedSede.name}: ${error.message}`,
+                duration: 5000,
+            });
+        }
     };
 
     if (error) {
@@ -191,7 +277,7 @@ const SedesAdmin = () => {
                                             round
                                             showLeftIcon
                                             IconLeft={Trash}
-                                            onClick={(e) => e.stopPropagation()}
+                                            onClick={(e) => handleOpenCancelPopup(sede, e)}
                                         />
                                         <Button
                                             label=''
@@ -236,6 +322,28 @@ const SedesAdmin = () => {
                                     onClick={handleClosePopup}
                                     showLeftIcon
                                     IconLeft={X}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {isCancelPopupOpen && selectedSede && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-700">
+                            <h2 className="text-2xl font-bold mx-4 mt-6 mb-12 text-center">
+                                ¿Seguro que quieres cancelar la sede {selectedSede.name}?
+                            </h2>
+                            <div className="mt-4 flex justify-center gap-4">
+                                <Button
+                                    label="Cancelar Sede"
+                                    variant="error"
+                                    onClick={handleCancelVenue}
+                                />
+                                <Button
+                                    label="Cerrar"
+                                    variant="primary"
+                                    onClick={handleCloseCancelPopup}
                                 />
                             </div>
                         </div>
