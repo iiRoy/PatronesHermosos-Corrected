@@ -318,6 +318,30 @@ const approveVenue = async (req, res) => {
   }
 };
 
+// Cancelar una sede
+const cancelarVenue = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username; // Usar username del token JWT
+
+  try {
+    // Llamar al procedimiento almacenado
+    await prisma.$queryRaw`
+      CALL cancelar_sede(${parseInt(id)}, ${username})
+    `;
+
+    res.status(200).json({
+      message: `Sede con ID ${id} cancelada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al cancelar la sede:', error);
+    if (error.code === '45000') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Full error details:', JSON.stringify(error, null, 2));
+    res.status(500).json({ message: 'Error interno al cancelar la sede', error: error.message });
+  }
+};
+
 module.exports = {
   getAll,
   getSpecificData,
@@ -327,4 +351,5 @@ module.exports = {
   remove,
   cancelVenue,
   approveVenue,
+  cancelarVenue
 };
