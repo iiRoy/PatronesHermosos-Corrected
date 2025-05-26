@@ -19,6 +19,7 @@ const getAll = async (req, res) => {
       phone_number: mentor.phone_number || 'Sin teléfono',
       venue: mentor.venues?.name || 'Sede desconocida',
       number_of_groups: mentor.groups.length,
+      status: mentor.status,
     }));
 
     res.json({ success: true, data: formattedMentors });
@@ -226,6 +227,54 @@ const removeMentorFromGroup = async (req, res) => {
   }
 };
 
+
+// Cancelar una mentora (cambiar status de Aprobada a Cancelada)
+const cancelMentor = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username; // Usar username del token JWT
+
+  try {
+    // Verificar si la mentora existe y está Aprobada
+    const mentor = await prisma.mentors.findUnique({
+      where: { id_mentor: parseInt(id) },
+      select: { id_mentor: true, status: true, name: true, paternal_name: true, maternal_name: true, id_venue: true },
+    });
+
+    if (!mentor) {
+      return res.status(404).json({ message: 'La mentora no existe.' });
+    }
+
+    if (mentor.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'Solo se pueden cancelar mentoras con status Aprobada.' });
+    }
+
+    // Actualizar el status a Cancelada
+    await prisma.mentors.update({
+      where: { id_mentor: parseInt(id) },
+      data: { status: 'Cancelada' },
+    });
+
+    // Registrar en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'mentors',
+        message: `Se canceló la mentora con ID ${id} (${mentor.name || ''} ${mentor.paternal_name || ''} ${mentor.maternal_name || ''})`,
+        username,
+        id_venue: mentor.id_venue,
+      },
+    });
+
+    res.status(200).json({
+      message: `Mentora con ID ${id} cancelada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al cancelar la mentora:', error);
+    res.status(500).json({ message: 'Error interno al cancelar la mentora', error: error.message });
+  }
+};
+
+
 module.exports = {
   getAll,
   getMentorById,
@@ -236,4 +285,5 @@ module.exports = {
   remove,
   getGroupMentor,
   removeMentorFromGroup,
+  cancelMentor,
 };
