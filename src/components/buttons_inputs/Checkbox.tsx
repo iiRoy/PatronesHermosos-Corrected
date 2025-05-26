@@ -21,7 +21,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
   const borderClass = bordered ? 'with-border' : '';
 
   return (
-    <label className={`checkbox-container ${colorClass} ${borderClass}`}>
+    <label className={`checkbox-container ${colorClass} ${borderClass} transition-all duration-500 ease-in-out`}>
       <input
         type='checkbox'
         checked={checked}
