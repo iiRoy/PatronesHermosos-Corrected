@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import OptionLink from '../buttons_inputs/OptionLink';
 import * as Icons from '../icons';
 import Button from '../buttons_inputs/Button';
@@ -63,6 +63,7 @@ const Navbar = () => {
               variant='secondary'
               showLeftIcon
               IconLeft={Icons.FingerprintSimple}
+              disabled={usePathname() == '/login'}
               onClick={() => router.push('/login')}
               activeTransition={true}
             />
