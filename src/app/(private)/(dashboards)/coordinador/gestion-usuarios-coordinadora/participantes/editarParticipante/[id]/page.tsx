@@ -9,6 +9,13 @@ import Button from '@/components/buttons_inputs/Button';
 import { FileText } from 'lucide-react';
 import withIconDecorator from '@/components/decorators/IconDecorator';
 import { MapPin, Users } from '@/components/icons';
+import { useNotification } from '@/components/buttons_inputs/Notification';
+
+interface GroupOption {
+    id_group: number;
+    name: string;
+    available_places: number;
+}
 
 interface Participante {
     id_participant: number;
@@ -19,28 +26,32 @@ interface Participante {
     year: number;
     education: string;
     participation_file: Buffer | null;
-    preferred_group: string;
+    preferred_group: number | null;
     status: string;
-    id_group: number;
+    id_group: number | null;
     id_tutor: number | null;
-    sede: string;
-    grupo: string;
+    groups?: {
+        name: string;
+        venues?: { name: string };
+    } | null;
 }
 
 const EditarParticipante = () => {
     const [participante, setParticipante] = useState<Participante | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [idValue, setIdValue] = useState('');
+    const [nombreValue, setNombreValue] = useState('');
     const [apellidoPaternoValue, setApellidoPaternoValue] = useState('');
     const [apellidoMaternoValue, setApellidoMaternoValue] = useState('');
-    const [nombreValue, setNombreValue] = useState('');
     const [correoValue, setCorreoValue] = useState('');
     const [telefonoValue, setTelefonoValue] = useState('');
     const [statusValue, setStatusValue] = useState('');
-    const [sedeValue, setSedeValue] = useState('Monterrey');
-    const [grupoValue, setGrupoValue] = useState('Luna');
+    const [sedeValue, setSedeValue] = useState('');
+    const [grupoValue, setGrupoValue] = useState<number | null>(null);
+    const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
     const router = useRouter();
-    const { id } = useParams(); // Obtener el id de la URL
+    const { id } = useParams();
+    const { notify } = useNotification();
 
     useEffect(() => {
         const fetchParticipante = async () => {
@@ -69,26 +80,60 @@ const EditarParticipante = () => {
 
                 const data = await response.json();
                 setParticipante(data);
-
-                // Precargar los campos con la información del participante
                 setIdValue(data.id_participant.toString());
                 setNombreValue(data.name);
                 setApellidoPaternoValue(data.paternal_name);
                 setApellidoMaternoValue(data.maternal_name);
                 setCorreoValue(data.email);
-                setTelefonoValue(''); // Este campo no está en la base de datos, se deja vacío
+                setTelefonoValue(data.tutors?.phone_number || ''); // Prellenar con el número de teléfono del tutor
                 setStatusValue(data.status);
-                // Los valores de sede y grupo se manejan con los estados de los Dropdown
+                setGrupoValue(data.id_group || null);
+                setSedeValue(data.groups?.venues?.name || 'No asignado');
             } catch (error: any) {
                 console.error('Error al obtener participante:', error);
                 setError(error.message);
             }
         };
 
+        const fetchAvailableGroups = async () => {
+            try {
+                const token = typeof window !== "undefined" ? localStorage.getItem("api_token") : "";
+                if (!token) {
+                    router.push('/login');
+                    return;
+                }
+
+                const response = await fetch(`/api/participants/${id}/available-groups`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error fetching available groups: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                setAvailableGroups(data.groups);
+                if (data.groups.length > 0 && !grupoValue) {
+                    const currentGroup = data.groups.find((group: GroupOption) => group.id_group === participante?.id_group);
+                    if (currentGroup) {
+                        setGrupoValue(currentGroup.id_group);
+                    } else {
+                        setGrupoValue(data.groups[0].id_group);
+                    }
+                }
+            } catch (error: any) {
+                console.error('Error al obtener grupos disponibles:', error);
+                setError(error.message);
+            }
+        };
+
         if (id) {
-            fetchParticipante();
+            fetchParticipante().then(() => fetchAvailableGroups());
         }
-    }, [id, router]);
+    }, [id, router, participante?.id_group]);
 
     const handleConfirm = async () => {
         try {
@@ -98,23 +143,16 @@ const EditarParticipante = () => {
                 return;
             }
 
-            // Separar el nombre completo en name, paternal_name y maternal_name
-            const nameParts = nombreValue.trim().split(' ');
-            const name = nameParts[0] || '';
-            const paternal_name = nameParts[1] || '';
-            const maternal_name = nameParts.slice(2).join(' ') || '';
-
             const updatedParticipante = {
-                name,
-                paternal_name,
-                maternal_name,
+                name: nombreValue,
+                paternal_name: apellidoPaternoValue,
+                maternal_name: apellidoMaternoValue,
                 email: correoValue,
-                status: statusValue,
-                sede: sedeValue,
-                grupo: grupoValue,
+                id_group: grupoValue,
+                phone_number: telefonoValue, // Incluir el número de teléfono
             };
 
-            const response = await fetch(`/api/participants/${id}`, {
+            const response = await fetch(`/api/participants/${id}/basic-info`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,13 +168,25 @@ const EditarParticipante = () => {
                     router.push('/login');
                     return;
                 }
-                throw new Error('Error updating participant');
+                throw new Error(`Error updating participant: ${errorData.message || 'Unknown error'}`);
             }
 
+            notify({
+                color: 'green',
+                title: 'Participante Actualizado',
+                message: `El participante ${nombreValue} ha sido actualizado exitosamente`,
+                duration: 5000,
+            });
+
             router.push('/coordinador/gestion-usuarios-coordinadora/participantes');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al actualizar participante:', error);
-            setError('Error al actualizar participante');
+            notify({
+                color: 'red',
+                title: 'Error',
+                message: `No se pudo actualizar al participante: ${error.message}`,
+                duration: 5000,
+            });
         }
     };
 
@@ -154,7 +204,7 @@ const EditarParticipante = () => {
 
             <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
                 <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-                    <div className="basis-1/5">
+                    <div className="basis-1/3">
                         <InputField
                             label="Nombre"
                             darkText={true}
@@ -167,7 +217,7 @@ const EditarParticipante = () => {
                         />
                     </div>
 
-                    <div className="basis-1/5">
+                    <div className="basis-1/3">
                         <InputField
                             label="Apellido Paterno"
                             darkText={true}
@@ -176,11 +226,11 @@ const EditarParticipante = () => {
                             showError={false}
                             variant="accent"
                             value={apellidoPaternoValue}
-                            onChangeText={(val) => setNombreValue(val)}
+                            onChangeText={(val) => setApellidoPaternoValue(val)}
                         />
                     </div>
 
-                    <div className="basis-1/5">
+                    <div className="basis-1/3">
                         <InputField
                             label="Apellido Materno"
                             darkText={true}
@@ -189,25 +239,13 @@ const EditarParticipante = () => {
                             showError={false}
                             variant="accent"
                             value={apellidoMaternoValue}
-                            onChangeText={(val) => setNombreValue(val)}
-                        />
-                    </div>
-
-                    <div className="basis-2/5">
-                        <p className='texto-filtro'>Sede</p>
-                        <Dropdown
-                            label=""
-                            options={['Monterrey', 'Puebla', 'Guadalajara', 'Querétaro']}
-                            value={sedeValue}
-                            onChange={(value: string) => setSedeValue(value)}
-                            variant="accent"
-                            Icon={withIconDecorator(MapPin)}
+                            onChangeText={(val) => setApellidoMaternoValue(val)}
                         />
                     </div>
                 </div>
 
                 <div className="flex gap-4 justify-between mb-4">
-                    <div className="basis-1/2">
+                    <div className="basis-1/3">
                         <InputField
                             label="Correo"
                             darkText={true}
@@ -219,13 +257,27 @@ const EditarParticipante = () => {
                             onChangeText={(val) => setCorreoValue(val)}
                         />
                     </div>
-                    <div className="basis-1/2">
-                        <p className='texto-filtro'>Grupo Asignado</p>
+                    <div className="basis-1/3">
+                        <InputField
+                            label="Teléfono del tutor"
+                            darkText={true}
+                            showDescription={false}
+                            placeholder={telefonoValue}
+                            showError={false}
+                            variant="accent"
+                            value={telefonoValue}
+                            onChangeText={(val) => setTelefonoValue(val)}
+                        />
+                    </div>
+                    <div className="basis-1/3">
                         <Dropdown
-                            label=""
-                            options={['Luna', 'Sol', 'Mar', 'Montaña']}
-                            value={grupoValue}
-                            onChange={(value: string) => setGrupoValue(value)}
+                            label="Grupo Asignado"
+                            options={availableGroups.map(group => ({
+                                label: `${group.name} (${group.available_places} lugares disponibles)`,
+                                value: group.id_group.toString(),
+                            }))}
+                            value={grupoValue?.toString() || ''}
+                            onChange={(value: string) => setGrupoValue(parseInt(value))}
                             variant="accent"
                             Icon={withIconDecorator(Users)}
                         />
@@ -241,7 +293,8 @@ const EditarParticipante = () => {
                             variant="primary"
                             showLeftIcon
                             IconLeft={FileText}
-                            href='../'
+                            href={participante.participation_file ? `/api/files/${participante.participation_file}` : '#'}
+                            disabled={!participante.participation_file}
                         />
                     </div>
                 </div>
