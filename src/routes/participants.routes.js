@@ -10,38 +10,38 @@ router.get('/table', authMiddleware, participantsController.getParticipantsTable
 router.get(
   '/:participantId/available-groups',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.getAvailableGroups
 );
 router.patch(
   '/:participantId/approve',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.approveParticipant
 );
 
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.updateParticipant,
 );
 router.put(
   '/:id/basic-info',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.updateParticipantBasicInfo,
 );
 router.delete(
   '/:id',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.deleteParticipant,
 );
 router.patch(
   '/:id/status',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.changeParticipantStatus,
 );
 
