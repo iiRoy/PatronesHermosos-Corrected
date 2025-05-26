@@ -1,3 +1,24 @@
+## 1.13.0-coord.5 (2025-05-26)
+
+* improve(pages): corrección color de textos en pop-ups de información ([b480dbf](https://github.com/iiRoy/Patrones-Hermosos/commit/b480dbf))
+* improve(pages): editar participantes ya funciona correctamente ([b48450f](https://github.com/iiRoy/Patrones-Hermosos/commit/b48450f))
+* improve(pages): editarSede actualizado para editar información básica de sede ([98e9e67](https://github.com/iiRoy/Patrones-Hermosos/commit/98e9e67))
+* improve(pages): gestion de participantes ya muestra solo las participantes aprobadas ([7ca9969](https://github.com/iiRoy/Patrones-Hermosos/commit/7ca9969))
+* improve(pages): página de solicitudes y página de editar participante funcionando ([64b035e](https://github.com/iiRoy/Patrones-Hermosos/commit/64b035e))
+* chore(estadísticas): Fixed merge mistakes for Graphs ([47e7027](https://github.com/iiRoy/Patrones-Hermosos/commit/47e7027))
+* feat(solicitudes) Pagina de solicitudes lista ([ec365e0](https://github.com/iiRoy/Patrones-Hermosos/commit/ec365e0))
+* feat(solicitudes) Se agregaron dos controladores de participants, con sus rutas respectivas. Se pued ([df587b4](https://github.com/iiRoy/Patrones-Hermosos/commit/df587b4))
+* fix(backend) se arreglo una ruta de participants ([927f7e9](https://github.com/iiRoy/Patrones-Hermosos/commit/927f7e9))
+* fix(migrate) se corrigio el formato de los procedimientos ([6a32e9d](https://github.com/iiRoy/Patrones-Hermosos/commit/6a32e9d))
+* fix(migrate) se eliminaron comentarios erroneos ([e207db4](https://github.com/iiRoy/Patrones-Hermosos/commit/e207db4))
+* Merge branch 'pages/superuser' into diego_sqlProcedures ([caddfeb](https://github.com/iiRoy/Patrones-Hermosos/commit/caddfeb))
+* Merge con rama pages/superuser ([e6d2530](https://github.com/iiRoy/Patrones-Hermosos/commit/e6d2530))
+* Merge desde diego_sqlProcedures ([6b0dd8c](https://github.com/iiRoy/Patrones-Hermosos/commit/6b0dd8c))
+* chore(release): 1.13.0-admin.5 [skip ci] ([754bb2a](https://github.com/iiRoy/Patrones-Hermosos/commit/754bb2a))
+* chore(release): 1.13.0-admin.6 [skip ci] ([a9fb3b5](https://github.com/iiRoy/Patrones-Hermosos/commit/a9fb3b5))
+* feat(login): Login page attempts function + design complete ([54f569e](https://github.com/iiRoy/Patrones-Hermosos/commit/54f569e))
+* feat(pages): nueva página de editar sede superuser ([85dd02d](https://github.com/iiRoy/Patrones-Hermosos/commit/85dd02d))
+
 <<<<<<< HEAD
 ## 1.13.0-coord.4 (2025-05-25)
 
