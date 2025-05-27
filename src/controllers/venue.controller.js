@@ -351,6 +351,68 @@ const approveVenue = async (req, res) => {
   }
 };
 
+// Cancelar una sede
+const cancelarVenue = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username; // Usar username del token JWT
+
+  try {
+    // Llamar al procedimiento almacenado
+    await prisma.$queryRaw`
+      CALL cancelar_sede(${parseInt(id)}, ${username})
+    `;
+
+    res.status(200).json({
+      message: `Sede con ID ${id} cancelada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al cancelar la sede:', error);
+    if (error.code === '45000') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Full error details:', JSON.stringify(error, null, 2));
+    res.status(500).json({ message: 'Error interno al cancelar la sede', error: error.message });
+  }
+};
+
+// Get PDF for a venue
+const getVenuePDF = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      select: { participation_file_path: true }, // For file system approach
+      // select: { participation_file: true }, // Uncomment for BLOB approach
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
+    // File System Approach
+    if (!venue.participation_file_path) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+
+    // Return the filename to be used with the /files/:filename route
+    res.json({ filename: venue.participation_file_path });
+
+    /*
+    // BLOB Approach (uncomment if preferred)
+    if (!venue.participation_file) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename=venue_${id}_participation.pdf`);
+    res.send(venue.participation_file);
+    */
+  } catch (error) {
+    console.error('Error al obtener el PDF de la sede:', error);
+    res.status(500).json({ message: 'Error interno al obtener el PDF', error: error.message });
+  }
+};
+
 module.exports = {
   getAll,
   getSpecificData,
@@ -361,4 +423,6 @@ module.exports = {
   remove,
   cancelVenue,
   approveVenue,
+  cancelarVenue,
+  getVenuePDF,
 };

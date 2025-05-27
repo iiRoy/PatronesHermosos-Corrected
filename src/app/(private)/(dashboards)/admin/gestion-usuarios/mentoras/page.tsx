@@ -8,6 +8,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Mentora {
   id_mentor: number;
@@ -19,6 +20,7 @@ interface Mentora {
   paternal_name: string;
   maternal_name: string;
   number_of_groups: number;
+  status: string;
 }
 
 const GestionMentoras = () => {
@@ -31,6 +33,7 @@ const GestionMentoras = () => {
   const [mentorasData, setMentorasData] = useState<Mentora[]>([]);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { notify } = useNotification();
 
   const rowsPerPage = 5;
 
@@ -39,6 +42,12 @@ const GestionMentoras = () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
         if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
           router.push('/login');
           return;
         }
@@ -54,7 +63,14 @@ const GestionMentoras = () => {
 
         if (!mentorsResponse.ok) {
           if (mentorsResponse.status === 403) {
-            setError('No tienes permisos para acceder a las mentoras');
+            localStorage.removeItem('api_token');
+            notify({
+              color: 'red',
+              title: 'Error',
+              message: 'Sesión expirada, redirigiendo al login',
+              duration: 5000,
+            });
+            router.push('/login');
             return;
           }
           throw new Error(`Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`);
@@ -70,16 +86,23 @@ const GestionMentoras = () => {
           name_only: mentor.name || 'Sin nombre',
           paternal_name: mentor.paternal_name || 'Sin apellido paterno',
           maternal_name: mentor.maternal_name || 'Sin apellido materno',
+          status: mentor.status,
           number_of_groups: mentor.number_of_groups || 0,
         }));
         setMentorasData(formattedData);
       } catch (error: any) {
         console.error('Error al obtener mentoras:', error);
         setError(error.message);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudieron cargar las mentoras: ${error.message}`,
+          duration: 5000,
+        });
       }
     };
     fetchMentoras();
-  }, [router]);
+  }, [router, notify]);
 
   const uniqueVenues = Array.from(new Set(mentorasData.map(mentora => mentora.venue))).sort();
   const venueOptions = [
@@ -97,7 +120,9 @@ const GestionMentoras = () => {
         mentora.phone_number.toLowerCase().includes(searchTerm) ||
         mentora.venue.toLowerCase().includes(searchTerm);
       const matchesVenue = section === '__All__' ? true : mentora.venue === section;
-      return matchesSearch && matchesVenue;
+      // Filtrar solo mentoras con status Aprobada
+      const matchesStatus = mentora.status === 'Aprobada';
+      return matchesSearch && matchesVenue && matchesStatus;
     });
   }, [inputValue, section, mentorasData]);
 
@@ -142,10 +167,57 @@ const GestionMentoras = () => {
     setSelectedMentora(null);
   };
 
-  const handleConfirmDelete = () => {
-    if (selectedMentora) {
-      alert(`Eliminando a ${selectedMentora.name}`); // Placeholder para la lógica real de eliminación
+  const handleConfirmDelete = async () => {
+    if (!selectedMentora) {
       handleCloseDeletePopup();
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/mentors/${selectedMentora.id_mentor}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al cancelar la mentora');
+      }
+
+      // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
+      setMentorasData(prev => prev.filter(m => m.id_mentor !== selectedMentora.id_mentor));
+
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Mentora ${selectedMentora.name} cancelada exitosamente`,
+        duration: 5000,
+      });
+
+      handleCloseDeletePopup();
+    } catch (error: any) {
+      console.error('Error al cancelar la mentora:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo cancelar la mentora ${selectedMentora.name}: ${error.message}`,
+        duration: 5000,
+      });
     }
   };
 
@@ -253,11 +325,11 @@ const GestionMentoras = () => {
         {isDeletePopupOpen && selectedMentora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
-              <p className="my-12">¿Estás seguro de que quieres eliminar a la mentora {selectedMentora.name}?</p>
+              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
+              <p className="my-12">¿Estás seguro de que quieres cancelar a la mentora {selectedMentora.name}?</p>
               <div className="flex justify-center gap-4">
-                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
+                <Button label="Cancelar Mentora" variant="error" onClick={handleConfirmDelete} />
+                <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
@@ -276,6 +348,7 @@ const GestionMentoras = () => {
                 <p><strong>Correo:</strong> {selectedMentora.email}</p>
                 <p><strong>Teléfono:</strong> {selectedMentora.phone_number}</p>
                 <p><strong>Sede:</strong> {selectedMentora.venue}</p>
+                <p><strong>Status:</strong> {selectedMentora.status}</p>
                 <p><strong>Número de Grupos:</strong> {selectedMentora.number_of_groups}</p>
               </div>
               <div className="mt-4 flex justify-center">

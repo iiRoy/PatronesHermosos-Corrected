@@ -8,6 +8,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Coordinadora {
   id_venue_coord: number;
@@ -18,12 +19,12 @@ interface Coordinadora {
   name: string; // Campo separado para el popup
   paternal_name: string;
   maternal_name: string;
+  status: string; // Añadido para manejar el estado
 }
 
 interface Venue {
   id_venue: number;
   name: string;
-  // Otros campos de venues si son necesarios
 }
 
 const GestionCoordinadoras = () => {
@@ -37,6 +38,7 @@ const GestionCoordinadoras = () => {
   const [venuesMap, setVenuesMap] = useState<Map<number, string>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { notify } = useNotification();
 
   const rowsPerPage = 5;
 
@@ -44,9 +46,13 @@ const GestionCoordinadoras = () => {
     const fetchCoordinadoras = async () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        console.log('Token:', token);
         if (!token) {
-          console.log('No token found, redirecting to login');
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
           router.push('/login');
           return;
         }
@@ -57,22 +63,23 @@ const GestionCoordinadoras = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Coordinator response status:', coordResponse.status);
 
-        // Leer el cuerpo de la respuesta una sola vez
         const coordData = await coordResponse.json();
-        console.log('Coordinator response body:', coordData);
 
         if (!coordResponse.ok) {
-          console.log('Coordinator error data:', coordData);
           if (coordResponse.status === 403) {
-            setError('No tienes permisos para acceder a los coordinadores');
+            localStorage.removeItem('api_token');
+            notify({
+              color: 'red',
+              title: 'Error',
+              message: 'Sesión expirada, redirigiendo al login',
+              duration: 5000,
+            });
+            router.push('/login');
             return;
           }
           throw new Error(`Error fetching coordinators: ${coordResponse.status} - ${coordData.message || 'Unknown error'}`);
         }
-
-        console.log('Coordinator data:', coordData);
 
         // Obtener sedes (con token)
         const venuesResponse = await fetch('/api/venues', {
@@ -80,23 +87,25 @@ const GestionCoordinadoras = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Venues response status:', venuesResponse.status);
 
-        // Leer el cuerpo de la respuesta una sola vez
         const venuesDataResponse = await venuesResponse.json();
-        console.log('Venues response body:', venuesDataResponse);
 
         if (!venuesResponse.ok) {
-          console.log('Venues error data:', venuesDataResponse);
           if (venuesResponse.status === 403) {
-            setError('No tienes permisos para acceder a las sedes');
+            localStorage.removeItem('api_token');
+            notify({
+              color: 'red',
+              title: 'Error',
+              message: 'Sesión expirada, redirigiendo al login',
+              duration: 5000,
+            });
+            router.push('/login');
             return;
           }
           throw new Error(`Error fetching venues: ${venuesResponse.status} - ${venuesDataResponse.message || 'Unknown error'}`);
         }
 
         const venuesData = venuesDataResponse as Venue[];
-        console.log('Venues data:', venuesData);
         const venuesMapData = new Map<number, string>(
           venuesData.map((venue: Venue) => [venue.id_venue, venue.name || 'Sin nombre'] as const)
         );
@@ -111,15 +120,22 @@ const GestionCoordinadoras = () => {
           name: coordinator.name || 'Sin nombre',
           paternal_name: coordinator.paternal_name || 'Sin apellido paterno',
           maternal_name: coordinator.maternal_name || 'Sin apellido materno',
+          status: coordinator.status || 'Pendiente', // Añadido para el estado
         }));
         setCoordinadorasData(formattedData);
       } catch (error: any) {
         console.error('Error al obtener coordinadoras:', error);
         setError(error.message);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudieron cargar las coordinadoras: ${error.message}`,
+          duration: 5000,
+        });
       }
     };
     fetchCoordinadoras();
-  }, [router]);
+  }, [router, notify]);
 
   const uniqueVenues = Array.from(new Set(coordinadorasData.map(coordinadora => coordinadora.venue))).sort();
   const venueOptions = [
@@ -137,7 +153,8 @@ const GestionCoordinadoras = () => {
         coordinadora.phone_number.toLowerCase().includes(searchTerm) ||
         coordinadora.venue.toLowerCase().includes(searchTerm);
       const matchesVenue = section === '__All__' ? true : coordinadora.venue === section;
-      return matchesSearch && matchesVenue;
+      const matchesStatus = coordinadora.status === 'Aprobada'; // Filtrar solo Aprobada
+      return matchesSearch && matchesVenue && matchesStatus;
     });
   }, [inputValue, section, coordinadorasData]);
 
@@ -182,10 +199,57 @@ const GestionCoordinadoras = () => {
     setSelectedCoordinadora(null);
   };
 
-  const handleConfirmDelete = () => {
-    if (selectedCoordinadora) {
-      alert(`Eliminando a ${selectedCoordinadora.nombre}`); // Placeholder para la lógica real de eliminación
+  const handleConfirmDelete = async () => {
+    if (!selectedCoordinadora) {
       handleCloseDeletePopup();
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/venue-coordinators/${selectedCoordinadora.id_venue_coord}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al cancelar la coordinadora');
+      }
+
+      // Remover la coordinadora de la lista (ya que cambia a Cancelada y no cumple el filtro)
+      setCoordinadorasData(prev => prev.filter(c => c.id_venue_coord !== selectedCoordinadora.id_venue_coord));
+
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Coordinadora ${selectedCoordinadora.nombre} cancelada exitosamente`,
+        duration: 5000,
+      });
+
+      handleCloseDeletePopup();
+    } catch (error: any) {
+      console.error('Error al cancelar la coordinadora:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo cancelar la coordinadora ${selectedCoordinadora.nombre}: ${error.message}`,
+        duration: 5000,
+      });
     }
   };
 
@@ -257,7 +321,7 @@ const GestionCoordinadoras = () => {
                       showLeftIcon
                       IconLeft={Trash}
                       onClick={(e) => {
-                        e.stopPropagation(); // Evitar que el clic en el botón dispare el evento de la fila
+                        e.stopPropagation();
                         handleDeleteClick(coordinadora);
                       }}
                     />
@@ -268,7 +332,7 @@ const GestionCoordinadoras = () => {
                       showLeftIcon
                       IconLeft={Highlighter}
                       onClick={(e) => {
-                        e.stopPropagation(); // Evitar que el clic en el botón dispare el evento de la fila
+                        e.stopPropagation();
                         handleEditClick(coordinadora);
                       }}
                     />
@@ -289,15 +353,15 @@ const GestionCoordinadoras = () => {
           />
         </div>
 
-        {/* Popup de eliminación */}
+        {/* Popup de cancelación */}
         {isDeletePopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
-              <p className="my-12">¿Estás seguro de que quieres eliminar a la coordinadora {selectedCoordinadora.nombre}?</p>
+              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
+              <p className="my-12">¿Estás seguro de que quieres cancelar a la coordinadora {selectedCoordinadora.nombre}?</p>
               <div className="flex justify-center gap-4">
-                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
+                <Button label="Cancelar Coordinadora" variant="error" onClick={handleConfirmDelete} />
+                <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
@@ -316,6 +380,7 @@ const GestionCoordinadoras = () => {
                 <p><strong>Correo:</strong> {selectedCoordinadora.email}</p>
                 <p><strong>Teléfono:</strong> {selectedCoordinadora.phone_number}</p>
                 <p><strong>Sede:</strong> {selectedCoordinadora.venue}</p>
+                <p><strong>Status:</strong> {selectedCoordinadora.status}</p>
               </div>
               <div className="mt-4 flex justify-center">
                 <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
