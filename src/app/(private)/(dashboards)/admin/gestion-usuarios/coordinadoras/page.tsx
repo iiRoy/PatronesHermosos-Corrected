@@ -153,7 +153,7 @@ const GestionCoordinadoras = () => {
         coordinadora.phone_number.toLowerCase().includes(searchTerm) ||
         coordinadora.venue.toLowerCase().includes(searchTerm);
       const matchesVenue = section === '__All__' ? true : coordinadora.venue === section;
-      const matchesStatus = coordinadora.status === 'Aprobada' || 'Pendiente'; // Filtrar solo Aprobada
+      const matchesStatus = coordinadora.status === 'Aprobada'; // Filtrar solo Aprobada
       return matchesSearch && matchesVenue && matchesStatus;
     });
   }, [inputValue, section, coordinadorasData]);
