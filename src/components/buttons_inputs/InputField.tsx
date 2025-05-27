@@ -80,7 +80,7 @@ const InputField: React.FC<InputFieldProps> = ({
         <input
           type={type}
           placeholder={placeholder}
-          disabled={variant.includes('disabled')}
+          disabled={disabled}
           value={inputValue}
           onChange={handleChange}
         />
