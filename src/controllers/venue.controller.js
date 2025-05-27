@@ -375,6 +375,44 @@ const cancelarVenue = async (req, res) => {
   }
 };
 
+// Get PDF for a venue
+const getVenuePDF = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      select: { participation_file_path: true }, // For file system approach
+      // select: { participation_file: true }, // Uncomment for BLOB approach
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
+    // File System Approach
+    if (!venue.participation_file_path) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+
+    // Return the filename to be used with the /files/:filename route
+    res.json({ filename: venue.participation_file_path });
+
+    /*
+    // BLOB Approach (uncomment if preferred)
+    if (!venue.participation_file) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename=venue_${id}_participation.pdf`);
+    res.send(venue.participation_file);
+    */
+  } catch (error) {
+    console.error('Error al obtener el PDF de la sede:', error);
+    res.status(500).json({ message: 'Error interno al obtener el PDF', error: error.message });
+  }
+};
+
 module.exports = {
   getAll,
   getSpecificData,
@@ -385,5 +423,6 @@ module.exports = {
   remove,
   cancelVenue,
   approveVenue,
-  cancelarVenue
+  cancelarVenue,
+  getVenuePDF,
 };

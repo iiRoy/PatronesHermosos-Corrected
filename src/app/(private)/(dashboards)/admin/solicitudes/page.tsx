@@ -80,6 +80,7 @@ const SolicitudesRegistroAdmin = () => {
   const [apoyoStaffData, setApoyoStaffData] = useState<ApoyoStaff[]>([]);
   const [sedesData, setSedesData] = useState<Sede[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
@@ -280,14 +281,71 @@ const SolicitudesRegistroAdmin = () => {
     }
   }, [filteredData.length, currentPage, totalPages]);
 
-  const openPopup = (item: Participante | ApoyoStaff | Sede) => {
+  const openPopup = async (item: Participante | ApoyoStaff | Sede) => {
     setSelectedItem(item);
     setIsPopupOpen(true);
+
+    // Fetch PDF filename for venues
+    if (section === 'SEDES') {
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/venues/${(item as Sede).id_venue}/pdf`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: `No se pudo cargar el PDF: ${errorData.message}`,
+            duration: 5000,
+          });
+          setPdfUrl(null);
+          return;
+        }
+
+        const data = await response.json();
+        if (data.filename) {
+          // Construct URL for the /files/:filename route
+          setPdfUrl(`/api/venues/files/${data.filename}`);
+        } else {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el archivo de participación',
+            duration: 5000,
+          });
+          setPdfUrl(null);
+        }
+      } catch (error: any) {
+        console.error('Error fetching PDF:', error);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo cargar el PDF: ${error.message}`,
+          duration: 5000,
+        });
+        setPdfUrl(null);
+      }
+    }
   };
 
   const closePopup = () => {
     setIsPopupOpen(false);
     setSelectedItem(null);
+    setPdfUrl(null);
   };
 
   const openConfirmPopup = (item: Participante | ApoyoStaff | Sede) => {
@@ -788,6 +846,18 @@ const SolicitudesRegistroAdmin = () => {
                   <p><strong>Ubicación:</strong> {(selectedItem as Sede).state}</p>
                   <p><strong>Dirección:</strong> {(selectedItem as Sede).address}</p>
                   <p><strong>Estado:</strong> {(selectedItem as Sede).status}</p>
+                  {pdfUrl ? (
+                    <div className="mt-4">
+                      <p><strong>Archivo de participación:</strong></p>
+                      <iframe
+                        src={pdfUrl}
+                        className="w-full h-[400px] border rounded"
+                        title="Participation File"
+                      />
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
+                  )}
                 </div>
               )}
               <div className="mt-4 flex justify-center">
