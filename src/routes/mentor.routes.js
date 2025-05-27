@@ -80,7 +80,7 @@ router.put(
 router.patch(
   '/:id/cancel',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   mentorController.cancelMentor
 );
 
