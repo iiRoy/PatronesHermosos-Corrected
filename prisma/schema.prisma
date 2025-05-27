@@ -16,6 +16,7 @@ model assistant_coordinators {
   phone_number       String?                     @db.VarChar(255)
   id_venue           Int                         @db.UnsignedInt
   role               assistant_coordinators_role @default(Pendiente)
+  status             AssistantCoordinatorStatus  @default(Pendiente)
   venues             venues                      @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "assistant_coordinators_ibfk_1")
 
   @@index([id_venue], map: "id_venue")
@@ -107,15 +108,16 @@ model excluded_days {
 }
 
 model mentors {
-  id_mentor     Int      @id @default(autoincrement()) @db.UnsignedInt
-  name          String?  @db.VarChar(255)
-  paternal_name String?  @db.VarChar(255)
-  maternal_name String?  @db.VarChar(255)
-  email         String   @db.VarChar(255)
-  phone_number  String?  @db.VarChar(255)
-  id_venue      Int      @db.UnsignedInt
+  id_mentor     Int          @id @default(autoincrement()) @db.UnsignedInt
+  name          String?      @db.VarChar(255)
+  paternal_name String?      @db.VarChar(255)
+  maternal_name String?      @db.VarChar(255)
+  email         String       @db.VarChar(255)
+  phone_number  String?      @db.VarChar(255)
+  id_venue      Int          @db.UnsignedInt
+  status        MentorStatus @default(Pendiente)
   groups        groups[]
-  venues        venues   @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "mentors_ibfk_1")
+  venues        venues       @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "mentors_ibfk_1")
 
   @@index([id_venue], map: "id_venue")
 }
@@ -166,20 +168,21 @@ model tutors {
 }
 
 model venue_coordinators {
-  id_venue_coord Int     @id @default(autoincrement()) @db.UnsignedInt
-  name           String? @db.VarChar(255)
-  paternal_name  String? @db.VarChar(255)
-  maternal_name  String? @db.VarChar(255)
-  email          String  @db.VarChar(255)
-  phone_number   String? @db.VarChar(255)
-  gender         String? @db.VarChar(255)
-  username       String  @db.VarChar(255)
-  password       String  @db.VarChar(255)
-  tokenVersion Int    @default(0)
-  profile_image  Bytes?  @db.Blob
-  profile_image_path    String?   @db.VarChar(255)
-  id_venue       Int     @db.UnsignedInt
-  venues         venues  @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "venue_coordinators_ibfk_1")
+  id_venue_coord     Int                     @id @default(autoincrement()) @db.UnsignedInt
+  name               String?                 @db.VarChar(255)
+  paternal_name      String?                 @db.VarChar(255)
+  maternal_name      String?                 @db.VarChar(255)
+  email              String                  @db.VarChar(255)
+  phone_number       String?                 @db.VarChar(255)
+  gender             String?                 @db.VarChar(255)
+  username           String                  @db.VarChar(255)
+  password           String                  @db.VarChar(255)
+  tokenVersion       Int                     @default(0)
+  profile_image      Bytes?                  @db.Blob
+  profile_image_path String?                 @db.VarChar(255)
+  id_venue           Int                     @db.UnsignedInt
+  status             VenueCoordinatorStatus  @default(Pendiente)
+  venues             venues                  @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "venue_coordinators_ibfk_1")
 
   @@index([id_venue], map: "id_venue")
 }
@@ -255,4 +258,25 @@ enum collaborators_level {
   Pendiente
   Básico
   Avanzado
+}
+
+enum AssistantCoordinatorStatus {
+  Pendiente
+  Aprobada
+  Rechazada
+  Cancelada
+}
+
+enum MentorStatus {
+  Pendiente
+  Aprobada
+  Rechazada
+  Cancelada
+}
+
+enum VenueCoordinatorStatus {
+  Pendiente
+  Aprobada
+  Rechazada
+  Cancelada
 }

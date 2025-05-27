@@ -40,6 +40,7 @@ const router = express.Router();
 
 // Routes
 router.get('/', authMiddleware, venueController.getAll);
+router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
 router.post(
   '/',
   upload.fields([
@@ -93,6 +94,14 @@ router.get('/files/:filename', (req, res) => {
       res.status(404).json({ message: 'Archivo no encontrado' });
     });
 });
+
+// Cancelar una sede
+router.patch(
+  '/:id/cancelar',
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  venueController.cancelarVenue
+);
 
 router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
 
