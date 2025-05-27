@@ -72,6 +72,16 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
     sede: '__all__',
   });
   const [sedeOptions, setSedeOptions] = useState<{ label: string; value: string }[]>([]);
+  const [selectedSedeName, setSelectedSedeName] = useState<string>('');
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      setFade(true);
+      setTimeout(() => {
+        setFade(false);
+      }, 200);
+    }
+  }, [chartRef, setFade, setFadeSec]);
 
   const fetchDashboardData = async (filters: {
     page: string;
@@ -194,9 +204,6 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
           });
         });
 
-        setInnerData(innerArray);
-        setOuterData(outerArray);
-
         // Guardar defaultColors para inner
         setColors(innerArray.map((d) => d.fill));
         setDefaultColors(innerArray.map((d) => d.fill));
@@ -209,12 +216,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
         setOuterColorMap(outerMap);
         setDefaultOuterColorMap({ ...outerMap });
 
-        setFade(true);
         setFadeSec(true);
         setTimeout(() => {
-          setFade(false);
           setFadeSec(false);
-        }, 200);
+          setInnerData(innerArray);
+          setOuterData(outerArray);
+          setSelectedSedeName(sedeOptions.find((s) => s.value === selectedFilters.sede)?.label ?? '')
+        }, 400);
         setTimeout(() => {
           isFirstRender.current = false;
           setInteractionsDisabled(false);
@@ -237,7 +245,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
             label: sede.name,
             value: sede.id.toString(),
           }));
-        setSedeOptions([{ label: 'Todas las sedes', value: '__all__' }, ...opciones]);
+        setSedeOptions([{ label: '', value: '__all__' }, ...opciones]);
       }
     };
     loadSedes();
@@ -248,7 +256,6 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
   const outerLabels = Array.from(new Set(outerData.map((d) => d.name)));
   const outerColors = outerLabels.map((name) => outerColorMap[name] ?? '#ccc');
   const defaultOuterColors = outerLabels.map((name) => defaultOuterColorMap[name] ?? '#ccc');
-  const selectedSedeName = sedeOptions.find((s) => s.value === selectedFilters.sede)?.label ?? '';
 
   return (
     <div className='bg-white rounded-xl w-full h-full p-4 flex flex-col'>
@@ -261,9 +268,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
               fadeSec ? 'opacity-0' : 'opacity-100'
             }`}
           >
-            {selectedFilters.sede !== '__all__' && selectedSedeName && (
-              <span>{selectedSedeName}</span>
-            )}
+            <span>{selectedSedeName}</span>
           </div>
         </div>
         <button
@@ -340,13 +345,13 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       </div>
 
       {/* Gráfico */}
-      <div className='relative w-auto h-[30vh]'>
+      <div className='relative w-auto h-auto'>
         {innerData.length === 0 ? (
-          <div className='flex justify-center items-center h-full w-full'>
-            <p className='text-textDim text-lg'>No hay datos para mostrar</p>
+          <div className='relative flex flex-col justify-between items-center h-auto'>
+            <p className='text-textDim text-lg text-center px-10 py-40 h-max'>No hay datos para mostrar</p>
           </div>
         ) : (
-          <div className='pointer-events-none relative w-full h-full'>
+          <div className='pointer-events-none relative w-full h-[30vh]'>
             <ResponsiveContainer>
               <PieChart>
                 {/* Círculo interno - áreas principales */}
@@ -400,7 +405,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
             {/* Imagen central */}
             <div
               className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 transition-opacity duration-300 ${
-                fadeSec ? 'opacity-0' : 'opacity-100'
+                fade ? 'opacity-0' : 'opacity-100'
               }`}
             >
               <Image src={imageSrc} alt='Logo centro' width={60} height={60} />
@@ -415,7 +420,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
           className={`flex ${
             interactionsDisabled ? 'pointer-events-none' : ''
           } flex-col items-center gap-3 mt-4 transition-opacity duration-300 ${
-            fade ? 'opacity-0' : 'opacity-100'
+            fadeSec ? 'opacity-0' : 'opacity-100'
           }`}
         >
           <div className={`flex flex-row items-center justify-end w-full relative`}>
