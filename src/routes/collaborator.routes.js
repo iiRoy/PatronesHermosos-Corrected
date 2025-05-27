@@ -35,5 +35,6 @@ router.delete('/:id', authMiddleware, roleMiddleware(['superuser', 'venue_coordi
 
 router.get('/:collaboratorId/available-groups', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getAvailableGroups);
 router.patch('/:collaboratorId/approve', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.approveCollaborator);
+router.patch('/:id/cancel', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.cancelCollaborator);
 
 module.exports = router;

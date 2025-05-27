@@ -606,7 +606,63 @@ const approveCollaborator = async (req, res) => {
   }
 };
 
+// Cancelar una colaboradora (cambiar status de Aprobada a Cancelada)
+const cancelCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username; // Usar username del token JWT
 
+  try {
+    // Log para depurar id
+    console.log('ID recibido:', id, 'Parsed ID:', parseInt(id));
+
+    // Verificar si la colaboradora existe y está Aprobada
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: Number(id) }, // Usar Number(id) para mayor claridad
+      select: {
+        id_collaborator: true,
+        status: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        groups: {
+          select: { id_venue: true }, // Incluir id_venue desde groups
+        },
+      },
+    });
+
+    if (!collaborator) {
+      return res.status(404).json({ message: 'La colaboradora no existe.' });
+    }
+
+    if (collaborator.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'Solo se pueden cancelar colaboradoras con status Aprobada.' });
+    }
+
+    // Actualizar el status a Cancelada
+    await prisma.collaborators.update({
+      where: { id_collaborator: Number(id) },
+      data: { status: 'Cancelada' },
+    });
+
+    // Registrar en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'collaborators',
+        message: `Se canceló la colaboradora con ID ${id} (${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''})`,
+        username,
+        id_venue: collaborator.groups?.id_venue || null, // Usar id_venue si existe, sino null
+      },
+    });
+
+    res.status(200).json({
+      message: `Colaboradora con ID ${id} cancelada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al cancelar la colaboradora:', error);
+    res.status(500).json({ message: 'Error interno al cancelar la colaboradora', error: error.message });
+  }
+};
 
 module.exports = {
   createCollaborator,
@@ -618,4 +674,5 @@ module.exports = {
   updateCollaboratorBasicInfo,
   getAvailableGroups,
   approveCollaborator,
+  cancelCollaborator,
 };
