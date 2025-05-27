@@ -121,7 +121,7 @@ const GestionMentoras = () => {
         mentora.venue.toLowerCase().includes(searchTerm);
       const matchesVenue = section === '__All__' ? true : mentora.venue === section;
       // Filtrar solo mentoras con status Aprobada
-      const matchesStatus = mentora.status === 'Aprobada' || 'Pendiente';
+      const matchesStatus = mentora.status === 'Aprobada';
       return matchesSearch && matchesVenue && matchesStatus;
     });
   }, [inputValue, section, mentorasData]);
