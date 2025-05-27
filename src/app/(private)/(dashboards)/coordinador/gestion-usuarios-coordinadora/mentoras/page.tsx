@@ -8,6 +8,7 @@ import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Mentora {
     id_mentor: number;
@@ -40,6 +41,7 @@ const GestionMentoras = () => {
     const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { notify } = useNotification();
 
     const rowsPerPage = 5;
 
@@ -169,13 +171,59 @@ const GestionMentoras = () => {
         setSelectedMentora(null);
     };
 
-    const handleConfirmDelete = () => {
-        if (selectedMentora) {
-            alert(`Eliminando a ${selectedMentora.name}`);
-            handleCloseDeletePopup();
-        }
-    };
+  const handleConfirmDelete = async () => {
+    if (!selectedMentora) {
+      handleCloseDeletePopup();
+      return;
+    }
 
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/mentors/${selectedMentora.id_mentor}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al cancelar la mentora');
+      }
+
+      // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
+      setMentorasData(prev => prev.filter(m => m.id_mentor !== selectedMentora.id_mentor));
+
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Mentora ${selectedMentora.name} cancelada exitosamente`,
+        duration: 5000,
+      });
+
+      handleCloseDeletePopup();
+    } catch (error: any) {
+      console.error('Error al cancelar la mentora:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo cancelar la mentora ${selectedMentora.name}: ${error.message}`,
+        duration: 5000,
+      });
+    }
+  };
     if (error) {
         return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
     }
