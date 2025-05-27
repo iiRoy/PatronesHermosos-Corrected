@@ -95,11 +95,7 @@ export default function LoginForm() {
         return;
         }
 
-<<<<<<< Updated upstream
         setError(`${data.message} (Intentos restantes: ${5-Number(localStorage.getItem('loginAttempts'))}.)`);
-=======
-        setError(`${data.message} (Intentos restantes: ${5-Number(localStorage.getItem('loginAttempts'))} intentos)`);
->>>>>>> Stashed changes
         notify({
           color: 'red',
           title: 'Error en Inicio de Sesión',
@@ -137,7 +133,7 @@ export default function LoginForm() {
         duration: 4000,
       });
     } finally {
-      setError('');
+      setLoading(false);
     }
     setError('');
   };
@@ -146,22 +142,14 @@ export default function LoginForm() {
     <div className='h-lvh max-h-full my-[20vw]'>
       <form
         onSubmit={handleLogin}
-<<<<<<< Updated upstream
         className='flex flex-col gap-4 justify-center align-bottom h-fit min-w-[340px] w-[90vw] max-w-[400px]'
-=======
-        className='flex flex-col gap-4 min-w-[340px] w-[90vw] max-w-[400px] mb-5'
->>>>>>> Stashed changes
       >
         <Image
           src='/assets/logo.png'
           alt='logo'
           width={120}
           height={120}
-<<<<<<< Updated upstream
           style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '3vw'  }}
-=======
-          style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
->>>>>>> Stashed changes
         />
         <div>
           <h2 className='text-4xl font-bold text-center text-[#ede0e8]'>Iniciar Sesión</h2>
@@ -197,31 +185,19 @@ export default function LoginForm() {
           <div className={`mt-2 ${isLocked ? 'hidden' : 'block'}`}>
             <Checkbox
               label='Mostrar Contraseña'
-<<<<<<< Updated upstream
               color={error ? 'yellow' : 'purple'}
-=======
-              color='purple'
->>>>>>> Stashed changes
               checked={showConfirmPassword}
               onChange={setShowConfirmPassword}
             />
           </div>
         </div>
-<<<<<<< Updated upstream
         <div className='flex flex-center justify-center mb-[3vw]'>
-=======
-        <div className='flex flex-center justify-center'>
->>>>>>> Stashed changes
           <Button
             label={loading ? 'Entrando...' : 'Validar'}
             variant='success'
             disabled={loading || isLocked || !emailOrUsername || !password}
             showLeftIcon
             IconLeft={Icons.StarFour}
-<<<<<<< Updated upstream
-=======
-            className={'w-fit h-auto'}
->>>>>>> Stashed changes
           />
         </div>
       </form>
