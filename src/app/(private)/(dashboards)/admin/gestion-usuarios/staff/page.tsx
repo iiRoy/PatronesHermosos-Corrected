@@ -412,7 +412,6 @@ const GestionApoyo = () => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Información del Colaborador</h2>
               <div className="space-y-2">
-                <p><strong>ID:</strong> {selectedApoyo.id_collaborator}</p>
                 <p><strong>Nombre:</strong> {selectedApoyo.name}</p>
                 <p><strong>Apellido Paterno:</strong> {selectedApoyo.paternal_name}</p>
                 <p><strong>Apellido Materno:</strong> {selectedApoyo.maternal_name}</p>

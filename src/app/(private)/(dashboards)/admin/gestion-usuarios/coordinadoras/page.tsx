@@ -153,7 +153,7 @@ const GestionCoordinadoras = () => {
         coordinadora.phone_number.toLowerCase().includes(searchTerm) ||
         coordinadora.venue.toLowerCase().includes(searchTerm);
       const matchesVenue = section === '__All__' ? true : coordinadora.venue === section;
-      const matchesStatus = coordinadora.status === 'Aprobada'; // Filtrar solo Aprobada
+      const matchesStatus = coordinadora.status === 'Aprobada' || 'Pendiente'; // Filtrar solo Aprobada
       return matchesSearch && matchesVenue && matchesStatus;
     });
   }, [inputValue, section, coordinadorasData]);
@@ -373,7 +373,6 @@ const GestionCoordinadoras = () => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Coordinadora</h2>
               <div className="pt-6 pb-6">
-                <p><strong>ID:</strong> {selectedCoordinadora.id_venue_coord}</p>
                 <p><strong>Nombre:</strong> {selectedCoordinadora.name}</p>
                 <p><strong>Apellido Paterno:</strong> {selectedCoordinadora.paternal_name}</p>
                 <p><strong>Apellido Materno:</strong> {selectedCoordinadora.maternal_name}</p>

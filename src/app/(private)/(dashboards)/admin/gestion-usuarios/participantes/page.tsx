@@ -321,7 +321,6 @@ const GestionParticipantes = () => {
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
                             <h2 className="text-3xl font-bold mb-4 text-center">Detalles del Participante</h2>
                             <div className="pt-6 pb-6">
-                                <p><strong>ID:</strong> {selectedParticipante.id_participant}</p>
                                 <p><strong>Nombre Completo:</strong> {`${selectedParticipante.name} ${selectedParticipante.paternal_name} ${selectedParticipante.maternal_name}`}</p>
                                 <p><strong>Correo:</strong> {selectedParticipante.email}</p>
                                 <p><strong>Año:</strong> {selectedParticipante.year}</p>
