@@ -326,11 +326,19 @@
 }
 
 .input-primary-disabled input {
+<<<<<<< Updated upstream
   color: #44363b;
 }
 
 .input-accent-disabled input {
   color: #483e48;
+=======
+  color: #44363b; 
+}
+
+.input-accent-disabled input {
+  color: #483e48; 
+>>>>>>> Stashed changes
 }
 
 .input-accent-disabled input::placeholder {
@@ -342,7 +350,11 @@
 }
 
 .input-primary input::placeholder {
+<<<<<<< Updated upstream
   color: rgb(199, 161, 202);
+=======
+  color: rgb(199, 161, 202); 
+>>>>>>> Stashed changes
 }
 
 .input-secondary input::placeholder {
@@ -358,7 +370,11 @@
 }
 
 .input-warning input::placeholder {
+<<<<<<< Updated upstream
   color: rgb(194, 171, 148);
+=======
+  color: rgb(194, 171, 148); 
+>>>>>>> Stashed changes
 }
 
 .error-text {
