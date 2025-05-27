@@ -219,95 +219,59 @@ const GestionApoyo = () => {
         setSelectedApoyo(null);
     };
 
-    const handleConfirmDelete = async () => {
-        if (selectedApoyo) {
-            try {
-                const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-                if (!token) {
-                    setError('No token found, redirecting to login');
-                    router.push('/login');
-                    return;
-                }
+  const handleConfirmDelete = async () => {
+    if (!selectedApoyo) {
+      handleCloseDeletePopup();
+      return;
+    }
 
-                const collaboratorResponse = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
 
-                if (!collaboratorResponse.ok) {
-                    const errorData = await collaboratorResponse.json();
-                    throw new Error(`Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`);
-                }
+      const response = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}/cancel`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-                const collaboratorData = await collaboratorResponse.json();
-                const collaborator = collaboratorData.data;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al cancelar la colaboradora');
+      }
 
-                const updateData = {
-                    name: collaborator.name,
-                    paternal_name: collaborator.paternal_name,
-                    maternal_name: collaborator.maternal_name,
-                    email: collaborator.email,
-                    phone_number: collaborator.phone_number,
-                    college: collaborator.college,
-                    degree: collaborator.degree,
-                    semester: collaborator.semester,
-                    gender: collaborator.gender,
-                    preferred_role: collaborator.preferred_role,
-                    preferred_language: collaborator.preferred_language,
-                    preferred_level: collaborator.preferred_level,
-                    ...(collaborator.preferred_group !== null && { preferred_group: collaborator.preferred_group }),
-                    role: collaborator.role,
-                    status: 'Cancelada',
-                    level: collaborator.level,
-                    language: collaborator.language,
-                };
+      // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
+      setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
 
-                const response = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(updateData),
-                });
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+        duration: 5000,
+      });
 
-                const responseData = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(`Error updating collaborator: ${response.status} - ${responseData.message || 'Unknown error'}`);
-                }
-
-                setApoyoData(prevData =>
-                    prevData.map(apoyo =>
-                        apoyo.id_collaborator === selectedApoyo.id_collaborator
-                            ? { ...apoyo, status: 'Cancelada' }
-                            : apoyo
-                    )
-                );
-
-                const fullName = `${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`;
-                notify({
-                    color: 'green',
-                    title: 'Usuario Cancelado',
-                    message: `El usuario ${fullName} ha sido cancelado correctamente`,
-                    duration: 5000,
-                });
-
-                handleCloseDeletePopup();
-            } catch (error: any) {
-                console.error('Error al actualizar el status del colaborador:', error);
-                const fullName = `${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`;
-                notify({
-                    color: 'red',
-                    title: 'Error',
-                    message: `No se pudo cancelar al usuario ${fullName}: ${error.message}`,
-                    duration: 5000,
-                });
-                handleCloseDeletePopup();
-            }
-        }
-    };
+      handleCloseDeletePopup();
+    } catch (error: any) {
+      console.error('Error al cancelar la mentora:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+        duration: 5000,
+      });
+    }
+  };
 
     if (error) {
         return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
