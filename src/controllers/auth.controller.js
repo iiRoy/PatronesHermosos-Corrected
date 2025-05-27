@@ -48,7 +48,7 @@ const login = async (req, res) => {
         tokenVersion,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '15m' } // corto y seguro
+      { expiresIn: '1d' }
     );
 
     return res.json({

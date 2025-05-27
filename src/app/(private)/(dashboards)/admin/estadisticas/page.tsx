@@ -4,6 +4,7 @@ import GenericRadialChart from '@/components/graphics/bases/genericPieChart';
 import GenericBarChart from '@/components/graphics/bases/genericBarChart';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import CardSection from './CardSection';
+import GenericLineChart from '@/components/graphics/bases/genericLineChart';
 
 const EstadisticasAdmin = () => {
   const [barMinimized, setBarMinimized] = useState(false);
@@ -17,15 +18,15 @@ const EstadisticasAdmin = () => {
         <div className='flex transition-all duration-700 ease-in-out overflow-hidden gap-7 flex-col md:flex-row justify-between'>
           <div>
             <div
-              className={`w-full transition-all duration-500 ease-in-out overflow-hidden ${
+              className={`w-fit transition-all duration-500 ease-in-out overflow-hidden ${
                 radialMinimized
-                  ? 'max-w-full max-h-[405px] opacity-100 translate-y-0 pointer-events-auto'
+                  ? 'max-w-fit max-h-[405px] opacity-100 translate-y-0 pointer-events-auto'
                   : 'max-w-0 max-h-0 opacity-0 translate-y-5 pointer-events-none'
               }`}
             >
               <div
                 onClick={() => setRadialMinimized(false)}
-                className='w-full text-center px-3 h-auto min-h-[405px] flex items-center justify-center bg-white rounded-xl shadow text-sm text-gray-500 cursor-pointer hover:text-black'
+                className='w-fit text-center px-3 h-auto min-h-[405px] flex items-center justify-center bg-white rounded-xl shadow text-sm text-gray-500 cursor-pointer hover:text-black'
               >
                 Expandir <br/>gráfica
               </div>
@@ -34,7 +35,7 @@ const EstadisticasAdmin = () => {
               className={`w-full transition-all duration-700 ease-in-out overflow-hidden ${
                 radialMinimized
                   ? 'max-w-0 max-h-0 opacity-0 translate-y-5 pointer-events-none'
-                  : 'max-w-full max-h-[999px] opacity-100 translate-y-0 pointer-events-auto'
+                  : 'max-w-fit max-h-[999px] opacity-100 translate-y-0 pointer-events-auto'
               }`}
             >
               {!radialMinimized && (
@@ -52,9 +53,14 @@ const EstadisticasAdmin = () => {
           </div>
           <div className={`h-auto min-h-[400px] bg-white rounded-2xl text-primary transition-all duration-700 ease-in-out ${
                 radialMinimized
-                  ? 'w-full lg:w-11/12'
-                  : 'w-full lg:w-3/5'
-              }`}></div>
+                  ? 'w-full lg:w-11/12 lg:max-w-screen lg:min-w-screen'
+                  : 'w-full lg:w-3/5 lg:max-w-screen lg:min-w-'
+              }`}>
+                <GenericLineChart
+                  apiEndpoint='/api/data?page=estadisticas'
+                  onMinimize={() => {/* implement minimize logic if needed */}}
+                />
+              </div>
         </div>
 
         {/* GRÁFICA DE BARRAS */}
