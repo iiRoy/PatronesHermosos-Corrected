@@ -306,6 +306,10 @@ const changeGroupStatus = async (req, res) => {
   }
 };
 
+/*
+commit
+*/
+
 module.exports = {
   getAll,
   createGroup,
