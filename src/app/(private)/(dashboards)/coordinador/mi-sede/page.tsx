@@ -195,6 +195,9 @@ const verSede = () => {
                             onChangeSeccion={sectionFilterChange}
                         />
                     </div>
+                    <div>
+                        <Button label='Crear Grupo' variant='warning' href='/coordinador/mi-sede/crear-grupo' />
+                    </div>
                 </div>
 
                 {/* Tabla */}

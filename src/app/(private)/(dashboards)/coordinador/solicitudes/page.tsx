@@ -677,7 +677,7 @@ const SolicitudesRegistroAdmin = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="min-w-full text-left text-sm">
+                    <table className="overflow-x-auto min-w-full text-left text-sm custom-scrollbar">
                         <thead className="text-purple-800 font-bold">
                             <tr className='texto-primary-shade'>
                                 <th className="p-2 text-center"></th>
