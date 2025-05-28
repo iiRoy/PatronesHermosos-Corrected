@@ -92,7 +92,7 @@ const Button: React.FC<ButtonProps> = ({
       data-variant={variant}
     >
       {showLeftIcon && DecoratedIconL && (
-        <div className='ease-in-out duration-300 transition-colors'>
+        <div className='ease-in-out duration-500 transition-colors'>
           <DecoratedIconL
             width='1.5rem'
             height='1.5rem'

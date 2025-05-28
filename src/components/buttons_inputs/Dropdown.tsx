@@ -5,23 +5,29 @@ import { CaretDoubleDown } from '@/components/icons';
 // Tipo para soportar opciones como string o { label, value }
 type DropdownOption = string | { label: string; value: string };
 
+// Define a type for label-value pairs
+interface Option {
+  label: string;
+  value: string;
+}
+
 interface DropdownProps {
   label: string;
   description?: string;
   showDescription?: boolean;
-  options: DropdownOption[];
+  options: DropdownOption[] | string[] | Option[]; // Accept either string[] or Option[]
   value: string;
   onChange: (value: string) => void;
   variant?:
-  | 'accent'
-  | 'primary'
-  | 'secondary-shade'
-  | 'text-color'
-  | 'warning'
-  | 'accent-disabled'
-  | 'primary-disabled'
-  | 'secondary-shade-disabled'
-  | 'text-color-disabled';
+    | 'accent'
+    | 'primary'
+    | 'secondary-shade'
+    | 'text-color'
+    | 'warning'
+    | 'accent-disabled'
+    | 'primary-disabled'
+    | 'secondary-shade-disabled'
+    | 'text-color-disabled';
   dim?: boolean;
   Icon?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
 }
@@ -40,9 +46,9 @@ const Dropdown: React.FC<DropdownProps> = ({
   const selectClass = `input input-${variant}${dim ? ' dim' : ''} relative`;
 
   return (
-    <div className='container-input'>
-      <div className='label-input'>{label}</div>
-      {showDescription && description && <div className='description-input'>{description}</div>}
+    <div className="container-input">
+      <div className="label-input">{label}</div>
+      {showDescription && description && <div className="description-input">{description}</div>}
       <div className={selectClass}>
         {Icon && (
           <div className='icon-input'>
@@ -56,10 +62,13 @@ const Dropdown: React.FC<DropdownProps> = ({
           disabled={variant?.includes('disabled')}
         >
           {options.map((option, index) => {
-            const optionValue = typeof option === 'string' ? option : option.value;
-            const optionLabel = typeof option === 'string' ? option : option.label;
+            // Check if option is a string or an object
+            const isString = typeof option === 'string';
+            const optionValue = isString ? option : (option as Option).value;
+            const optionLabel = isString ? option : (option as Option).label;
+
             return (
-              <option key={optionValue || index} value={optionValue}>
+              <option key={isString ? option : option.value + index} value={optionValue}>
                 {optionLabel}
               </option>
             );

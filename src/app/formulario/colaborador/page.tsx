@@ -1,18 +1,16 @@
 'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import InputField from '@components/buttons_inputs/InputField';
-import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Dropdown from '@components/buttons_inputs/Dropdown';
-import PageTitle from '@/components/headers_menu_users/pageTitle';
 import Button from '@components/buttons_inputs/Button';
-import Pagination from '@/components/buttons_inputs/Pagination';
 import Checkbox from '@components/buttons_inputs/Checkbox';
-import { Modal, Toast } from '@/components//buttons_inputs/FormNotification';
+import { Modal, Toast } from '@/components/buttons_inputs/FormNotification';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student } from '@/components/icons';
+import { FlowerLotus, AddressBook, X, UserSound, ChatTeardropText, Grains, Student, Megaphone } from '@/components/icons';
+import Send from '@components/icons/ArrowFatRight';
 import Navbar from '@/components/headers_menu_users/navbar';
-import Send from '@components/icons/ArrowFatRight'; // For submit button
+import VenueSelectionTable from '@/components/tables/VenueSelectionTable';
 
 interface Collaborator {
   name: string;
@@ -27,16 +25,7 @@ interface Collaborator {
   preferred_role: string;
   preferred_language: string;
   preferred_level: string;
-  preferred_group?: number;
-}
-
-interface Venue {
-  id_venue: number;
-  name: string;
-  modality: string;
-  groups: number;
-  coordinator: string;
-  dates: string;
+  preferred_venue: number | null;
 }
 
 const CollaboratorRegistrationForm: React.FC = () => {
@@ -47,93 +36,21 @@ const CollaboratorRegistrationForm: React.FC = () => {
     maternal_name: '',
     email: '',
     phone_number: '',
-    gender: 'Femenino',
+    gender: '',
     college: '',
     degree: '',
     semester: '',
-    preferred_role: 'Instructora',
-    preferred_language: 'Español',
-    preferred_level: 'Básico',
-    preferred_group: undefined,
+    preferred_role: '',
+    preferred_language: '',
+    preferred_level: '',
+    preferred_venue: null,
   });
 
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [venues, setVenues] = useState<Venue[]>([]);
-
-  const rowsPerPage = 10;
-
-  // Fetch venues
-  useEffect(() => {
-    const fetchVenues = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/venues');
-        const data = await response.json();
-        // Transform venue data to match table format
-        const transformedVenues = data.map((venue: any) => ({
-          id_venue: venue.id_venue,
-          name: venue.name,
-          modality: venue.mode || 'Presencial', // Adjust based on your API
-          groups: venue.groups?.length || 0,
-          coordinator: venue.venue_coordinators?.[0]?.name || 'N/A',
-          dates: 'DD/MM - DD/MM', // Adjust based on actual group dates
-        }));
-        setVenues(transformedVenues);
-      } catch (err) {
-        setErrors(['Error al cargar las sedes']);
-        setIsErrorModalOpen(true);
-      }
-    };
-    fetchVenues();
-  }, []);
-
-  // Get unique modalities
-  const uniqueModalidades = Array.from(new Set(venues.map(venue => venue.modality))).sort();
-  const modalidadesOptions = [
-    { label: 'Todas', value: '__All__' },
-    ...uniqueModalidades.map(modality => ({ label: modality, value: modality })),
-  ];
-
-  // Filter venues
-  const filteredData = useMemo(() => {
-    const searchTerm = inputValue.toLowerCase().trim();
-    return venues.filter(venue => {
-      const matchesSearch = !searchTerm || venue.name.toLowerCase().includes(searchTerm);
-      const matchesSede = section === '__All__' ? true : venue.modality === section;
-      return matchesSearch && matchesSede;
-    });
-  }, [inputValue, section, venues]);
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
-
-  // Reset currentPage when filteredData changes
-  useEffect(() => {
-    if (currentPage >= totalPages && totalPages > 0) {
-      setCurrentPage(totalPages - 1);
-    } else if (totalPages === 0) {
-      setCurrentPage(0);
-    }
-  }, [filteredData.length, currentPage, totalPages]);
-
-  const sectionFilterChange = (value: string) => {
-    setSection(value);
-    setInputValue('');
-    setCurrentPage(0);
-  };
-
-  // Handle venue selection
-  const handleVenueSelect = (venue: Venue) => {
-    setFormData(prev => ({ ...prev, preferred_group: venue.id_venue }));
-  };
 
   // Handle input changes
   const handleInputChange = (field: keyof Collaborator, value: string | number) => {
@@ -141,6 +58,11 @@ const CollaboratorRegistrationForm: React.FC = () => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  // Handle venue selection
+  const handleVenueSelect = (id_venue: number) => {
+    setFormData(prev => ({ ...prev, preferred_venue: id_venue }));
   };
 
   // Client-side validation
@@ -154,12 +76,13 @@ const CollaboratorRegistrationForm: React.FC = () => {
       newErrors.push('El correo electrónico debe ser válido');
     if (!formData.phone_number) newErrors.push('El celular es obligatorio');
     if (!formData.gender) newErrors.push('El sexo es obligatorio');
-    if (!formData.college) newErrors.push('La institución académica es obligatoria');
-    if (!formData.degree) newErrors.push('La carrera es obligatoria');
+    if (!formData.college) newErrors.push('La institución académica es obligatorio');
+    if (!formData.degree) newErrors.push('La carrera es obligatorio');
     if (!formData.semester) newErrors.push('El semestre es obligatorio');
     if (!formData.preferred_role) newErrors.push('El rol preferido es obligatorio');
     if (!formData.preferred_language) newErrors.push('El idioma preferido es obligatorio');
-    if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatoria');
+    if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatorio');
+    if (!formData.preferred_venue) newErrors.push('La sede preferida es obligatorio');
     if (!privacyAccepted) newErrors.push('Debes aceptar el aviso de privacidad');
 
     return newErrors;
@@ -179,30 +102,10 @@ const CollaboratorRegistrationForm: React.FC = () => {
     }
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('paternal_name', formData.paternal_name);
-      formDataToSend.append('maternal_name', formData.maternal_name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone_number', formData.phone_number);
-      formDataToSend.append('gender', formData.gender);
-      formDataToSend.append('college', formData.college);
-      formDataToSend.append('degree', formData.degree);
-      formDataToSend.append('semester', formData.semester);
-      formDataToSend.append('preferred_role', formData.preferred_role);
-      formDataToSend.append('preferred_language', formData.preferred_language);
-      formDataToSend.append('preferred_level', formData.preferred_level);
-      if (formData.preferred_group) {
-        formDataToSend.append('preferred_group', formData.preferred_group.toString());
-      }
-
-      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3000/api/collaborators', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -231,14 +134,14 @@ const CollaboratorRegistrationForm: React.FC = () => {
         maternal_name: '',
         email: '',
         phone_number: '',
-        gender: 'Femenino',
+        gender: '',
         college: '',
         degree: '',
         semester: '',
-        preferred_role: 'Instructora',
-        preferred_language: 'Español',
-        preferred_level: 'Básico',
-        preferred_group: undefined,
+        preferred_role: '',
+        preferred_language: '',
+        preferred_level: '',
+        preferred_venue: null,
       });
       setPrivacyAccepted(false);
     } catch (err: any) {
@@ -270,7 +173,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 showLeftIcon
                 round
                 IconLeft={X}
-                onClick={() => router.push('/')}
+                onClick={() => router.push('../inicio')}
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
@@ -339,8 +242,6 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 variant="accent"
                 Icon={withIconDecorator(Grains)}
               />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Institución Académica*"
                 description="Escribe el nombre completo de la institución académica a la cual actualmente estás asistiendo."
@@ -367,14 +268,6 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 value={formData.semester}
                 onChangeText={(value: string) => handleInputChange('semester', value)}
               />
-              <InputField
-                label="Locación*"
-                placeholder="Puebla"
-                variant="secondary"
-                icon="MapPin"
-                value={formData.semester} // Temporarily reusing semester; should be a separate field if needed
-                onChangeText={(value: string) => handleInputChange('semester', value)}
-              />
             </div>
 
             {/* Section: Selección de Sede */}
@@ -383,88 +276,21 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 <span className="mr-2"><AddressBook /></span> Selección de Sede
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
-                Selecciona la SEDE que más te llame la atención para apoyar.<br />
-                Puedes ver los detalles del grupo usando los botones del lado derecho.
+                Selecciona la sede que prefieres para apoyar.<br />
+                Puedes ver los detalles de la sede usando los botones del lado derecho.
               </p>
             </div>
 
-            <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 input-secondary text-xs sm:text-base md:text-lg lg:text-xl">
-              <Student />
-              <h2 className="mx-4 font-semibold">SEDE Elegida: </h2>
-              <p>{venues.find(v => v.id_venue === formData.preferred_group)?.name || 'Ninguna'}</p>
-            </div>
-            <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh]">
-              <div className="flex flex-wrap justify-between gap-4">
-                <div className="flex flex-1 gap-4 top-0">
-                  <div className="basis-2/3">
-                    <InputField
-                      label=""
-                      showDescription={false}
-                      placeholder="Search"
-                      showError={false}
-                      variant="primary"
-                      icon="MagnifyingGlass"
-                      value={inputValue}
-                      onChangeText={(val) => setInputValue(val)}
-                    />
-                  </div>
-                  <div className="basis-1/3">
-                    <FiltroEvento
-                      disableCheckboxes
-                      label="Modalidad"
-                      showSecciones
-                      labelSecciones="Seleccionar"
-                      secciones={modalidadesOptions}
-                      seccionActiva={section}
-                      onChangeSeccion={sectionFilterChange}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="overflow-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead className="sticky top-0 fondo-titulos-tabla text-purple-800 font-bold">
-                    <tr className="texto-primary-shade">
-                      <th className="p-2 text-center">Sede</th>
-                      <th className="p-2 text-center">Modalidad</th>
-                      <th className="p-2 text-center">Grupos</th>
-                      <th className="p-2 text-center">Coordinadora</th>
-                      <th className="p-2 text-center">Fechas</th>
-                      <th className="p-2 text-center"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-700">
-                    {paginatedData.map((venue, index) => (
-                      <tr key={index} className="border-t border-gray-300">
-                        <td className="p-2 text-center">{venue.name}</td>
-                        <td className="p-2 text-center">{venue.modality}</td>
-                        <td className="p-2 text-center">{venue.groups}</td>
-                        <td className="p-2 text-center">{venue.coordinator}</td>
-                        <td className="p-2 text-center">{venue.dates}</td>
-                        <td className="p-2 flex gap-2 justify-center">
-                          <Button
-                            label=""
-                            variant="success"
-                            round
-                            showLeftIcon
-                            IconLeft={Check}
-                            onClick={() => handleVenueSelect(venue)}
-                          />
-                          <Button label="" variant="primary" round showLeftIcon IconLeft={Eye} />
-                          <Button label="" variant="warning" round showLeftIcon IconLeft={Star} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-            </div>
+            <VenueSelectionTable
+              onSelect={handleVenueSelect}
+              selectedVenueId={formData.preferred_venue ?? undefined}
+              rowsPerPage={4}
+            />
 
             {/* Section: Preferencias */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><SketchLogo /></span> Preferencias
+                <span className="mr-2"><Student /></span> Preferencias
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con sinceridad sobre tus preferencias durante la participación del taller.<br />
@@ -531,6 +357,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 showRightIcon
                 IconRight={withIconDecorator(Send)}
                 className="px-6 py-2 rounded-full flex items-center"
+
               />
             </div>
           </div>

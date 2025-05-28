@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import OptionLink from '../buttons_inputs/OptionLink';
 import * as Icons from '../icons';
 import Button from '../buttons_inputs/Button';
@@ -14,7 +14,7 @@ const navItems = [
       {
         icon: 'User',
         label: 'Postúlate',
-        href: '/',
+        href: '../inicio',
       },
       {
         icon: 'Info',
@@ -31,7 +31,7 @@ const Navbar = () => {
     <div className='min-h-[45px] flex item-center justify-between pr-4 pl-4 pb-2 pt-2 w-full rounded-b-lg bg-[#2E1C31]'>
       {/* Logo */}
       <Link
-        href='/'
+        href='/inicio'
         className='relative h-[7vh] w-[7vh] min-h-[40px] min-w-[40px] flex items-center justify-center'
       >
         <Image
@@ -63,6 +63,7 @@ const Navbar = () => {
               variant='secondary'
               showLeftIcon
               IconLeft={Icons.FingerprintSimple}
+              disabled={usePathname() == '/login'}
               onClick={() => router.push('/login')}
               activeTransition={true}
             />
