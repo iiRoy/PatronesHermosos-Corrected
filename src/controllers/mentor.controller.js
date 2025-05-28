@@ -21,6 +21,8 @@ const getAll = async (req, res) => {
       id_venue: mentor.id_venue,
       number_of_groups: mentor.groups.length,
       status: mentor.status,
+      paternal_name: mentor.paternal_name || null,
+      maternal_name: mentor.maternal_name || null,
     }));
 
     res.json({ success: true, data: formattedMentors });
@@ -123,22 +125,27 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
+
   try {
+    const updateData = {};
+    if (name !== undefined) updateData.name = name?.trim() || null;
+    if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+    if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+    if (email !== undefined) updateData.email = email?.trim() || null;
+    if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+    if (id_venue !== undefined) updateData.id_venue = id_venue;
+
+    console.log('Datos enviados al controlador (update):', updateData); // Log para depurar
+
     const updatedMentor = await prisma.mentors.update({
       where: { id_mentor: parseInt(id) },
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        id_venue,
-      },
+      data: updateData,
     });
+
     res.json({ success: true, message: 'Mentora actualizada', data: updatedMentor });
   } catch (error) {
     console.error('Error updating mentor:', error);
-    res.status(500).json({ success: false, message: 'Error al actualizar la mentora' });
+    res.status(500).json({ success: false, message: 'Error al intentar actualizar la mentora' });
   }
 };
 
@@ -147,20 +154,23 @@ const updateBasicData = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
 
-
-
   try {
+    // Crear objeto de datos dinámicamente, incluyendo solo campos proporcionados
+    const updateData = {};
+    if (name !== undefined) updateData.name = name?.trim() || null;
+    if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+    if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+    if (email !== undefined) updateData.email = email?.trim() || null;
+    if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+    if (id_venue !== undefined) updateData.id_venue = id_venue;
+
+    console.log('Datos enviados al controlador (updateBasicData):', updateData); // Log para depurar
+
     const updatedMentor = await prisma.mentors.update({
       where: { id_mentor: parseInt(id) },
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        id_venue,
-      },
+      data: updateData,
     });
+
     res.json({ success: true, message: 'Mentora actualizada (datos básicos)', data: updatedMentor });
   } catch (error) {
     console.error('Error updating mentor basic data:', error);
