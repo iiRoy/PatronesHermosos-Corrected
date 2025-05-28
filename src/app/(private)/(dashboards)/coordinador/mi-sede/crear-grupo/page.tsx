@@ -43,7 +43,7 @@ const CrearGrupo = () => {
     const [endDateValue, setEndDateValue] = useState('');
     const [startHourValue, setStartHourValue] = useState('');
     const [endHourValue, setEndHourValue] = useState('');
-    const [mentorNameValue, setMentorNameValue] = useState<string | null>(null);
+    const [mentorNameValue, setMentorNameValue] = useState<string>('');
     const [mentorMap, setMentorMap] = useState<{ [key: string]: number }>({});
     const [languageValue, setLanguageValue] = useState('Español');
     const [levelValue, setLevelValue] = useState('Básico');
