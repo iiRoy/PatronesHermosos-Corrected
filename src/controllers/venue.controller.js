@@ -335,7 +335,6 @@ const approveVenue = async (req, res) => {
   const { id } = req.params;
   const username = req.user?.username; // Asumiendo que el username viene del token JWT
 
-  try {
     try {
     // Fetch venue, coordinator, and assistant coordinators
     const venue = await prisma.venues.findUnique({
