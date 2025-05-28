@@ -40,7 +40,7 @@ const router = express.Router();
 
 // Routes
 router.get('/',venueController.getAll);
-router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
+//router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
 router.post(
   '/',
   upload.fields([
