@@ -259,7 +259,7 @@ const GestionMentoras = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scrollbar-tabla">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold">
               <tr className='texto-primary-shade'>
@@ -324,7 +324,7 @@ const GestionMentoras = () => {
         {/* Popup de eliminación */}
         {isDeletePopupOpen && selectedMentora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
               <p className="my-12">¿Estás seguro de que quieres cancelar a la mentora {selectedMentora.name}?</p>
               <div className="flex justify-center gap-4">
@@ -341,7 +341,6 @@ const GestionMentoras = () => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Mentora</h2>
               <div className="pt-6 pb-6">
-                <p><strong>ID:</strong> {selectedMentora.id_mentor}</p>
                 <p><strong>Nombre:</strong> {selectedMentora.name_only}</p>
                 <p><strong>Apellido Paterno:</strong> {selectedMentora.paternal_name}</p>
                 <p><strong>Apellido Materno:</strong> {selectedMentora.maternal_name}</p>
