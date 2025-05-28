@@ -12,7 +12,7 @@ interface Participant {
     id: number;
     nombre: string;
     sede: string;
-    id_venue: number | null; // Añadido para el filtrado
+    id_venue: number | null;
     grupo: string;
     correo: string;
     status: string;
@@ -40,8 +40,9 @@ const verSede = () => {
     const [section, setSection] = useState('__All__');
     const [participants, setParticipants] = useState<Participant[]>([]);
     const [venueName, setVenueName] = useState('Cargando...');
-    const [venueId, setVenueId] = useState<number | null>(null); // Añadido para almacenar id_venue
+    const [venueId, setVenueId] = useState<number | null>(null);
     const [groupOptions, setGroupOptions] = useState([{ label: 'Todos', value: '__All__' }]);
+    const [groupsData, setGroupsData] = useState<Group[]>([]); // Almacenar todos los grupos con id_group
     const [error, setError] = useState<string | null>(null);
     const [userInfo, setUserInfo] = useState<{ email: string; username: string } | null>(null);
     const router = useRouter();
@@ -80,7 +81,7 @@ const verSede = () => {
             console.log('Venue data:', data);
             if (response.ok) {
                 setVenueName(data.name || 'Sede no encontrada');
-                setVenueId(data.id_venue || null); // Almacenar id_venue
+                setVenueId(data.id_venue || null);
             } else {
                 setVenueName('Sede no encontrada');
                 setVenueId(null);
@@ -104,6 +105,7 @@ const verSede = () => {
             if (response.ok && Array.isArray(data)) {
                 const filteredGroups = data.filter((group: Group) => group.id_venue === venueId);
                 console.log('Filtered groups:', filteredGroups);
+                setGroupsData(filteredGroups); // Almacenar todos los grupos
                 setGroupOptions([
                     { label: 'Todos', value: '__All__' },
                     ...filteredGroups.map((group: Group) => ({ label: group.name, value: group.name })),
@@ -127,7 +129,7 @@ const verSede = () => {
             if (response.ok && data.data) {
                 const filteredParticipants = data.data.filter((p: Participant) => {
                     console.log(`Participant ${p.id}: id_venue=${p.id_venue}, venueId=${venueId}`);
-                    return p.id_venue === venueId; // Filtrar por id_venue
+                    return p.id_venue === venueId;
                 });
                 console.log('Filtered participants:', filteredParticipants);
                 setParticipants(filteredParticipants);
@@ -149,6 +151,16 @@ const verSede = () => {
     const sectionFilterChange = (value: string) => {
         setSection(value);
         setInputValue('');
+    };
+
+    // Determinar si los botones deben estar deshabilitados
+    const isButtonsDisabled = section === '__All__';
+
+    // Obtener el id_group del grupo seleccionado
+    const getGroupId = () => {
+        if (section === '__All__') return null;
+        const selectedGroup = groupsData.find((group) => group.name === section);
+        return selectedGroup ? selectedGroup.id_group : null;
     };
 
     if (error) {
@@ -226,9 +238,25 @@ const verSede = () => {
                     </table>
                 </div>
 
-                {/* Botón Listo */}
-                <div className='mt-6 self-start'>
-                    <Button label='Volver' variant='primary' href='../' />
+                {/* Botones */}
+                <div className='flex justify-between mt-6'>
+                    <div>
+                        <Button label='Volver' variant='primary' href='../' />
+                    </div>
+                    <div className='flex gap-4'>
+                        <Button
+                            label='Editar Grupo'
+                            variant='secondary'
+                            href={getGroupId() ? `/coordinador/mi-sede/editar-grupo/${getGroupId()}` : '#'}
+                            disabled={isButtonsDisabled}
+                        />
+                        <Button
+                            label='Eliminar Grupo'
+                            variant='error'
+                            href='./eliminar-grupo'
+                            disabled={isButtonsDisabled}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

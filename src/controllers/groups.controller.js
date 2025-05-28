@@ -111,8 +111,8 @@ const createGroup = async (req, res) => {
       location,
       start_date: startDateTime,
       end_date: endDateTime,
-      start_hour: startDateTime, // Usamos el DateTime completo
-      end_hour: endDateTime,     // Usamos el DateTime completo
+      start_hour: startDateTime,
+      end_hour: endDateTime,
       id_mentor,
       language,
       level,
@@ -150,7 +150,121 @@ const createGroup = async (req, res) => {
   }
 };
 
+const updateGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const groupId = parseInt(id);
+    console.log('Headers recibidos:', req.headers);
+    console.log('Cuerpo recibido (req.body):', req.body);
+    console.log('ID del grupo:', groupId);
+
+    // Verificar si el grupo existe
+    const existingGroup = await prisma.groups.findUnique({
+      where: { id_group: groupId },
+    });
+
+    if (!existingGroup) {
+      return res.status(404).json({ message: 'Grupo no encontrado' });
+    }
+
+    const {
+      name,
+      max_places,
+      occupied_places,
+      location,
+      start_date,
+      end_date,
+      start_hour,
+      end_hour,
+      id_mentor,
+      language,
+      level,
+      mode,
+      id_venue,
+    } = req.body;
+
+    // Construir el objeto de datos a actualizar (solo los campos que se proporcionen)
+    const updateData = {};
+
+    if (name !== undefined) updateData.name = name;
+    if (location !== undefined) updateData.location = location;
+    if (language !== undefined) updateData.language = language;
+    if (level !== undefined) updateData.level = level;
+    if (mode !== undefined) updateData.mode = mode;
+    if (max_places !== undefined) updateData.max_places = parseInt(max_places);
+    if (occupied_places !== undefined) updateData.occupied_places = parseInt(occupied_places);
+    if (id_mentor !== undefined) updateData.id_mentor = parseInt(id_mentor);
+    if (id_venue !== undefined) updateData.id_venue = parseInt(id_venue);
+
+    // Manejar fechas y horas si se proporcionan
+    if (start_date || start_hour || end_date || end_hour) {
+      // Si alguna fecha u hora se proporciona, necesitamos calcular start_date y end_date completos
+      const currentGroup = existingGroup;
+
+      // Usar valores actuales si no se proporcionan nuevos
+      const startDateStr = start_date || currentGroup.start_date.toISOString().split('T')[0];
+      const endDateStr = end_date || currentGroup.end_date.toISOString().split('T')[0];
+      const startHourStr = start_hour || currentGroup.start_hour.toISOString().split('T')[1].slice(0, 5);
+      const endHourStr = end_hour || currentGroup.end_hour.toISOString().split('T')[1].slice(0, 5);
+
+      const startDateBase = new Date(`${startDateStr}T00:00:00.000Z`);
+      const endDateBase = new Date(`${endDateStr}T00:00:00.000Z`);
+
+      if (isNaN(startDateBase.getTime()) || isNaN(endDateBase.getTime())) {
+        return res.status(400).json({
+          message: 'Las fechas start_date y end_date deben estar en formato YYYY-MM-DD válido',
+        });
+      }
+
+      const [startHourNum, startMinute] = startHourStr.split(':').map(Number);
+      const [endHourNum, endMinute] = endHourStr.split(':').map(Number);
+
+      const startDateTime = new Date(startDateBase);
+      startDateTime.setHours(startHourNum, startMinute, 0, 0);
+
+      const endDateTime = new Date(endDateBase);
+      endDateTime.setHours(endHourNum, endMinute, 0, 0);
+
+      if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+        return res.status(400).json({
+          message: 'Las horas start_hour y end_hour deben estar en formato HH:MM válido',
+        });
+      }
+
+      updateData.start_date = startDateTime;
+      updateData.end_date = endDateTime;
+      updateData.start_hour = startDateTime;
+      updateData.end_hour = endDateTime;
+    }
+
+    // Validaciones adicionales
+    if (updateData.max_places !== undefined && updateData.occupied_places !== undefined) {
+      if (updateData.occupied_places > updateData.max_places) {
+        return res.status(400).json({
+          message: 'Los lugares ocupados no pueden ser mayores que los lugares máximos',
+        });
+      }
+    }
+
+    console.log('Datos a actualizar en Prisma:', updateData);
+
+    const updatedGroup = await prisma.groups.update({
+      where: { id_group: groupId },
+      data: updateData,
+    });
+
+    res.status(200).json({
+      message: 'Grupo actualizado exitosamente',
+      group: updatedGroup,
+    });
+  } catch (error) {
+    console.error('Error actualizando grupo:', error);
+    res.status(500).json({ message: 'Error interno del servidor al actualizar el grupo', error: error.message });
+  }
+};
+
 module.exports = {
   getAll,
   createGroup,
+  updateGroup,
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
@@ -26,6 +26,23 @@ interface DecodedToken {
     id_venue: number;
 }
 
+interface Group {
+    id_group: number;
+    name: string;
+    max_places: number;
+    occupied_places: number;
+    location: string;
+    start_date: string;
+    end_date: string;
+    start_hour: string;
+    end_hour: string;
+    id_mentor: number | null;
+    language: string;
+    level: string;
+    mode: string;
+    id_venue: number;
+}
+
 interface Mentor {
     id_mentor: number;
     name: string;
@@ -35,7 +52,7 @@ interface Mentor {
     id_venue: number;
 }
 
-const CrearGrupo = () => {
+const EditarGrupo = () => {
     const [nameValue, setNameValue] = useState('');
     const [maxPlacesValue, setMaxPlacesValue] = useState('');
     const [locationValue, setLocationValue] = useState('');
@@ -43,7 +60,7 @@ const CrearGrupo = () => {
     const [endDateValue, setEndDateValue] = useState('');
     const [startHourValue, setStartHourValue] = useState('');
     const [endHourValue, setEndHourValue] = useState('');
-    const [mentorNameValue, setMentorNameValue] = useState<string | null>(null);
+    const [mentorNameValue, setMentorNameValue] = useState<string>('');
     const [mentorMap, setMentorMap] = useState<{ [key: string]: number }>({});
     const [languageValue, setLanguageValue] = useState('Español');
     const [levelValue, setLevelValue] = useState('Básico');
@@ -53,6 +70,8 @@ const CrearGrupo = () => {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const { notify } = useNotification();
+    const params = useParams();
+    const groupId = params.id;
 
     useEffect(() => {
         const fetchCoordinatorVenue = () => {
@@ -79,6 +98,61 @@ const CrearGrupo = () => {
             } else {
                 setError('No se encontró el token, por favor inicia sesión');
                 router.push('/login');
+            }
+        };
+
+        const fetchGroupData = async () => {
+            if (!groupId || isNaN(parseInt(groupId as string))) {
+                setError('ID de grupo inválido');
+                router.push('/coordinador/mi-sede');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/groups', {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
+                });
+                const data = await response.json();
+                console.log('Groups data:', data);
+                if (response.ok && Array.isArray(data)) {
+                    const group = data.find((g: Group) => g.id_group === parseInt(groupId as string));
+                    if (group) {
+                        setNameValue(group.name || '');
+                        setMaxPlacesValue(group.max_places ? group.max_places.toString() : '');
+                        setLocationValue(group.location || '');
+                        setStartDateValue(group.start_date ? group.start_date.split('T')[0] : '');
+                        setEndDateValue(group.end_date ? group.end_date.split('T')[0] : '');
+                        setStartHourValue(group.start_hour ? group.start_hour.split('T')[1]?.slice(0, 5) || '' : '');
+                        setEndHourValue(group.end_hour ? group.end_hour.split('T')[1]?.slice(0, 5) || '' : '');
+                        setLanguageValue(group.language || 'Español');
+                        setLevelValue(group.level || 'Básico');
+                        setModeValue(group.mode || 'Presencial');
+
+                        if (group.id_mentor) {
+                            const mentorResponse = await fetch(`/api/mentors/${group.id_mentor}`, {
+                                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
+                            });
+                            const mentorData = await mentorResponse.json();
+                            console.log('Mentor data for group:', mentorData); // Depuración
+                            if (mentorResponse.ok && mentorData.success) {
+                                setMentorNameValue(mentorData.data.name);
+                            } else {
+                                console.log('Error or no mentor found:', mentorData.message);
+                                setMentorNameValue('Mentor no encontrado'); // Establecer null si no se encuentra
+                            }
+                        } else {
+                            setMentorNameValue('Sin mentor asignado'); // Sin mentor asignado
+                        }
+                    } else {
+                        setError('Grupo no encontrado');
+                        router.push('/coordinador/mi-sede');
+                    }
+                } else {
+                    setError(`Error al cargar datos del grupo: ${data.message || 'Datos no disponibles'}`);
+                }
+            } catch (error) {
+                console.error('Error fetching group data:', error);
+                setError('Error al cargar datos del grupo');
             }
         };
 
@@ -114,9 +188,10 @@ const CrearGrupo = () => {
 
         fetchCoordinatorVenue();
         if (idVenue !== null) {
+            fetchGroupData();
             fetchMentors();
         }
-    }, [router, notify, idVenue]);
+    }, [router, notify, groupId, idVenue]);
 
     const handleConfirm = async () => {
         try {
@@ -158,7 +233,7 @@ const CrearGrupo = () => {
             // Validar y convertir números
             const maxPlaces = parseInt(maxPlacesValue);
             if (isNaN(maxPlaces)) {
-                throw new Error('El campo de lugares máximos debe ser un número válido');
+                throw new Error('Los campos de lugares máximos deben ser números válidos');
             }
 
             // Obtener el id_mentor correspondiente al nombre seleccionado
@@ -168,10 +243,9 @@ const CrearGrupo = () => {
             }
             console.log('Selected mentor name:', mentorNameValue, 'Mapped ID:', idMentor); // Depuración
 
-            const newGroup = {
+            const updatedGroup = {
                 name: nameValue.trim(),
                 max_places: maxPlaces,
-                occupied_places: 0, // Establecer en 0 ya que es un grupo nuevo
                 location: locationValue.trim(),
                 start_date: startDateValue,
                 end_date: endDateValue,
@@ -184,14 +258,14 @@ const CrearGrupo = () => {
                 id_venue: idVenue,
             };
 
-            console.log('Datos enviados al servidor:', newGroup);
-            const response = await fetch('/api/groups', {
-                method: 'POST',
+            console.log('Datos enviados al servidor:', updatedGroup);
+            const response = await fetch(`/api/groups/${groupId}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(newGroup),
+                body: JSON.stringify(updatedGroup),
             });
 
             const responseData = await response.json();
@@ -203,23 +277,23 @@ const CrearGrupo = () => {
                     router.push('/login');
                     return;
                 }
-                throw new Error(responseData.message || 'Error desconocido al crear el grupo');
+                throw new Error(responseData.message || 'Error desconocido al actualizar el grupo');
             }
 
             notify({
                 color: 'green',
-                title: 'Grupo Creado',
-                message: responseData.message || `El grupo ${nameValue} ha sido creado exitosamente`,
+                title: 'Grupo Actualizado',
+                message: responseData.message || `El grupo ${nameValue} ha sido actualizado exitosamente`,
                 duration: 5000,
             });
 
             router.push('/coordinador/mi-sede');
         } catch (error: any) {
-            console.error('Error al crear grupo:', error);
+            console.error('Error al actualizar grupo:', error);
             notify({
                 color: 'red',
                 title: 'Error',
-                message: `No se pudo crear el grupo: ${error.message}`,
+                message: `No se pudo actualizar el grupo: ${error.message}`,
                 duration: 5000,
             });
         }
@@ -231,7 +305,7 @@ const CrearGrupo = () => {
 
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
-            <PageTitle>Crear Grupo</PageTitle>
+            <PageTitle>Editar Grupo</PageTitle>
 
             <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
                 <div className="flex justify-between gap-4 items-center pb-2 mb-4">
@@ -405,4 +479,4 @@ const CrearGrupo = () => {
     );
 };
 
-export default CrearGrupo;
+export default EditarGrupo;
