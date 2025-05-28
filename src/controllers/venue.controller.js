@@ -331,6 +331,151 @@ const cancelVenue = async (req, res) => {
   }
 };
 
+const approveVenue = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user?.username; // Asumiendo que el username viene del token JWT
+
+    try {
+    // Fetch venue, coordinator, and assistant coordinators
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      include: {
+        venue_coordinators: {
+          select: {
+            name: true,
+            paternal_name: true,
+            maternal_name: true,
+            email: true,
+            username: true,
+            password: true,
+          },
+        },
+        assistant_coordinators: {
+          select: {
+            name: true,
+            paternal_name: true,
+            maternal_name: true,
+            email: true,
+            role: true,
+          },
+        },
+        groups: {
+          include: {
+            participants: {
+              select: {
+                id_participant: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'La sede no existe.' });
+    }
+
+    // Validar que el estado actual sea Pendiente
+    if (venue.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
+    }
+
+    const generalCoordinator = venue.venue_coordinators[0];
+
+    // Actualizar el estado a Registrada sin participantes
+    const updatedVenue = await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: {
+        status: 'Registrada_sin_participantes',
+        updated_at: new Date(),
+      },
+    });
+
+    // Registrar el log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'venues',
+        message: `Se aprobó la sede con ID ${id}`,
+        username: username || 'unknown',
+        id_venue: parseInt(id),
+      },
+    });
+
+    // Send acceptance email to general coordinator
+    await sendEmail({
+      to: generalCoordinator.email,
+      subject: '¡Felicidades! Tu Sede ha sido Aceptada - Patrones Hermosos',
+      template: 'sedes/aceptado',
+      data: {
+        name: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
+        role: 'Coordinadora General',
+        venue: venue.name,
+        username: generalCoordinator.username,
+        email: generalCoordinator.email,
+        password: generalCoordinator.password, // Note: Sending passwords in email is insecure; consider a secure alternative
+        platformLink: `https://patroneshermosos.org/login/${uuidv4().slice(0, 8)}`,
+      },
+    });
+
+    // Send assignment emails to all assistant coordinators
+    for (const assistant of venue.assistant_coordinators) {
+      // Map role based on stored role
+      let teamRole = assistant.role;
+      if (!teamRole || teamRole === 'Pendiente') {
+        // Fallback: Infer role based on context (e.g., email matching from registrar_sede)
+        teamRole = assistant.role === 'Coordinadora_Asociada' ? 'Coordinadora_Asociada' : 'Coordinadora_de_informes';
+      }
+
+      await sendEmail({
+        to: assistant.email,
+        subject: 'Asignación de Puesto en Sede - Patrones Hermosos',
+        template: 'lideres/aceptado',
+        data: {
+          pName: `${assistant.name} ${assistant.paternal_name || ''} ${assistant.maternal_name || ''}`.trim(),
+          venue: venue.name,
+          role: teamRole,
+          address: venue.address || 'No especificado',
+          cName: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
+          cEmail: generalCoordinator.email || 'rgparedes@tec.mx',
+        },
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Sede aprobada exitosamente.',
+      data: updatedVenue,
+    });
+  } catch (error) {
+    console.error('Error al aprobar la sede:', error);
+    return res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Cancelar una sede
+const cancelarVenue = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username; // Usar username del token JWT
+
+  try {
+    // Llamar al procedimiento almacenado
+    await prisma.$queryRaw`
+      CALL cancelar_sede(${parseInt(id)}, ${username})
+    `;
+
+    res.status(200).json({
+      message: `Sede con ID ${id} cancelada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al cancelar la sede:', error);
+    if (error.code === '45000') {
+      return res.status(400).json({ message: error.message });
+    }
+    console.error('Full error details:', JSON.stringify(error, null, 2));
+    res.status(500).json({ message: 'Error interno al cancelar la sede', error: error.message });
+  }
+};
+
 
 module.exports = {
   getAll,
