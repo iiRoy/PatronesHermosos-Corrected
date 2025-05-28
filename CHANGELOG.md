@@ -1,3 +1,7 @@
+## 1.13.0-coord.10 (2025-05-28)
+
+* feat(pages): nueva funcionalidad de eliminar grupo funcional ([04fb084](https://github.com/iiRoy/Patrones-Hermosos/commit/04fb084))
+
 ## 1.13.0-coord.9 (2025-05-28)
 
 * feat(pages): nueva página de editar grupo funcional ([21a5a18](https://github.com/iiRoy/Patrones-Hermosos/commit/21a5a18))
