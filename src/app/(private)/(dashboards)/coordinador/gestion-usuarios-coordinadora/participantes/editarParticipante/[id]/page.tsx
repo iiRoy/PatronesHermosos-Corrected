@@ -284,21 +284,6 @@ const EditarParticipante = () => {
                     </div>
                 </div>
 
-                <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-                    <div>
-                        <p className='texto-filtro'>Carta Firmada</p>
-                        <Button
-                            label=""
-                            round
-                            variant="primary"
-                            showLeftIcon
-                            IconLeft={FileText}
-                            href={participante.participation_file ? `/api/files/${participante.participation_file}` : '#'}
-                            disabled={!participante.participation_file}
-                        />
-                    </div>
-                </div>
-
                 <div className="flex gap-4 justify-between mt-auto">
                     <div className='flex gap-4'>
                         <Button
