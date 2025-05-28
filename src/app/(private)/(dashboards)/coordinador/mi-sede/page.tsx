@@ -289,25 +289,25 @@ const verSede = () => {
                     </div>
                 </div>
 
-                <div className='overflow-x-auto bg-white rounded-xl p-4 shadow flex-1'>
-                    <table className='w-full text-left'>
-                        <thead className='text-gray-400 text-sm border-b'>
-                            <tr>
-                                <th className='pb-2 text-center'>Nombre</th>
-                                <th className='pb-2 text-center'>Sede</th>
-                                <th className='pb-2 text-center'>Grupo</th>
-                                <th className='pb-2 text-center'>Correo</th>
-                                <th className='pb-2 text-center'>Status</th>
+                <div className='overflow-x-auto bg-white rounded-xl px-4 shadow flex-1'>
+                    <table className='w-full text-left table-fixed'>
+                        <thead className='text-gray-400 text-sm border-b sticky top-0 bg-white'>
+                            <tr className='p-4'>
+                                <th className='py-4 text-center' style={{ width: '20%' }}>Nombre</th>
+                                <th className='py-4 text-center' style={{ width: '20%' }}>Sede</th>
+                                <th className='py-4 text-center' style={{ width: '20%' }}>Grupo</th>
+                                <th className='py-4 text-center' style={{ width: '20%' }}>Correo</th>
+                                <th className='py-4 text-center' style={{ width: '20%' }}>Status</th>
                             </tr>
                         </thead>
                         <tbody className='text-gray-800'>
                             {filteredParticipants.map((p) => (
                                 <tr key={p.id} className='border-b last:border-none'>
-                                    <td className='py-2 text-center'>{p.nombre}</td>
-                                    <td className='py-2 text-center'>{p.sede}</td>
-                                    <td className='py-2 text-center'>{p.grupo}</td>
-                                    <td className='py-2 text-center'>{p.correo}</td>
-                                    <td className='py-2 text-center'>{p.status}</td>
+                                    <td className='py-2 text-center' style={{ width: '20%' }}>{p.nombre}</td>
+                                    <td className='py-2 text-center' style={{ width: '20%' }}>{p.sede}</td>
+                                    <td className='py-2 text-center' style={{ width: '20%' }}>{p.grupo}</td>
+                                    <td className='py-2 text-center' style={{ width: '20%' }}>{p.correo}</td>
+                                    <td className='py-2 text-center' style={{ width: '20%' }}>{p.status}</td>
                                 </tr>
                             ))}
                         </tbody>

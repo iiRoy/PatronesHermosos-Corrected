@@ -678,7 +678,7 @@ const SolicitudesRegistroAdmin = () => {
 
                 <div className="overflow-x-auto">
                     <table className="overflow-x-auto min-w-full text-left text-sm custom-scrollbar">
-                        <thead className="text-purple-800 font-bold">
+                        <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className='texto-primary-shade'>
                                 <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center"></th>
@@ -687,6 +687,7 @@ const SolicitudesRegistroAdmin = () => {
                                         <th className="p-2 text-center">Nombre</th>
                                         <th className="p-2 text-center">Grupo Preferido</th>
                                         <th className="p-2 text-center">Sede</th>
+                                        <th className="p-2 text-center"></th>
                                     </>
                                 )}
                                 {section === 'APOYO & STAFF' && (
