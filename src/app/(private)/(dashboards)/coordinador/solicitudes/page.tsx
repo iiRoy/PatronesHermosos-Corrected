@@ -4,7 +4,7 @@ import Pagination from '@/components/buttons_inputs/Pagination';
 import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
-import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
+import { Eye, Check, X, Envelope } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
@@ -677,7 +677,7 @@ const SolicitudesRegistroAdmin = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="min-w-full text-left text-sm">
+                    <table className="overflow-x-auto min-w-full text-left text-sm custom-scrollbar">
                         <thead className="text-purple-800 font-bold">
                             <tr className='texto-primary-shade'>
                                 <th className="p-2 text-center"></th>
@@ -717,6 +717,7 @@ const SolicitudesRegistroAdmin = () => {
                                                 <div className='flex gap-4 justify-center'>
                                                     <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
                                                     <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
+                                                    <Button label='' variant="primary" round showLeftIcon IconLeft={Envelope} />
                                                 </div>
                                             </td>
                                         </>
@@ -737,6 +738,7 @@ const SolicitudesRegistroAdmin = () => {
                                                 <div className='flex gap-4 justify-center'>
                                                     <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
                                                     <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
+                                                    <Button label='' variant="primary" round showLeftIcon IconLeft={Envelope} />
                                                 </div>
                                             </td>
                                         </>
