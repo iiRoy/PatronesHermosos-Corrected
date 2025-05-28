@@ -733,6 +733,24 @@ const approveCollaborator = async (req, res) => {
       },
     });
 
+    await sendEmail({
+        to: collaborator.email,
+        subject: '¡Felicidades! Has sido aceptada como colaboradora en Patrones Hermosos',
+        template: 'colaboradores/aceptado',
+        data: {
+          pName: `${collaborator.name} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim(),
+          role: collaborator.role || 'No asignado',
+          sede: collaborator.groups?.venues?.name || 'No asignado',
+          grupo: collaborator.groups?.name || 'No asignado',
+          direccion: collaborator.groups?.venues?.address || 'No asignado',
+          mName: collaborator.groups?.mentors
+            ? `${collaborator.groups.mentors.name || ''} ${collaborator.groups.mentors.paternal_name || ''} ${collaborator.groups.mentors.maternal_name || ''}`.trim()
+            : 'No asignado',
+          mEmail: collaborator.groups?.mentors?.email || 'No asignado',
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+
     res.json({
       success: true,
       message: 'Colaborador aprobado exitosamente',
@@ -801,6 +819,20 @@ const cancelCollaborator = async (req, res) => {
       },
     });
 
+    await sendEmail({
+        to: collaborator.email,
+        subject: 'Resultados de tu Postulación - Patrones Hermosos',
+        template: 'colaboradores/rechazado',
+        data: {
+          pName: `${collaborator.name} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim(),
+          venue: collaborator.preferredVenue?.name || 'No asignado',
+          role: collaborator.preferred_role || 'No asignado',
+          reason: reason || 'No cumplió con los criterios de sceptación',
+          code: uuidv4().slice(0, 8),
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+
     res.status(200).json({
       message: `Colaboradora con ID ${id} cancelada exitosamente`,
     });
@@ -809,10 +841,6 @@ const cancelCollaborator = async (req, res) => {
     res.status(500).json({ message: 'Error interno al cancelar la colaboradora', error: error.message });
   }
 };
-
-/*
-commit
-*/
 
 // Cambiar estado del colaborador (Aprobada/Rechazada)
 const changeCollaboratorStatus = async (req, res) => {
