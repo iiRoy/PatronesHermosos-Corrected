@@ -163,6 +163,21 @@ const create = async (req, res) => {
       )
     `;
 
+    // Send registration confirmation email to venue coordinator
+    await sendEmail({
+      to: generalCoordinator.email,
+      subject: 'Confirmación de Solicitud de Sede - Patrones Hermosos',
+      template: 'sede/solicitud',
+      data: {
+        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
+        venueName: name,
+        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
+        email: generalCoordinator.email,
+        location: address || 'No especificado',
+        iEmail: 'rgparedes@tec.mx',
+      },
+    });
+
     res.status(201).json({
       message: 'Venue creado exitosamente',
       files: {
@@ -291,6 +306,20 @@ const cancelVenue = async (req, res) => {
       CALL cancelar_sede(${parseInt(id)}, ${username})
     `;
 
+    // Send rejection email to venue coordinator
+      await sendEmail({
+        to: generalCoordinator.email,
+        subject: 'Resultados de tu Postulación de Sede - Patrones Hermosos',
+        template: 'sedes/rechazado',
+        data: {
+          name: `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
+          venue: venue.name,
+          reason: reason || 'No cumplió con los criterios de selección',
+          code: uuidv4().slice(0, 8),
+          iEmail: 'rgparedes@tec.mx',
+        },
+      });
+
     res.status(200).json({ message: `Sede con ID ${id} cancelada exitosamente` });
   } catch (error) {
     console.error('Error al cancelar la sede:', error);
@@ -306,10 +335,40 @@ const approveVenue = async (req, res) => {
   const { id } = req.params;
   const username = req.user?.username; // Asumiendo que el username viene del token JWT
 
-  try {
-    // Verificar si la sede existe
+    try {
+    // Fetch venue, coordinator, and assistant coordinators
     const venue = await prisma.venues.findUnique({
       where: { id_venue: parseInt(id) },
+      include: {
+        venue_coordinators: {
+          select: {
+            name: true,
+            paternal_name: true,
+            maternal_name: true,
+            email: true,
+            username: true,
+            password: true,
+          },
+        },
+        assistant_coordinators: {
+          select: {
+            name: true,
+            paternal_name: true,
+            maternal_name: true,
+            email: true,
+            role: true,
+          },
+        },
+        groups: {
+          include: {
+            participants: {
+              select: {
+                id_participant: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!venue) {
@@ -320,6 +379,8 @@ const approveVenue = async (req, res) => {
     if (venue.status !== 'Pendiente') {
       return res.status(400).json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
     }
+
+    const generalCoordinator = venue.venue_coordinators[0];
 
     // Actualizar el estado a Registrada sin participantes
     const updatedVenue = await prisma.venues.update({
@@ -340,6 +401,46 @@ const approveVenue = async (req, res) => {
         id_venue: parseInt(id),
       },
     });
+
+    // Send acceptance email to general coordinator
+    await sendEmail({
+      to: generalCoordinator.email,
+      subject: '¡Felicidades! Tu Sede ha sido Aceptada - Patrones Hermosos',
+      template: 'sedes/aceptado',
+      data: {
+        name: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
+        role: 'Coordinadora General',
+        venue: venue.name,
+        username: generalCoordinator.username,
+        email: generalCoordinator.email,
+        password: generalCoordinator.password, // Note: Sending passwords in email is insecure; consider a secure alternative
+        platformLink: `https://patroneshermosos.org/login/${uuidv4().slice(0, 8)}`,
+      },
+    });
+
+    // Send assignment emails to all assistant coordinators
+    for (const assistant of venue.assistant_coordinators) {
+      // Map role based on stored role
+      let teamRole = assistant.role;
+      if (!teamRole || teamRole === 'Pendiente') {
+        // Fallback: Infer role based on context (e.g., email matching from registrar_sede)
+        teamRole = assistant.role === 'Coordinadora_Asociada' ? 'Coordinadora_Asociada' : 'Coordinadora_de_informes';
+      }
+
+      await sendEmail({
+        to: assistant.email,
+        subject: 'Asignación de Puesto en Sede - Patrones Hermosos',
+        template: 'lideres/aceptado',
+        data: {
+          pName: `${assistant.name} ${assistant.paternal_name || ''} ${assistant.maternal_name || ''}`.trim(),
+          venue: venue.name,
+          role: teamRole,
+          address: venue.address || 'No especificado',
+          cName: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
+          cEmail: generalCoordinator.email || 'rgparedes@tec.mx',
+        },
+      });
+    }
 
     return res.status(200).json({
       message: 'Sede aprobada exitosamente.',
@@ -375,6 +476,45 @@ const cancelarVenue = async (req, res) => {
   }
 };
 
+// Get PDF for a venue
+const getVenuePDF = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      select: { participation_file_path: true }, // For file system approach
+      // select: { participation_file: true }, // Uncomment for BLOB approach
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Venue no encontrado' });
+    }
+
+    // File System Approach
+    if (!venue.participation_file_path) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+
+    // Return the filename to be used with the /files/:filename route
+    res.json({ filename: venue.participation_file_path });
+
+    /*
+    // BLOB Approach (uncomment if preferred)
+    if (!venue.participation_file) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename=venue_${id}_participation.pdf`);
+    res.send(venue.participation_file);
+    */
+  } catch (error) {
+    console.error('Error al obtener el PDF de la sede:', error);
+    res.status(500).json({ message: 'Error interno al obtener el PDF', error: error.message });
+  }
+};
+
+
 module.exports = {
   getAll,
   getSpecificData,
@@ -385,5 +525,6 @@ module.exports = {
   remove,
   cancelVenue,
   approveVenue,
-  cancelarVenue
+  cancelarVenue,
+  getVenuePDF,
 };

@@ -8,6 +8,7 @@ interface ColorPickerSectionProps {
   elementLabels: string[];
   onIsCustomizingChange: (val: boolean) => void;
   restoreDefaultColors: () => void;
+  resetModeSignal?: number;
 }
 
 const ColorPickerSection: React.FC<ColorPickerSectionProps> = ({
@@ -17,6 +18,7 @@ const ColorPickerSection: React.FC<ColorPickerSectionProps> = ({
   notify,
   elementLabels,
   onIsCustomizingChange,
+  resetModeSignal,
 }) => {
   const [mode, setMode] = useState<'main' | 'select' | 'edit'>('main');
   const [transitioning, setTransitioning] = useState(false);
@@ -43,6 +45,17 @@ const ColorPickerSection: React.FC<ColorPickerSectionProps> = ({
   useEffect(() => {
     measureHeight();
   }, [displayedMode, selectedIndex]);
+
+useEffect(() => {
+  if (mode === 'edit') {
+    setTransitioning(true);
+    enterMode('select');
+    onIsCustomizingChange(false);
+    setTransitioning(false);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [resetModeSignal]);
+
 
   const enterMode = (next: typeof mode) => {
     if (next === mode) return;

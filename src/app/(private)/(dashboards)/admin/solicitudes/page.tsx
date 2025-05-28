@@ -4,7 +4,7 @@ import Pagination from '@/components/buttons_inputs/Pagination';
 import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
-import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
+import { Eye, Check, X, Envelope } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
@@ -80,6 +80,7 @@ const SolicitudesRegistroAdmin = () => {
   const [apoyoStaffData, setApoyoStaffData] = useState<ApoyoStaff[]>([]);
   const [sedesData, setSedesData] = useState<Sede[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
@@ -280,14 +281,71 @@ const SolicitudesRegistroAdmin = () => {
     }
   }, [filteredData.length, currentPage, totalPages]);
 
-  const openPopup = (item: Participante | ApoyoStaff | Sede) => {
+  const openPopup = async (item: Participante | ApoyoStaff | Sede) => {
     setSelectedItem(item);
     setIsPopupOpen(true);
+
+    // Fetch PDF filename for venues
+    if (section === 'SEDES') {
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/venues/${(item as Sede).id_venue}/pdf`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: `No se pudo cargar el PDF: ${errorData.message}`,
+            duration: 5000,
+          });
+          setPdfUrl(null);
+          return;
+        }
+
+        const data = await response.json();
+        if (data.filename) {
+          // Construct URL for the /files/:filename route
+          setPdfUrl(`/api/venues/files/${data.filename}`);
+        } else {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el archivo de participación',
+            duration: 5000,
+          });
+          setPdfUrl(null);
+        }
+      } catch (error: any) {
+        console.error('Error fetching PDF:', error);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo cargar el PDF: ${error.message}`,
+          duration: 5000,
+        });
+        setPdfUrl(null);
+      }
+    }
   };
 
   const closePopup = () => {
     setIsPopupOpen(false);
     setSelectedItem(null);
+    setPdfUrl(null);
   };
 
   const openConfirmPopup = (item: Participante | ApoyoStaff | Sede) => {
@@ -638,7 +696,7 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Tabla */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scrollbar-tabla">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold">
               <tr className='texto-primary-shade'>
@@ -688,6 +746,7 @@ const SolicitudesRegistroAdmin = () => {
                         <div className='flex gap-4 justify-center'>
                           <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
                           <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
+                          <Button label='' variant="primary" round showLeftIcon IconLeft={Envelope} />
                         </div>
                       </td>
                     </>
@@ -708,6 +767,7 @@ const SolicitudesRegistroAdmin = () => {
                         <div className='flex gap-4 justify-center'>
                           <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
                           <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
+                          <Button label='' variant="primary" round showLeftIcon IconLeft={Envelope} />
                         </div>
                       </td>
                     </>
@@ -725,6 +785,7 @@ const SolicitudesRegistroAdmin = () => {
                         <div className='flex gap-4 justify-center'>
                           <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Sede)} />
                           <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Sede)} />
+                          <Button label='' variant="primary" round showLeftIcon IconLeft={Envelope} />
                         </div>
                       </td>
                     </>
@@ -749,7 +810,7 @@ const SolicitudesRegistroAdmin = () => {
         {/* Pop-up de información */}
         {isPopupOpen && selectedItem && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
+            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
               <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
               {section === 'PARTICIPANTES' && selectedItem && (
                 <div className='pt-6 pb-6'>
@@ -788,6 +849,18 @@ const SolicitudesRegistroAdmin = () => {
                   <p><strong>Ubicación:</strong> {(selectedItem as Sede).state}</p>
                   <p><strong>Dirección:</strong> {(selectedItem as Sede).address}</p>
                   <p><strong>Estado:</strong> {(selectedItem as Sede).status}</p>
+                  {pdfUrl ? (
+                    <div className="mt-4">
+                      <p><strong>Archivo de participación:</strong></p>
+                      <iframe
+                        src={pdfUrl}
+                        className="w-full h-[400px] border rounded"
+                        title="Participation File"
+                      />
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
+                  )}
                 </div>
               )}
               <div className="mt-4 flex justify-center">

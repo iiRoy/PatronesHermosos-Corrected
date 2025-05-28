@@ -95,7 +95,7 @@ export default function LoginForm() {
         return;
         }
 
-        setError(`${data.message} (Intentos restantes: ${5-Number(localStorage.getItem('loginAttempts'))} intentos)`);
+        setError(`${data.message} (Intentos restantes: ${5-Number(localStorage.getItem('loginAttempts'))}.)`);
         notify({
           color: 'red',
           title: 'Error en Inicio de Sesión',
@@ -139,17 +139,17 @@ export default function LoginForm() {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen'>
+    <div className='h-lvh max-h-full my-[20vw]'>
       <form
         onSubmit={handleLogin}
-        className='flex flex-col gap-4 min-w-[340px] w-[90vw] max-w-[400px] mb-5'
+        className='flex flex-col gap-4 justify-center align-bottom h-fit min-w-[340px] w-[90vw] max-w-[400px]'
       >
         <Image
           src='/assets/logo.png'
           alt='logo'
           width={120}
           height={120}
-          style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+          style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '3vw'  }}
         />
         <div>
           <h2 className='text-4xl font-bold text-center text-[#ede0e8]'>Iniciar Sesión</h2>
@@ -185,20 +185,19 @@ export default function LoginForm() {
           <div className={`mt-2 ${isLocked ? 'hidden' : 'block'}`}>
             <Checkbox
               label='Mostrar Contraseña'
-              color='purple'
+              color={error ? 'yellow' : 'purple'}
               checked={showConfirmPassword}
               onChange={setShowConfirmPassword}
             />
           </div>
         </div>
-        <div className='flex flex-center justify-center'>
+        <div className='flex flex-center justify-center mb-[3vw]'>
           <Button
             label={loading ? 'Entrando...' : 'Validar'}
             variant='success'
             disabled={loading || isLocked || !emailOrUsername || !password}
             showLeftIcon
             IconLeft={Icons.StarFour}
-            className={'w-fit h-auto'}
           />
         </div>
       </form>
