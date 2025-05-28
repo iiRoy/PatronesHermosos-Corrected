@@ -52,6 +52,7 @@ const login = async (req, res) => {
       { expiresIn: '1d' } // corto y seguro
     );
 
+    /*
     await sendEmail({
       to: user.email,
       subject: 'Nuevo inicio de sesión detectado',
@@ -61,7 +62,7 @@ const login = async (req, res) => {
         date: new Date().toLocaleString()
       }
     })
-
+*/
 
     return res.json({
       message: 'Login exitoso',
