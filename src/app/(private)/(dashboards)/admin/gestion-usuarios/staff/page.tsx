@@ -306,7 +306,7 @@ const GestionApoyo = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scrollbar-tabla">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold">
               <tr className='texto-primary-shade'>
@@ -369,7 +369,7 @@ const GestionApoyo = () => {
 
         {isDeletePopupOpen && selectedApoyo && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
               <p className="my-12">
                 ¿Segura que quieres eliminar a la {selectedApoyo.role.toLowerCase()} {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
@@ -384,10 +384,9 @@ const GestionApoyo = () => {
 
         {isInfoPopupOpen && selectedApoyo && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
               <h2 className="text-3xl font-bold mb-4 text-center">Información del Colaborador</h2>
               <div className="space-y-2">
-                <p><strong>ID:</strong> {selectedApoyo.id_collaborator}</p>
                 <p><strong>Nombre:</strong> {selectedApoyo.name}</p>
                 <p><strong>Apellido Paterno:</strong> {selectedApoyo.paternal_name}</p>
                 <p><strong>Apellido Materno:</strong> {selectedApoyo.maternal_name}</p>

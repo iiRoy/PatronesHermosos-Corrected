@@ -53,6 +53,34 @@
   background: linear-gradient(180deg, #c267ff 0%, #b77690 100%);
 }
 
+.custom-scrollbar-tabla {
+  /* Para Firefox: barra delgada y colores personalizados */
+  scrollbar-width: auto;
+  scrollbar-color: #a259ff;
+  /* thumb y track respectivamente */
+}
+
+.custom-scrollbar-tabla::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+  /* Para scroll horizontal, o 'width' para vertical */
+}
+
+.custom-scrollbar-tabla::-webkit-scrollbar-track {
+  background: #cfcfcf;
+  /* Color del fondo del scrollbar */
+}
+
+.custom-scrollbar-tabla::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b77690 0%, #c267ff 100%);
+  border-radius: 10px;
+  /* Para redondear el thumb */
+}
+
+.custom-scrollbar-tabla::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c267ff 0%, #b77690 100%);
+}
+
 :root {
   --primaryColor: #97639c;
   --primary-shade: #6e2d75;

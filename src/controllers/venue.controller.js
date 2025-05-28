@@ -163,6 +163,21 @@ const create = async (req, res) => {
       )
     `;
 
+    // Send registration confirmation email to venue coordinator
+    await sendEmail({
+      to: generalCoordinator.email,
+      subject: 'Confirmación de Solicitud de Sede - Patrones Hermosos',
+      template: 'sede/solicitud',
+      data: {
+        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
+        venueName: name,
+        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
+        email: generalCoordinator.email,
+        location: address || 'No especificado',
+        iEmail: 'rgparedes@tec.mx',
+      },
+    });
+
     res.status(201).json({
       message: 'Venue creado exitosamente',
       files: {
@@ -291,6 +306,20 @@ const cancelVenue = async (req, res) => {
       CALL cancelar_sede(${parseInt(id)}, ${username})
     `;
 
+    // Send rejection email to venue coordinator
+      await sendEmail({
+        to: generalCoordinator.email,
+        subject: 'Resultados de tu Postulación de Sede - Patrones Hermosos',
+        template: 'sedes/rechazado',
+        data: {
+          name: `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
+          venue: venue.name,
+          reason: reason || 'No cumplió con los criterios de selección',
+          code: uuidv4().slice(0, 8),
+          iEmail: 'rgparedes@tec.mx',
+        },
+      });
+
     res.status(200).json({ message: `Sede con ID ${id} cancelada exitosamente` });
   } catch (error) {
     console.error('Error al cancelar la sede:', error);
@@ -302,78 +331,6 @@ const cancelVenue = async (req, res) => {
   }
 };
 
-const approveVenue = async (req, res) => {
-  const { id } = req.params;
-  const username = req.user?.username; // Asumiendo que el username viene del token JWT
-
-  try {
-    // Verificar si la sede existe
-    const venue = await prisma.venues.findUnique({
-      where: { id_venue: parseInt(id) },
-    });
-
-    if (!venue) {
-      return res.status(404).json({ message: 'La sede no existe.' });
-    }
-
-    // Validar que el estado actual sea Pendiente
-    if (venue.status !== 'Pendiente') {
-      return res.status(400).json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
-    }
-
-    // Actualizar el estado a Registrada sin participantes
-    const updatedVenue = await prisma.venues.update({
-      where: { id_venue: parseInt(id) },
-      data: {
-        status: 'Registrada_sin_participantes',
-        updated_at: new Date(),
-      },
-    });
-
-    // Registrar el log
-    await prisma.audit_log.create({
-      data: {
-        action: 'UPDATE',
-        table_name: 'venues',
-        message: `Se aprobó la sede con ID ${id}`,
-        username: username || 'unknown',
-        id_venue: parseInt(id),
-      },
-    });
-
-    return res.status(200).json({
-      message: 'Sede aprobada exitosamente.',
-      data: updatedVenue,
-    });
-  } catch (error) {
-    console.error('Error al aprobar la sede:', error);
-    return res.status(500).json({ message: 'Error interno del servidor.' });
-  }
-};
-
-// Cancelar una sede
-const cancelarVenue = async (req, res) => {
-  const { id } = req.params;
-  const username = req.user.username; // Usar username del token JWT
-
-  try {
-    // Llamar al procedimiento almacenado
-    await prisma.$queryRaw`
-      CALL cancelar_sede(${parseInt(id)}, ${username})
-    `;
-
-    res.status(200).json({
-      message: `Sede con ID ${id} cancelada exitosamente`,
-    });
-  } catch (error) {
-    console.error('Error al cancelar la sede:', error);
-    if (error.code === '45000') {
-      return res.status(400).json({ message: error.message });
-    }
-    console.error('Full error details:', JSON.stringify(error, null, 2));
-    res.status(500).json({ message: 'Error interno al cancelar la sede', error: error.message });
-  }
-};
 
 module.exports = {
   getAll,
