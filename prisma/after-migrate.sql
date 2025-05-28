@@ -1,3 +1,4 @@
+/*
 -- =====================
 -- 🟣   BYTE FORGE   🟣
 -- =====================
@@ -19,6 +20,7 @@
 
 -- 🔸 Definición:
 
+*/
 DELIMITER $$
 CREATE OR REPLACE TRIGGER actualizar_cupo
 AFTER UPDATE ON participants
@@ -869,6 +871,7 @@ CREATE OR REPLACE PROCEDURE registrar_part(
     IN grado_part VARCHAR(255),
     IN escolaridad_part VARCHAR(255),
     IN archivo_permiso BLOB,
+    IN archivo_permiso_path VARCHAR(255),
     IN id_grupo INT,
 
     -- Datos del Tutor
@@ -914,11 +917,11 @@ BEGIN
 
     INSERT INTO participants (
         name, paternal_name, maternal_name, email,
-        year, education, participation_file, preferred_group, id_tutor, status
+        year, education, participation_file, participation_file_path, preferred_group, id_tutor, status
     )
     VALUES (
         nombre_part, paterno_part, materno_part, email_part,
-        grado_part, escolaridad_part, archivo_permiso,
+        grado_part, escolaridad_part, archivo_permiso, archivo_permiso_path,
         id_grupo, id_tutor_nuevo, 'Pendiente'
     );
 END;
@@ -1006,7 +1009,7 @@ CREATE OR REPLACE PROCEDURE registrar_colab(
     IN rol_preferido VARCHAR(255),
     IN idioma_preferido VARCHAR(255),
     IN nivel_preferido VARCHAR(255),
-    IN id_grupo_preferido INT,
+    IN id_venue_preferido INT,
     IN genero VARCHAR(255)
 )
 BEGIN
@@ -1026,13 +1029,13 @@ BEGIN
         name, paternal_name, maternal_name, email, phone_number,
         college, degree, semester,
         preferred_role, preferred_language, preferred_level,
-        preferred_group, gender
+        preferred_venue, gender
     )
     VALUES (
         nombre, paterno, materno, email, telefono,
         universidad, carrera, semestre,
         rol_preferido, idioma_preferido, nivel_preferido,
-        id_grupo_preferido, genero
+        id_venue_preferido, genero
     );
 END;
 $$ 
@@ -1346,7 +1349,7 @@ $$
 
 DELIMITER $$
 
-CREATE PROCEDURE registrar_log (
+CREATE OR REPLACE PROCEDURE registrar_log (
   IN p_action VARCHAR(50),
   IN p_table_name VARCHAR(50),
   IN p_message TEXT,
@@ -1369,7 +1372,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE cancelar_sede(
+CREATE OR REPLACE PROCEDURE cancelar_sede(
     IN p_id_venue INT,
     IN p_username VARCHAR(255)
 )
@@ -1450,10 +1453,9 @@ END //
 DELIMITER ;
 
 
---cambiar estado grupo
 DELIMITER //
 
-CREATE PROCEDURE cambiar_estado_grupo(
+CREATE OR REPLACE PROCEDURE cambiar_estado_grupo(
     IN p_id_group INT,
     IN p_username VARCHAR(255),
     IN p_id_venue INT,
@@ -1553,7 +1555,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE FUNCTION fun_validar_cupo(
+CREATE OR REPLACE FUNCTION fun_validar_cupo(
     idGrupo INT,
     rol VARCHAR(255)
 )
@@ -1602,10 +1604,9 @@ DELIMITER ;
 
 
 
---gestionar_solicitud_colab (funcional)
 DELIMITER //
 
-CREATE PROCEDURE gestionar_solicitud_colab(
+CREATE OR REPLACE PROCEDURE gestionar_solicitud_colab(
     IN id_colab INT,
     IN grupo_alternativo INT -- Puede ser NULL si solo se desea rechazar
 )
@@ -1731,7 +1732,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE FUNCTION fun_validar_cupo_roles(idGrupo INT)
+CREATE OR REPLACE FUNCTION fun_validar_cupo_roles(idGrupo INT)
 RETURNS JSON
 DETERMINISTIC
 BEGIN
@@ -1777,7 +1778,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE gestionar_solicitud_pendiente(
+CREATE OR REPLACE PROCEDURE gestionar_solicitud_pendiente(
     IN participante_id INT,
     IN grupo_alternativo_id INT -- Puede ser NULL si solo se quiere rechazar
 )
@@ -1881,16 +1882,14 @@ DELIMITER ;
 
 
 
---participantes 
 
 
 
 
---CALL cambiar_estado_colaborador(1, 'Diegorl', 'activar');
---Se cambia el estado del colaborador, de aprobada a cancelada, y viceversa.
+
 DELIMITER $$
 
-CREATE PROCEDURE cambiar_estado_colaborador(
+CREATE OR REPLACE PROCEDURE cambiar_estado_colaborador(
     IN p_id_collaborator INT,
     IN p_username VARCHAR(255),
     IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
@@ -1953,12 +1952,10 @@ END$$
 DELIMITER ;
 
 
---Este procedimiento cambia el estado de un participante, de Aprobada a Cancelada, y viceversa
---CALL cambiar_estado_participant(114, 'Diegorl', 'activar');
---CALL cambiar_estado_participant(114, 'Diegorl', 'desactivar');
+
 DELIMITER $$
 
-CREATE PROCEDURE cambiar_estado_participant(
+CREATE OR REPLACE PROCEDURE cambiar_estado_participant(
     IN p_id_participant INT,
     IN p_username VARCHAR(255),
     IN p_accion VARCHAR(10) -- 'activar' o 'desactivar'
@@ -2030,7 +2027,7 @@ DELIMITER ;
 
 
 
-
+/*
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -2111,3 +2108,5 @@ DELIMITER ;
 -- 🔸 Se cambió el valor de los 'prefered_groups' en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
 -- 🔸 Se puso como valor predeterminado de 'occupied_places' en la tabla 'groups' como 0.
 -- 🔸 Se agregaron las columnas de 'level' y 'language' a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.
+
+*/
