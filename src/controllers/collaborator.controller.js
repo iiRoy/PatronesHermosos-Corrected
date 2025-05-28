@@ -283,31 +283,62 @@ const deleteCollaborator = async (req, res) => {
 };
 
 // Actualizar información básica de un colaborador
-const updateCollaboratorBasicInfo = async (req, res) => {
-  const { id } = req.params;
-  const { name, paternal_name, maternal_name, email, phone_number } = req.body;
+  const updateCollaboratorBasicInfo = async (req, res) => {
+    const { id } = req.params;
+    const {
+      name,
+      paternal_name,
+      maternal_name,
+      email,
+      phone_number,
+      college,
+      degree,
+      semester,
+      gender,
+      preferred_role,
+      preferred_language,
+      preferred_level,
+    } = req.body;
 
-  try {
-    const updatedCollaborator = await prisma.collaborators.update({
-      where: { id_collaborator: parseInt(id) },
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-      },
-    });
+    try {
+      // Crear objeto de datos dinámicamente, incluyendo solo campos proporcionados
+      const updateData = {};
+      if (name !== undefined) updateData.name = name?.trim() || null;
+      if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+      if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+      if (email !== undefined) updateData.email = email?.trim() || null;
+      if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+      if (college !== undefined) updateData.college = college?.trim() || null;
+      if (degree !== undefined) updateData.degree = degree?.trim() || null;
+      if (semester !== undefined) updateData.semester = semester?.trim() || null;
+      if (gender !== undefined) updateData.gender = gender?.trim() || null;
+      if (preferred_role !== undefined) updateData.preferred_role = preferred_role?.trim() || null;
+      if (preferred_language !== undefined) updateData.preferred_language = preferred_language?.trim() || null;
+      if (preferred_level !== undefined) updateData.preferred_level = preferred_level?.trim() || null;
 
-    res.json({ success: true, message: 'Información básica del colaborador actualizada', data: updatedCollaborator });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
+      console.log('Datos enviados al controlador:', updateData); // Log para depurar
+
+      const updatedCollaborator = await prisma.collaborators.update({
+        where: { id_collaborator: parseInt(id) },
+        data: updateData,
+      });
+
+      res.json({
+        success: true,
+        message: 'Información básica del colaborador actualizada',
+        data: updatedCollaborator,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        return res.status(404).json({
+          success: false,
+          message: `El colaborador con ID ${id} no existe`,
+        });
+      }
+      console.error('Error al actualizar información básica del colaborador:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
-    console.error('Error al actualizar información básica del colaborador:', error);
-    res.status(500).json({ success: false, message: 'Error interno del servidor' });
-  }
-};
+  };
 
 // Obtener datos específicos para tabla
 const getCollaboratorsTable = async (req, res) => {
