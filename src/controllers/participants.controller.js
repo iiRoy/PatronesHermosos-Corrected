@@ -572,6 +572,7 @@ const getAvailableGroups = async (req, res) => {
   }
 };
 
+// Approve participant
 const approveParticipant = async (req, res) => {
   const { participantId } = req.params;
   const { groupId } = req.body;
@@ -603,7 +604,7 @@ const approveParticipant = async (req, res) => {
     const group = await prisma.groups.findUnique({
       where: { id_group: parseInt(groupId) },
       select: {
-        id_group: true, // Explicitly select id_group
+        id_group: true,
         id_venue: true,
         max_places: true,
         status: true,
@@ -644,7 +645,7 @@ const approveParticipant = async (req, res) => {
     const updatedParticipant = await prisma.participants.update({
       where: { id_participant: parseInt(participantId) },
       data: {
-        id_group: parseInt(group.id_group), // Ensure integer
+        id_group: parseInt(group.id_group),
         status: 'Aprobada',
       },
       select: {
@@ -663,11 +664,22 @@ const approveParticipant = async (req, res) => {
       },
     });
 
+    // Create audit log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'participants',
+        message: `Se aprobó el participante con ID ${participantId}`,
+        username: req.user?.username || 'unknown',
+        id_venue: group.id_venue,
+      },
+    });
+
     res.json({
       success: true,
       message: 'Participante aprobado exitosamente',
       participant: updatedParticipant,
-      assignedGroupId: group.id_group, // Include for confirmation
+      assignedGroupId: group.id_group,
     });
   } catch (error) {
     console.error('Error approving participant:', JSON.stringify(error, null, 2));
