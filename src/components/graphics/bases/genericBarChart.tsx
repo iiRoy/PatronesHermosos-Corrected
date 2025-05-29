@@ -200,6 +200,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 elementLabels={seriesKeys.map(
                   (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' '),
                 )}
+                chartType='bar'
               />
             </div>
           </div>

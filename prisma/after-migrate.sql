@@ -622,10 +622,247 @@ $$
 -- 🔸 Ejemplo de uso:
 
 -- DELIMITER ;
--- CALL resumen_colaboradores('venue_coordinator', 'corta@tec.mx', 5);
+-- CALL resumen_colaboradoras('venue_coordinator', 'corta@tec.mx', 5);
 
 -- 🔹 Agrupa las coordinadoras generales, asociadas e informes por sede.
 -- 🔸 Definición:
+
+DELIMITER $$
+
+CREATE PROCEDURE resumen_tiempo_roles_detallado (
+  IN tipo_usuario ENUM('superuser', 'venue_coordinator'),
+  IN email_coordinadora VARCHAR(255),
+  IN frecuencia ENUM('semanal', 'mensual'),
+  IN nivel_analisis ENUM('general', 'detallado'),
+  IN id_sede_param INT,
+  IN estado_filtro ENUM('Aprobada', 'Pendiente', 'Rechazada')
+)
+BEGIN
+  DECLARE v_id INT;
+
+  IF tipo_usuario = 'venue_coordinator' THEN
+    SELECT id_venue INTO v_id
+    FROM venue_coordinators
+    WHERE email COLLATE utf8mb4_general_ci = email_coordinadora COLLATE utf8mb4_general_ci;
+  END IF;
+
+  DROP TEMPORARY TABLE IF EXISTS temp_registros_fecha;
+  CREATE TEMPORARY TABLE temp_registros_fecha (
+    fecha DATE,
+    tipo VARCHAR(100),
+    total INT
+  );
+
+  -- PARTICIPANTES
+  INSERT INTO temp_registros_fecha (fecha, tipo, total)
+  SELECT
+    CASE
+      WHEN frecuencia = 'mensual' THEN DATE_FORMAT(p.created_at, '%Y-%m-01')
+      ELSE DATE_SUB(p.created_at, INTERVAL WEEKDAY(p.created_at) DAY)
+    END,
+    'Participante',
+    COUNT(*)
+  FROM (
+    SELECT *,
+      COALESCE(id_group, preferred_group) AS grupo_id_final
+    FROM participants
+  ) p
+  JOIN groups g ON p.grupo_id_final = g.id_group
+  WHERE (tipo_usuario = 'superuser' OR g.id_venue = v_id)
+    AND (id_sede_param IS NULL OR g.id_venue = id_sede_param)
+    AND (
+      (estado_filtro = 'Aprobada' AND p.status = 'Aprobada') OR
+      (estado_filtro = 'Pendiente' AND p.status = 'Pendiente') OR
+      (estado_filtro = 'Rechazada' AND p.status IN ('Rechazada', 'Cancelada')) OR
+      (estado_filtro IS NULL AND p.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+    )
+  GROUP BY 1;
+
+  -- COLABORADORAS
+  IF nivel_analisis = 'general' THEN
+    INSERT INTO temp_registros_fecha (fecha, tipo, total)
+    SELECT
+      CASE
+        WHEN frecuencia = 'mensual' THEN DATE_FORMAT(c.created_at, '%Y-%m-01')
+        ELSE DATE_SUB(c.created_at, INTERVAL WEEKDAY(c.created_at) DAY)
+      END,
+      'Colaboradora',
+      COUNT(*)
+    FROM (
+      SELECT *,
+        COALESCE(id_group, preferred_group) AS grupo_id_final
+      FROM collaborators
+    ) c
+    JOIN groups g ON c.grupo_id_final = g.id_group
+    WHERE (tipo_usuario = 'superuser' OR g.id_venue = v_id)
+      AND (id_sede_param IS NULL OR g.id_venue = id_sede_param)
+      AND (
+        (estado_filtro = 'Aprobada' AND c.status = 'Aprobada') OR
+        (estado_filtro = 'Pendiente' AND c.status = 'Pendiente') OR
+        (estado_filtro = 'Rechazada' AND c.status IN ('Rechazada', 'Cancelada')) OR
+        (estado_filtro IS NULL AND c.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+      )
+    GROUP BY 1;
+  ELSE
+    INSERT INTO temp_registros_fecha (fecha, tipo, total)
+    SELECT fecha, tipo, SUM(total)
+    FROM (
+      SELECT
+        CASE
+          WHEN frecuencia = 'mensual' THEN DATE_FORMAT(c.created_at, '%Y-%m-01')
+          ELSE DATE_SUB(c.created_at, INTERVAL WEEKDAY(c.created_at) DAY)
+        END AS fecha,
+        CASE
+          WHEN c.role != 'Pendiente' THEN c.role
+          ELSE c.preferred_role
+        END AS tipo,
+        COUNT(*) AS total
+      FROM (
+        SELECT *,
+          COALESCE(id_group, preferred_group) AS grupo_id_final
+        FROM collaborators
+      ) c
+      JOIN groups g ON c.grupo_id_final = g.id_group
+      WHERE (tipo_usuario = 'superuser' OR g.id_venue = v_id)
+        AND (id_sede_param IS NULL OR g.id_venue = id_sede_param)
+        AND (
+          (estado_filtro = 'Aprobada' AND c.status = 'Aprobada') OR
+          (estado_filtro = 'Pendiente' AND c.status = 'Pendiente') OR
+          (estado_filtro = 'Rechazada' AND c.status IN ('Rechazada', 'Cancelada')) OR
+          (estado_filtro IS NULL AND c.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+        )
+      GROUP BY fecha, tipo
+    ) agrupado
+    GROUP BY fecha, tipo;
+  END IF;
+
+  -- MENTORAS
+  INSERT INTO temp_registros_fecha (fecha, tipo, total)
+  SELECT
+    CASE
+      WHEN frecuencia = 'mensual' THEN DATE_FORMAT(m.created_at, '%Y-%m-01')
+      ELSE DATE_SUB(m.created_at, INTERVAL WEEKDAY(m.created_at) DAY)
+    END,
+    'Mentora',
+    COUNT(*)
+  FROM mentors m
+  JOIN groups g ON m.id_mentor = g.id_mentor
+  WHERE (tipo_usuario = 'superuser' OR m.id_venue = v_id)
+    AND (id_sede_param IS NULL OR m.id_venue = id_sede_param)
+    AND (
+      (estado_filtro = 'Aprobada' AND m.status = 'Aprobada') OR
+      (estado_filtro = 'Pendiente' AND m.status = 'Pendiente') OR
+      (estado_filtro = 'Rechazada' AND m.status IN ('Rechazada', 'Cancelada')) OR
+      (estado_filtro IS NULL AND m.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+    )
+  GROUP BY 1;
+
+  -- COORDINADORAS
+  IF nivel_analisis = 'general' THEN
+    INSERT INTO temp_registros_fecha (fecha, tipo, total)
+    SELECT
+      CASE
+        WHEN frecuencia = 'mensual' THEN DATE_FORMAT(vc.created_at, '%Y-%m-01')
+        ELSE DATE_SUB(vc.created_at, INTERVAL WEEKDAY(vc.created_at) DAY)
+      END,
+      'Coordinadora',
+      COUNT(*)
+    FROM venue_coordinators vc
+    JOIN venues v ON vc.id_venue = v.id_venue
+    WHERE (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param)
+      AND (
+        (estado_filtro = 'Aprobada' AND vc.status = 'Aprobada') OR
+        (estado_filtro = 'Pendiente' AND vc.status = 'Pendiente') OR
+        (estado_filtro = 'Rechazada' AND vc.status IN ('Rechazada', 'Cancelada')) OR
+        (estado_filtro IS NULL AND vc.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+      )
+    GROUP BY 1;
+
+    INSERT INTO temp_registros_fecha (fecha, tipo, total)
+    SELECT
+      CASE
+        WHEN frecuencia = 'mensual' THEN DATE_FORMAT(ac.created_at, '%Y-%m-01')
+        ELSE DATE_SUB(ac.created_at, INTERVAL WEEKDAY(ac.created_at) DAY)
+      END,
+      'Coordinadora',
+      COUNT(*)
+    FROM assistant_coordinators ac
+    JOIN venues v ON ac.id_venue = v.id_venue
+    WHERE (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+      AND (id_sede_param IS NULL OR v.id_venue = id_sede_param)
+      AND (
+        (estado_filtro = 'Aprobada' AND ac.status = 'Aprobada') OR
+        (estado_filtro = 'Pendiente' AND ac.status = 'Pendiente') OR
+        (estado_filtro = 'Rechazada' AND ac.status IN ('Rechazada', 'Cancelada')) OR
+        (estado_filtro IS NULL AND ac.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+      )
+    GROUP BY 1;
+  ELSE
+    INSERT INTO temp_registros_fecha (fecha, tipo, total)
+    SELECT fecha, tipo, SUM(total)
+    FROM (
+      SELECT
+        CASE
+          WHEN frecuencia = 'mensual' THEN DATE_FORMAT(vc.created_at, '%Y-%m-01')
+          ELSE DATE_SUB(vc.created_at, INTERVAL WEEKDAY(vc.created_at) DAY)
+        END AS fecha,
+        'Coordinadora General' AS tipo,
+        COUNT(*) AS total
+      FROM venue_coordinators vc
+      JOIN venues v ON vc.id_venue = v.id_venue
+      WHERE (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+        AND (id_sede_param IS NULL OR v.id_venue = id_sede_param)
+        AND (
+          (estado_filtro = 'Aprobada' AND vc.status = 'Aprobada') OR
+          (estado_filtro = 'Pendiente' AND vc.status = 'Pendiente') OR
+          (estado_filtro = 'Rechazada' AND vc.status IN ('Rechazada', 'Cancelada')) OR
+          (estado_filtro IS NULL AND vc.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+        )
+      GROUP BY fecha, tipo
+
+      UNION ALL
+
+      SELECT
+        CASE
+          WHEN frecuencia = 'mensual' THEN DATE_FORMAT(ac.created_at, '%Y-%m-01')
+          ELSE DATE_SUB(ac.created_at, INTERVAL WEEKDAY(ac.created_at) DAY)
+        END AS fecha,
+        ac.role AS tipo,
+        COUNT(*) AS total
+      FROM assistant_coordinators ac
+      JOIN venues v ON ac.id_venue = v.id_venue
+      WHERE (tipo_usuario = 'superuser' OR v.id_venue = v_id)
+        AND (id_sede_param IS NULL OR v.id_venue = id_sede_param)
+        AND (
+          (estado_filtro = 'Aprobada' AND ac.status = 'Aprobada') OR
+          (estado_filtro = 'Pendiente' AND ac.status = 'Pendiente') OR
+          (estado_filtro = 'Rechazada' AND ac.status IN ('Rechazada', 'Cancelada')) OR
+          (estado_filtro IS NULL AND ac.status IN ('Aprobada', 'Pendiente', 'Rechazada', 'Cancelada'))
+        )
+      GROUP BY fecha, tipo
+    ) t
+    GROUP BY fecha, tipo;
+  END IF;
+
+-- Consolidación final para evitar duplicados por fecha y tipo
+SELECT JSON_ARRAYAGG(
+  JSON_OBJECT(
+    'fecha', fecha,
+    'tipo', tipo,
+    'total', total
+  )
+) AS resumen
+FROM (
+  SELECT fecha, tipo, SUM(total) AS total
+  FROM temp_registros_fecha
+  GROUP BY fecha, tipo
+) AS resumen_agrupado;
+
+
+  DROP TEMPORARY TABLE IF EXISTS temp_registros_fecha;
+END 
+$$
 
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE resumen_coordinadoras(

@@ -24,6 +24,9 @@ interface ExtendedOptionsMenuProps extends OptionsMenuProps {
   setOuterColors?: (colors: string[]) => void;
   selectedFilters?: { [key: string]: string };
   setSelectedFilters?: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  chartType: 'pie' | 'bar' | 'line';
+  selection?: string[];
+  selectionChange?: (updated: string[]) => void
 }
 
 const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
@@ -49,6 +52,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     outerLabels = [],
     outerColors = [],
     setOuterColors = () => {},
+    chartType,
+    selection,
+    selectionChange,
   } = props;
 
   const fallbackFilters = useMemo(
@@ -65,6 +71,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   const [resetPickerSignal, setResetPickerSignal] = useState<number>(0);
 
   const [sedes, setSedes] = useState<{ label: string; value: string }[]>([]);
+  const [roles, setRoles] = useState<{ label: string; value: string }[]>([]);
 
   const fetchDashboardData = async (filters: {
     page: string;
@@ -113,9 +120,52 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     }
   }, []);
 
+const loadRoles = useCallback(async () => {
+  try {
+    const res = await fetchDashboardData({ page: 'roles' });
+
+    if (res?.roles && Array.isArray(res.roles)) {
+      const detalle = props.selectedFilters?.detalle ?? '1';
+      let opciones: { value: string; label: string }[] = [];
+
+      res.roles.forEach((rol: any) => {
+        if (detalle === '1') {
+          // Nivel general: solo value
+          opciones.push({
+            value: rol.value,
+            label: rol.value.charAt(0).toUpperCase() + rol.value.slice(1),
+          });
+        } else if (detalle === '2') {
+          if (rol.variante && Array.isArray(rol.variante)) {
+            rol.variante.forEach((v: string) => {
+              opciones.push({
+                value: v,
+                label: v,
+              });
+            });
+          } else {
+            opciones.push({
+              value: rol.value,
+              label: rol.value.charAt(0).toUpperCase() + rol.value.slice(1),
+            });
+          }
+        }
+      });
+
+      setRoles(opciones);
+    } else {
+      console.warn('No se encontraron roles o el formato de respuesta es incorrecto:', res);
+    }
+  } catch (error) {
+    console.error('Error al cargar los roles:', error);
+  }
+}, [props.selectedFilters?.detalle]);
+
+
   useEffect(() => {
     loadSedes();
-  }, [loadSedes]);
+    loadRoles();
+  }, [loadSedes, loadRoles]);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const { notify } = useNotification();
@@ -123,7 +173,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
-  const isBarChart = !!seriesKeys?.length;
+  const isBarChart = chartType === 'bar';
+  const isPieChart = chartType === 'pie';
+  const isLineChart = chartType === 'line';
 
   function adjustTextColor(hex: string): string {
     const parsed = hex.replace('#', '');
@@ -278,7 +330,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
           .join('');
 
     const innerLegendHtml =
-      !isBarChart &&
+      isPieChart &&
       elementLabels
         .map((label, i) => {
           const color = colors[i];
@@ -415,7 +467,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     const chartExportDiv = tempRoot.querySelector('#chart-export');
     const root = createRoot(chartExportDiv!);
 
-    if (!isBarChart) {
+    if (isPieChart) {
       const outerColorMap = outerLabels.reduce((acc, label, i) => {
         acc[label] = outerColors[i];
         return acc;
@@ -600,7 +652,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                 onChange={onMaxItemsChange}
               />
             )}
-            {!isBarChart && !isCustomizingColors && (
+            {isPieChart && !isCustomizingColors && (
               <div className='mb-2'>
                 <FiltroEvento
                   disableCheckboxes
@@ -614,7 +666,64 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                 />
               </div>
             )}
-            {!isBarChart && (
+            {isLineChart && !isCustomizingColors && (
+              <div className='mb-2'>
+                <FiltroEvento
+                  disableCheckboxes
+                  label='Personalización'
+                  iconName='Star'
+                  extraFilters={[
+                    {
+                      label: 'SEDE',
+                      key: 'sede',
+                      options: sedes,
+                    },
+                    {
+                      label: 'Frecuencia',
+                      key: 'frecuencia',
+                      options: [
+                        { label: 'Semanal', value: '__default__' },
+                        { label: 'Mensual', value: '2' },
+                      ],
+                    },
+                    {
+                      label: 'Detalle',
+                      key: 'detalle',
+                      options: [
+                        { label: 'General', value: '1' },
+                        { label: 'Detallado', value: '2' },
+                      ],
+                    },
+                    {
+                      label: 'Estado',
+                      key: 'estado',
+                      options: [
+                        { label: 'Aprobada', value: '1' },
+                        { label: 'Pendiente', value: '2' },
+                        { label: 'Rechazada', value: '3' },
+                        { label: 'Todos', value: '__all__' },
+                      ],
+                    },
+                  ]}
+                  filterActiva={fallbackFilters}
+                  onExtraFilterChange={(key, value) =>
+                    props.setSelectedFilters?.((prev) => ({ ...prev, [key]: value }))
+                  }
+                />
+                <div className='mt-2'>
+                <FiltroEvento
+                  options={roles}
+                  selected={selection}
+                  onChange={selectionChange}
+                  label='Filtros'
+                  labelOptions='Roles'
+                  selectAll={true}
+                  deselectAll={true}
+                />
+              </div>
+              </div>
+            )}
+            {isPieChart && (
               <div>
                 {isCustomizingColors && (
                   <div className='flex gap-2 mb-2'>
