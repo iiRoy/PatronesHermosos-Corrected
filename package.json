@@ -1,6 +1,6 @@
 {
   "name": "patrones-hermosos",
-  "version": "1.13.0-login.1",
+  "version": "1.13.0-admin.7",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",
@@ -27,6 +27,7 @@
     "d3-interpolate": "^3.0.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "express-validator": "^7.2.1",
@@ -35,6 +36,7 @@
     "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^3.0.1",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2",
@@ -58,6 +60,7 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/release-notes-generator": "^14.0.3",
     "@stryker-mutator/core": "^9.0.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.17.30",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -5,7 +5,19 @@ const prisma = new PrismaClient();
 const validateCollaborator = [
   body('name').notEmpty().withMessage('El nombre es obligatorio'),
   body('paternal_name').notEmpty().withMessage('El apellido paterno es obligatorio'),
-  body('email').notEmpty().withMessage('El nombre es obligatorio'),
+  body('email')
+    .notEmpty()
+    .withMessage('El correo electrónico es obligatorio')
+    .isEmail()
+    .withMessage('Correo electrónico no válido')
+    .custom(async (email) => {
+      const existing = await prisma.collaborators.findFirst({
+        where: { email },
+      });
+      if (existing) {
+        throw new Error('El correo ya está registrado');
+      }
+    }),
   body('phone_number').notEmpty().withMessage('El celular es obligatorio'),
   body('gender').notEmpty().withMessage('El sexo es obligatorio'),
   body('college').notEmpty().withMessage('La institución académica es obligatoria'),
@@ -20,14 +32,14 @@ const validateCollaborator = [
   body('preferred_level')
     .isIn(['Básico', 'Intermedio', 'Avanzado'])
     .withMessage('Dificultad preferida no válida'),
-  body('preferred_group')
+  body('preferred_venue')
     .optional()
     .isInt()
-    .withMessage('Grupo preferido debe ser un número')
-    .custom(async (id) => {
-      if (id) {
+    .withMessage('Sede preferida debe ser un número')
+    .custom(async (id_venue) => {
+      if (id_venue) {
         const venue = await prisma.venues.findUnique({
-          where: { id_venue: parseInt(id) },
+          where: { id_venue: parseInt(id_venue) },
         });
         if (!venue) {
           throw new Error('Sede no encontrada');
