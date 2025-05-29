@@ -407,7 +407,6 @@ const updateParticipantBasicInfo = async (req, res) => {
   }
 };
 
-// Cambiar estado del participante (activar/desactivar)
 const changeParticipantStatus = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;
@@ -419,27 +418,13 @@ const changeParticipantStatus = async (req, res) => {
   }
 
   try {
-    // Fetch participant data for email
+    // Fetch participant data for audit log
     const participant = await prisma.participants.findUnique({
       where: { id_participant: parseInt(id) },
       include: {
         groups: {
           select: {
-            name: true,
-            venues: {
-              select: {
-                name: true,
-                address: true,
-              },
-            },
-            mentors: {
-              select: {
-                name: true,
-                paternal_name: true,
-                maternal_name: true,
-                email: true,
-              },
-            },
+            id_venue: true,
           },
         },
       },
@@ -454,45 +439,24 @@ const changeParticipantStatus = async (req, res) => {
       CALL cambiar_estado_participant(${parseInt(id)}, ${username}, ${action})
     `;
 
-    // Send email if participant is activated
-    if (action === 'activar') {
-      await sendEmail({
-        to: participant.email,
-        subject: '¡Felicidades! Has sido aceptada en Patrones Hermosos',
-        template: 'participantes/aceptado',
-        data: {
-          pname: `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
-          sede: participant.groups?.venues?.name || 'No asignado',
-          grupo: participant.groups?.name || 'No asignado',
-          direccion: participant.groups?.venues?.address || 'No asignado',
-          mName: participant.groups?.mentors
-            ? `${participant.groups.mentors.name || ''} ${participant.groups.mentors.paternal_name || ''} ${participant.groups.mentors.maternal_name || ''}`.trim()
-            : 'No asignado',
-          mEmail: participant.groups?.mentors?.email || 'No asignado',
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
-    }else if (action === 'desactivar') {
-      await sendEmail({
-        to: participant.email,
-        subject: 'Resultados de tu Postulación - Patrones Hermosos',
-        template: 'participantes/rechazado',
-        data: {
-          pName: `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
-          reason: reason || 'No cumplió con los criterios de registro',
-          code: uuidv4().slice(0, 8),
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
-    }
+    // Create audit log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'participants',
+        message: `Se ${action === 'activar' ? 'aprobó' : 'rechazó'} el participante con ID ${id}`,
+        username: username || 'unknown',
+        id_venue: participant.groups?.id_venue || participant.id_venue,
+      },
+    });
 
     res.status(200).json({
       message: `Participante con ID ${id} ${action === 'activar' ? 'activado' : 'desactivado'} exitosamente`,
     });
   } catch (error) {
     console.error('Error al cambiar estado del participante:', error);
-    if (error.code === '45000') {
-      return res.status(400).json({ message: error.message });
+    if (error.code === 'P2010' && error.meta?.code === '1644') {
+      return res.status(400).json({ message: error.meta.message });
     }
     console.error('Full error details:', JSON.stringify(error, null, 2));
     res.status(500).json({ message: 'Error interno al cambiar estado del participante', error: error.message });
