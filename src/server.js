@@ -18,6 +18,7 @@ const mentorRoutes = require('./routes/mentor.routes');
 const diplomaRoutes = require('./routes/diploma.routes');
 const groupRoutes = require('./routes/groups.routes');
 const registrationRoutes = require('./routes/registrations.routes');
+const auditLogRoutes = require('./routes/auditLog.routes');
 //const emailRoutes = require('./routes/email.routes');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -74,6 +75,7 @@ appNext.prepare().then(() => {
   app.use('/api/mentors', mentorRoutes);
   app.use('/api/groups', groupRoutes);
   app.use('/api/registrations', registrationRoutes);
+  app.use('/api/audit-logs', auditLogRoutes);
   //app.use('/api/emails', emailRoutes);
 
   app.get('/api', (req, res) => {
