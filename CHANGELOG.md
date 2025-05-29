@@ -1,3 +1,8 @@
+## 1.13.0-coord.11 (2025-05-29)
+
+* fix(pages): FiltroEvento de gestión de participantes arreglado ([dbd56d7](https://github.com/iiRoy/Patrones-Hermosos/commit/dbd56d7))
+* refactor(pages): fila de títulos de tablas sticky (fixed) en todas las tablas de coordinadora ([44731bc](https://github.com/iiRoy/Patrones-Hermosos/commit/44731bc))
+
 ## 1.13.0-coord.10 (2025-05-28)
 
 * feat(pages): nueva funcionalidad de eliminar grupo funcional ([04fb084](https://github.com/iiRoy/Patrones-Hermosos/commit/04fb084))
