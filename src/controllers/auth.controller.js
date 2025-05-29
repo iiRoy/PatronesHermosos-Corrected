@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
+const { sendEmail } = require('../lib/emails/emailSender')
 
 const prisma = new PrismaClient();
 
@@ -48,7 +49,7 @@ const login = async (req, res) => {
         tokenVersion,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' }
+      { expiresIn: '1d' } // corto y seguro
     );
 
     return res.json({

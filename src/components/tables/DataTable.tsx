@@ -9,7 +9,7 @@ interface DataTableProps<T extends TableData> {
   columns: { key: string; label: string }[];
   onSearch: (term: string) => void;
   rowsPerPage?: number;
-  role?: 'admin' | 'user';
+  role?: 'admin';
   renderCell?: (item: T, columnKey: string) => React.ReactNode;
 }
 
@@ -18,7 +18,6 @@ const DataTable = <T extends TableData>({
   columns,
   onSearch,
   rowsPerPage = 4,
-  role = 'user',
   renderCell,
 }: DataTableProps<T>) => {
   const [inputValue, setInputValue] = useState('');

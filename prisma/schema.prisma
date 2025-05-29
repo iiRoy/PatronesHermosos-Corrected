@@ -36,39 +36,43 @@ model collaborators {
   preferred_role     String?                @db.VarChar(255)
   preferred_language String?                @db.VarChar(255)
   preferred_level    String?                @db.VarChar(255)
-  preferred_group    Int?                   @db.UnsignedInt
+  preferred_venue    Int?                   @db.UnsignedInt
   gender             String?                @db.VarChar(255)
   role               collaborators_role     @default(Pendiente)
   status             collaborators_status   @default(Pendiente)
   level              collaborators_level    @default(Pendiente)
   language           collaborators_language @default(Pendiente)
-  id_group           Int?                   @db.UnsignedInt
+  id_group           Int?                   @db.UnsignedInt // Replace id_venue with id_group
   groups             groups?                @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "collaborators_ibfk_1")
   preferredGroup     groups?                @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
   created_at             DateTime                 @default(now()) @db.Timestamp(0)
+  preferredVenue     venues?                @relation("preferred_venue_fk", fields: [preferred_venue], references: [id_venue])
+  @@index([id_group], map: "id_group") // Update index
+  @@index([preferred_venue], map: "collaborators_preferred_venue_fkey")
 
   @@index([id_group], map: "id_group")
 }
 
+model collaborator_interviews { 
+  id_interview Int @id @default(autoincrement()) @db.UnsignedInt 
+  id_collaborator Int @db.UnsignedInt scheduled_at DateTime? @db.DateTime 
+  deadline DateTime @db.DateTime 
+  status String @default("Pendiente") @db.VarChar(50) created_at DateTime @default(now()) @db.Timestamp(0) 
+  collaborator collaborators @relation(fields: [id_collaborator], references: [id_collaborator], onDelete: Cascade)
+
+@@index([id_collaborator], map: "id_collaborator") }
 
 model audit_log {
   id         Int         @id @default(autoincrement())
   action     AuditAction
   table_name String      @db.VarChar(50)
-  id_venue   Int?        @db.UnsignedInt  
+  id_venue   Int?        @db.UnsignedInt
   username   String      @db.VarChar(255)
   message    String      @db.Text
   created_at DateTime    @default(now()) @db.Timestamp(0)
-
   venues     venues?     @relation(fields: [id_venue], references: [id_venue], onDelete: NoAction, onUpdate: Restrict)
 
   @@index([id_venue], map: "id_venue")
-}
-
-enum AuditAction {
-  INSERT
-  UPDATE
-  DELETE
 }
 
 model groups {
@@ -84,15 +88,14 @@ model groups {
   end_date                      DateTime?       @db.Date
   start_hour                    DateTime?       @db.Time(0)
   end_hour                      DateTime?       @db.Time(0)
-  status                        groups_status   @default(Aprobada)
   id_mentor                     Int?            @db.UnsignedInt
   id_venue                      Int             @db.UnsignedInt
+  status                        groups_status   @default(Aprobada)
   collaborators                 collaborators[]
+  excluded_days                 excluded_days[]
   mentors                       mentors?        @relation(fields: [id_mentor], references: [id_mentor], onUpdate: Restrict, map: "groups_ibfk_1")
   venues                        venues          @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "groups_ibfk_2")
   participants                  participants[]
-  excluded_days                 excluded_days[]
-  preferred_group_collaborators collaborators[] @relation("preferred_group_fk")
   preferred_group_participants  participants[]  @relation("preferred_group_fk")
 
   @@index([id_mentor], map: "id_mentor")
@@ -106,6 +109,7 @@ model excluded_days {
   reason        String?  @default("No especificado") @db.VarChar(255)
   group         groups   @relation(fields: [id_group], references: [id_group], onDelete: Cascade)
 
+  @@index([id_group], map: "excluded_days_id_group_fkey")
   @@map("excluded_days")
 }
 
@@ -126,6 +130,7 @@ model mentors {
 }
 
 model participants {
+<<<<<<< HEAD
   id_participant     Int                 @id @default(autoincrement()) @db.UnsignedInt
   name               String?             @db.VarChar(255)
   paternal_name      String?             @db.VarChar(255)
@@ -142,23 +147,42 @@ model participants {
   groups             groups?             @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "participants_ibfk_1")
   tutors             tutors?             @relation(fields: [id_tutor], references: [id_tutor], onUpdate: Restrict, map: "participants_ibfk_2")
   created_at             DateTime                 @default(now()) @db.Timestamp(0)
+=======
+  id_participant          Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name                    String?             @db.VarChar(255)
+  paternal_name           String?             @db.VarChar(255)
+  maternal_name           String?             @db.VarChar(255)
+  email                   String?             @db.VarChar(255)
+  year                    String?             @db.VarChar(255)
+  education               String?             @db.VarChar(255)
+  participation_file      Bytes               @db.Blob
+  participation_file_path String?             @db.VarChar(255)
+  preferred_group         Int?                @db.UnsignedInt
+  status                  participants_status @default(Pendiente)
+  id_group                Int?                @db.UnsignedInt
+  id_tutor                Int?                @db.UnsignedInt
+  groups                  groups?             @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "participants_ibfk_1")
+  tutors                  tutors?             @relation(fields: [id_tutor], references: [id_tutor], onUpdate: Restrict, map: "participants_ibfk_2")
+  preferredGroup          groups?             @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
+>>>>>>> 633c63a9bf2b84e8d86bf36bc34d5a9aa0dc12bd
 
   @@index([id_group], map: "id_group")
   @@index([id_tutor], map: "id_tutor")
+  @@index([preferred_group], map: "participants_preferred_group_fkey")
 }
 
 model superusers {
-  id_superuser Int      @id @default(autoincrement()) @db.UnsignedInt
-  name           String? @db.VarChar(255)
-  paternal_name  String? @db.VarChar(255)
-  maternal_name  String? @db.VarChar(255)
-  username     String   @db.VarChar(255)
-  email        String   @unique(map: "email") @db.VarChar(255)
-  password     String   @db.VarChar(255)
-  profile_image  Bytes?  @db.Blob
-  tokenVersion Int    @default(0)
-  created_at   DateTime @default(now()) @db.Timestamp(0)
-  updated_at   DateTime @default(now()) @db.Timestamp(0)
+  id_superuser  Int      @id @default(autoincrement()) @db.UnsignedInt
+  username      String   @db.VarChar(255)
+  email         String   @unique(map: "email") @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  updated_at    DateTime @default(now()) @db.Timestamp(0)
+  maternal_name String?  @db.VarChar(255)
+  name          String?  @db.VarChar(255)
+  paternal_name String?  @db.VarChar(255)
+  profile_image Bytes?   @db.Blob
+  tokenVersion  Int      @default(0)
 }
 
 model tutors {
@@ -172,6 +196,20 @@ model tutors {
 }
 
 model venue_coordinators {
+  id_venue_coord     Int     @id @default(autoincrement()) @db.UnsignedInt
+  name               String? @db.VarChar(255)
+  paternal_name      String? @db.VarChar(255)
+  maternal_name      String? @db.VarChar(255)
+  email              String  @db.VarChar(255)
+  phone_number       String? @db.VarChar(255)
+  gender             String? @db.VarChar(255)
+  username           String  @db.VarChar(255)
+  password           String  @db.VarChar(255)
+  profile_image      Bytes?  @db.Blob
+  profile_image_path String? @db.VarChar(255)
+  id_venue           Int     @db.UnsignedInt
+  tokenVersion       Int     @default(0)
+  venues             venues  @relation(fields: [id_venue], references: [id_venue], onDelete: Cascade, onUpdate: Restrict, map: "venue_coordinators_ibfk_1")
   id_venue_coord     Int                     @id @default(autoincrement()) @db.UnsignedInt
   name               String?                 @db.VarChar(255)
   paternal_name      String?                 @db.VarChar(255)
@@ -193,24 +231,31 @@ model venue_coordinators {
 }
 
 model venues {
-  id_venue               Int                      @id @default(autoincrement()) @db.UnsignedInt
-  name                   String                   @db.VarChar(255)
-  country                String?                  @db.VarChar(255)
-  state                  String?                  @db.VarChar(255)
-  location               String?                  @db.VarChar(255)
-  address                String?                  @db.VarChar(255)
-  logo                   Bytes?                   @db.Blob
-  participation_file     Bytes                    @db.Blob
-  logo_path              String?                  @db.VarChar(255)
-  participation_file_path String?                 @db.VarChar(255)
-  status                 venues_status            @default(Pendiente)
-  created_at             DateTime                 @default(now()) @db.Timestamp(0)
-  updated_at             DateTime                 @default(now()) @db.Timestamp(0)
-  assistant_coordinators assistant_coordinators[]
-  groups                 groups[]
-  mentors                mentors[]
-  venue_coordinators     venue_coordinators[]
-  audit_log              audit_log[]
+  id_venue                Int                      @id @default(autoincrement()) @db.UnsignedInt
+  name                    String                   @db.VarChar(255)
+  country                 String?                  @db.VarChar(255)
+  state                   String?                  @db.VarChar(255)
+  address                 String?                  @db.VarChar(255)
+  logo                    Bytes?                   @db.Blob
+  participation_file      Bytes                    @db.Blob
+  logo_path               String?                  @db.VarChar(255)
+  participation_file_path String?                  @db.VarChar(255)
+  status                  venues_status            @default(Pendiente)
+  created_at              DateTime                 @default(now()) @db.Timestamp(0)
+  updated_at              DateTime                 @default(now()) @db.Timestamp(0)
+  location                String?                  @db.VarChar(255)
+  assistant_coordinators  assistant_coordinators[]
+  audit_log               audit_log[]
+  groups                  groups[]
+  mentors                 mentors[]
+  venue_coordinators      venue_coordinators[]
+  preferred_venue_collaborators collaborators[] @relation("preferred_venue_fk") // Inverse relation
+}
+
+enum AuditAction {
+  INSERT
+  UPDATE
+  DELETE
 }
 
 enum venues_status {

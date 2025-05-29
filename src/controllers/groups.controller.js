@@ -11,21 +11,6 @@ const getAll = async (req, res) => {
           },
         },
       },
-      select: {
-        id_group: true,
-        name: true,
-        mode: true,
-        language: true,
-        level: true,
-        start_date: true,
-        end_date: true,
-        max_places: true,
-        occupied_places: true,
-        start_hour: true,
-        end_hour: true,
-        location: true,
-        id_venue: true,
-      },
     });
     res.json(groups);
   } catch (error) {
