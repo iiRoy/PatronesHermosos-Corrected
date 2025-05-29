@@ -5,7 +5,6 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import withIconDecorator from '../../decorators/IconDecorator';
 import { interpolateRgb } from 'd3-interpolate';
 import * as Icons from '../../icons';
-import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 
 export const Options = withIconDecorator(Icons.DotsThree);
 export const Back = withIconDecorator(Icons.ArrowBendUpLeft);
@@ -340,6 +339,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
             }}
             selectedFilters={selectedFilters}
             setSelectedFilters={setSelectedFilters}
+            chartType='pie'
           />
         </div>
       </div>
@@ -405,7 +405,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
             {/* Imagen central */}
             <div
               className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 transition-opacity duration-300 ${
-                fade ? 'opacity-0' : 'opacity-100'
+                fade && !isFirstRender.current ? 'opacity-0' : 'opacity-100'
               }`}
             >
               <Image src={imageSrc} alt='Logo centro' width={60} height={60} />
@@ -420,7 +420,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
           className={`flex ${
             interactionsDisabled ? 'pointer-events-none' : ''
           } flex-col items-center gap-3 mt-4 transition-opacity duration-300 ${
-            fadeSec ? 'opacity-0' : 'opacity-100'
+            fadeSec || fade ? 'opacity-0' : 'opacity-100'
           }`}
         >
           <div className={`flex flex-row items-center justify-end w-full relative`}>
