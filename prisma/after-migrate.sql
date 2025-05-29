@@ -1,4 +1,4 @@
-/*
+
 -- =====================
 -- 🟣   BYTE FORGE   🟣
 -- =====================
@@ -20,7 +20,7 @@
 
 -- 🔸 Definición:
 
-*/
+
 DELIMITER $$
 CREATE OR REPLACE TRIGGER actualizar_cupo
 AFTER UPDATE ON participants
@@ -2032,6 +2032,7 @@ DELIMITER ;
 
 
 
+/*
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2111,5 +2112,4 @@ DELIMITER ;
 -- 🔸 Se cambió el valor de los 'prefered_groups' en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
 -- 🔸 Se puso como valor predeterminado de 'occupied_places' en la tabla 'groups' como 0.
 -- 🔸 Se agregaron las columnas de 'level' y 'language' a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.
-
 */
