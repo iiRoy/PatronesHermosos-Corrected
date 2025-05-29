@@ -31,8 +31,7 @@ interface DecodedToken {
 
 const gestionParticipantes = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('__All__');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({ grupo: '__All__' });
+    const [filterActivaExtra, setFilterActivaExtra] = useState({ sede: '__All__', grupo: '__All__' });
     const [currentPage, setCurrentPage] = useState(0);
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
     const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
@@ -111,6 +110,7 @@ const gestionParticipantes = () => {
             ...prev,
             [key]: value,
         }));
+        setCurrentPage(0); // Resetear la página al cambiar el filtro
     };
 
     // Extraer sedes y grupos únicos para los filtros
@@ -133,14 +133,13 @@ const gestionParticipantes = () => {
             const matchesSearch = !searchTerm || participante.nombre.toLowerCase().includes(searchTerm);
             const sede = participante.sede || 'No asignado';
             const grupo = participante.grupo || 'No asignado';
-            const matchesSede = section === '__All__' ? true : sede === section;
-            const selectedGrupo = filterActivaExtra['grupo'];
-            const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
-            const isApproved = (participante.status || 'Pendiente').toLowerCase() === 'aprobada'; // Añadido valor por defecto
+            const matchesSede = filterActivaExtra['sede'] === '__All__' ? true : sede === filterActivaExtra['sede'];
+            const matchesGrupo = filterActivaExtra['grupo'] === '__All__' ? true : grupo === filterActivaExtra['grupo'];
+            const isApproved = (participante.status || 'Pendiente').toLowerCase() === 'aprobada';
             const matchesVenue = coordinatorVenueId === null || participante.id_venue === coordinatorVenueId;
             return matchesSearch && matchesSede && matchesGrupo && isApproved && matchesVenue;
         });
-    }, [inputValue, section, filterActivaExtra, participantesData, coordinatorVenueId]);
+    }, [inputValue, filterActivaExtra, participantesData, coordinatorVenueId]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
@@ -152,12 +151,6 @@ const gestionParticipantes = () => {
             setCurrentPage(0);
         }
     }, [filteredData.length, currentPage, totalPages]);
-
-    const sectionFilterChange = (value: string) => {
-        setSection(value);
-        setInputValue('');
-        setCurrentPage(0);
-    };
 
     const handleDeleteClick = (participante: Participante) => {
         setSelectedParticipante(participante);
@@ -202,7 +195,6 @@ const gestionParticipantes = () => {
                     throw new Error(`Error updating participant status: ${errorData.message || 'Unknown error'}`);
                 }
 
-                // Se actualiza manualmente el estado a "Cancelada"
                 setParticipantesData((prev) =>
                     prev.map((p) =>
                         p.id === selectedParticipante.id
@@ -255,15 +247,16 @@ const gestionParticipantes = () => {
                                 onChangeText={(val) => setInputValue(val)}
                             />
                         </div>
-
                         <div className="basis-1/3">
                             <FiltroEvento
                                 disableCheckboxes
                                 label="Filtros"
-                                showSecciones
-                                labelSecciones="Grupo"
-                                secciones={grupoOptions}
-                                seccionActiva={section}
+                                showSecciones={false} // Desactivar secciones tradicionales
+                                extraFilters={[
+                                    { label: 'Grupo', key: 'grupo', options: grupoOptions },
+                                ]}
+                                filterActiva={filterActivaExtra}
+                                onExtraFilterChange={extraHandleFilterChange}
                             />
                         </div>
                     </div>

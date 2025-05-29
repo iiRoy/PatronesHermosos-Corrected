@@ -285,7 +285,7 @@ const verSede = () => {
                         />
                     </div>
                     <div>
-                        <Button label='Crear Grupo' variant='warning' href='/coordinador/mi-sede/crear-grupo' />
+                        <Button label='Crear Grupo' variant='secondary' href='/coordinador/mi-sede/crear-grupo' />
                     </div>
                 </div>
 
@@ -321,7 +321,7 @@ const verSede = () => {
                     <div className='flex gap-4'>
                         <Button
                             label='Editar Grupo'
-                            variant='secondary'
+                            variant='warning'
                             href={getGroupId() ? `/coordinador/mi-sede/editar-grupo/${getGroupId()}` : '#'}
                             disabled={isButtonsDisabled}
                         />
