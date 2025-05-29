@@ -592,7 +592,7 @@ const SolicitudesRegistroAdmin = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: 'Rechazada' }),
+          body: JSON.stringify({ action: 'desactivar'  }),
         });
 
         if (!response.ok) {

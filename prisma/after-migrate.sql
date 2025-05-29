@@ -1985,11 +1985,11 @@ BEGIN
 
     -- Validaciones de cambio de estado
     IF p_accion = 'desactivar' THEN
-        IF v_status != 'Aprobada' THEN
+        IF v_status != 'Pendiente' THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Solo se pueden desactivar participantes con estatus Aprobada.';
         END IF;
-        SET v_nuevo_status = 'Cancelada';
+        SET v_nuevo_status = 'Rechazada';
 
     ELSEIF p_accion = 'activar' THEN
         IF v_status != 'Cancelada' THEN
@@ -2003,14 +2003,6 @@ BEGIN
         SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
     END IF;
 
-    -- Registrar el log (sin sede, se usa NULL)
-    CALL registrar_log(
-        'UPDATE',
-        'participants',
-        CONCAT('Se ', p_accion, ' al participante con ID ', p_id_participant),
-        p_username,
-        NULL
-    );
 
     -- Actualizar el status
     UPDATE participants
