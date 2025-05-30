@@ -13,6 +13,8 @@ router.post('/', validateCollaborator, collaboratorsController.createCollaborato
 // Get a collaborator by ID (superuser or venue coordinator)
 router.get('/:id', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getCollaboratorById);
 
+router.patch('/:id/reject', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.rejectCollaborator);
+
 // Update a collaborator (superuser only)
 router.put(
   '/:id',

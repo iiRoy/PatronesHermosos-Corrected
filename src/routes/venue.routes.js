@@ -104,5 +104,6 @@ router.patch(
 );
 
 router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
+router.patch('/:id/reject', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), venueController.rejectVenue);
 
 module.exports = router;

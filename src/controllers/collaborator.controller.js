@@ -706,6 +706,62 @@ const cancelCollaborator = async (req, res) => {
   }
 };
 
+
+const rejectCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+  const username = req.user?.username || 'unknown';
+
+  // Validar acción
+  if (action !== 'desactivar') {
+    return res.status(400).json({ message: 'La acción debe ser "desactivar"' });
+  }
+
+  try {
+    // Fetch collaborator data
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: parseInt(id) },
+      include: {
+        groups: { select: { id_venue: true } },
+        preferredGroup: { select: { id_venue: true } },
+      },
+    });
+
+    if (!collaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
+    // Verificar estado Pendiente
+    if (collaborator.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'Solo se pueden rechazar colaboradores con estatus Pendiente' });
+    }
+
+    // Actualizar estado a Rechazada
+    await prisma.collaborators.update({
+      where: { id_collaborator: parseInt(id) },
+      data: { status: 'Rechazada' },
+    });
+
+    // Crear registro en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'collaborators',
+        message: `Se rechazó el colaborador con ID ${id}`,
+        username,
+        id_venue: collaborator.groups?.id_venue || collaborator.preferredGroup?.id_venue,
+      },
+    });
+
+    res.status(200).json({
+      message: `Colaborador con ID ${id} rechazado exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al rechazar colaborador:', error);
+    res.status(500).json({ message: 'Error interno al rechazar colaborador', error: error.message });
+  }
+};
+
 /*
 commit
 */
@@ -721,4 +777,5 @@ module.exports = {
   getAvailableGroups,
   approveCollaborator,
   cancelCollaborator,
+  rejectCollaborator,
 };
