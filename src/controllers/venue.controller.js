@@ -375,6 +375,57 @@ const cancelarVenue = async (req, res) => {
   }
 };
 
+const rejectVenue = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+  const username = req.user?.username || 'unknown';
+
+  // Validar acción
+  if (action !== 'desactivar') {
+    return res.status(400).json({ message: 'La acción debe ser "desactivar"' });
+  }
+
+  try {
+    // Fetch venue data
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Sede no encontrada' });
+    }
+
+    // Verificar estado Pendiente
+    if (venue.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'Solo se pueden rechazar sedes con estatus Pendiente' });
+    }
+
+    // Actualizar estado a Rechazada
+    await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: { status: 'Rechazada' },
+    });
+
+    // Crear registro en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'venues',
+        message: `Se rechazó la sede con ID ${id}`,
+        username,
+        id_venue: parseInt(id),
+      },
+    });
+
+    res.status(200).json({
+      message: `Sede con ID ${id} rechazada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al rechazar sede:', error);
+    res.status(500).json({ message: 'Error interno al rechazar sede', error: error.message });
+  }
+};
+
 module.exports = {
   getAll,
   getSpecificData,
@@ -385,5 +436,6 @@ module.exports = {
   remove,
   cancelVenue,
   approveVenue,
-  cancelarVenue
+  cancelarVenue,
+  rejectVenue,
 };
