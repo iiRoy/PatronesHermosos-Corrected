@@ -17,9 +17,9 @@ const sendTestEmail = async (req, res) => {
 
     // Enviar correo de prueba
     await sendEmail({
-      to: 'panaboxgaming@gmail.com', // Correo de destino
+      to: 'panaboxgaming@gmail.com',
       subject: 'Correo de Prueba - Patrones Hermosos',
-      template: 'aceptado', // Nombre del template sin .ejs
+      template: 'templates/colaboradores/aceptado', // Ruta relativa sin .ejs
       data: emailData
     });
 

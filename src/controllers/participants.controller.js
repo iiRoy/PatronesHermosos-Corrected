@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const fs = require('fs').promises;
+const { sendEmail } = require('../lib/emails/emailSender');
 
 // Utility function to transform flat keys into nested objects
 const parseNestedBody = (body) => {
@@ -638,6 +639,52 @@ const approveParticipant = async (req, res) => {
         id_venue: group.id_venue,
       },
     });
+
+    // Send approval email (non-critical)
+    try {
+      // Fetch additional data for email
+      const groupDetails = await prisma.groups.findUnique({
+        where: { id_group: parseInt(groupId) },
+        include: {
+          venues: true,
+          mentors: true, // Changed from tutors to mentors
+        },
+      });
+
+      // Construct full name
+      const fullName = [
+        updatedParticipant.name,
+        updatedParticipant.paternal_name,
+        updatedParticipant.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      // Prepare email data
+      const emailData = {
+        pName: fullName || 'Participante',
+        sede: groupDetails?.venues?.name || 'No asignada',
+        grupo: groupDetails?.name || 'No asignado',
+        direccion: groupDetails?.venues?.address || 'No disponible',
+        mName: groupDetails?.mentors?.name || 'No asignada',
+        mEmail: groupDetails?.mentors?.email || 'no-reply@patroneshermosos.org',
+        iName: 'Soporte Patrones Hermosos',
+        iEmail: 'soporte@patroneshermosos.org'
+      };
+
+      // Send email
+      await sendEmail({
+        to: updatedParticipant.email,
+        subject: 'Resultados de la postulación - Patrones Hermosos',
+        template: 'templates/participantes/aceptado',
+        data: emailData
+      });
+
+      console.log(`Approval email sent to ${updatedParticipant.email}`);
+    } catch (emailError) {
+      console.error('Error sending approval email:', emailError.message);
+      // Do not affect the success response
+    }
 
     res.json({
       success: true,
