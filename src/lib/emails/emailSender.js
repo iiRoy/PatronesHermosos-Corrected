@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
 const path = require('path');
+const fs = require('fs').promises;
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -12,15 +13,29 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendEmail({ to, subject, template, data }) {
-  const templatePath = path.join(__dirname, 'templates', 'colaboradores', `${template}.ejs`);
-  const html = await ejs.renderFile(templatePath, data);
+  try {
+    // Construir la ruta del template dinámicamente
+    const templatePath = path.join(__dirname, `${template}.ejs`);
 
-  await transporter.sendMail({
-    from: `"Equipo Patrones Hermosos" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html
-  });
+    // Verificar si el archivo del template existe
+    await fs.access(templatePath).catch(() => {
+      throw new Error(`Template no encontrado: ${templatePath}`);
+    });
+
+    // Renderizar el template con los datos
+    const html = await ejs.renderFile(templatePath, data);
+
+    // Enviar el correo
+    await transporter.sendMail({
+      from: `"Equipo Patrones Hermosos" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html
+    });
+  } catch (error) {
+    console.error('Error al enviar correo:', error);
+    throw error; // Propagar el error para que el controlador lo maneje
+  }
 }
 
 module.exports = { sendEmail };
