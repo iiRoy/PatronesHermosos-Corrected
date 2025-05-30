@@ -554,82 +554,210 @@ const SolicitudesRegistroAdmin = () => {
         }
     };
 
-    const handleReject = async () => {
-        if (!selectedItem) {
-            closeRejectPopup();
-            return;
+      const handleReject = async () => {
+  if (!selectedItem) {
+    closeRejectPopup();
+    return;
+  }
+
+  if (section === 'PARTICIPANTES') {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action: 'desactivar' }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al rechazar participante');
+      }
+
+      // Remove participant from list
+      setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
+
+      const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Participante ${fullName} rechazado exitosamente`,
+        duration: 5000,
+      });
+
+      closeRejectPopup();
+    } catch (error: any) {
+      console.error('Error rejecting participant:', error);
+      const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo rechazar al participante ${fullName}: ${error.message}`,
+        duration: 5000,
+      });
+    }
+  } else if (section === 'APOYO & STAFF') {
+  try {
+    const token = localStorage.getItem('api_token');
+    if (!token) {
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: 'No se encontró el token, redirigiendo al login',
+        duration: 5000,
+      });
+      router.push('/login');
+      return;
+    }
+
+    // Send request to reject collaborator
+    const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/reject`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'desactivar' }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al rechazar colaborador');
+    }
+
+    // Remove collaborator from list
+    setApoyoStaffData((prev: ApoyoStaff[]) => prev.filter((c: ApoyoStaff) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
+
+    const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    notify({
+      color: 'green',
+      title: 'Éxito',
+      message: `Colaborador ${fullName} rechazado exitosamente`,
+      duration: 5000,
+    });
+
+    closeRejectPopup();
+  } catch (error: any) {
+    console.error('Error rejecting collaborator:', error);
+    const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    let errorMessage = error.message;
+
+    // Handle specific error
+    if (errorMessage.includes('Solo se pueden rechazar colaboradores con estatus Pendiente')) {
+      errorMessage = 'El colaborador debe estar en estado Pendiente para ser rechazado.';
+    }
+
+    notify({
+      color: 'red',
+      title: 'Error',
+      message: `No se pudo rechazar al colaborador ${fullName}: ${errorMessage}`,
+      duration: 5000,
+    });
+    closeRejectPopup();
+  }
+  } else {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      // Send request to reject venue
+      const response = await fetch(`/api/venues/${(selectedItem as Sede).id_venue}/reject`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action: 'desactivar' }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al rechazar sede');
+      }
+
+      // Remove venue from list
+      setSedesData((prev: Sede[]) => prev.filter((v: Sede) => v.id_venue !== (selectedItem as Sede).id_venue));
+
+      const venueName = (selectedItem as Sede).name.trim();
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Sede ${venueName} rechazada exitosamente`,
+        duration: 5000,
+      });
+
+      closeRejectPopup();
+
+      // Attempt to create audit log (non-critical)
+      try {
+        const auditResponse = await fetch('/api/audit-logs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            action: 'UPDATE',
+            table_name: 'venues',
+            message: `Se rechazó la sede con ID ${(selectedItem as Sede).id_venue}`,
+            id_venue: (selectedItem as Sede).id_venue,
+          }),
+        });
+
+        if (!auditResponse.ok) {
+          const auditError = await auditResponse.json();
+          console.error('Error creating audit log:', auditError);
         }
+      } catch (auditError) {
+        console.error('Error creating audit log:', auditError);
+      }
+    } catch (error: any) {
+      console.error('Error rejecting venue:', error);
+      const venueName = (selectedItem as Sede).name.trim();
+      let errorMessage = error.message;
 
-        if (section === 'PARTICIPANTES') {
-            try {
-                const token = localStorage.getItem('api_token');
-                if (!token) {
-                    notify({
-                        color: 'red',
-                        title: 'Error',
-                        message: 'No se encontró el token, redirigiendo al login',
-                        duration: 5000,
-                    });
-                    router.push('/login');
-                    return;
-                }
+      // Handle specific error
+      if (errorMessage.includes('Solo se pueden rechazar sedes con estatus Pendiente')) {
+        errorMessage = 'La sede debe estar en estado Pendiente para ser rechazada.';
+      }
 
-                const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/status`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({ status: 'Rechazada' }),
-                });
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo rechazar la sede ${venueName}: ${errorMessage}`,
+        duration: 5000,
+      });
+      closeRejectPopup();
+    }
+  }
+};
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al rechazar participante');
-                }
-
-                setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
-
-                const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
-                notify({
-                    color: 'green',
-                    title: 'Éxito',
-                    message: `Participante ${fullName} rechazado exitosamente`,
-                    duration: 5000,
-                });
-
-                closeRejectPopup();
-            } catch (error: any) {
-                console.error('Error rejecting participant:', error);
-                const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
-                notify({
-                    color: 'red',
-                    title: 'Error',
-                    message: `No se pudo rechazar al participante ${fullName}: ${error.message}`,
-                    duration: 5000,
-                });
-            }
-        } else if (section === 'APOYO & STAFF') {
-            console.log('Solicitud rechazada para:', selectedItem);
-            const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
-            notify({
-                color: 'green',
-                title: 'Éxito',
-                message: `Colaborador ${fullName} rechazado`,
-                duration: 5000,
-            });
-            closeRejectPopup();
-        } else {
-            console.log('Solicitud rechazada para:', selectedItem);
-            notify({
-                color: 'green',
-                title: 'Éxito',
-                message: `Sede ${(selectedItem as Sede).name} rechazada`,
-                duration: 5000,
-            });
-            closeRejectPopup();
-        }
-    };
+if (error) {
+  return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+}
 
     if (error) {
         return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
