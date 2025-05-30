@@ -623,84 +623,64 @@ const SolicitudesRegistroAdmin = () => {
       });
     }
   } else if (section === 'APOYO & STAFF') {
-    try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
-        notify({
-          color: 'red',
-          title: 'Error',
-          message: 'No se encontró el token, redirigiendo al login',
-          duration: 5000,
-        });
-        router.push('/login');
-        return;
-      }
-
-      // Send request to reject collaborator
-      const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/reject`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ action: 'desactivar' }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al rechazar colaborador');
-      }
-
-      // Create audit log
-      const auditResponse = await fetch('/api/audit-logs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          action: 'UPDATE',
-          table_name: 'collaborators',
-          message: `Se rechazó el colaborador con ID ${(selectedItem as ApoyoStaff).id_collaborator}`,
-          id_venue: null, // ApoyoStaff no tiene id_venue
-        }),
-      });
-
-      if (!auditResponse.ok) {
-        const auditError = await auditResponse.json();
-        console.error('Error creating audit log:', auditError);
-      }
-
-      // Remove collaborator from list
-      setApoyoStaffData((prev: ApoyoStaff[]) => prev.filter((c: ApoyoStaff) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
-
-      const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
-      notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `Colaborador ${fullName} rechazado exitosamente`,
-        duration: 5000,
-      });
-
-      closeRejectPopup();
-    } catch (error: any) {
-      console.error('Error rejecting collaborator:', error);
-      const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
-      let errorMessage = error.message;
-
-      // Handle specific error
-      if (errorMessage.includes('Solo se pueden rechazar colaboradores con estatus Pendiente')) {
-        errorMessage = 'El colaborador debe estar en estado Pendiente para ser rechazado.';
-      }
-
+  try {
+    const token = localStorage.getItem('api_token');
+    if (!token) {
       notify({
         color: 'red',
         title: 'Error',
-        message: `No se pudo rechazar al colaborador ${fullName}: ${errorMessage}`,
+        message: 'No se encontró el token, redirigiendo al login',
         duration: 5000,
       });
-      closeRejectPopup();
+      router.push('/login');
+      return;
     }
+
+    // Send request to reject collaborator
+    const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/reject`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'desactivar' }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al rechazar colaborador');
+    }
+
+    // Remove collaborator from list
+    setApoyoStaffData((prev: ApoyoStaff[]) => prev.filter((c: ApoyoStaff) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
+
+    const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    notify({
+      color: 'green',
+      title: 'Éxito',
+      message: `Colaborador ${fullName} rechazado exitosamente`,
+      duration: 5000,
+    });
+
+    closeRejectPopup();
+  } catch (error: any) {
+    console.error('Error rejecting collaborator:', error);
+    const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    let errorMessage = error.message;
+
+    // Handle specific error
+    if (errorMessage.includes('Solo se pueden rechazar colaboradores con estatus Pendiente')) {
+      errorMessage = 'El colaborador debe estar en estado Pendiente para ser rechazado.';
+    }
+
+    notify({
+      color: 'red',
+      title: 'Error',
+      message: `No se pudo rechazar al colaborador ${fullName}: ${errorMessage}`,
+      duration: 5000,
+    });
+    closeRejectPopup();
+  }
   } else {
     try {
       const token = localStorage.getItem('api_token');
