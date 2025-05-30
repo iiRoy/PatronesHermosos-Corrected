@@ -651,6 +651,57 @@ const approveParticipant = async (req, res) => {
   }
 };
 
+const rejectParticipant = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username;
+
+  try {
+    // Buscar participante
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(id) },
+      include: {
+        groups: {
+          select: {
+            id_venue: true,
+          },
+        },
+      },
+    });
+
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    // Validar estado actual
+    if (participant.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'Solo se pueden rechazar participantes con estado Aprobada' });
+    }
+
+    // Actualizar estado a Cancelada
+    await prisma.participants.update({
+      where: { id_participant: parseInt(id) },
+      data: { status: 'Cancelada' },
+    });
+
+    // Crear registro en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'participants',
+        message: `Se rechazó el participante con ID ${id}`,
+        username: username || 'unknown',
+        id_venue: participant.groups?.id_venue || participant.id_venue,
+      },
+    });
+
+    res.status(200).json({
+      message: `Participante con ID ${id} rechazado exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al rechazar participante:', error);
+    res.status(500).json({ message: 'Error interno al rechazar participante', error: error.message });
+  }
+};
 
 module.exports = {
   createParticipant,
@@ -663,4 +714,5 @@ module.exports = {
   getParticipantsTable,
   updateParticipantBasicInfo,
   changeParticipantStatus,
+  rejectParticipant,
 };

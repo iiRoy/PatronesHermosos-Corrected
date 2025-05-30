@@ -94,4 +94,11 @@ router.get('/files/:filename', async (req, res) => {
   }
 });
 
+router.patch(
+  '/:id/reject',
+  authMiddleware,
+  roleMiddleware(['venue_coordinator', 'superuser']),
+  participantsController.rejectParticipant
+);
+
 module.exports = router;
