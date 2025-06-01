@@ -42,6 +42,41 @@ const createCollaborator = async (req, res) => {
       },
     });
 
+    // Send confirmation email (non-critical)
+    try {
+      let venueName = 'No asignada';
+      let groupName = 'No asignado';
+      if (preferred_group) {
+        const group = await prisma.groups.findUnique({
+          where: { id_group: parseInt(preferred_group) },
+          include: { venues: { select: { name: true } } },
+        });
+        if (group) {
+          groupName = group.name || 'No asignado';
+          venueName = group.venues?.name || 'No asignada';
+        }
+      }
+
+      await sendEmail({
+        to: email,
+        subject: 'Confirmación de Solicitud - Patrones Hermosos',
+        template: 'templates/colaboradores/solicitud',
+        data: {
+          cName: `${name || ''} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
+          venueName: venueName,
+          cEmail,
+          role: preferred_role || 'No especificado',
+          language: preferred_language || 'No especificado',
+          level: preferred_level || 'No especificado',
+          mode: 'No especificado', // Assuming mode is not provided in request
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+      console.log(`Solicitud email sent to ${email}`);
+    } catch (emailError) {
+      console.error(`Error sending solicitud email to ${email}:`, emailError.message);
+    }
+
     res.status(201).json({
       success: true,
       message: 'Colaborador creado',
@@ -618,6 +653,30 @@ const approveCollaborator = async (req, res) => {
       },
     });
 
+    // Send approval email (non-critical)
+    try {
+      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+      await sendEmail({
+        to: collaborator.email,
+        subject: 'Resultados de la postulación - Patrones Hermosos',
+        template: 'templates/collaborators/aceptado',
+        data: {
+          pName: fullName,
+          role: updatedCollaborator.role,
+          sede: group.venues?.name || 'No asignada',
+          grupo: group.name || 'No asignado',
+          direccion: group.venues?.address || 'No disponible',
+          mName: group.mentors?.name || 'No asignada',
+          mEmail: group.mentors?.email || 'no-reply@patroneshermosos.org',
+          iName: 'Soporte Patrones Hermosos',
+          iEmail: process.env.EMAIL_USER || 'soporte@patroneshermosos.org',
+        },
+      });
+      console.log(`Approval email sent to ${collaborator.email}`);
+    } catch (emailError) {
+      console.error(`Error sending approval email to ${collaborator.email}:`, emailError.message);
+    }
+
     // Create audit log
     await prisma.audit_log.create({
       data: {
@@ -667,7 +726,8 @@ const cancelCollaborator = async (req, res) => {
         paternal_name: true,
         maternal_name: true,
         groups: {
-          select: { id_venue: true }, // Incluir id_venue desde groups
+          select: { id_venue: true, name: true },
+          venues: { select: { name: true } }, // Incluir id_venue desde groups
         },
       },
     });
@@ -697,6 +757,27 @@ const cancelCollaborator = async (req, res) => {
       },
     });
 
+    // Send cancellation email (non-critical)
+    try {
+      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+      await sendEmail({
+        to: collaborator.email,
+        subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
+        template: 'templates/collaborators/rechazado',
+        data: {
+          pName: fullName,
+          venue: collaborator.groups?.venues?.name || 'No asignada',
+          role: collaborator.role || 'No especificado',
+          reason: 'Cancelación solicitada por el usuario o administrador.',
+          code: `COL-${id}-${new Date().getFullYear()}`,
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+      console.log(`Cancellation email sent to ${collaborator.email}`);
+    } catch (emailError) {
+      console.error(`Error sending cancellation email to ${collaborator.email}:`, emailError.message);
+    }
+
     res.status(200).json({
       message: `Colaboradora con ID ${id} cancelada exitosamente`,
     });
@@ -723,7 +804,12 @@ const rejectCollaborator = async (req, res) => {
       where: { id_collaborator: parseInt(id) },
       include: {
         groups: { select: { id_venue: true } },
-        preferredGroup: { select: { id_venue: true } },
+        preferredGroup: {
+          select: {
+            id_venue: true,
+            venues: { select: { name: true } },
+          },
+        },
       },
     });
 
@@ -753,6 +839,27 @@ const rejectCollaborator = async (req, res) => {
       },
     });
 
+    // Send cancellation email (non-critical)
+    try {
+      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+      await sendEmail({
+        to: collaborator.email,
+        subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
+        template: 'templates/collaborators/rechazado',
+        data: {
+          pName: fullName,
+          venue: collaborator.groups?.venues?.name || 'No asignada',
+          role: collaborator.role || 'No especificado',
+          reason: 'No se cumplieron los criterios de aceptación.',
+          code: `COL-${id}-${new Date().getFullYear()}`,
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+      console.log(`Cancellation email sent to ${collaborator.email}`);
+    } catch (emailError) {
+      console.error(`Error sending cancellation email to ${collaborator.email}:`, emailError.message);
+    }
+
     res.status(200).json({
       message: `Colaborador con ID ${id} rechazado exitosamente`,
     });
@@ -761,10 +868,6 @@ const rejectCollaborator = async (req, res) => {
     res.status(500).json({ message: 'Error interno al rechazar colaborador', error: error.message });
   }
 };
-
-/*
-commit
-*/
 
 module.exports = {
   createCollaborator,
