@@ -256,8 +256,8 @@ const GestionApoyo = () => {
 
             notify({
                 color: 'green',
-                title: 'Éxito',
-                message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+                title: 'Usuario Eliminado',
+                message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} eliminada exitosamente`,
                 duration: 5000,
             });
 
@@ -267,7 +267,7 @@ const GestionApoyo = () => {
             notify({
                 color: 'red',
                 title: 'Error',
-                message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+                message: `Error al eliminar a la colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`,
                 duration: 5000,
             });
         }
@@ -368,14 +368,14 @@ const GestionApoyo = () => {
                 </div>
                 {isDeletePopupOpen && selectedApoyo && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
                             <p className="my-12">
-                                ¿Segura que quieres cancelar a la {selectedApoyo.role.toLowerCase()}{' '}
+                                ¿Segura que quieres eliminar a la {selectedApoyo.role.toLowerCase()}{' '}
                                 {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
                             </p>
                             <div className="flex justify-center gap-4">
-                                <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
                                 <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
                             </div>
                         </div>

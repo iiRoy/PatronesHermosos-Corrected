@@ -212,8 +212,8 @@ const GestionMentoras = () => {
 
       notify({
         color: 'green',
-        title: 'Éxito',
-        message: `Mentora ${selectedMentora.name} cancelada exitosamente`,
+        title: 'Usuario Eliminado',
+        message: `Mentora ${selectedMentora.name} eliminada exitosamente`,
         duration: 5000,
       });
 
@@ -223,7 +223,7 @@ const GestionMentoras = () => {
       notify({
         color: 'red',
         title: 'Error',
-        message: `No se pudo cancelar la mentora ${selectedMentora.name}: ${error.message}`,
+        message: `Error al eliminar a la mentora ${selectedMentora.name}: ${error.message}`,
         duration: 5000,
       });
     }
@@ -319,7 +319,7 @@ const GestionMentoras = () => {
 
         {isDeletePopupOpen && selectedMentora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
               <p className="my-12">¿Estás seguro de que quieres eliminar a la mentora {selectedMentora.name}?</p>
               <div className="flex justify-center gap-4">
