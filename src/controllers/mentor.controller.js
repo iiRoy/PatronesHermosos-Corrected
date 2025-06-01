@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { sendEmail } = require('../lib/emails/emailSender');
+
 
 // Obtener todas las mentoras con los datos necesarios para la tabla
 const getAll = async (req, res) => {
@@ -248,7 +250,15 @@ const cancelMentor = async (req, res) => {
     // Verificar si la mentora existe y está Aprobada
     const mentor = await prisma.mentors.findUnique({
       where: { id_mentor: parseInt(id) },
-      select: { id_mentor: true, status: true, name: true, paternal_name: true, maternal_name: true, id_venue: true },
+      select: {
+        id_mentor: true,
+        status: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        email: true, // Añadido para el correo
+        id_venue: true,
+      },
     });
 
     if (!mentor) {
@@ -275,6 +285,48 @@ const cancelMentor = async (req, res) => {
         id_venue: mentor.id_venue,
       },
     });
+
+    // Send cancellation email (non-critical)
+    try {
+      // Construct full name
+      const fullName = [
+        mentor.name,
+        mentor.paternal_name,
+        mentor.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      // Fetch venue name
+      const venue = await prisma.venues.findUnique({
+        where: { id_venue: mentor.id_venue },
+        select: { name: true },
+      });
+
+      // Prepare email data
+      const emailData = {
+        pName: fullName || 'Mentora',
+        venue: venue?.name || 'Sede no especificada',
+        role: 'Mentora', // Hardcoded role
+        iEmail: 'soporte@patroneshermosos.org'
+      };
+
+      // Validate email before sending
+      if (mentor.email && mentor.email.trim()) {
+        await sendEmail({
+          to: mentor.email,
+          subject: 'Notificación de Cancelación - Patrones Hermosos',
+          template: 'templates/lideres/eliminado',
+          data: emailData
+        });
+        console.log(`Cancellation email sent to ${mentor.email}`);
+      } else {
+        console.log(`No email sent for mentor ${id}: No valid email address`);
+      }
+    } catch (emailError) {
+      console.error('Error sending cancellation email:', emailError.message);
+      // Do not affect the success response
+    }
 
     res.status(200).json({
       message: `Mentora con ID ${id} cancelada exitosamente`,
