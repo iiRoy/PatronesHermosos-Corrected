@@ -202,6 +202,7 @@ const EditarCoordinadora = () => {
               value={selectedVenue}
               onChange={handleVenueChange}
               variant="accent"
+              darkText
               Icon={withIconDecorator(MapPin)} // Ícono decorativo para la sede
             />
           </div>

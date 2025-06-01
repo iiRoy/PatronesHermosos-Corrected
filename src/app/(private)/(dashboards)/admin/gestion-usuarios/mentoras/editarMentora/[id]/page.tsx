@@ -198,6 +198,7 @@ const EditarMentora = () => {
               value={selectedVenue}
               onChange={handleVenueChange}
               variant="accent"
+              darkText
               Icon={withIconDecorator(MapPin)} // Ícono decorativo similar a EditarParticipante
             />
           </div>
