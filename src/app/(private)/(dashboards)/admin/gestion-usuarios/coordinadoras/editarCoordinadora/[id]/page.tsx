@@ -180,9 +180,9 @@ const EditarCoordinadora = () => {
       <PageTitle>Editar Coordinadora</PageTitle>
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        <div className="flex justify-between gap-4 items-center pb-2 mb-4">
+        <div className="flex justify-between gap-4  pb-2 mb-4">
 
-          <div className="basis-1/2">
+          <div className="basis-1/3">
             <InputField
               label="Nombre"
               darkText={true}
@@ -195,20 +195,6 @@ const EditarCoordinadora = () => {
             />
           </div>
 
-          <div className="basis-1/2">
-            <Dropdown
-              label="Sede"
-              options={venueOptions}
-              value={selectedVenue}
-              onChange={handleVenueChange}
-              variant="accent"
-              darkText
-              Icon={withIconDecorator(MapPin)} // Ícono decorativo para la sede
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
@@ -233,7 +219,12 @@ const EditarCoordinadora = () => {
               onChangeText={(val) => setMaternalName(val)}
             />
           </div>
-          <div className="basis-1/3">
+
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
+
+          <div className="basis-1/2">
             <InputField
               label="Username"
               darkText={true}
@@ -245,9 +236,7 @@ const EditarCoordinadora = () => {
               onChangeText={(val) => setUsername(val)}
             />
           </div>
-        </div>
 
-        <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/2">
             <InputField
               label="Correo"
@@ -260,6 +249,9 @@ const EditarCoordinadora = () => {
               onChangeText={(val) => setEmail(val)}
             />
           </div>
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/2">
             <InputField
               label="Teléfono"
@@ -270,6 +262,18 @@ const EditarCoordinadora = () => {
               variant="accent"
               value={phoneNumber}
               onChangeText={(val) => setPhoneNumber(val)}
+            />
+          </div>
+
+          <div className="basis-1/2">
+            <Dropdown
+              label="Sede"
+              options={venueOptions}
+              value={selectedVenue}
+              onChange={handleVenueChange}
+              variant="accent"
+              darkText
+              Icon={withIconDecorator(MapPin)} // Ícono decorativo para la sede
             />
           </div>
         </div>

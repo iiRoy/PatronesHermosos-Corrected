@@ -178,7 +178,7 @@ const EditarMentora = () => {
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-          <div className="basis-1/2">
+          <div className="basis-1/3">
             <InputField
               label="Nombre"
               darkText={true}
@@ -191,20 +191,6 @@ const EditarMentora = () => {
             />
           </div>
 
-          <div className="basis-1/2">
-            <Dropdown
-              label="Sede"
-              options={venueOptions}
-              value={selectedVenue}
-              onChange={handleVenueChange}
-              variant="accent"
-              darkText
-              Icon={withIconDecorator(MapPin)} // Ícono decorativo similar a EditarParticipante
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
@@ -229,7 +215,12 @@ const EditarMentora = () => {
               onChangeText={(val) => setMaternalName(val)}
             />
           </div>
-          <div className="basis-1/3">
+
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
+
+          <div className="basis-1/2">
             <InputField
               label="Correo"
               darkText={true}
@@ -241,10 +232,7 @@ const EditarMentora = () => {
               onChangeText={(val) => setEmail(val)}
             />
           </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="basis-1/3">
+          <div className="basis-1/2">
             <InputField
               label="Teléfono"
               darkText={true}
@@ -254,6 +242,20 @@ const EditarMentora = () => {
               variant="accent"
               value={phoneNumber}
               onChangeText={(val) => setPhoneNumber(val)}
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
+          <div className="basis-1/2">
+            <Dropdown
+              label="Sede"
+              options={venueOptions}
+              value={selectedVenue}
+              onChange={handleVenueChange}
+              variant="accent"
+              darkText
+              Icon={withIconDecorator(MapPin)} // Ícono decorativo similar a EditarParticipante
             />
           </div>
         </div>

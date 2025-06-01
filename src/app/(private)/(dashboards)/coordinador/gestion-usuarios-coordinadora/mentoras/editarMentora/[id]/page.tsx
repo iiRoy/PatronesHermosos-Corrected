@@ -224,20 +224,8 @@ const EditarMentora = () => {
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-          <div className="basis-1/5">
-            <InputField
-              label="ID"
-              darkText={true}
-              showDescription={false}
-              placeholder={mentora.id_mentor.toString()}
-              showError={false}
-              variant="accent"
-              value={mentora.id_mentor.toString()}
-              disabled
-            />
-          </div>
 
-          <div className="basis-2/5">
+          <div className="basis-1/3">
             <InputField
               label="Nombre"
               darkText={true}
@@ -249,26 +237,6 @@ const EditarMentora = () => {
               onChangeText={(val) => setName(val)}
             />
           </div>
-
-          <div className="basis-2/5">
-            <p className="texto-filtro">Sede</p>
-            <FiltroEvento
-              disableCheckboxes
-              label={selectedVenue || 'Seleccionar sede'}
-              showSecciones
-              labelSecciones=""
-              secciones={venueOptions}
-              seccionActiva={selectedVenue}
-              onChangeSeccion={handleVenueChange}
-              extraFilters={[]}
-              filterActiva={{}}
-              onExtraFilterChange={() => {}}
-              fade={false}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
@@ -293,7 +261,10 @@ const EditarMentora = () => {
               onChangeText={(val) => setMaternalName(val)}
             />
           </div>
-          <div className="basis-1/3">
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
+          <div className="basis-1/2">
             <InputField
               label="Correo"
               darkText={true}
@@ -305,9 +276,6 @@ const EditarMentora = () => {
               onChangeText={(val) => setEmail(val)}
             />
           </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/2">
             <InputField
               label="Teléfono"

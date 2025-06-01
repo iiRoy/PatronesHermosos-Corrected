@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
+import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
@@ -50,6 +51,12 @@ const EditarApoyo = () => {
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
+  // Opciones para los select de enums
+  const roleOptions = ['Staff', 'Instructora', 'Facilitadora', 'Pendiente'];
+  const languageOptions = ['Inglés', 'Español', 'Pendiente'];
+  const levelOptions = ['Básico', 'Avanzado', 'Pendiente'];
+  const genderOptions = ['Masculino', 'Femenino', 'Otro'];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,6 +80,8 @@ const EditarApoyo = () => {
         }
         const collaboratorData = await collaboratorResponse.json();
         const collab = collaboratorData.data;
+        console.log('Datos recibidos del API:', collab); // Log para depurar
+
         setCollaborator(collab);
         setName(collab.name || '');
         setPaternalName(collab.paternal_name || '');
@@ -116,6 +125,32 @@ const EditarApoyo = () => {
 
     if (!gender.trim()) {
       errors.push('El género es obligatorio');
+    } else if (!genderOptions.includes(gender)) {
+      errors.push('El género seleccionado no es válido');
+    }
+
+    if (college && college.length > 255) {
+      errors.push('La universidad no debe exceder 255 caracteres');
+    }
+
+    if (degree && degree.length > 255) {
+      errors.push('La carrera no debe exceder 255 caracteres');
+    }
+
+    if (semester && !/^\d{1,2}$/.test(semester)) {
+      errors.push('El semestre debe ser un número entre 1 y 99');
+    }
+
+    if (preferredRole && !roleOptions.includes(preferredRole)) {
+      errors.push('El rol preferido no es válido');
+    }
+
+    if (preferredLanguage && !languageOptions.includes(preferredLanguage)) {
+      errors.push('El idioma preferido no es válido');
+    }
+
+    if (preferredLevel && !levelOptions.includes(preferredLevel)) {
+      errors.push('El nivel preferido no es válido');
     }
 
     setValidationErrors(errors);
@@ -123,7 +158,7 @@ const EditarApoyo = () => {
   };
 
   const handleSubmit = async () => {
-    setValidationErrors([]); // Limpiar errores previos
+    setValidationErrors([]); // Limpiamos errores previos
 
     if (!validateForm()) {
       return;
@@ -132,20 +167,29 @@ const EditarApoyo = () => {
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
       if (!token) {
+        setValidationErrors(['No se encontró el token, redirigiendo al login']);
         router.push('/login');
         return;
       }
 
       const updatedCollaborator = {
-        name: name.trim(),
+        name: name.trim() || null,
         paternal_name: paternalName.trim() || null,
         maternal_name: maternalName.trim() || null,
-        email: email.trim(),
+        email: email.trim() || null,
         phone_number: phoneNumber.trim() || null,
-
+        college: college.trim() || null,
+        degree: degree.trim() || null,
+        semester: semester.trim() || null,
+        gender: gender.trim() || null,
+        preferred_role: preferredRole.trim() || null,
+        preferred_language: preferredLanguage.trim() || null,
+        preferred_level: preferredLevel.trim() || null,
       };
 
-      const response = await fetch(`/api/collaborators/basic/${id}/`, {
+      console.log('Datos enviados al API:', updatedCollaborator); // Log para depurar
+
+      const response = await fetch(`/api/collaborators/basic/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +200,7 @@ const EditarApoyo = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`Error updating collaborator: ${errorData.message || 'Unknown error'}`);
+        throw new Error(`Error al actualizar colaborador: ${errorData.message || 'Error desconocido'}`);
       }
 
       notify({
@@ -168,7 +212,7 @@ const EditarApoyo = () => {
 
       router.push('/admin/gestion-usuarios/staff');
     } catch (error: any) {
-      console.error('Error updating collaborator:', error);
+      console.error('Error al actualizar colaborador:', error);
       notify({
         color: 'red',
         title: 'Error',
@@ -187,7 +231,7 @@ const EditarApoyo = () => {
   }
 
   return (
-    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
+    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
       <PageTitle>Editar Colaborador</PageTitle>
 
       {validationErrors.length > 0 && (
@@ -201,42 +245,42 @@ const EditarApoyo = () => {
         </div>
       )}
 
-      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
+      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
         {/* Primera fila: ID, Nombre, Apellidos */}
-        <div className='flex justify-between gap-4 items-center pb-2 mb-4'>
+        <div className="flex justify-between gap-4 items-center pb-2 mb-4">
 
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Nombre'
+              label="Nombre"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.name}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={name}
               onChangeText={(val) => setName(val)}
             />
           </div>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Apellido Paterno'
+              label="Apellido Paterno"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
           </div>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Apellido Materno'
+              label="Apellido Materno"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
@@ -244,79 +288,77 @@ const EditarApoyo = () => {
         </div>
 
         {/* Segunda fila: Correo, Teléfono, Género */}
-        <div className='flex gap-4 justify-between mb-4'>
-          <div className='basis-1/3'>
+        <div className="flex gap-4 justify-between mb-4">
+          <div className="basis-1/3">
             <InputField
-              label='Correo'
+              label="Correo"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.email}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={email}
               onChangeText={(val) => setEmail(val)}
             />
           </div>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Teléfono'
+              label="Teléfono"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.phone_number || 'Sin teléfono'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={phoneNumber}
               onChangeText={(val) => setPhoneNumber(val)}
             />
           </div>
-          <div className='basis-1/3'>
-            <InputField
-              label='Género'
-              darkText={true}
-              showDescription={false}
-              placeholder={collaborator.gender || 'Sin género'}
-              showError={false}
-              variant='accent'
+          <div className="basis-1/3">
+            <Dropdown
+              label="Género"
+              options={genderOptions.map((option) => ({ label: option, value: option }))}
               value={gender}
-              onChangeText={(val) => setGender(val)}
+              onChange={setGender}
+              variant="accent"
+              darkText
             />
           </div>
         </div>
 
         {/* Tercera fila: Universidad, Carrera, Semestre */}
-        <div className='flex gap-4 justify-between mb-4'>
-          <div className='basis-1/3'>
+        <div className="flex gap-4 justify-between mb-4">
+          <div className="basis-1/3">
             <InputField
-              label='Universidad'
+              label="Universidad"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.college || 'Sin universidad'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={college}
               onChangeText={(val) => setCollege(val)}
             />
           </div>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Carrera'
+              label="Carrera"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.degree || 'Sin carrera'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={degree}
               onChangeText={(val) => setDegree(val)}
             />
           </div>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Semestre'
+              label="Semestre"
               darkText={true}
               showDescription={false}
               placeholder={collaborator.semester || 'Sin semestre'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={semester}
               onChangeText={(val) => setSemester(val)}
             />
@@ -324,50 +366,44 @@ const EditarApoyo = () => {
         </div>
 
         {/* Cuarta fila: Rol Preferido, Idioma Preferido, Nivel Preferido */}
-        <div className='flex gap-4 justify-between mb-4'>
-          <div className='basis-1/3'>
-            <InputField
-              label='Rol Preferido'
-              darkText={true}
-              showDescription={false}
-              placeholder={collaborator.preferred_role || 'Sin rol preferido'}
-              showError={false}
-              variant='accent'
+        <div className="flex gap-4 justify-between mb-4">
+          <div className="basis-1/3">
+            <Dropdown
+              label="Rol Preferido"
+              options={roleOptions.map((option) => ({ label: option, value: option }))}
               value={preferredRole}
-              onChangeText={(val) => setPreferredRole(val)}
+              onChange={setPreferredRole}
+              variant="accent"
+              darkText
             />
           </div>
-          <div className='basis-1/3'>
-            <InputField
-              label='Idioma Preferido'
-              darkText={true}
-              showDescription={false}
-              placeholder={collaborator.preferred_language || 'Sin idioma preferido'}
-              showError={false}
-              variant='accent'
+          <div className="basis-1/3">
+            <Dropdown
+              label="Idioma Preferido"
+              options={languageOptions.map((option) => ({ label: option, value: option }))}
               value={preferredLanguage}
-              onChangeText={(val) => setPreferredLanguage(val)}
+              onChange={setPreferredLanguage}
+              variant="accent"
+              darkText
             />
           </div>
-          <div className='basis-1/3'>
-            <InputField
-              label='Nivel Preferido'
-              darkText={true}
-              showDescription={false}
-              placeholder={collaborator.preferred_level || 'Sin nivel preferido'}
-              showError={false}
-              variant='accent'
+          <div className="basis-1/3">
+            <Dropdown
+              label="Nivel Preferido"
+              options={levelOptions.map((option) => ({ label: option, value: option }))}
               value={preferredLevel}
-              onChangeText={(val) => setPreferredLevel(val)}
+              onChange={setPreferredLevel}
+              variant="accent"
+              darkText
             />
           </div>
         </div>
 
         {/* Botones */}
-        <div className='flex gap-4 justify-between mt-auto'>
-          <div className='flex gap-4'>
-            <Button label='Confirmar' variant='primary' onClick={handleSubmit} />
-            <Button label='Cancelar' variant='secondary' href='/admin/gestion-usuarios/staff' />
+        <div className="flex gap-4 justify-between mt-auto">
+          <div className="flex gap-4">
+            <Button label="Confirmar" variant="primary" onClick={handleSubmit} />
+            <Button label="Cancelar" variant="secondary" href="/admin/gestion-usuarios/staff" />
           </div>
         </div>
       </div>
