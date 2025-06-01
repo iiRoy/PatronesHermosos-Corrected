@@ -236,8 +236,8 @@ const GestionCoordinadoras = () => {
 
       notify({
         color: 'green',
-        title: 'Éxito',
-        message: `Coordinadora ${selectedCoordinadora.nombre} cancelada exitosamente`,
+        title: 'Usuario Eliminado',
+        message: `Coordinadora ${selectedCoordinadora.nombre} eliminada exitosamente`,
         duration: 5000,
       });
 
@@ -357,10 +357,10 @@ const GestionCoordinadoras = () => {
         {isDeletePopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
-              <p className="my-12">¿Estás seguro de que quieres cancelar a la coordinadora {selectedCoordinadora.nombre}?</p>
+              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+              <p className="my-12">¿Estás segura de que quieres eliminar a la coordinadora {selectedCoordinadora.nombre}?</p>
               <div className="flex justify-center gap-4">
-                <Button label="Cancelar Coordinadora" variant="error" onClick={handleConfirmDelete} />
+                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
                 <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
               </div>
             </div>
