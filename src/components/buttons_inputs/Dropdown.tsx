@@ -17,17 +17,18 @@ interface DropdownProps {
   showDescription?: boolean;
   options: DropdownOption[] | string[] | Option[]; // Accept either string[] or Option[]
   value: string;
+  darkText?: boolean;
   onChange: (value: string) => void;
   variant?:
-    | 'accent'
-    | 'primary'
-    | 'secondary-shade'
-    | 'text-color'
-    | 'warning'
-    | 'accent-disabled'
-    | 'primary-disabled'
-    | 'secondary-shade-disabled'
-    | 'text-color-disabled';
+  | 'accent'
+  | 'primary'
+  | 'secondary-shade'
+  | 'text-color'
+  | 'warning'
+  | 'accent-disabled'
+  | 'primary-disabled'
+  | 'secondary-shade-disabled'
+  | 'text-color-disabled';
   dim?: boolean;
   Icon?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
 }
@@ -36,6 +37,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   label,
   description,
   showDescription = true,
+  darkText = false,
   options,
   value,
   onChange,
@@ -44,10 +46,11 @@ const Dropdown: React.FC<DropdownProps> = ({
   Icon,
 }) => {
   const selectClass = `input input-${variant}${dim ? ' dim' : ''} relative`;
+  const labelClass = `label-input ${darkText ? ' darkText' : ''}`;
 
   return (
     <div className="container-input">
-      <div className="label-input">{label}</div>
+      <div className={labelClass}>{label}</div>
       {showDescription && description && <div className="description-input">{description}</div>}
       <div className={selectClass}>
         {Icon && (

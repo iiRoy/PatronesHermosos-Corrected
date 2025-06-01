@@ -204,20 +204,8 @@ const EditarApoyo = () => {
       <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
         {/* Primera fila: ID, Nombre, Apellidos */}
         <div className='flex justify-between gap-4 items-center pb-2 mb-4'>
-          <div className='basis-1/5'>
-            <InputField
-              label='ID'
-              darkText={true}
-              showDescription={false}
-              placeholder={collaborator.id_collaborator.toString()}
-              showError={false}
-              variant='accent'
-              value={collaborator.id_collaborator.toString()}
-              disabled
-            />
-          </div>
 
-          <div className='basis-2/5'>
+          <div className='basis-1/3'>
             <InputField
               label='Nombre'
               darkText={true}
@@ -229,32 +217,29 @@ const EditarApoyo = () => {
               onChangeText={(val) => setName(val)}
             />
           </div>
-
-          <div className='basis-2/5 flex gap-2'>
-            <div className='basis-1/2'>
-              <InputField
-                label='Apellido Paterno'
-                darkText={true}
-                showDescription={false}
-                placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
-                showError={false}
-                variant='accent'
-                value={paternalName}
-                onChangeText={(val) => setPaternalName(val)}
-              />
-            </div>
-            <div className='basis-1/2'>
-              <InputField
-                label='Apellido Materno'
-                darkText={true}
-                showDescription={false}
-                placeholder={collaborator.maternal_name || 'Sin apellido materno'}
-                showError={false}
-                variant='accent'
-                value={maternalName}
-                onChangeText={(val) => setMaternalName(val)}
-              />
-            </div>
+          <div className='basis-1/3'>
+            <InputField
+              label='Apellido Paterno'
+              darkText={true}
+              showDescription={false}
+              placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
+              showError={false}
+              variant='accent'
+              value={paternalName}
+              onChangeText={(val) => setPaternalName(val)}
+            />
+          </div>
+          <div className='basis-1/3'>
+            <InputField
+              label='Apellido Materno'
+              darkText={true}
+              showDescription={false}
+              placeholder={collaborator.maternal_name || 'Sin apellido materno'}
+              showError={false}
+              variant='accent'
+              value={maternalName}
+              onChangeText={(val) => setMaternalName(val)}
+            />
           </div>
         </div>
 

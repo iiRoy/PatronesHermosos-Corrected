@@ -37,7 +37,7 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder = 'Text',
   error,
   showError = true,
-  darkText = true,
+  darkText = false,
   variant = 'accent',
   disabled = false,
   icon,
@@ -62,6 +62,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClass = `input input-${variant}${disabled ? ' input-disabled' : ''}${darkText ? ' darkText' : ''} transition-all duration-500 ease-in-out`;
+  const labelClass = `label-input ${darkText ? ' darkText' : ''}`;
   const errorClass =
     variant === 'warning' || variant.includes('warning') ? 'error-text-red' : 'error-text';
 
@@ -69,7 +70,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
   return (
     <div className='container-input'>
-      <div className='label-input'>{label}</div>
+      <div className={labelClass}>{label}</div>
       {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={inputClass}>
         {IconComponent && (

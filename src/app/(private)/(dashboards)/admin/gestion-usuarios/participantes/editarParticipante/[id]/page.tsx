@@ -279,22 +279,8 @@ const EditarParticipante = () => {
                             value={grupoValue?.toString() || ''}
                             onChange={(value: string) => setGrupoValue(parseInt(value))}
                             variant="accent"
+                            darkText
                             Icon={withIconDecorator(Users)}
-                        />
-                    </div>
-                </div>
-
-                <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-                    <div>
-                        <p className='texto-filtro'>Carta Firmada</p>
-                        <Button
-                            label=""
-                            round
-                            variant="primary"
-                            showLeftIcon
-                            IconLeft={FileText}
-                            href={participante.participation_file ? `/api/files/${participante.participation_file}` : '#'}
-                            disabled={!participante.participation_file}
                         />
                     </div>
                 </div>
