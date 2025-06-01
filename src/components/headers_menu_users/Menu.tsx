@@ -127,7 +127,7 @@ const Menu: React.FC = () => {
             href: '/diplomas',
             visible: ['superuser', 'venue_coordinator'],
           },
-          { icon: 'Envelope', label: 'Correos', href: '/correos', visible: ['superuser', 'venue_coordinator'] },
+          { icon: 'ArrowSquareIn', label: 'Logs', href: '/gestion-audit-log', visible: ['superuser', 'venue_coordinator'] },
         ]
           .filter((item) => item.visible.includes(role))
           .map((item) => {
