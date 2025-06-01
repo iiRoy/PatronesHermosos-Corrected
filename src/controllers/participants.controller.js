@@ -419,7 +419,7 @@ const changeParticipantStatus = async (req, res) => {
   }
 
   try {
-    // Fetch participant data for audit log
+    // Fetch participant data for audit log and email
     const participant = await prisma.participants.findUnique({
       where: { id_participant: parseInt(id) },
       include: {
@@ -450,6 +450,45 @@ const changeParticipantStatus = async (req, res) => {
         id_venue: participant.groups?.id_venue || participant.id_venue,
       },
     });
+
+    // Send rejection email (non-critical) only for 'desactivar'
+    if (action === 'desactivar') {
+      try {
+        // Construct full name
+        const fullName = [
+          participant.name,
+          participant.paternal_name,
+          participant.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
+
+        // Prepare email data with static reason and code
+        const emailData = {
+          pName: fullName || 'Participante',
+          reason: 'No se cumplieron los criterios de selección',
+          code: 'REJ123', // Static code
+          iName: 'Soporte Patrones Hermosos',
+          iEmail: 'soporte@patroneshermosos.org'
+        };
+
+        // Validate email before sending
+        if (participant.email && participant.email.trim()) {
+          await sendEmail({
+            to: participant.email,
+            subject: 'Resultados de la postulación - Patrones Hermosos',
+            template: 'templates/participantes/rechazado',
+            data: emailData
+          });
+          console.log(`Rejection email sent to ${participant.email}`);
+        } else {
+          console.log(`No email sent for participant ${id}: No valid email address`);
+        }
+      } catch (emailError) {
+        console.error('Error sending rejection email:', emailError.message);
+        // Do not affect the success response
+      }
+    }
 
     res.status(200).json({
       message: `Participante con ID ${id} ${action === 'activar' ? 'activado' : 'desactivado'} exitosamente`,
@@ -740,6 +779,43 @@ const rejectParticipant = async (req, res) => {
         id_venue: participant.groups?.id_venue || participant.id_venue,
       },
     });
+
+    // Send rejection email (non-critical)
+    try {
+      // Construct full name
+      const fullName = [
+        participant.name,
+        participant.paternal_name,
+        participant.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      // Prepare email data with static reason and code
+      const emailData = {
+        pName: fullName || 'Participante',
+        reason: 'No se cumplieron los criterios de selección',
+        code: 'REJ123', // Static code
+        iName: 'Soporte Patrones Hermosos',
+        iEmail: 'soporte@patroneshermosos.org'
+      };
+
+      // Validate email before sending
+      if (participant.email && participant.email.trim()) {
+        await sendEmail({
+          to: participant.email,
+          subject: 'Resultados de la postulación - Patrones Hermosos',
+          template: 'templates/participantes/rechazado',
+          data: emailData
+        });
+        console.log(`Rejection email sent to ${participant.email}`);
+      } else {
+        console.log(`No email sent for participant ${id}: No valid email address`);
+      }
+    } catch (emailError) {
+      console.error('Error sending rejection email:', emailError.message);
+      // Do not affect the success response
+    }
 
     res.status(200).json({
       message: `Participante con ID ${id} rechazado exitosamente`,
