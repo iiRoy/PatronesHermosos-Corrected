@@ -289,7 +289,7 @@ const verSede = () => {
                     </div>
                 </div>
 
-                <div className='overflow-x-auto bg-white rounded-xl p-4 shadow flex-1'>
+                <div className='overflow-x-auto bg-white rounded-xl p-4 shadow flex-1 custom-scrollbar-tabla'>
                     <table className='w-full text-left'>
                         <thead className='text-gray-400 text-sm border-b'>
                             <tr>

@@ -219,59 +219,59 @@ const GestionApoyo = () => {
         setSelectedApoyo(null);
     };
 
-  const handleConfirmDelete = async () => {
-    if (!selectedApoyo) {
-      handleCloseDeletePopup();
-      return;
-    }
+    const handleConfirmDelete = async () => {
+        if (!selectedApoyo) {
+            handleCloseDeletePopup();
+            return;
+        }
 
-    try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
-        notify({
-          color: 'red',
-          title: 'Error',
-          message: 'No se encontró el token, redirigiendo al login',
-          duration: 5000,
-        });
-        router.push('/login');
-        return;
-      }
+        try {
+            const token = localStorage.getItem('api_token');
+            if (!token) {
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: 'No se encontró el token, redirigiendo al login',
+                    duration: 5000,
+                });
+                router.push('/login');
+                return;
+            }
 
-      const response = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}/cancel`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+            const response = await fetch(`/api/collaborators/${selectedApoyo.id_collaborator}/cancel`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al cancelar la colaboradora');
-      }
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al cancelar la colaboradora');
+            }
 
-      // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
-      setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
+            // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
+            setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
 
-      notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
-        duration: 5000,
-      });
+            notify({
+                color: 'green',
+                title: 'Éxito',
+                message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+                duration: 5000,
+            });
 
-      handleCloseDeletePopup();
-    } catch (error: any) {
-      console.error('Error al cancelar la mentora:', error);
-      notify({
-        color: 'red',
-        title: 'Error',
-        message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
-        duration: 5000,
-      });
-    }
-  };
+            handleCloseDeletePopup();
+        } catch (error: any) {
+            console.error('Error al cancelar la mentora:', error);
+            notify({
+                color: 'red',
+                title: 'Error',
+                message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+                duration: 5000,
+            });
+        }
+    };
 
     if (error) {
         return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
@@ -307,7 +307,7 @@ const GestionApoyo = () => {
                         </div>
                     </div>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto custom-scrollbar-tabla">
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
                             <tr className="texto-primary-shade">

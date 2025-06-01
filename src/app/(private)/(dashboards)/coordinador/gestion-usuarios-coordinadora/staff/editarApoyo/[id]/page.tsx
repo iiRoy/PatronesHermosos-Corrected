@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
+import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
@@ -247,20 +248,8 @@ const EditarApoyo = () => {
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
         {/* Primera fila: ID, Nombre, Apellidos */}
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-          <div className="basis-1/5">
-            <InputField
-              label="ID"
-              darkText={true}
-              showDescription={false}
-              placeholder={collaborator.id_collaborator.toString()}
-              showError={false}
-              variant="accent"
-              value={collaborator.id_collaborator.toString()}
-              disabled
-            />
-          </div>
 
-          <div className="basis-2/5">
+          <div className="basis-1/3">
             <InputField
               label="Nombre"
               darkText={true}
@@ -272,32 +261,29 @@ const EditarApoyo = () => {
               onChangeText={(val) => setName(val)}
             />
           </div>
-
-          <div className="basis-2/5 flex gap-2">
-            <div className="basis-1/2">
-              <InputField
-                label="Apellido Paterno"
-                darkText={true}
-                showDescription={false}
-                placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
-                showError={false}
-                variant="accent"
-                value={paternalName}
-                onChangeText={(val) => setPaternalName(val)}
-              />
-            </div>
-            <div className="basis-1/2">
-              <InputField
-                label="Apellido Materno"
-                darkText={true}
-                showDescription={false}
-                placeholder={collaborator.maternal_name || 'Sin apellido materno'}
-                showError={false}
-                variant="accent"
-                value={maternalName}
-                onChangeText={(val) => setMaternalName(val)}
-              />
-            </div>
+          <div className="basis-1/3">
+            <InputField
+              label="Apellido Paterno"
+              darkText={true}
+              showDescription={false}
+              placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
+              showError={false}
+              variant="accent"
+              value={paternalName}
+              onChangeText={(val) => setPaternalName(val)}
+            />
+          </div>
+          <div className="basis-1/3">
+            <InputField
+              label="Apellido Materno"
+              darkText={true}
+              showDescription={false}
+              placeholder={collaborator.maternal_name || 'Sin apellido materno'}
+              showError={false}
+              variant="accent"
+              value={maternalName}
+              onChangeText={(val) => setMaternalName(val)}
+            />
           </div>
         </div>
 
@@ -328,20 +314,14 @@ const EditarApoyo = () => {
             />
           </div>
           <div className="basis-1/3">
-            <label className="block text-sm font-medium dark:text-gray-200">Género</label>
-            <select
+            <Dropdown
+              label="Género"
+              options={genderOptions.map((option) => ({ label: option, value: option }))}
               value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="mt-1 block w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              required
-            >
-              <option value="">Selecciona un género</option>
-              {genderOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              onChange={setGender}
+              variant="accent"
+              darkText
+            />
           </div>
         </div>
 
@@ -388,49 +368,34 @@ const EditarApoyo = () => {
         {/* Cuarta fila: Rol Preferido, Idioma Preferido, Nivel Preferido */}
         <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/3">
-            <label className="block text-sm font-medium dark:text-gray-200">Rol Preferido</label>
-            <select
+            <Dropdown
+              label="Rol Preferido"
+              options={roleOptions.map((option) => ({ label: option, value: option }))}
               value={preferredRole}
-              onChange={(e) => setPreferredRole(e.target.value)}
-              className="mt-1 block w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">Selecciona un rol</option>
-              {roleOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              onChange={setPreferredRole}
+              variant="accent"
+              darkText
+            />
           </div>
           <div className="basis-1/3">
-            <label className="block text-sm font-medium dark:text-gray-200">Idioma Preferido</label>
-            <select
+            <Dropdown
+              label="Idioma Preferido"
+              options={languageOptions.map((option) => ({ label: option, value: option }))}
               value={preferredLanguage}
-              onChange={(e) => setPreferredLanguage(e.target.value)}
-              className="mt-1 block w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">Selecciona un idioma</option>
-              {languageOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              onChange={setPreferredLanguage}
+              variant="accent"
+              darkText
+            />
           </div>
           <div className="basis-1/3">
-            <label className="block text-sm font-medium dark:text-gray-200">Nivel Preferido</label>
-            <select
+            <Dropdown
+              label="Nivel Preferido"
+              options={levelOptions.map((option) => ({ label: option, value: option }))}
               value={preferredLevel}
-              onChange={(e) => setPreferredLevel(e.target.value)}
-              className="mt-1 block w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">Selecciona un nivel</option>
-              {levelOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              onChange={setPreferredLevel}
+              variant="accent"
+              darkText
+            />
           </div>
         </div>
 
