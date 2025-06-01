@@ -213,8 +213,8 @@ const gestionParticipantes = () => {
 
                 notify({
                     color: 'green',
-                    title: 'Usuario Cancelado',
-                    message: `El usuario ${selectedParticipante.nombre} ha sido cancelado correctamente`,
+                    title: 'Usuario Eliminado',
+                    message: `El usuario ${selectedParticipante.nombre} ha sido eliminado correctamente`,
                     duration: 5000,
                 });
 
@@ -315,14 +315,14 @@ const gestionParticipantes = () => {
 
                 {isDeletePopupOpen && selectedParticipante && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Cancelación</h2>
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
+                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
                             <p className="mt-12 mb-12">
-                                ¿Estás segura de que quieres cancelar a la participante{' '}
+                                ¿Estás segura de que quieres eliminar a la participante{' '}
                                 {selectedParticipante.nombre}?
                             </p>
                             <div className="flex justify-center gap-4">
-                                <Button label="Confirmar" variant="error" onClick={handleConfirmDelete} />
+                                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
                                 <Button label="Cancelar" variant="secondary" onClick={() => handleClosePopup('delete')} />
                             </div>
                         </div>
