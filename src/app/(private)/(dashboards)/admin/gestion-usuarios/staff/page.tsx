@@ -246,8 +246,8 @@ const GestionApoyo = () => {
 
       notify({
         color: 'green',
-        title: 'Éxito',
-        message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} cancelada exitosamente`,
+        title: 'Usuario Eliminado',
+        message: `Colaboradora ${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name} eliminada exitosamente`,
         duration: 5000,
       });
 
@@ -372,11 +372,11 @@ const GestionApoyo = () => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
               <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
               <p className="my-12">
-                ¿Segura que quieres eliminar a la {selectedApoyo.role.toLowerCase()} {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
+                ¿Estás segura de que quieres eliminar a la colaboradora {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
               </p>
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-center gap-4 ml-8 mr-8">
                 <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
+                <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
