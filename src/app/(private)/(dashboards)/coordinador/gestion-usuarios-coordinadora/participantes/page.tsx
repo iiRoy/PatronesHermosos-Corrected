@@ -188,13 +188,12 @@ const gestionParticipantes = () => {
                     return;
                 }
 
-                const response = await fetch(`/api/participants/${selectedParticipante.id}/status`, {
+                const response = await fetch(`/api/participants/${selectedParticipante.id}/reject`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ action: 'desactivar' }),
                 });
 
                 if (!response.ok) {
