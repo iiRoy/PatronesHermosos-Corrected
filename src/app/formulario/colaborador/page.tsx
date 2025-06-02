@@ -10,7 +10,7 @@ import withIconDecorator from '@/components/decorators/IconDecorator';
 import { FlowerLotus, AddressBook, X, UserSound, ChatTeardropText, Grains, Student, Megaphone } from '@/components/icons';
 import Send from '@components/icons/ArrowFatRight';
 import Navbar from '@/components/headers_menu_users/navbar';
-import VenueSelectionTable from '@/components/tables/VenueSelectionTable';
+import GroupSelectionTable from '@/components/tables/GroupSelectionTable';
 
 interface Collaborator {
   name: string;
@@ -25,7 +25,7 @@ interface Collaborator {
   preferred_role: string;
   preferred_language: string;
   preferred_level: string;
-  preferred_venue: number | null;
+  preferred_group: number | null;
 }
 
 const CollaboratorRegistrationForm: React.FC = () => {
@@ -43,7 +43,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
     preferred_role: '',
     preferred_language: '',
     preferred_level: '',
-    preferred_venue: null,
+    preferred_group: null,
   });
 
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -60,9 +60,9 @@ const CollaboratorRegistrationForm: React.FC = () => {
     }));
   };
 
-  // Handle venue selection
-  const handleVenueSelect = (id_venue: number) => {
-    setFormData(prev => ({ ...prev, preferred_venue: id_venue }));
+  // Handle group selection
+  const handleGroupSelect = (id_group: number) => {
+    setFormData(prev => ({ ...prev, preferred_group: id_group }));
   };
 
   // Client-side validation
@@ -82,7 +82,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
     if (!formData.preferred_role) newErrors.push('El rol preferido es obligatorio');
     if (!formData.preferred_language) newErrors.push('El idioma preferido es obligatorio');
     if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatorio');
-    if (!formData.preferred_venue) newErrors.push('La sede preferida es obligatorio');
+    if (!formData.preferred_group) newErrors.push('El grupo preferido es obligatorio');
     if (!privacyAccepted) newErrors.push('Debes aceptar el aviso de privacidad');
 
     return newErrors;
@@ -141,7 +141,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
         preferred_role: '',
         preferred_language: '',
         preferred_level: '',
-        preferred_venue: null,
+        preferred_group: null,
       });
       setPrivacyAccepted(false);
     } catch (err: any) {
@@ -281,9 +281,9 @@ const CollaboratorRegistrationForm: React.FC = () => {
               </p>
             </div>
 
-            <VenueSelectionTable
-              onSelect={handleVenueSelect}
-              selectedVenueId={formData.preferred_venue ?? undefined}
+            <GroupSelectionTable
+              onSelect={handleGroupSelect}
+              selectedGroupId={formData.preferred_group ?? undefined}
               rowsPerPage={4}
             />
 
