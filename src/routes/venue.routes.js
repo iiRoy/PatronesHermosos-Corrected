@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs').promises; // Use promises for better error handling
 const venueController = require('../controllers/venue.controller');
 const { validateVenue } = require('../validators/venueValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');

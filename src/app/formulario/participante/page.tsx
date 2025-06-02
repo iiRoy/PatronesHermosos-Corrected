@@ -367,28 +367,6 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
         </div>
 
-        {/* Selección de Grupo */}
-        <div className="mb-6">
-          <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-            <span className="mr-2"><AddressBook /></span> Selección de Grupo
-          </h2>
-          <p className="text-gray-400 text-sm md:text-base mb-4">
-            Selecciona el grupo que prefieres. Usa los botones para más detalles.
-          </p>
-        </div>
-
-        <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 bg-gray-700 text-xs sm:text-base md:text-lg lg:text-xl">
-          <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
-          <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
-        </div>
-        <ParticipantGroupSelectionTable
-          onSelect={(id_group) => {
-            handleGroupSelect(id_group);
-          }}
-          selectedGroupId={formData.preferred_group ?? undefined}
-          rowsPerPage={4}
-        />
-
         {/* Permiso de Participación */}
         <div className="mt-8">
           <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
@@ -432,6 +410,28 @@ const ParticipantRegistrationForm: React.FC = () => {
             />
           </div>
         </div>
+
+        {/* Selección de Grupo */}
+        <div className="mb-6">
+          <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+            <span className="mr-2"><AddressBook /></span> Selección de Grupo
+          </h2>
+          <p className="text-gray-400 text-sm md:text-base mb-4">
+            Selecciona el grupo que prefieres. Usa los botones para más detalles.
+          </p>
+        </div>
+
+        <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 bg-gray-700 text-xs sm:text-base md:text-lg lg:text-xl">
+          <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
+          <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
+        </div>
+        <ParticipantGroupSelectionTable
+          onSelect={(id_group) => {
+            handleGroupSelect(id_group);
+          }}
+          selectedGroupId={formData.preferred_group ?? undefined}
+          rowsPerPage={4}
+        />
 
         {/* Submit Button */}
         <div className="mt-6 flex justify-end">
