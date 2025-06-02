@@ -826,6 +826,38 @@ const rejectParticipant = async (req, res) => {
   }
 };
 
+const getParticipantPDF = async (req, res) => {
+  const { id } = req.params;
+  const { download } = req.query; // Check for download query parameter
+
+  try {
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(id) },
+      select: { participation_file: true },
+    });
+
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    if (!participant.participation_file) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      download === 'true'
+        ? `attachment; filename=participant_${id}_participation.pdf`
+        : `inline; filename=participant_${id}_participation.pdf`
+    );
+    res.send(participant.participation_file);
+  } catch (error) {
+    console.error('Error al obtener el PDF del participante:', error);
+    res.status(500).json({ message: 'Error interno al obtener el PDF', error: error.message });
+  }
+};
+
 module.exports = {
   createParticipant,
   getAllParticipants,
@@ -838,4 +870,5 @@ module.exports = {
   updateParticipantBasicInfo,
   changeParticipantStatus,
   rejectParticipant,
+  getParticipantPDF,
 };

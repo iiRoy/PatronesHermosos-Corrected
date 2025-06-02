@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const fs = require('fs').promises;
+const { sendEmail } = require('../lib/emails/emailSender');
 
 // Crear una nueva colaboradora
 const createCollaborator = async (req, res) => {
