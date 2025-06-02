@@ -94,6 +94,8 @@ router.get('/files/:filename', async (req, res) => {
   }
 });
 
+router.get('/:id/pdf', authMiddleware, participantController.getParticipantPDF);
+
 router.patch(
   '/:id/reject',
   authMiddleware,

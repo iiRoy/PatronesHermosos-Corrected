@@ -285,7 +285,58 @@ const SolicitudesRegistroAdmin = () => {
     setSelectedItem(item);
     setIsPopupOpen(true);
 
-    // Fetch PDF filename for venues
+    // Clean up previous PDF URL
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(null);
+    }
+
+    // Fetch PDF for participants
+    if (section === 'PARTICIPANTES') {
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/participants/${(item as Participante).id_participant}/pdf`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: `No se pudo cargar el PDF: ${errorData.message}`,
+            duration: 5000,
+          });
+          setPdfUrl(null);
+          return;
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
+      } catch (error: any) {
+        console.error('Error fetching participant PDF:', error);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo cargar el PDF: ${error.message}`,
+          duration: 5000,
+        });
+        setPdfUrl(null);
+      }
+    }
+
     if (section === 'SEDES') {
       try {
         const token = localStorage.getItem('api_token');
@@ -316,19 +367,9 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        const data = await response.json();
-        if (data.filename) {
-          // Construct URL for the /files/:filename route
-          setPdfUrl(`/api/venues/files/${data.filename}`);
-        } else {
-          notify({
-            color: 'red',
-            title: 'Error',
-            message: 'No se encontró el archivo de participación',
-            duration: 5000,
-          });
-          setPdfUrl(null);
-        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
       } catch (error: any) {
         console.error('Error fetching PDF:', error);
         notify({
@@ -345,6 +386,9 @@ const SolicitudesRegistroAdmin = () => {
   const closePopup = () => {
     setIsPopupOpen(false);
     setSelectedItem(null);
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl); // Clean up object URL
+    }
     setPdfUrl(null);
   };
 
@@ -941,8 +985,31 @@ if (error) {
                   <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).groups?.name || 'No asignado'}</p>
                   <p><strong>Sede:</strong> {(selectedItem as Participante).groups?.venues?.name || 'No asignado'}</p>
                   <p><strong>Estado:</strong> {(selectedItem as Participante).status}</p>
+                  {pdfUrl ? (
+                    <div className="mt-4">
+                      <p><strong>Archivo de participación:</strong></p>
+                      <iframe
+                        src={pdfUrl}
+                        className="w-full h-[400px] border rounded"
+                        title="Participation File"
+                      />
+                      <div className="mt-4 flex justify-center">
+                        <a
+                          href={`/api/participants/${(selectedItem as Participante).id_participant}/pdf?download=true`}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button label="Descargar PDF" variant="primary" />
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
+                  )}
                 </div>
               )}
+
               {section === 'APOYO & STAFF' && selectedItem && (
                 <div className='pt-6 pb-6'>
                   <p><strong>Nombre:</strong> {`${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}</p>
@@ -978,6 +1045,16 @@ if (error) {
                         className="w-full h-[400px] border rounded"
                         title="Participation File"
                       />
+                      <div className="mt-4 flex justify-center">
+                        <a
+                          href={`/api/venues/${(selectedItem as Sede).id_venue}/pdf?download=true`}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button label="Descargar PDF" variant="primary" />
+                        </a>
+                      </div>
                     </div>
                   ) : (
                     <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
