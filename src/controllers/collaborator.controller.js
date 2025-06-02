@@ -787,7 +787,7 @@ const cancelCollaborator = async (req, res) => {
         await sendEmail({
           to: collaborator.email,
           subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
-          template: 'templates/collaborators/rechazado',
+          template: 'templates/colaboradores/rechazado',
           data: emailData
         });
         console.log(`Cancellation email sent to ${collaborator.email}`);
