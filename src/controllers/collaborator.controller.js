@@ -720,18 +720,25 @@ const cancelCollaborator = async (req, res) => {
 
     // Verificar si la colaboradora existe y está Aprobada
     const collaborator = await prisma.collaborators.findUnique({
-      where: { id_collaborator: Number(id) }, // Usar Number(id) para mayor claridad
+      where: { id_collaborator: Number(id) },
       select: {
         id_collaborator: true,
         status: true,
         name: true,
         paternal_name: true,
         maternal_name: true,
+        email: true, // Añadido para el correo
+        role: true, // Añadido para el correo
         groups: {
-          select: { id_venue: true, name: true },
-          venues: { select: { name: true } }, // Incluir id_venue desde groups
-        },
-      },
+          select: {
+            id_venue: true,
+            name: true,
+            venues: { // Correct relation
+              select: { name: true }
+            }
+          }
+        }
+      }
     });
 
     if (!collaborator) {
@@ -745,7 +752,7 @@ const cancelCollaborator = async (req, res) => {
     // Actualizar el status a Cancelada
     await prisma.collaborators.update({
       where: { id_collaborator: Number(id) },
-      data: { status: 'Cancelada' },
+      data: { status: 'Cancelada' }
     });
 
     // Registrar en audit_log
@@ -755,40 +762,50 @@ const cancelCollaborator = async (req, res) => {
         table_name: 'collaborators',
         message: `Se canceló la colaboradora con ID ${id} (${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''})`,
         username,
-        id_venue: collaborator.groups?.id_venue || null, // Usar id_venue si existe, sino null
-      },
+        id_venue: collaborator.groups?.id_venue || null
+      }
     });
 
     // Send cancellation email (non-critical)
     try {
-      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
-      await sendEmail({
-        to: collaborator.email,
-        subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
-        template: 'templates/collaborators/rechazado',
-        data: {
-          pName: fullName,
-          venue: collaborator.groups?.venues?.name || 'No asignada',
-          role: collaborator.role || 'No especificado',
-          reason: 'Cancelación solicitada por el usuario o administrador.',
-          code: `COL-${id}-${new Date().getFullYear()}`,
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
-      console.log(`Cancellation email sent to ${collaborator.email}`);
+      const fullName = [collaborator.name, collaborator.paternal_name, collaborator.maternal_name]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      const emailData = {
+        pName: fullName || 'Colaboradora',
+        venue: collaborator.groups?.venues?.name || 'No asignada',
+        role: collaborator.role || 'No especificado',
+        reason: 'Cancelación solicitada por el usuario o administrador.',
+        code: `COL-${id}-${new Date().getFullYear()}`,
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org'
+      };
+
+      // Validate email before sending
+      if (collaborator.email && collaborator.email.trim()) {
+        await sendEmail({
+          to: collaborator.email,
+          subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
+          template: 'templates/collaborators/rechazado',
+          data: emailData
+        });
+        console.log(`Cancellation email sent to ${collaborator.email}`);
+      } else {
+        console.log(`No email sent for collaborator ${id}: No valid email address`);
+      }
     } catch (emailError) {
-      console.error(`Error sending cancellation email to ${collaborator.email}:`, emailError.message);
+      console.error(`Error sending cancellation email to ${collaborator.email || 'unknown'}:`, emailError.message);
     }
 
     res.status(200).json({
-      message: `Colaboradora con ID ${id} cancelada exitosamente`,
+      message: `Colaboradora con ID ${id} cancelada exitosamente`
     });
   } catch (error) {
     console.error('Error al cancelar la colaboradora:', error);
     res.status(500).json({ message: 'Error interno al cancelar la colaboradora', error: error.message });
   }
 };
-
 
 const rejectCollaborator = async (req, res) => {
   const { id } = req.params;
