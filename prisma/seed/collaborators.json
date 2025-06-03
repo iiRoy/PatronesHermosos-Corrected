@@ -131,11 +131,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
-    "preferred_group": 2,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
+"preferred_group": 2,
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -155,11 +151,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 2,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -179,11 +171,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
-    "preferred_group": 2,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
+"preferred_group": 2,
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -203,11 +191,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
-    "preferred_group": 2,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
+"preferred_group": 2,
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -227,11 +211,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
-    "preferred_group": 2,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
+"preferred_group": 2,
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -251,11 +231,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
-    "preferred_group": 2,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
+"preferred_group": 2,
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -275,11 +251,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 3,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -299,11 +271,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 3,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -323,11 +291,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 3,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -347,11 +311,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 3,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -371,11 +331,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 3,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -395,11 +351,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 3,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -419,11 +371,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 4,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -443,11 +391,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 4,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -467,11 +411,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 4,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -491,11 +431,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 4,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -515,11 +451,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 4,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -539,11 +471,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 4,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -563,11 +491,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 5,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -587,11 +511,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 5,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -611,11 +531,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 5,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -635,11 +551,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 5,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -659,11 +571,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 5,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -683,11 +591,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 5,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -707,11 +611,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 6,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -731,11 +631,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 6,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -755,11 +651,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 6,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -779,11 +671,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 6,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -803,11 +691,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 6,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -827,11 +711,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 6,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -851,11 +731,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 7,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -875,11 +751,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 7,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -899,11 +771,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 7,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -923,11 +791,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 7,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -947,11 +811,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 7,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -971,11 +831,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 7,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -995,11 +851,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 8,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1019,11 +871,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 8,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1043,11 +891,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 8,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1067,11 +911,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 8,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1091,11 +931,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 8,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1115,11 +951,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 8,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1139,11 +971,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 9,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1163,11 +991,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 9,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1187,11 +1011,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 9,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1211,11 +1031,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 9,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1235,11 +1051,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 9,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1259,11 +1071,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 9,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1283,11 +1091,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 10,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1307,11 +1111,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 10,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1331,11 +1131,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 10,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1355,11 +1151,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 10,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1379,11 +1171,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 10,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1403,11 +1191,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 10,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1427,11 +1211,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 11,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1451,11 +1231,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 11,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1475,11 +1251,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 11,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1499,11 +1271,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 11,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1523,11 +1291,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 11,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1547,11 +1311,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 11,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1571,11 +1331,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 12,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1595,11 +1351,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 12,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1619,11 +1371,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 12,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1643,11 +1391,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 12,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1667,11 +1411,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 12,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1691,11 +1431,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 12,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1715,11 +1451,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 13,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1739,11 +1471,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 13,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1763,11 +1491,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 13,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1787,11 +1511,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 13,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1811,11 +1531,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 13,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1835,11 +1551,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 13,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1859,11 +1571,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 14,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -1883,11 +1591,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 14,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1907,11 +1611,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 14,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -1931,11 +1631,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 14,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -1955,11 +1651,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 14,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Staff",
     "status": "Aprobada",
@@ -1979,11 +1671,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 14,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2003,11 +1691,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 15,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -2027,11 +1711,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 15,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2051,11 +1731,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 15,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -2075,11 +1751,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 15,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2099,11 +1771,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 15,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -2123,11 +1791,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 15,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2147,11 +1811,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 16,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -2171,11 +1831,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 16,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2195,11 +1851,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 16,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -2219,11 +1871,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 16,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2243,11 +1891,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 16,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -2267,11 +1911,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 16,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2291,11 +1931,7 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 17,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -2315,11 +1951,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 17,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2339,11 +1971,7 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Inglés",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
     "preferred_group": 17,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -2363,11 +1991,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 17,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -2387,11 +2011,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
     "preferred_group": 17,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -2411,11 +2031,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
     "preferred_group": 17,
-=======
-    "preferred_group": 1,
->>>>>>> forms/collab
     "gender": "Masculino",
     "role": "Pendiente",
     "status": "Pendiente",

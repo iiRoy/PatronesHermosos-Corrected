@@ -96,7 +96,7 @@ const createParticipant = async (req, res) => {
     await sendEmail({
       to: email,
       subject: 'Confirmación de Solicitud - Patrones Hermosos',
-      template: 'participantes/solicitud',
+      template: 'templates/participantes/solicitud',
       data: {
         pName: `${name} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
         pEmail: email,
