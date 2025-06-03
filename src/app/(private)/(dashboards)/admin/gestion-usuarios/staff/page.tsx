@@ -102,7 +102,9 @@ const GestionApoyo = () => {
     fetchApoyo();
   }, [router]);
 
-  const uniqueRoles = Array.from(new Set(apoyoData.map(apoyo => apoyo.role))).sort();
+  const uniqueRoles = Array.from(new Set(apoyoData.map(apoyo => apoyo.role)))
+    .filter(role => role !== 'Pendiente')
+    .sort();
 
   const rolOptions = [
     { label: 'Todas', value: '__All__' },

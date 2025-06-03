@@ -52,21 +52,6 @@ const login = async (req, res) => {
       process.env.JWT_SECRET || 'mi_clave_secreta',
       { expiresIn: '1d' } // corto y seguro
     );
-<<<<<<< HEAD
-
-=======
-/*
-    await sendEmail({
-      to: user.email,
-      subject: 'Nuevo inicio de sesión detectado',
-      template: 'welcome',
-      data: {
-        name: user.name || user.username,
-        date: new Date().toLocaleString()
-      }
-    })
-*/
->>>>>>> diego_sqlProcedures
     return res.json({
       message: 'Login exitoso',
       token,

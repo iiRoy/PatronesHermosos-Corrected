@@ -32,7 +32,6 @@ interface DecodedToken {
 const gestionParticipantes = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__');
-    const [filterActivaExtra, setFilterActivaExtra] = useState({ grupo: '__All__' });
     const [currentPage, setCurrentPage] = useState(0);
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
     const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
@@ -106,21 +105,19 @@ const gestionParticipantes = () => {
         }
     }, [router, coordinatorVenueId]);
 
-    const extraHandleFilterChange = (key: string, value: string) => {
-        setFilterActivaExtra((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
+    const sectionFilterChange = (value: string) => {
+        setSection(value);
+        setInputValue('');
+        setCurrentPage(0);
     };
 
     // Extraer sedes y grupos únicos para los filtros
-    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede || 'No asignado'))).sort();
-    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado'))).sort();
-
-    const sedeOptions = [
-        { label: 'Todas', value: '__All__' },
-        ...uniqueSedes.map((sede) => ({ label: sede, value: sede })),
-    ];
+    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede || 'No asignado')))
+        .filter(sede => sede && sede !== 'No asignado')
+        .sort();
+    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado')))
+        .filter(grupo => grupo && grupo !== 'No asignado')
+        .sort();
 
     const grupoOptions = [
         { label: 'Todas', value: '__All__' },
@@ -131,16 +128,13 @@ const gestionParticipantes = () => {
         const searchTerm = inputValue.toLowerCase().trim();
         return participantesData.filter((participante) => {
             const matchesSearch = !searchTerm || participante.nombre.toLowerCase().includes(searchTerm);
-            const sede = participante.sede || 'No asignado';
             const grupo = participante.grupo || 'No asignado';
-            const matchesSede = section === '__All__' ? true : sede === section;
-            const selectedGrupo = filterActivaExtra['grupo'];
-            const matchesGrupo = selectedGrupo === '__All__' ? true : grupo === selectedGrupo;
-            const isApproved = (participante.status || 'Pendiente').toLowerCase() === 'aprobada'; // Añadido valor por defecto
+            const matchesGrupo = section === '__All__' ? true : grupo === section;
+            const isApproved = (participante.status || 'Pendiente').toLowerCase() === 'aprobada';
             const matchesVenue = coordinatorVenueId === null || participante.id_venue === coordinatorVenueId;
-            return matchesSearch && matchesSede && matchesGrupo && isApproved && matchesVenue;
+            return matchesSearch && matchesGrupo && isApproved && matchesVenue;
         });
-    }, [inputValue, section, filterActivaExtra, participantesData, coordinatorVenueId]);
+    }, [inputValue, section, participantesData, coordinatorVenueId]);
 
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
     const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
@@ -152,12 +146,6 @@ const gestionParticipantes = () => {
             setCurrentPage(0);
         }
     }, [filteredData.length, currentPage, totalPages]);
-
-    const sectionFilterChange = (value: string) => {
-        setSection(value);
-        setInputValue('');
-        setCurrentPage(0);
-    };
 
     const handleDeleteClick = (participante: Participante) => {
         setSelectedParticipante(participante);
@@ -263,6 +251,7 @@ const gestionParticipantes = () => {
                                 labelSecciones="Grupo"
                                 secciones={grupoOptions}
                                 seccionActiva={section}
+                                onChangeSeccion={sectionFilterChange}
                             />
                         </div>
                     </div>
