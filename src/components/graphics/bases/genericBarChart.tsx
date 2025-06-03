@@ -31,6 +31,7 @@ interface GenericBarChartProps {
   selectAll?: boolean;
   deselectAll?: boolean;
   maxItemsSelected: number | undefined;
+  isFrozen?: boolean;
 }
 
 type GenericChartData = {
@@ -48,6 +49,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   selectAll = false,
   deselectAll = false,
   maxItemsSelected = undefined,
+  isFrozen = false,
 }) => {
   const [data, setData] = useState<GenericChartData[]>([]);
   const [filteredData, setFilteredData] = useState<GenericChartData[]>([]);
@@ -183,7 +185,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               <OptionsMenu
                 onMinimize={onMinimize}
                 onMaxItemsChange={setMaxItems}
-                onToggleVisibility={() => setIsVisible(false)}
+                onToggleVisibility={() => {}}
                 setColors={setColors}
                 maxItemsSelected={maxItems}
                 visible={showMenu}
@@ -234,58 +236,62 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           <div
             className={`w-full h-full transform transition-all duration-300 ease-in-out ${fade ? 'opacity-0' : 'opacity-100'
               }`}
-          >
-            {filteredData.length === 0 ? (
-              <div className='flex justify-center items-center h-full'>
-                <p className='text-textDim text-lg'>No hay datos para mostrar</p>
-              </div>
-            ) : (
-              <ResponsiveContainer>
-                <BarChart data={filteredData} barSize={20}>
-                  <CartesianGrid strokeDasharray='3 3' vertical={false} stroke='#BBA5BDFF' />
-                  <XAxis
-                    dataKey={xKey}
-                    axisLine={false}
-                    tick={<CustomTick numElements={filteredData.length} />}
-                    tickLine={false}
-                    interval={0}
-                    height={60}
-                  />
-                  <YAxis axisLine={false} tick={{ fill: '#8E76A3FF' }} tickLine={false} />
-                  <Tooltip
-                    labelFormatter={(label) => (
-                      <span
-                        style={{ fontWeight: 'bold' }}
-                      >{`${labelFormatterPrefix}${label}`}</span>
-                    )}
-                    formatter={(value, name) => {
-                      const upperName =
-                        typeof name === 'string'
-                          ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
-                          : name;
-                      return [`${value}`, upperName];
-                    }}
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      borderRadius: '5px',
-                      border: '1px solid #ccc',
-                    }}
-                  />
-                  {seriesKeys.map((key, index) => (
-                    <Bar
-                      key={key}
-                      dataKey={key}
-                      fill={colors[index % colors.length]}
-                      style={{ transition: 'fill 0.3s ease-in-out' }}
-                      radius={[10, 10, 0, 0]}
-                      activeBar={<Rectangle />}
-                      isAnimationActive={isFirstRender.current}
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
+>
+  {!isFrozen ? (
+    filteredData.length === 0 ? (
+      <div className='flex justify-center items-center h-full'>
+        <p className='text-textDim text-lg'>No hay datos para mostrar</p>
+      </div>
+    ) : (
+      <ResponsiveContainer>
+        <BarChart data={filteredData} barSize={20}>
+          <CartesianGrid strokeDasharray='3 3' vertical={false} stroke='#BBA5BDFF' />
+          <XAxis
+            dataKey={xKey}
+            axisLine={false}
+            tick={<CustomTick numElements={filteredData.length} />}
+            tickLine={false}
+            interval={0}
+            height={60}
+          />
+          <YAxis axisLine={false} tick={{ fill: '#8E76A3FF' }} tickLine={false} />
+          <Tooltip
+            labelFormatter={(label) => (
+              <span
+                style={{ fontWeight: 'bold' }}
+              >{`${labelFormatterPrefix}${label}`}</span>
             )}
-          </div>
+            formatter={(value, name) => {
+              const upperName =
+                typeof name === 'string'
+                  ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
+                  : name;
+              return [`${value}`, upperName];
+            }}
+            contentStyle={{
+              backgroundColor: '#fff',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+            }}
+          />
+          {seriesKeys.map((key, index) => (
+            <Bar
+              key={key}
+              dataKey={key}
+              fill={colors[index % colors.length]}
+              style={{ transition: 'fill 0.3s ease-in-out' }}
+              radius={[10, 10, 0, 0]}
+              activeBar={<Rectangle />}
+              isAnimationActive={isFirstRender.current}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    )
+  ) : (
+    <div className="w-full h-full" />
+  )}
+</div>
         </div>
       )}
     </>

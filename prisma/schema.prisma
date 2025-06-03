@@ -45,7 +45,7 @@ model collaborators {
   id_group           Int?                   @db.UnsignedInt // Replace id_venue with id_group
   groups             groups?                @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "collaborators_ibfk_1")
   preferredGroup     groups?                @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
-  created_at             DateTime                 @default(now()) @db.Timestamp(0)
+  created_at         DateTime                 @default(now()) @db.Timestamp(0)
   preferredVenue     venues?                @relation("preferred_venue_fk", fields: [preferred_venue], references: [id_venue])
   @@index([id_group], map: "id_group") // Update index
   @@index([preferred_venue], map: "collaborators_preferred_venue_fkey")
@@ -130,7 +130,6 @@ model mentors {
 }
 
 model participants {
-<<<<<<< HEAD
   id_participant     Int                 @id @default(autoincrement()) @db.UnsignedInt
   name               String?             @db.VarChar(255)
   paternal_name      String?             @db.VarChar(255)
@@ -147,24 +146,6 @@ model participants {
   groups             groups?             @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "participants_ibfk_1")
   tutors             tutors?             @relation(fields: [id_tutor], references: [id_tutor], onUpdate: Restrict, map: "participants_ibfk_2")
   created_at             DateTime                 @default(now()) @db.Timestamp(0)
-=======
-  id_participant          Int                 @id @default(autoincrement()) @db.UnsignedInt
-  name                    String?             @db.VarChar(255)
-  paternal_name           String?             @db.VarChar(255)
-  maternal_name           String?             @db.VarChar(255)
-  email                   String?             @db.VarChar(255)
-  year                    String?             @db.VarChar(255)
-  education               String?             @db.VarChar(255)
-  participation_file      Bytes               @db.Blob
-  participation_file_path String?             @db.VarChar(255)
-  preferred_group         Int?                @db.UnsignedInt
-  status                  participants_status @default(Pendiente)
-  id_group                Int?                @db.UnsignedInt
-  id_tutor                Int?                @db.UnsignedInt
-  groups                  groups?             @relation(fields: [id_group], references: [id_group], onUpdate: Restrict, map: "participants_ibfk_1")
-  tutors                  tutors?             @relation(fields: [id_tutor], references: [id_tutor], onUpdate: Restrict, map: "participants_ibfk_2")
-  preferredGroup          groups?             @relation("preferred_group_fk", fields: [preferred_group], references: [id_group])
->>>>>>> 633c63a9bf2b84e8d86bf36bc34d5a9aa0dc12bd
 
   @@index([id_group], map: "id_group")
   @@index([id_tutor], map: "id_tutor")

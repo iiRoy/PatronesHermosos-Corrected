@@ -21,6 +21,7 @@ interface ConcentricDonutChartProps {
   statusColors?: string[];
   imageSrc?: string;
   onMinimize?: () => void;
+  isFrozen?: boolean;
 }
 
 function toGrayish(hex: string, intensity: number = 1): string {
@@ -47,7 +48,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
   colorPalette,
   statusColors,
   imageSrc = '/assets/logo.png',
-  onMinimize
+  onMinimize,
+  isFrozen = false,
 }) => {
   const [innerData, setInnerData] = useState<any[]>([]);
   const [outerData, setOuterData] = useState<any[]>([]);
@@ -291,7 +293,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
         {/* Menú fuera del flujo flex, pero dentro de contenedor relative */}
         <div className='absolute top-full right-0 z-50'>
           <OptionsMenu
-            onMinimize={onMinimize ?? (() => {})}
+            onMinimize={onMinimize ?? (() => {isFrozen=true})}
             onToggleVisibility={() => {}}
             onMaxItemsChange={() => {}}
             maxItemsSelected={undefined}
@@ -346,7 +348,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
 
       {/* Gráfico */}
       <div className='relative w-auto h-auto'>
-        {innerData.length === 0 ? (
+        {!isFrozen ? (
+        innerData.length === 0 ? (
           <div className='relative flex flex-col justify-between items-center h-auto'>
             <p className='text-textDim text-lg text-center px-10 py-40 h-max'>No hay datos para mostrar</p>
           </div>
@@ -411,7 +414,9 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
               <Image src={imageSrc} alt='Logo centro' width={60} height={60} />
             </div>
           </div>
-        )}
+        )) : (
+  <div className="w-full h-full" />
+)}
       </div>
 
       {/* Leyendas Interactivas */}
