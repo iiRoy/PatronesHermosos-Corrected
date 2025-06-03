@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const fs = require('fs').promises;
+const { sendEmail } = require('../lib/emails/emailSender');
 
 // Crear una nueva colaboradora
 const createCollaborator = async (req, res) => {
@@ -15,64 +17,76 @@ const createCollaborator = async (req, res) => {
     preferred_role,
     preferred_language,
     preferred_level,
-    preferred_venue,
+    preferred_group,
     gender,
   } = req.body;
 
   try {
-    let venueName = 'No asignado';
-    if (preferred_venue) {
-      const venue = await prisma.venues.findUnique({
-        where: { id_venue: parseInt(preferred_venue) },
-        select: { name: true },
-      });
-      if (venue) {
-        venueName = venue.name || 'No asignado';
-      }
-    }
-    
-    await prisma.$queryRaw`
-      CALL registrar_colab(
-        ${name}, 
-        ${paternal_name}, 
-        ${maternal_name}, 
-        ${email}, 
-        ${phone_number},
-        ${college}, 
-        ${degree}, 
-        ${semester},
-        ${preferred_role}, 
-        ${preferred_language}, 
-        ${preferred_level},
-        ${preferred_venue}, 
-        ${gender}
-      );
-    `;
-
-    // Send registration confirmation email
-    await sendEmail({
-      to: email,
-      subject: 'Confirmación de Solicitud - Patrones Hermosos',
-      template: 'colaboradores/solicitud',
+    const newCollaborator = await prisma.collaborators.create({
       data: {
-        cName: `${name} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
-        cEmail:email,
-        role: preferred_role || 'No especificado',
-        language: preferred_language || 'No especificado',
-        level: preferred_level || 'No especificado',
-        mode: 'No especificado', // Assuming modality is not provided in req.body
-        venueName: venueName || 'No especificada',
-        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        name,
+        paternal_name,
+        maternal_name,
+        email,
+        phone_number,
+        college,
+        degree,
+        semester,
+        preferred_role,
+        preferred_language,
+        preferred_level,
+        gender,
+        role: 'Pendiente',
+        status: 'Pendiente',
+        level: 'Pendiente',
+        language: 'Pendiente',
+        preferred_group: preferred_group ? parseInt(preferred_group) : null,
       },
     });
+
+    // Send confirmation email (non-critical)
+    try {
+      let venueName = 'No asignada';
+      let groupName = 'No asignado';
+      if (preferred_group) {
+        const group = await prisma.groups.findUnique({
+          where: { id_group: parseInt(preferred_group) },
+          include: { venues: { select: { name: true } } },
+        });
+        if (group) {
+          groupName = group.name || 'No asignado';
+          venueName = group.venues?.name || 'No asignada';
+        }
+      }
+
+      await sendEmail({
+        to: email,
+        subject: 'Confirmación de Solicitud - Patrones Hermosos',
+        template: 'templates/colaboradores/solicitud',
+        data: {
+          cName: `${name || ''} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
+          venueName: venueName,
+          cEmail,
+          role: preferred_role || 'No especificado',
+          language: preferred_language || 'No especificado',
+          level: preferred_level || 'No especificado',
+          mode: 'No especificado', // Assuming mode is not provided in request
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+      console.log(`Solicitud email sent to ${email}`);
+    } catch (emailError) {
+      console.error(`Error sending solicitud email to ${email}:`, emailError.message);
+    }
 
     res.status(201).json({
       success: true,
       message: 'Colaborador creado',
+      data: newCollaborator,
     });
   } catch (error) {
-    if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
-      return res.status(422).json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
+    if (error instanceof Prisma.PrismaClientValidationError) {
+      return res.status(422).json({ success: false, message: 'Datos inválidos', error: error.message });
     }
     console.error('Error al crear colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
@@ -90,7 +104,7 @@ const getAllCollaborators = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true,
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
@@ -98,8 +112,14 @@ const getAllCollaborators = async (req, res) => {
         },
         preferredGroup: {
           select: {
-            id_venue: true,
+            id_group: true,
             name: true,
+            venues: {
+              select: {
+                id_venue: true, // Cambiado de id a id_venue
+                name: true,
+              },
+            },
           },
         },
       },
@@ -116,8 +136,8 @@ const getAllCollaborators = async (req, res) => {
       level: collab.level || 'Sin nivel',
       language: collab.language || 'Sin idioma',
       group: collab.groups?.name || 'Sin grupo',
+      id_venue: collab.groups?.venues?.id_venue || null,
       venue: collab.groups?.venues?.name || 'Sin sede',
-      venue_id: collab.groups?.venues?.id_venue || null,
       college: collab.college || 'Sin universidad',
       degree: collab.degree || 'Sin carrera',
       semester: collab.semester || 'Sin semestre',
@@ -126,7 +146,7 @@ const getAllCollaborators = async (req, res) => {
       preferred_role: collab.preferred_role || 'Sin rol preferido',
       preferred_language: collab.preferred_language || 'Sin idioma preferido',
       preferred_level: collab.preferred_level || 'Sin nivel preferido',
-      preferred_venue: collab.preferred_venue || null,
+      preferred_group: collab.preferred_group || null,
     }));
 
     const formattedCollaboratorsForRequests = collaborators.map(collab => ({
@@ -147,12 +167,12 @@ const getAllCollaborators = async (req, res) => {
       preferred_role: collab.preferred_role || 'Sin rol preferido',
       preferred_language: collab.preferred_language || 'Sin idioma preferido',
       preferred_level: collab.preferred_level || 'Sin nivel preferido',
-      preferred_venue: collab.preferred_venue || null,
-      venue: collab.preferredVenue
+      preferred_group: collab.preferred_group || null,
+      groups: collab.preferredGroup
         ? {
-            name: collab.preferredGroup.name || 'No asignado',
-            venues: collab.preferredGroup.venues || { name: 'No asignado' },
-          }
+          name: collab.preferredGroup.name || 'No asignado',
+          venues: collab.preferredGroup.venues || { name: 'No asignado' },
+        }
         : null,
     }));
 
@@ -181,16 +201,22 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true,
+                id_venue: true, // Cambiado de id a id_venue
                 name: true,
               },
             },
           },
         },
-        preferredVenue: {
+        preferredGroup: {
           select: {
-            id_venue: true,
+            id_group: true,
             name: true,
+            venues: {
+              select: {
+                id_venue: true, // Cambiado de id a id_venue
+                name: true,
+              },
+            },
           },
         },
       },
@@ -202,11 +228,11 @@ const getCollaboratorById = async (req, res) => {
 
     const formattedCollaborator = {
       ...collaborator,
-      venue: collaborator.preferredVenue
+      groups: collaborator.preferredGroup
         ? {
-            name: collaborator.preferredGroup.name || 'No asignado',
-            venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
-          }
+          name: collaborator.preferredGroup.name || 'No asignado',
+          venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
+        }
         : null,
     };
 
@@ -232,47 +258,15 @@ const updateCollaborator = async (req, res) => {
     preferred_role,
     preferred_language,
     preferred_level,
-    preferred_venue,
+    preferred_group,
     gender,
     role,
     status,
     level,
     language,
-    id_group,
   } = req.body;
 
   try {
-    // Fetch current collaborator data to check for changes
-    const currentCollaborator = await prisma.collaborators.findUnique({
-      where: { id_collaborator: parseInt(id) },
-      include: {
-        groups: {
-          select: {
-            id_group: true,
-            name: true,
-            venues: {
-              select: {
-                name: true,
-                address: true,
-              },
-            },
-            language: true,
-            level: true,
-            mode: true,
-            start_date: true,
-            end_date: true,
-            start_hour: true,
-            end_hour: true,
-          },
-        },
-      },
-    });
-
-    if (!currentCollaborator) {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
-    }
-
-    // Update collaborator
     const updatedCollaborator = await prisma.collaborators.update({
       where: { id_collaborator: parseInt(id) },
       data: {
@@ -292,57 +286,9 @@ const updateCollaborator = async (req, res) => {
         status,
         level,
         language,
-        preferred_venue: preferred_venue ? parseInt(preferred_venue) : null,
-        id_group: id_group ? parseInt(id_group) : null,
+        preferred_group: preferred_group ? parseInt(preferred_group) : null,
       },
     });
-
-    // Check if id_group or role has changed
-    const groupChanged = id_group && parseInt(id_group) !== currentCollaborator.groups?.id_group;
-    const roleChanged = role && role !== currentCollaborator.role;
-
-    if (groupChanged || roleChanged) {
-      const newGroup = id_group
-        ? await prisma.groups.findUnique({
-            where: { id_group: parseInt(id_group) },
-            include: {
-              venues: {
-                select: {
-                  name: true,
-                  address: true,
-                },
-              },
-            },
-          })
-        : null;
-
-      // Calculate confirmation deadline (7 days from now)
-      const deadlineDate = new Date();
-      deadlineDate.setDate(deadlineDate.getDate() + 7);
-
-      await sendEmail({
-        to: updatedCollaborator.email,
-        subject: 'Solicitud de Cambio de Preferencias - Patrones Hermosos',
-        template: 'colaboradores/sol_cambio',
-        data: {
-          cName: `${updatedCollaborator.name} ${updatedCollaborator.paternal_name || ''} ${updatedCollaborator.maternal_name || ''}`.trim(),
-          venue: newGroup?.venues?.name || 'No asignado',
-          group: newGroup?.name || 'No asignado',
-          location: newGroup?.venues?.address || 'No asignado',
-          role: role || updatedCollaborator.role || 'No asignado',
-          language: newGroup?.language || updatedCollaborator.language || 'No especificado',
-          level: newGroup?.level || updatedCollaborator.level || 'No especificado',
-          mode: newGroup?.mode || 'No especificado',
-          sDate: newGroup?.start_date ? newGroup.start_date.toLocaleDateString() : 'No especificado',
-          eDate: newGroup?.end_date ? newGroup.end_date.toLocaleDateString() : 'No especificado',
-          sHour: newGroup?.start_hour ? newGroup.start_hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No especificado',
-          eHour: newGroup?.end_hour ? newGroup.end_hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No especificado',
-          lDate: deadlineDate.toLocaleDateString(),
-          platformLink: `https://patroneshermosos.org/confirmar-colaborador/${updatedCollaborator.id_collaborator}/${uuidv4().slice(0, 8)}`,
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
-    }
 
     res.json({ success: true, message: 'Colaborador actualizado', data: updatedCollaborator });
   } catch (error) {
@@ -374,31 +320,62 @@ const deleteCollaborator = async (req, res) => {
 };
 
 // Actualizar información básica de un colaborador
-const updateCollaboratorBasicInfo = async (req, res) => {
-  const { id } = req.params;
-  const { name, paternal_name, maternal_name, email, phone_number } = req.body;
+  const updateCollaboratorBasicInfo = async (req, res) => {
+    const { id } = req.params;
+    const {
+      name,
+      paternal_name,
+      maternal_name,
+      email,
+      phone_number,
+      college,
+      degree,
+      semester,
+      gender,
+      preferred_role,
+      preferred_language,
+      preferred_level,
+    } = req.body;
 
-  try {
-    const updatedCollaborator = await prisma.collaborators.update({
-      where: { id_collaborator: parseInt(id) },
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-      },
-    });
+    try {
+      // Crear objeto de datos dinámicamente, incluyendo solo campos proporcionados
+      const updateData = {};
+      if (name !== undefined) updateData.name = name?.trim() || null;
+      if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+      if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+      if (email !== undefined) updateData.email = email?.trim() || null;
+      if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+      if (college !== undefined) updateData.college = college?.trim() || null;
+      if (degree !== undefined) updateData.degree = degree?.trim() || null;
+      if (semester !== undefined) updateData.semester = semester?.trim() || null;
+      if (gender !== undefined) updateData.gender = gender?.trim() || null;
+      if (preferred_role !== undefined) updateData.preferred_role = preferred_role?.trim() || null;
+      if (preferred_language !== undefined) updateData.preferred_language = preferred_language?.trim() || null;
+      if (preferred_level !== undefined) updateData.preferred_level = preferred_level?.trim() || null;
 
-    res.json({ success: true, message: 'Información básica del colaborador actualizada', data: updatedCollaborator });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
+      console.log('Datos enviados al controlador:', updateData); // Log para depurar
+
+      const updatedCollaborator = await prisma.collaborators.update({
+        where: { id_collaborator: parseInt(id) },
+        data: updateData,
+      });
+
+      res.json({
+        success: true,
+        message: 'Información básica del colaborador actualizada',
+        data: updatedCollaborator,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        return res.status(404).json({
+          success: false,
+          message: `El colaborador con ID ${id} no existe`,
+        });
+      }
+      console.error('Error al actualizar información básica del colaborador:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
-    console.error('Error al actualizar información básica del colaborador:', error);
-    res.status(500).json({ success: false, message: 'Error interno del servidor' });
-  }
-};
+  };
 
 // Obtener datos específicos para tabla
 const getCollaboratorsTable = async (req, res) => {
@@ -415,16 +392,9 @@ const getCollaboratorsTable = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true,
                 name: true,
               },
             },
-          },
-        },
-        preferredVenue: {
-          select: {
-            id_venue: true,
-            name: true,
           },
         },
       },
@@ -433,8 +403,7 @@ const getCollaboratorsTable = async (req, res) => {
     const formatted = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name,
-      venue: collab.preferredVenue?.name || collab.groups?.venues?.name || 'Sin sede',
-      venue_id: collab.preferredVenue?.id_venue || collab.groups?.venues?.id_venue || null,
+      venue: collab.groups?.venues?.name || 'Sin sede',
       group: collab.groups?.name || 'Sin grupo',
       email: collab.email || 'Sin correo',
       phone_number: collab.phone_number || 'Sin teléfono',
@@ -686,6 +655,41 @@ const approveCollaborator = async (req, res) => {
       },
     });
 
+    // Send approval email (non-critical)
+    try {
+      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+      await sendEmail({
+        to: collaborator.email,
+        subject: 'Resultados de la postulación - Patrones Hermosos',
+        template: 'templates/collaborators/aceptado',
+        data: {
+          pName: fullName,
+          role: updatedCollaborator.role,
+          sede: group.venues?.name || 'No asignada',
+          grupo: group.name || 'No asignado',
+          direccion: group.venues?.address || 'No disponible',
+          mName: group.mentors?.name || 'No asignada',
+          mEmail: group.mentors?.email || 'no-reply@patroneshermosos.org',
+          iName: 'Soporte Patrones Hermosos',
+          iEmail: process.env.EMAIL_USER || 'soporte@patroneshermosos.org',
+        },
+      });
+      console.log(`Approval email sent to ${collaborator.email}`);
+    } catch (emailError) {
+      console.error(`Error sending approval email to ${collaborator.email}:`, emailError.message);
+    }
+
+    // Create audit log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'collaborators',
+        message: `Se aprobó la colaboradora con ID ${collaboratorId}`,
+        username: req.user?.username || 'unknown',
+        id_venue: group.id_venue,
+      },
+    });
+
     res.json({
       success: true,
       message: 'Colaborador aprobado exitosamente',
@@ -705,147 +709,182 @@ const approveCollaborator = async (req, res) => {
   }
 };
 
-
-
-// Cambiar estado del colaborador (Aprobada/Rechazada)
-const changeCollaboratorStatus = async (req, res) => {
+// Cancelar una colaboradora (cambiar status de Aprobada a Cancelada)
+const cancelCollaborator = async (req, res) => {
   const { id } = req.params;
-  const { status, reason } = req.body;
-  const username = req.user?.username || 'system';
+  const username = req.user.username; // Usar username del token JWT
 
-  if (!status || !['Aprobada', 'Rechazada'].includes(status)) {
-    return res.status(400).json({ success: false, message: 'El estado debe ser "Aprobada" o "Rechazada"' });
+  try {
+    // Log para depurar id
+    console.log('ID recibido:', id, 'Parsed ID:', parseInt(id));
+
+    // Verificar si la colaboradora existe y está Aprobada
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: Number(id) },
+      select: {
+        id_collaborator: true,
+        status: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        email: true, // Añadido para el correo
+        role: true, // Añadido para el correo
+        groups: {
+          select: {
+            id_venue: true,
+            name: true,
+            venues: { // Correct relation
+              select: { name: true }
+            }
+          }
+        }
+      }
+    });
+
+    if (!collaborator) {
+      return res.status(404).json({ message: 'La colaboradora no existe.' });
+    }
+
+    if (collaborator.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'Solo se pueden cancelar colaboradoras con status Aprobada.' });
+    }
+
+    // Actualizar el status a Cancelada
+    await prisma.collaborators.update({
+      where: { id_collaborator: Number(id) },
+      data: { status: 'Cancelada' }
+    });
+
+    // Registrar en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'collaborators',
+        message: `Se canceló la colaboradora con ID ${id} (${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''})`,
+        username,
+        id_venue: collaborator.groups?.id_venue || null
+      }
+    });
+
+    // Send cancellation email (non-critical)
+    try {
+      const fullName = [collaborator.name, collaborator.paternal_name, collaborator.maternal_name]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      const emailData = {
+        pName: fullName || 'Colaboradora',
+        venue: collaborator.groups?.venues?.name || 'No asignada',
+        role: collaborator.role || 'No especificado',
+        reason: 'Cancelación solicitada por el usuario o administrador.',
+        code: `COL-${id}-${new Date().getFullYear()}`,
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org'
+      };
+
+      // Validate email before sending
+      if (collaborator.email && collaborator.email.trim()) {
+        await sendEmail({
+          to: collaborator.email,
+          subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
+          template: 'templates/colaboradores/rechazado',
+          data: emailData
+        });
+        console.log(`Cancellation email sent to ${collaborator.email}`);
+      } else {
+        console.log(`No email sent for collaborator ${id}: No valid email address`);
+      }
+    } catch (emailError) {
+      console.error(`Error sending cancellation email to ${collaborator.email || 'unknown'}:`, emailError.message);
+    }
+
+    res.status(200).json({
+      message: `Colaboradora con ID ${id} cancelada exitosamente`
+    });
+  } catch (error) {
+    console.error('Error al cancelar la colaboradora:', error);
+    res.status(500).json({ message: 'Error interno al cancelar la colaboradora', error: error.message });
+  }
+};
+
+const rejectCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+  const username = req.user?.username || 'unknown';
+
+  // Validar acción
+  if (action !== 'desactivar') {
+    return res.status(400).json({ message: 'La acción debe ser "desactivar"' });
   }
 
   try {
+    // Fetch collaborator data
     const collaborator = await prisma.collaborators.findUnique({
       where: { id_collaborator: parseInt(id) },
       include: {
-        groups: {
+        groups: { select: { id_venue: true } },
+        preferredGroup: {
           select: {
-            name: true,
-            venues: {
-              select: {
-                name: true,
-                address: true,
-              },
-            },
-            mentors: {
-              select: {
-                name: true,
-                paternal_name: true,
-                maternal_name: true,
-                email: true,
-              },
-            },
+            id_venue: true,
+            venues: { select: { name: true } },
           },
         },
       },
     });
 
     if (!collaborator) {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
     }
 
+    // Verificar estado Pendiente
+    if (collaborator.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'Solo se pueden rechazar colaboradores con estatus Pendiente' });
+    }
+
+    // Actualizar estado a Rechazada
     await prisma.collaborators.update({
       where: { id_collaborator: parseInt(id) },
-      data: { status },
+      data: { status: 'Rechazada' },
     });
 
-    // Send email based on status
-    if (status === 'Aprobada') {
+    // Crear registro en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'collaborators',
+        message: `Se rechazó el colaborador con ID ${id}`,
+        username,
+        id_venue: collaborator.groups?.id_venue || collaborator.preferredGroup?.id_venue,
+      },
+    });
+
+    // Send cancellation email (non-critical)
+    try {
+      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
       await sendEmail({
         to: collaborator.email,
-        subject: '¡Felicidades! Has sido aceptada como colaboradora en Patrones Hermosos',
-        template: 'colaboradores/aceptado',
+        subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
+        template: 'templates/collaborators/rechazado',
         data: {
-          pName: `${collaborator.name} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim(),
-          role: collaborator.role || 'No asignado',
-          sede: collaborator.groups?.venues?.name || 'No asignado',
-          grupo: collaborator.groups?.name || 'No asignado',
-          direccion: collaborator.groups?.venues?.address || 'No asignado',
-          mName: collaborator.groups?.mentors
-            ? `${collaborator.groups.mentors.name || ''} ${collaborator.groups.mentors.paternal_name || ''} ${collaborator.groups.mentors.maternal_name || ''}`.trim()
-            : 'No asignado',
-          mEmail: collaborator.groups?.mentors?.email || 'No asignado',
+          pName: fullName,
+          venue: collaborator.groups?.venues?.name || 'No asignada',
+          role: collaborator.role || 'No especificado',
+          reason: 'No se cumplieron los criterios de aceptación.',
+          code: `COL-${id}-${new Date().getFullYear()}`,
           iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
         },
       });
-    } else if (status === 'Rechazada') {
-      await sendEmail({
-        to: collaborator.email,
-        subject: 'Resultados de tu Postulación - Patrones Hermosos',
-        template: 'colaboradores/rechazado',
-        data: {
-          pName: `${collaborator.name} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim(),
-          venue: collaborator.preferredVenue?.name || 'No asignado',
-          role: collaborator.preferred_role || 'No asignado',
-          reason: reason || 'No cumplió con los criterios de sceptación',
-          code: uuidv4().slice(0, 8),
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
+      console.log(`Cancellation email sent to ${collaborator.email}`);
+    } catch (emailError) {
+      console.error(`Error sending cancellation email to ${collaborator.email}:`, emailError.message);
     }
 
     res.status(200).json({
-      success: true,
-      message: `Colaborador con ID ${id} ${status === 'Aprobada' ? 'aprobado' : 'rechazado'} exitosamente`,
+      message: `Colaborador con ID ${id} rechazado exitosamente`,
     });
   } catch (error) {
-    console.error('Error al cambiar estado del colaborador:', error);
-    res.status(500).json({ success: false, message: 'Error interno del servidor' });
-  }
-};
-
-// Agendar entrevista para un colaborador
-const scheduleCollaboratorInterview = async (req, res) => {
-  const { id } = req.params;
-  const { deadline } = req.body; // Optional deadline in ISO format (e.g., '2025-06-01T23:59:59Z')
-
-  try {
-    const collaborator = await prisma.collaborators.findUnique({
-      where: { id_collaborator: parseInt(id) },
-    });
-
-    if (!collaborator) {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
-    }
-
-    // Calculate default deadline (7 days from now) if not provided
-    const deadlineDate = deadline ? new Date(deadline) : new Date();
-    if (!deadline) {
-      deadlineDate.setDate(deadlineDate.getDate() + 7);
-    }
-
-    // Create interview record
-    await prisma.collaborator_interviews.create({
-      data: {
-        id_collaborator: parseInt(id),
-        deadline: deadlineDate,
-        status: 'Pendiente',
-      },
-    });
-
-    // Send interview scheduling email
-    await sendEmail({
-      to: collaborator.email,
-      subject: 'Agenda tu Entrevista - Patrones Hermosos',
-      template: 'colaboradores/interview',
-      data: {
-        cName: `${collaborator.name} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim(),
-        lDate: deadlineDate.toLocaleDateString(),
-        platformLinkLink: `https://patroneshermosos.org/agendar-entrevista/${collaborator.id_collaborator}/${uuidv4().slice(0, 8)}`,
-        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-      },
-    });
-
-    res.json({
-      success: true,
-      message: 'Entrevista agendada exitosamente',
-    });
-  } catch (error) {
-    console.error('Error al agendar entrevista:', error);
-    res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    console.error('Error al rechazar colaborador:', error);
+    res.status(500).json({ message: 'Error interno al rechazar colaborador', error: error.message });
   }
 };
 
@@ -859,6 +898,6 @@ module.exports = {
   updateCollaboratorBasicInfo,
   getAvailableGroups,
   approveCollaborator,
-  changeCollaboratorStatus,
-  scheduleCollaboratorInterview,
+  cancelCollaborator,
+  rejectCollaborator,
 };

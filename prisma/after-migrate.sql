@@ -1,4 +1,4 @@
-/*
+
 -- =====================
 -- 🟣   BYTE FORGE   🟣
 -- =====================
@@ -20,7 +20,7 @@
 
 -- 🔸 Definición:
 
-*/
+
 DELIMITER $$
 CREATE OR REPLACE TRIGGER actualizar_cupo
 AFTER UPDATE ON participants
@@ -1246,7 +1246,7 @@ CREATE OR REPLACE PROCEDURE registrar_colab(
     IN rol_preferido VARCHAR(255),
     IN idioma_preferido VARCHAR(255),
     IN nivel_preferido VARCHAR(255),
-    IN id_venue_preferido INT,
+    IN id_group_preferido INT,
     IN genero VARCHAR(255)
 )
 BEGIN
@@ -1266,13 +1266,13 @@ BEGIN
         name, paternal_name, maternal_name, email, phone_number,
         college, degree, semester,
         preferred_role, preferred_language, preferred_level,
-        preferred_venue, gender
+        preferred_group, gender
     )
     VALUES (
         nombre, paterno, materno, email, telefono,
         universidad, carrera, semestre,
         rol_preferido, idioma_preferido, nivel_preferido,
-        id_venue_preferido, genero
+        id_group_preferido, genero
     );
 END;
 $$
@@ -2222,11 +2222,11 @@ BEGIN
 
     -- Validaciones de cambio de estado
     IF p_accion = 'desactivar' THEN
-        IF v_status != 'Aprobada' THEN
+        IF v_status != 'Pendiente' THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Solo se pueden desactivar participantes con estatus Aprobada.';
         END IF;
-        SET v_nuevo_status = 'Cancelada';
+        SET v_nuevo_status = 'Rechazada';
 
     ELSEIF p_accion = 'activar' THEN
         IF v_status != 'Cancelada' THEN
@@ -2240,14 +2240,6 @@ BEGIN
         SET MESSAGE_TEXT = 'Acción no válida. Debe ser "activar" o "desactivar".';
     END IF;
 
-    -- Registrar el log (sin sede, se usa NULL)
-    CALL registrar_log(
-        'UPDATE',
-        'participants',
-        CONCAT('Se ', p_accion, ' al participante con ID ', p_id_participant),
-        p_username,
-        NULL
-    );
 
     -- Actualizar el status
     UPDATE participants
@@ -2269,6 +2261,7 @@ DELIMITER ;
 
 
 
+/*
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2348,5 +2341,4 @@ DELIMITER ;
 -- 🔸 Se cambió el valor de los 'prefered_groups' en todas las tablas de STRINGS a INTS para facilitar la búsqueda dentro de la base de datos por medio de funciones.
 -- 🔸 Se puso como valor predeterminado de 'occupied_places' en la tabla 'groups' como 0.
 -- 🔸 Se agregaron las columnas de 'level' y 'language' a la tabla de colaboradores para poder definir los cambios pertinentes por medio de funciones y procedimientos.
-
 */

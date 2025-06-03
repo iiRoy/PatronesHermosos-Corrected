@@ -41,38 +41,38 @@ router.get('/table', authMiddleware, participantsController.getParticipantsTable
 router.get(
   '/:participantId/available-groups',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.getAvailableGroups
 );
 router.patch(
   '/:participantId/approve',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.approveParticipant
 );
 
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['superuser']),
-  participantsController.updateParticipant
+  roleMiddleware(['superuser', 'venue_coordinator']),
+  participantsController.updateParticipant,
 );
 router.put(
   '/:id/basic-info',
   authMiddleware,
-  roleMiddleware(['superuser']),
-  participantsController.updateParticipantBasicInfo
+  roleMiddleware(['superuser', 'venue_coordinator']),
+  participantsController.updateParticipantBasicInfo,
 );
 router.delete(
   '/:id',
   authMiddleware,
-  roleMiddleware(['superuser']),
-  participantsController.deleteParticipant
+  roleMiddleware(['superuser', 'venue_coordinator']),
+  participantsController.deleteParticipant,
 );
 router.patch(
   '/:id/status',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   participantsController.changeParticipantStatus,
 );
 
@@ -93,5 +93,14 @@ router.get('/files/:filename', async (req, res) => {
     res.status(404).json({ message: 'Archivo no encontrado' });
   }
 });
+
+router.get('/:id/pdf', authMiddleware, participantsController.getParticipantPDF);
+
+router.patch(
+  '/:id/reject',
+  authMiddleware,
+  roleMiddleware(['venue_coordinator', 'superuser']),
+  participantsController.rejectParticipant
+);
 
 module.exports = router;

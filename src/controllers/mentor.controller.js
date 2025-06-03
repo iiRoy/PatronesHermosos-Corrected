@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { sendEmail } = require('../lib/emails/emailSender');
+
 
 // Obtener todas las mentoras con los datos necesarios para la tabla
 const getAll = async (req, res) => {
@@ -18,8 +20,11 @@ const getAll = async (req, res) => {
       email: mentor.email || 'Sin correo',
       phone_number: mentor.phone_number || 'Sin teléfono',
       venue: mentor.venues?.name || 'Sede desconocida',
+      id_venue: mentor.id_venue,
       number_of_groups: mentor.groups.length,
       status: mentor.status,
+      paternal_name: mentor.paternal_name || null,
+      maternal_name: mentor.maternal_name || null,
     }));
 
     res.json({ success: true, data: formattedMentors });
@@ -122,22 +127,27 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
+
   try {
+    const updateData = {};
+    if (name !== undefined) updateData.name = name?.trim() || null;
+    if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+    if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+    if (email !== undefined) updateData.email = email?.trim() || null;
+    if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+    if (id_venue !== undefined) updateData.id_venue = id_venue;
+
+    console.log('Datos enviados al controlador (update):', updateData); // Log para depurar
+
     const updatedMentor = await prisma.mentors.update({
       where: { id_mentor: parseInt(id) },
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        id_venue,
-      },
+      data: updateData,
     });
+
     res.json({ success: true, message: 'Mentora actualizada', data: updatedMentor });
   } catch (error) {
     console.error('Error updating mentor:', error);
-    res.status(500).json({ success: false, message: 'Error al actualizar la mentora' });
+    res.status(500).json({ success: false, message: 'Error al intentar actualizar la mentora' });
   }
 };
 
@@ -146,20 +156,23 @@ const updateBasicData = async (req, res) => {
   const { id } = req.params;
   const { name, paternal_name, maternal_name, email, phone_number, id_venue } = req.body;
 
-
-
   try {
+    // Crear objeto de datos dinámicamente, incluyendo solo campos proporcionados
+    const updateData = {};
+    if (name !== undefined) updateData.name = name?.trim() || null;
+    if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+    if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+    if (email !== undefined) updateData.email = email?.trim() || null;
+    if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+    if (id_venue !== undefined) updateData.id_venue = id_venue;
+
+    console.log('Datos enviados al controlador (updateBasicData):', updateData); // Log para depurar
+
     const updatedMentor = await prisma.mentors.update({
       where: { id_mentor: parseInt(id) },
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        id_venue,
-      },
+      data: updateData,
     });
+
     res.json({ success: true, message: 'Mentora actualizada (datos básicos)', data: updatedMentor });
   } catch (error) {
     console.error('Error updating mentor basic data:', error);
@@ -237,7 +250,15 @@ const cancelMentor = async (req, res) => {
     // Verificar si la mentora existe y está Aprobada
     const mentor = await prisma.mentors.findUnique({
       where: { id_mentor: parseInt(id) },
-      select: { id_mentor: true, status: true, name: true, paternal_name: true, maternal_name: true, id_venue: true },
+      select: {
+        id_mentor: true,
+        status: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        email: true, // Añadido para el correo
+        id_venue: true,
+      },
     });
 
     if (!mentor) {
@@ -264,6 +285,48 @@ const cancelMentor = async (req, res) => {
         id_venue: mentor.id_venue,
       },
     });
+
+    // Send cancellation email (non-critical)
+    try {
+      // Construct full name
+      const fullName = [
+        mentor.name,
+        mentor.paternal_name,
+        mentor.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      // Fetch venue name
+      const venue = await prisma.venues.findUnique({
+        where: { id_venue: mentor.id_venue },
+        select: { name: true },
+      });
+
+      // Prepare email data
+      const emailData = {
+        pName: fullName || 'Mentora',
+        venue: venue?.name || 'Sede no especificada',
+        role: 'Mentora', // Hardcoded role
+        iEmail: 'soporte@patroneshermosos.org'
+      };
+
+      // Validate email before sending
+      if (mentor.email && mentor.email.trim()) {
+        await sendEmail({
+          to: mentor.email,
+          subject: 'Notificación de Cancelación - Patrones Hermosos',
+          template: 'templates/lideres/eliminado',
+          data: emailData
+        });
+        console.log(`Cancellation email sent to ${mentor.email}`);
+      } else {
+        console.log(`No email sent for mentor ${id}: No valid email address`);
+      }
+    } catch (emailError) {
+      console.error('Error sending cancellation email:', emailError.message);
+      // Do not affect the success response
+    }
 
     res.status(200).json({
       message: `Mentora con ID ${id} cancelada exitosamente`,

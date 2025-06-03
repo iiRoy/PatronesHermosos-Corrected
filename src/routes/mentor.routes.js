@@ -7,7 +7,7 @@ const mentorController = require('../controllers/mentor.controller');
 router.get(
   '/',
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin', 'superuser', 'venue_coordinator']),
   mentorController.getAll
 );
 
@@ -15,7 +15,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin', 'superuser', 'venue_coordinator']),
   mentorController.getMentorById
 );
 
@@ -23,7 +23,7 @@ router.get(
 router.get(
   '/specific/:id',
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin', 'superuser', 'venue_coordinator']),
   mentorController.getSpecific
 );
 
@@ -39,7 +39,7 @@ router.post(
 router.put(
   '/:id',
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin', 'superuser', 'venue_coordinator']),
   mentorController.update
 );
 
@@ -47,7 +47,7 @@ router.put(
 router.put(
   '/specific/:id',
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin', 'superuser', 'venue_coordinator']),
   mentorController.updateBasicData
 );
 
@@ -63,7 +63,7 @@ router.delete(
 router.get(
   '/:id_mentor/groups',
   authMiddleware,
-  roleMiddleware(['admin', 'superuser']),
+  roleMiddleware(['admin', 'superuser', 'venue_coordinator']),
   mentorController.getGroupMentor
 );
 
@@ -80,7 +80,7 @@ router.put(
 router.patch(
   '/:id/cancel',
   authMiddleware,
-  roleMiddleware(['superuser']),
+  roleMiddleware(['superuser', 'venue_coordinator']),
   mentorController.cancelMentor
 );
 

@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
-import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
+import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
+import { MapPin } from '@/components/icons'; // Ícono para la sede
+import withIconDecorator from '@/components/decorators/IconDecorator';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Coordinadora {
@@ -174,126 +176,113 @@ const EditarCoordinadora = () => {
   }
 
   return (
-    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
+    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
       <PageTitle>Editar Coordinadora</PageTitle>
 
-      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
-        <div className='flex justify-between gap-4 items-center pb-2 mb-4'>
-          <div className='basis-1/5'>
-            <InputField
-              label='ID'
-              darkText={true}
-              showDescription={false}
-              placeholder={coordinadora.id_venue_coord.toString()}
-              showError={false}
-              variant='accent'
-              value={coordinadora.id_venue_coord.toString()}
-              disabled
-            />
-          </div>
+      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+        <div className="flex justify-between gap-4  pb-2 mb-4">
 
-          <div className='basis-2/5'>
+          <div className="basis-1/3">
             <InputField
-              label='Nombre'
+              label="Nombre"
               darkText={true}
               showDescription={false}
               placeholder={coordinadora.name}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={name}
               onChangeText={(val) => setName(val)}
             />
           </div>
 
-          <div className='basis-2/5'>
-            <p className='texto-filtro'>Sede</p>
-            <FiltroEvento
-              disableCheckboxes
-              label={selectedVenue || 'Seleccionar sede'}
-              showSecciones
-              labelSecciones=''
-              secciones={venueOptions}
-              seccionActiva={selectedVenue}
-              onChangeSeccion={handleVenueChange}
-              extraFilters={[]}
-              filterActiva={{}}
-              onExtraFilterChange={() => { }}
-              fade={false}
-            />
-          </div>
-        </div>
-
-        <div className='flex gap-4 justify-between mb-4'>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Apellido Paterno'
+              label="Apellido Paterno"
               darkText={true}
               showDescription={false}
               placeholder={coordinadora.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
           </div>
-          <div className='basis-1/3'>
+          <div className="basis-1/3">
             <InputField
-              label='Apellido Materno'
+              label="Apellido Materno"
               darkText={true}
               showDescription={false}
               placeholder={coordinadora.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
           </div>
-          <div className='basis-1/3'>
+
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
+
+          <div className="basis-1/2">
             <InputField
-              label='Username'
+              label="Username"
               darkText={true}
               showDescription={false}
               placeholder={coordinadora.username}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={username}
               onChangeText={(val) => setUsername(val)}
             />
           </div>
-        </div>
 
-        <div className='flex gap-4 justify-between mb-4'>
-          <div className='basis-1/2'>
+          <div className="basis-1/2">
             <InputField
-              label='Correo'
+              label="Correo"
               darkText={true}
               showDescription={false}
               placeholder={coordinadora.email}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={email}
               onChangeText={(val) => setEmail(val)}
             />
           </div>
-          <div className='basis-1/2'>
+        </div>
+
+        <div className="flex gap-4 justify-between mb-4">
+          <div className="basis-1/2">
             <InputField
-              label='Teléfono'
+              label="Teléfono"
               darkText={true}
               showDescription={false}
               placeholder={coordinadora.phone_number}
               showError={false}
-              variant='accent'
+              variant="accent"
               value={phoneNumber}
               onChangeText={(val) => setPhoneNumber(val)}
+            />
+          </div>
+
+          <div className="basis-1/2">
+            <Dropdown
+              label="Sede"
+              options={venueOptions}
+              value={selectedVenue}
+              onChange={handleVenueChange}
+              variant="accent"
+              darkText
+              Icon={withIconDecorator(MapPin)} // Ícono decorativo para la sede
             />
           </div>
         </div>
 
         {/* Botón Listo */}
-        <div className='flex gap-4 justify-between mt-auto'>
-          <div className='flex gap-4'>
-            <Button label='Confirmar' variant='primary' onClick={handleSubmit} />
-            <Button label='Cancelar' variant='secondary' href='/admin/gestion-usuarios/coordinadoras' />
+        <div className="flex gap-4 justify-between mt-auto">
+          <div className="flex gap-4">
+            <Button label="Confirmar" variant="primary" onClick={handleSubmit} />
+            <Button label="Cancelar" variant="secondary" href="/admin/gestion-usuarios/coordinadoras" />
           </div>
         </div>
       </div>

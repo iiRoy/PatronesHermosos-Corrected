@@ -287,6 +287,124 @@
 * feature(mysql): Se agrego gestionar_solicitud_pendiente , gestionar_solicitud_colab y fun_validar cu ([c7abadf](https://github.com/iiRoy/Patrones-Hermosos/commit/c7abadf))
 * feature(mysql): Se modifico cambiar_estado_grupo, para que si se cancela un grupo, todos sus partici ([a885438](https://github.com/iiRoy/Patrones-Hermosos/commit/a885438))
 
+## 1.13.0-coord.10 (2025-05-28)
+
+* feat(pages): nueva funcionalidad de eliminar grupo funcional ([04fb084](https://github.com/iiRoy/Patrones-Hermosos/commit/04fb084))
+
+## 1.13.0-coord.9 (2025-05-28)
+
+* feat(pages): nueva página de editar grupo funcional ([21a5a18](https://github.com/iiRoy/Patrones-Hermosos/commit/21a5a18))
+* improve(pages): nuevo botón para mandar correo de cambio de solicitud ([f0cbc81](https://github.com/iiRoy/Patrones-Hermosos/commit/f0cbc81))
+
+## 1.13.0-coord.8 (2025-05-28)
+
+* feat(pages): nueva página de crear grupo funcional ([e826584](https://github.com/iiRoy/Patrones-Hermosos/commit/e826584))
+
+## 1.13.0-coord.7 (2025-05-26)
+
+* feat(pages): nuevo layout para página de inicio ([a4bec02](https://github.com/iiRoy/Patrones-Hermosos/commit/a4bec02))
+
+## 1.13.0-coord.6 (2025-05-26)
+
+* feat(pages): nueva página de estadísticas coordinadora ([a4d4a3e](https://github.com/iiRoy/Patrones-Hermosos/commit/a4d4a3e))
+* improve(pages): gestión de participantes y gestión de colaboradoras ya muestra solo la información d ([14c6db8](https://github.com/iiRoy/Patrones-Hermosos/commit/14c6db8))
+* improve(pages): se pueden eliminar participantes desde gestión de participantes ([28b86ef](https://github.com/iiRoy/Patrones-Hermosos/commit/28b86ef))
+
+## 1.13.0-coord.5 (2025-05-26)
+
+* improve(pages): corrección color de textos en pop-ups de información ([b480dbf](https://github.com/iiRoy/Patrones-Hermosos/commit/b480dbf))
+* improve(pages): editar participantes ya funciona correctamente ([b48450f](https://github.com/iiRoy/Patrones-Hermosos/commit/b48450f))
+* improve(pages): editarSede actualizado para editar información básica de sede ([98e9e67](https://github.com/iiRoy/Patrones-Hermosos/commit/98e9e67))
+* improve(pages): gestion de participantes ya muestra solo las participantes aprobadas ([7ca9969](https://github.com/iiRoy/Patrones-Hermosos/commit/7ca9969))
+* improve(pages): página de solicitudes y página de editar participante funcionando ([64b035e](https://github.com/iiRoy/Patrones-Hermosos/commit/64b035e))
+* chore(estadísticas): Fixed merge mistakes for Graphs ([47e7027](https://github.com/iiRoy/Patrones-Hermosos/commit/47e7027))
+* feat(solicitudes) Pagina de solicitudes lista ([ec365e0](https://github.com/iiRoy/Patrones-Hermosos/commit/ec365e0))
+* feat(solicitudes) Se agregaron dos controladores de participants, con sus rutas respectivas. Se pued ([df587b4](https://github.com/iiRoy/Patrones-Hermosos/commit/df587b4))
+* fix(backend) se arreglo una ruta de participants ([927f7e9](https://github.com/iiRoy/Patrones-Hermosos/commit/927f7e9))
+* fix(migrate) se corrigio el formato de los procedimientos ([6a32e9d](https://github.com/iiRoy/Patrones-Hermosos/commit/6a32e9d))
+* fix(migrate) se eliminaron comentarios erroneos ([e207db4](https://github.com/iiRoy/Patrones-Hermosos/commit/e207db4))
+* Merge branch 'pages/superuser' into diego_sqlProcedures ([caddfeb](https://github.com/iiRoy/Patrones-Hermosos/commit/caddfeb))
+* Merge con rama pages/superuser ([e6d2530](https://github.com/iiRoy/Patrones-Hermosos/commit/e6d2530))
+* Merge desde diego_sqlProcedures ([6b0dd8c](https://github.com/iiRoy/Patrones-Hermosos/commit/6b0dd8c))
+* chore(release): 1.13.0-admin.5 [skip ci] ([754bb2a](https://github.com/iiRoy/Patrones-Hermosos/commit/754bb2a))
+* chore(release): 1.13.0-admin.6 [skip ci] ([a9fb3b5](https://github.com/iiRoy/Patrones-Hermosos/commit/a9fb3b5))
+* feat(login): Login page attempts function + design complete ([54f569e](https://github.com/iiRoy/Patrones-Hermosos/commit/54f569e))
+* feat(pages): nueva página de editar sede superuser ([85dd02d](https://github.com/iiRoy/Patrones-Hermosos/commit/85dd02d))
+
+<<<<<<< HEAD
+## 1.13.0-coord.4 (2025-05-25)
+
+* feat(pages): nueva página de editarParticipantes coordinadora ([412a49c](https://github.com/iiRoy/Patrones-Hermosos/commit/412a49c))
+
+## 1.13.0-coord.3 (2025-05-24)
+
+* feat(pages): nueva página de solicitudes para coordinadora, ya muestra solo las solicitudes en las q ([a916f3c](https://github.com/iiRoy/Patrones-Hermosos/commit/a916f3c))
+
+## 1.13.0-coord.2 (2025-05-24)
+
+* feat(pages): nueva página mi-sede, ya muestra solo los participantes y grupos de la coordinadora esp ([16964b8](https://github.com/iiRoy/Patrones-Hermosos/commit/16964b8))
+* improve(pages): ya se muestran solo las colaboradoras que pertenecen a la sede de la coordinadora es ([3022dd5](https://github.com/iiRoy/Patrones-Hermosos/commit/3022dd5))
+* improve(pages): ya se muestran solo las mentoras que pertenecen a la sede de la coordinadora específ ([78cc0c4](https://github.com/iiRoy/Patrones-Hermosos/commit/78cc0c4))
+
+## 1.13.0-coord.1 (2025-05-23)
+
+* feat(BE): New routes7Controllers/Components ([58a01aa](https://github.com/iiRoy/Patrones-Hermosos/commit/58a01aa))
+* feat(collab): Backend for collab forms/Table Components created ([b22df17](https://github.com/iiRoy/Patrones-Hermosos/commit/b22df17))
+* feat(estadisticas): Opciones de Personalización de gráficas. ([c7ac6ca](https://github.com/iiRoy/Patrones-Hermosos/commit/c7ac6ca))
+* feat(estadisticas): Opciones de Personalización de gráficas. ([08ef181](https://github.com/iiRoy/Patrones-Hermosos/commit/08ef181))
+* feat(merge): Venue forms Visual Update and merge with backend ([5be9e88](https://github.com/iiRoy/Patrones-Hermosos/commit/5be9e88))
+* feat(pages): merge de pages/superuser a pages/coordinador e información nueva en dashboard de coordi ([234e07b](https://github.com/iiRoy/Patrones-Hermosos/commit/234e07b))
+* feat(pages): Nueva página de inicio implementada ([944ec7d](https://github.com/iiRoy/Patrones-Hermosos/commit/944ec7d))
+* feat(pages): nuevo formulario de registro Colaboradoras ([1e8252d](https://github.com/iiRoy/Patrones-Hermosos/commit/1e8252d))
+* feat(pages): nuevo formulario de registro Participantes ([7574858](https://github.com/iiRoy/Patrones-Hermosos/commit/7574858))
+* feat(routes): se agregaron rutas para cancelar_sede y cambiar_estado_participant ([33f5a4e](https://github.com/iiRoy/Patrones-Hermosos/commit/33f5a4e))
+* feat(sql): Se terminaron los procedimientos ([81b3b8a](https://github.com/iiRoy/Patrones-Hermosos/commit/81b3b8a))
+* chore(release): 1.13.0-admin.1 [skip ci] ([7919777](https://github.com/iiRoy/Patrones-Hermosos/commit/7919777))
+* chore(release): 1.13.0-admin.2 [skip ci] ([7c3f164](https://github.com/iiRoy/Patrones-Hermosos/commit/7c3f164))
+* chore(release): 1.13.0-admin.3 [skip ci] ([2548345](https://github.com/iiRoy/Patrones-Hermosos/commit/2548345))
+* chore(release): 1.13.0-admin.4 [skip ci] ([7eda97b](https://github.com/iiRoy/Patrones-Hermosos/commit/7eda97b))
+* chore(release): 1.9.0-admin.4 [skip ci] ([fe450f5](https://github.com/iiRoy/Patrones-Hermosos/commit/fe450f5))
+* chore(release): 1.9.0-admin.5 [skip ci] ([5c6809d](https://github.com/iiRoy/Patrones-Hermosos/commit/5c6809d))
+* chore(release): 1.9.0-admin.6 [skip ci] ([3d0ac89](https://github.com/iiRoy/Patrones-Hermosos/commit/3d0ac89))
+* improve(pages): columnas de tabla de sedes actualiazadas ([434b987](https://github.com/iiRoy/Patrones-Hermosos/commit/434b987))
+* improve(pages): columnas de tabla de sedes actualizadas y componente FiltroEvento funcional en págin ([7300ff8](https://github.com/iiRoy/Patrones-Hermosos/commit/7300ff8))
+* improve(pages): componente dropdown funcionando en pages/superuser ([16c3984](https://github.com/iiRoy/Patrones-Hermosos/commit/16c3984))
+* improve(pages): corrección de íconos en formularios de colaborador y participante ([c2747ca](https://github.com/iiRoy/Patrones-Hermosos/commit/c2747ca))
+* improve(pages): EditarParticipante ya utiliza la información del participante seleccionado en Gestio ([9698bd2](https://github.com/iiRoy/Patrones-Hermosos/commit/9698bd2))
+* improve(pages): eliminar participantes ya usa la función de cancelar ([fed2d23](https://github.com/iiRoy/Patrones-Hermosos/commit/fed2d23))
+* improve(pages): gestión de usuarios mejorado para llamar información de la db ([db59032](https://github.com/iiRoy/Patrones-Hermosos/commit/db59032))
+* improve(pages): mejoras en eliminación de participantes en superuser, se muestra una notificación al ([66712c0](https://github.com/iiRoy/Patrones-Hermosos/commit/66712c0))
+* improve(pages): página de editar coordinadoras ya actualiza los datos e la base de datos ([c9316b3](https://github.com/iiRoy/Patrones-Hermosos/commit/c9316b3))
+* improve(pages): página de editar mentoras ya actualiza los datos e la base de datos ([6115c42](https://github.com/iiRoy/Patrones-Hermosos/commit/6115c42))
+* improve(pages): página de gestión de apoyo ya utiliza datos de la base de datos y permite la elimina ([822c1b2](https://github.com/iiRoy/Patrones-Hermosos/commit/822c1b2))
+* improve(pages): página de solicitudes ya muestra la información de la base de datos ([bd10369](https://github.com/iiRoy/Patrones-Hermosos/commit/bd10369))
+* improve(pages): páginas de sedes, gestión de coordinadoras y gestión de mentoras ya muestran informa ([484e7c8](https://github.com/iiRoy/Patrones-Hermosos/commit/484e7c8))
+* improve(pages): popup para ver información de sede (superuser) ([9761687](https://github.com/iiRoy/Patrones-Hermosos/commit/9761687))
+* cambios en editar colaboradores ([5628d1f](https://github.com/iiRoy/Patrones-Hermosos/commit/5628d1f))
+* chore(files):testing files created ([41869e3](https://github.com/iiRoy/Patrones-Hermosos/commit/41869e3))
+* feat(estadísticas): Opciones de personalización de gráficas. ([4c54ce6](https://github.com/iiRoy/Patrones-Hermosos/commit/4c54ce6))
+* fix(controller):functions renamed and exported ([8f2c885](https://github.com/iiRoy/Patrones-Hermosos/commit/8f2c885))
+* fix(css):background color mod ([bb63927](https://github.com/iiRoy/Patrones-Hermosos/commit/bb63927))
+* fix(email):Controoler and routes for email updated ([e2d1066](https://github.com/iiRoy/Patrones-Hermosos/commit/e2d1066))
+* fix(forms):Placeholders changed ([aa0295f](https://github.com/iiRoy/Patrones-Hermosos/commit/aa0295f))
+* fix(sql) se eliminaron 5 metodos ([f5c2613](https://github.com/iiRoy/Patrones-Hermosos/commit/f5c2613))
+* Merge branch 'forms/part' into pages/superuser ([6968e8a](https://github.com/iiRoy/Patrones-Hermosos/commit/6968e8a))
+* Merge branch 'forms/sede' into pages/formularios ([dcc4acd](https://github.com/iiRoy/Patrones-Hermosos/commit/dcc4acd))
+* Merge branch 'pages/formularios' into pages/superuser ([50aea7c](https://github.com/iiRoy/Patrones-Hermosos/commit/50aea7c))
+* Merge branch 'pages/superuser' into diego_sqlProcedures ([79e2ccd](https://github.com/iiRoy/Patrones-Hermosos/commit/79e2ccd))
+* Merge desde main ([9292546](https://github.com/iiRoy/Patrones-Hermosos/commit/9292546))
+* Merge remote-tracking branch 'origin/diego_sqlProcedures' into pages/superuser ([57d9b99](https://github.com/iiRoy/Patrones-Hermosos/commit/57d9b99))
+* fix(components): funcionamiento de FiltroEvento arreglado para formulario colaboradoras ([9cf6354](https://github.com/iiRoy/Patrones-Hermosos/commit/9cf6354))
+* fix(controller): Functions created for collaborator ([487d772](https://github.com/iiRoy/Patrones-Hermosos/commit/487d772))
+* fix(db): Country and Region Var Insert/Form update ([56fa2af](https://github.com/iiRoy/Patrones-Hermosos/commit/56fa2af))
+* fix(estadisticas): Correción a opciones de Personalización de gráficas. ([472d861](https://github.com/iiRoy/Patrones-Hermosos/commit/472d861))
+* fix(form): testing group selection table ([95518e8](https://github.com/iiRoy/Patrones-Hermosos/commit/95518e8))
+* fix(pages): se corrigió la búsqueda con InputField para que funcione en todas las páginas de paginac ([916b75b](https://github.com/iiRoy/Patrones-Hermosos/commit/916b75b))
+* fix(routes): Updated route of collaborator ([fa0dcdc](https://github.com/iiRoy/Patrones-Hermosos/commit/fa0dcdc))
+* Improve(pages): Diseño correcto agregado a formulario de Sedes ([e2fda79](https://github.com/iiRoy/Patrones-Hermosos/commit/e2fda79))
+* feature(mysql): Se agrego gestionar_solicitud_pendiente , gestionar_solicitud_colab y fun_validar cu ([c7abadf](https://github.com/iiRoy/Patrones-Hermosos/commit/c7abadf))
+* feature(mysql): Se modifico cambiar_estado_grupo, para que si se cancela un grupo, todos sus partici ([a885438](https://github.com/iiRoy/Patrones-Hermosos/commit/a885438))
+=======
 ## 1.13.0-admin.6 (2025-05-26)
 
 * feat(login): Login page attempts function + design complete ([54f569e](https://github.com/iiRoy/Patrones-Hermosos/commit/54f569e))
@@ -306,21 +424,7 @@
 
 * feat(pages): nueva página de editar sede superuser ([85dd02d](https://github.com/iiRoy/Patrones-Hermosos/commit/85dd02d))
 * chore(estadísticas): Fixed merge mistakes for Graphs ([47e7027](https://github.com/iiRoy/Patrones-Hermosos/commit/47e7027))
-
-## 1.13.0-mail.2 (2025-05-25)
-
-* fix(correos): Templates creados y terminados. ([b48c47d](https://github.com/iiRoy/Patrones-Hermosos/commit/b48c47d))
-* chore(formats): Changes pending. Small advance. ([123f653](https://github.com/iiRoy/Patrones-Hermosos/commit/123f653))
-
-## 1.13.0-mail.1 (2025-05-19)
-
-* feat(notifications): Sistema de Correos Funcional ([4642c26](https://github.com/iiRoy/Patrones-Hermosos/commit/4642c26))
-* chore: manual conflict resolution after merge ([089d5d0](https://github.com/iiRoy/Patrones-Hermosos/commit/089d5d0))
-* Creación de Rutas API ([9d1e4d2](https://github.com/iiRoy/Patrones-Hermosos/commit/9d1e4d2))
-* Librerias Actualizadas ([5b015a6](https://github.com/iiRoy/Patrones-Hermosos/commit/5b015a6))
-* Merge branch 'main' into experiment/correo ([2e25e06](https://github.com/iiRoy/Patrones-Hermosos/commit/2e25e06))
-* Merge branch 'main' of https://github.com/iiRoy/Patrones-Hermosos into Rutas-API ([9e3c545](https://github.com/iiRoy/Patrones-Hermosos/commit/9e3c545))
-* Setup inicial de correo ([71b7e70](https://github.com/iiRoy/Patrones-Hermosos/commit/71b7e70))
+>>>>>>> origin/pages/superuser
 
 ## 1.13.0-admin.4 (2025-05-22)
 
