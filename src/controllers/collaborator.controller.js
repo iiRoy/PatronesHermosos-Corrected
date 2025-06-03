@@ -22,63 +22,7 @@ const createCollaborator = async (req, res) => {
   } = req.body;
 
   try {
-    const newCollaborator = await prisma.collaborators.create({
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        college,
-        degree,
-        semester,
-        preferred_role,
-        preferred_language,
-        preferred_level,
-        gender,
-        role: 'Pendiente',
-        status: 'Pendiente',
-        level: 'Pendiente',
-        language: 'Pendiente',
-        preferred_group: preferred_group ? parseInt(preferred_group) : null,
-      },
-    });
-
-    // Send confirmation email (non-critical)
-    try {
-      let venueName = 'No asignada';
-      let groupName = 'No asignado';
-      if (preferred_group) {
-        const group = await prisma.groups.findUnique({
-          where: { id_group: parseInt(preferred_group) },
-          include: { venues: { select: { name: true } } },
-        });
-        if (group) {
-          groupName = group.name || 'No asignado';
-          venueName = group.venues?.name || 'No asignada';
-        }
-      }
-
-      await sendEmail({
-        to: email,
-        subject: 'Confirmación de Solicitud - Patrones Hermosos',
-        template: 'templates/colaboradores/solicitud',
-        data: {
-          cName: `${name || ''} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
-          venueName: venueName,
-          cEmail,
-          role: preferred_role || 'No especificado',
-          language: preferred_language || 'No especificado',
-          level: preferred_level || 'No especificado',
-          mode: 'No especificado', // Assuming mode is not provided in request
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
-      console.log(`Solicitud email sent to ${email}`);
-    } catch (emailError) {
-      console.error(`Error sending solicitud email to ${email}:`, emailError.message);
-    }
-    await prisma.$queryRaw`
+  await prisma.$queryRaw`
       CALL registrar_colab(
         ${name}, 
         ${paternal_name}, 
@@ -96,14 +40,50 @@ const createCollaborator = async (req, res) => {
       );
     `;
 
+    // Send confirmation email (non-critical)
+    try {
+      let venueName = 'No asignada';
+      let groupName = 'No asignado';
+      if (preferred_group) {
+        const group = await prisma.groups.findUnique({
+          where: { id_group: parseInt(preferred_group) },
+          include: { venues: { select: { name: true } } },
+        });
+        if (group) {
+          groupName = group.name || 'No asignado';
+          groupMode = group.mode || 'No asignado';
+          venueName = group.venues?.name || 'No asignada';
+        }
+      }
+
+      await sendEmail({
+        to: email,
+        subject: 'Confirmación de Solicitud - Patrones Hermosos',
+        template: 'templates/colaboradores/solicitud',
+        data: {
+          cName: `${name || ''} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
+          venueName: venueName,
+          cEmail: email || 'No especificado',
+          role: preferred_role || 'No especificado',
+          language: preferred_language || 'No especificado',
+          level: preferred_level || 'No especificado',
+          mode: groupMode || 'No determinado', // Assuming mode is not provided in request
+          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        },
+      });
+      console.log(`Solicitud email sent to ${email}`);
+    } catch (emailError) {
+      console.error(`Error sending solicitud email to ${email}:`, emailError.message);
+    }
+
     res.status(201).json({
       success: true,
       message: 'Colaborador creado',
       data: newCollaborator,
     });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientValidationError) {
-      return res.status(422).json({ success: false, message: 'Datos inválidos', error: error.message });
+    if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
+      return res.status(422).json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
     }
     console.error('Error al crear colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
