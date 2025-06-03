@@ -1246,7 +1246,7 @@ CREATE OR REPLACE PROCEDURE registrar_colab(
     IN rol_preferido VARCHAR(255),
     IN idioma_preferido VARCHAR(255),
     IN nivel_preferido VARCHAR(255),
-    IN id_group_preferido INT,
+    IN id_grupo_preferido INT,
     IN genero VARCHAR(255)
 )
 BEGIN
@@ -1272,7 +1272,7 @@ BEGIN
         nombre, paterno, materno, email, telefono,
         universidad, carrera, semestre,
         rol_preferido, idioma_preferido, nivel_preferido,
-        id_group_preferido, genero
+        id_grupo_preferido, genero
     );
 END;
 $$
