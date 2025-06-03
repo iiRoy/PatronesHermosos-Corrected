@@ -1,3 +1,9 @@
+## <small>1.14.1 (2025-06-03)</small>
+
+* chore: manual conflict resolution after merge ([ba29942](https://github.com/iiRoy/Patrones-Hermosos/commit/ba29942))
+* fix(colab): Adaptation of forms to use groups instead of venue ([88fac21](https://github.com/iiRoy/Patrones-Hermosos/commit/88fac21))
+* fix(file): fs promise added to review uploaded files ([65ad7b0](https://github.com/iiRoy/Patrones-Hermosos/commit/65ad7b0))
+
 ## 1.14.0 (2025-06-03)
 
 * chore: manual conflict resolution after merge ([0998038](https://github.com/iiRoy/Patrones-Hermosos/commit/0998038))
