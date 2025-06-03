@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs').promises;
 const venueController = require('../controllers/venue.controller');
 const { validateVenue } = require('../validators/venueValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
@@ -40,7 +41,7 @@ const router = express.Router();
 
 // Routes
 router.get('/',venueController.getAll);
-router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
+//router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
 router.post(
   '/',
   upload.fields([
@@ -74,9 +75,10 @@ router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController
 router.post('/:id/cancel', authMiddleware, roleMiddleware(['admin']), venueController.cancelVenue);
 
 // Serve files from uploads/tmp
-router.get('/files/:filename', (req, res) => {
+router.get('/files/:filename', authMiddleware, (req, res) => {
   const { filename } = req.params;
-  const filePath = path.join(__dirname, '..', 'uploads', 'tmp', filename);
+  const { download } = req.query; // Check for download query parameter
+  const filePath = path.join(__dirname, '..', 'Uploads', 'tmp', filename);
 
   // Check if file exists
   fs.access(filePath)
@@ -85,7 +87,11 @@ router.get('/files/:filename', (req, res) => {
       const ext = path.extname(filename).toLowerCase();
       const contentType = ext === '.pdf' ? 'application/pdf' : 'image/jpeg';
       res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+      // Use 'attachment' for download, 'inline' for preview
+      res.setHeader(
+        'Content-Disposition',
+        download === 'true' ? `attachment; filename="${filename}"` : `inline; filename="${filename}"`
+      );
 
       // Serve the file
       res.sendFile(filePath);
@@ -103,6 +109,9 @@ router.patch(
   venueController.cancelarVenue
 );
 
+router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
+
 router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
+router.patch('/:id/reject', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), venueController.rejectVenue);
 
 module.exports = router;

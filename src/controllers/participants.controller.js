@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const fs = require('fs').promises;
+const { sendEmail } = require('../lib/emails/emailSender');
 
 // Utility function to transform flat keys into nested objects
 const parseNestedBody = (body) => {
@@ -129,6 +130,7 @@ const getAllParticipants = async (req, res) => {
           select: {
             id_group: true,
             name: true,
+            id_venue: true,
             venues: {
               select: {
                 name: true,
@@ -142,6 +144,7 @@ const getAllParticipants = async (req, res) => {
             name: true,
             venues: {
               select: {
+                id_venue: true, // Añadido para permitir el filtrado por sede
                 name: true,
               },
             },
@@ -155,15 +158,15 @@ const getAllParticipants = async (req, res) => {
       },
     });
 
-    // Formateo original (usando grupo asignado, basado en id_group)
+    // Formateo para el frontend (compatible con la interfaz Participant)
     const formattedParticipants = participants.map(participant => ({
-      ...participant,
-      groups: participant.groups
-        ? {
-          name: participant.groups.name || 'No asignado',
-          venues: participant.groups.venues || { name: 'No asignado' },
-        }
-        : null,
+      id: participant.id_participant,
+      nombre: `${participant.name || ''} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
+      sede: participant.groups?.venues?.name || 'No asignado',
+      id_venue: participant.groups?.id_venue || null,
+      grupo: participant.groups?.name || 'No asignado',
+      correo: participant.email,
+      status: participant.status || 'Pendiente',
     }));
 
     // Formateo para Solicitudes (usando grupo preferido, basado en preferred_group)
@@ -179,7 +182,7 @@ const getAllParticipants = async (req, res) => {
 
     res.json({
       success: true,
-      data: formattedParticipants, // Para uso general (grupo asignado)
+      data: formattedParticipants, // Para uso general (formato para frontend)
       dataForRequests: formattedParticipantsForRequests, // Para Solicitudes de Registro (grupo preferido)
     });
   } catch (error) {
@@ -202,6 +205,7 @@ const getParticipantById = async (req, res) => {
             venues: {
               select: {
                 name: true,
+                id_venue: true, // Añadido para consistencia
               },
             },
           },
@@ -404,7 +408,6 @@ const updateParticipantBasicInfo = async (req, res) => {
   }
 };
 
-// Cambiar estado del participante (activar/desactivar)
 const changeParticipantStatus = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;
@@ -416,27 +419,13 @@ const changeParticipantStatus = async (req, res) => {
   }
 
   try {
-    // Fetch participant data for email
+    // Fetch participant data for audit log and email
     const participant = await prisma.participants.findUnique({
       where: { id_participant: parseInt(id) },
       include: {
         groups: {
           select: {
-            name: true,
-            venues: {
-              select: {
-                name: true,
-                address: true,
-              },
-            },
-            mentors: {
-              select: {
-                name: true,
-                paternal_name: true,
-                maternal_name: true,
-                email: true,
-              },
-            },
+            id_venue: true,
           },
         },
       },
@@ -451,36 +440,54 @@ const changeParticipantStatus = async (req, res) => {
       CALL cambiar_estado_participant(${parseInt(id)}, ${username}, ${action})
     `;
 
-    // Send email if participant is activated
-    if (action === 'activar') {
-      await sendEmail({
-        to: participant.email,
-        subject: '¡Felicidades! Has sido aceptada en Patrones Hermosos',
-        template: 'participantes/aceptado',
-        data: {
-          pname: `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
-          sede: participant.groups?.venues?.name || 'No asignado',
-          grupo: participant.groups?.name || 'No asignado',
-          direccion: participant.groups?.venues?.address || 'No asignado',
-          mName: participant.groups?.mentors
-            ? `${participant.groups.mentors.name || ''} ${participant.groups.mentors.paternal_name || ''} ${participant.groups.mentors.maternal_name || ''}`.trim()
-            : 'No asignado',
-          mEmail: participant.groups?.mentors?.email || 'No asignado',
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
-    }else if (action === 'desactivar') {
-      await sendEmail({
-        to: participant.email,
-        subject: 'Resultados de tu Postulación - Patrones Hermosos',
-        template: 'participantes/rechazado',
-        data: {
-          pName: `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
-          reason: reason || 'No cumplió con los criterios de registro',
-          code: uuidv4().slice(0, 8),
-          iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
-        },
-      });
+    // Create audit log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'participants',
+        message: `Se ${action === 'activar' ? 'aprobó' : 'rechazó'} el participante con ID ${id}`,
+        username: username || 'unknown',
+        id_venue: participant.groups?.id_venue || participant.id_venue,
+      },
+    });
+
+    // Send rejection email (non-critical) only for 'desactivar'
+    if (action === 'desactivar') {
+      try {
+        // Construct full name
+        const fullName = [
+          participant.name,
+          participant.paternal_name,
+          participant.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
+
+        // Prepare email data with static reason and code
+        const emailData = {
+          pName: fullName || 'Participante',
+          reason: 'No se cumplieron los criterios de selección',
+          code: 'REJ123', // Static code
+          iName: 'Soporte Patrones Hermosos',
+          iEmail: 'soporte@patroneshermosos.org'
+        };
+
+        // Validate email before sending
+        if (participant.email && participant.email.trim()) {
+          await sendEmail({
+            to: participant.email,
+            subject: 'Resultados de la postulación - Patrones Hermosos',
+            template: 'templates/participantes/rechazado',
+            data: emailData
+          });
+          console.log(`Rejection email sent to ${participant.email}`);
+        } else {
+          console.log(`No email sent for participant ${id}: No valid email address`);
+        }
+      } catch (emailError) {
+        console.error('Error sending rejection email:', emailError.message);
+        // Do not affect the success response
+      }
     }
 
     res.status(200).json({
@@ -488,8 +495,8 @@ const changeParticipantStatus = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al cambiar estado del participante:', error);
-    if (error.code === '45000') {
-      return res.status(400).json({ message: error.message });
+    if (error.code === 'P2010' && error.meta?.code === '1644') {
+      return res.status(400).json({ message: error.meta.message });
     }
     console.error('Full error details:', JSON.stringify(error, null, 2));
     res.status(500).json({ message: 'Error interno al cambiar estado del participante', error: error.message });
@@ -569,6 +576,7 @@ const getAvailableGroups = async (req, res) => {
   }
 };
 
+// Approve participant
 const approveParticipant = async (req, res) => {
   const { participantId } = req.params;
   const { groupId } = req.body;
@@ -600,7 +608,7 @@ const approveParticipant = async (req, res) => {
     const group = await prisma.groups.findUnique({
       where: { id_group: parseInt(groupId) },
       select: {
-        id_group: true, // Explicitly select id_group
+        id_group: true,
         id_venue: true,
         max_places: true,
         status: true,
@@ -641,7 +649,7 @@ const approveParticipant = async (req, res) => {
     const updatedParticipant = await prisma.participants.update({
       where: { id_participant: parseInt(participantId) },
       data: {
-        id_group: parseInt(group.id_group), // Ensure integer
+        id_group: parseInt(group.id_group),
         status: 'Aprobada',
       },
       select: {
@@ -660,11 +668,68 @@ const approveParticipant = async (req, res) => {
       },
     });
 
+    // Create audit log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'participants',
+        message: `Se aprobó el participante con ID ${participantId}`,
+        username: req.user?.username || 'unknown',
+        id_venue: group.id_venue,
+      },
+    });
+
+    // Send approval email (non-critical)
+    try {
+      // Fetch additional data for email
+      const groupDetails = await prisma.groups.findUnique({
+        where: { id_group: parseInt(groupId) },
+        include: {
+          venues: true,
+          mentors: true, // Changed from tutors to mentors
+        },
+      });
+
+      // Construct full name
+      const fullName = [
+        updatedParticipant.name,
+        updatedParticipant.paternal_name,
+        updatedParticipant.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      // Prepare email data
+      const emailData = {
+        pName: fullName || 'Participante',
+        sede: groupDetails?.venues?.name || 'No asignada',
+        grupo: groupDetails?.name || 'No asignado',
+        direccion: groupDetails?.venues?.address || 'No disponible',
+        mName: groupDetails?.mentors?.name || 'No asignada',
+        mEmail: groupDetails?.mentors?.email || 'no-reply@patroneshermosos.org',
+        iName: 'Soporte Patrones Hermosos',
+        iEmail: 'soporte@patroneshermosos.org'
+      };
+
+      // Send email
+      await sendEmail({
+        to: updatedParticipant.email,
+        subject: 'Resultados de la postulación - Patrones Hermosos',
+        template: 'templates/participantes/aceptado',
+        data: emailData
+      });
+
+      console.log(`Approval email sent to ${updatedParticipant.email}`);
+    } catch (emailError) {
+      console.error('Error sending approval email:', emailError.message);
+      // Do not affect the success response
+    }
+
     res.json({
       success: true,
       message: 'Participante aprobado exitosamente',
       participant: updatedParticipant,
-      assignedGroupId: group.id_group, // Include for confirmation
+      assignedGroupId: group.id_group,
     });
   } catch (error) {
     console.error('Error approving participant:', JSON.stringify(error, null, 2));
@@ -672,6 +737,126 @@ const approveParticipant = async (req, res) => {
   }
 };
 
+const rejectParticipant = async (req, res) => {
+  const { id } = req.params;
+  const username = req.user.username;
+
+  try {
+    // Buscar participante
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(id) },
+      include: {
+        groups: {
+          select: {
+            id_venue: true,
+          },
+        },
+      },
+    });
+
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    // Validar estado actual
+    if (participant.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'Solo se pueden rechazar participantes con estado Aprobada' });
+    }
+
+    // Actualizar estado a Cancelada
+    await prisma.participants.update({
+      where: { id_participant: parseInt(id) },
+      data: { status: 'Cancelada' },
+    });
+
+    // Crear registro en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'participants',
+        message: `Se rechazó el participante con ID ${id}`,
+        username: username || 'unknown',
+        id_venue: participant.groups?.id_venue || participant.id_venue,
+      },
+    });
+
+    // Send rejection email (non-critical)
+    try {
+      // Construct full name
+      const fullName = [
+        participant.name,
+        participant.paternal_name,
+        participant.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      // Prepare email data with static reason and code
+      const emailData = {
+        pName: fullName || 'Participante',
+        reason: 'No se cumplieron los criterios de selección',
+        code: 'REJ123', // Static code
+        iName: 'Soporte Patrones Hermosos',
+        iEmail: 'soporte@patroneshermosos.org'
+      };
+
+      // Validate email before sending
+      if (participant.email && participant.email.trim()) {
+        await sendEmail({
+          to: participant.email,
+          subject: 'Resultados de la postulación - Patrones Hermosos',
+          template: 'templates/participantes/rechazado',
+          data: emailData
+        });
+        console.log(`Rejection email sent to ${participant.email}`);
+      } else {
+        console.log(`No email sent for participant ${id}: No valid email address`);
+      }
+    } catch (emailError) {
+      console.error('Error sending rejection email:', emailError.message);
+      // Do not affect the success response
+    }
+
+    res.status(200).json({
+      message: `Participante con ID ${id} rechazado exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al rechazar participante:', error);
+    res.status(500).json({ message: 'Error interno al rechazar participante', error: error.message });
+  }
+};
+
+const getParticipantPDF = async (req, res) => {
+  const { id } = req.params;
+  const { download } = req.query; // Check for download query parameter
+
+  try {
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(id) },
+      select: { participation_file: true },
+    });
+
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    if (!participant.participation_file) {
+      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
+    }
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      download === 'true'
+        ? `attachment; filename=participant_${id}_participation.pdf`
+        : `inline; filename=participant_${id}_participation.pdf`
+    );
+    res.send(participant.participation_file);
+  } catch (error) {
+    console.error('Error al obtener el PDF del participante:', error);
+    res.status(500).json({ message: 'Error interno al obtener el PDF', error: error.message });
+  }
+};
 
 module.exports = {
   createParticipant,
@@ -684,4 +869,6 @@ module.exports = {
   getParticipantsTable,
   updateParticipantBasicInfo,
   changeParticipantStatus,
+  rejectParticipant,
+  getParticipantPDF,
 };

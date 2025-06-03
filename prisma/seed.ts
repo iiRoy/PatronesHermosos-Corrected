@@ -212,26 +212,26 @@ async function main() {
     });
   }
 
-  // 10. COLLABORATORS
+   // 10. COLLABORATORS
   console.log('📌 Insertando collaborators...');
   const collaborators = JSON.parse(fs.readFileSync('./prisma/seed/collaborators.json', 'utf-8'));
   for (const c of collaborators) {
-    const expectedVenueId = c.preferred_venue;
+    const expectedGroupId = c.preferred_group;
     // Check if id_group is defined and a valid number
     if (
-      expectedVenueId === undefined ||
-      expectedVenueId === null ||
-      typeof expectedVenueId !== 'number'
+      expectedGroupId === undefined ||
+      expectedGroupId === null ||
+      typeof expectedGroupId !== 'number'
     ) {
       console.error(
-        `⚠️ id_group inválido (${expectedVenueId}) para collaborator: ${c.name}. Saltando...`,
+        `⚠️ id_group inválido (${expectedGroupId}) para collaborator: ${c.name}. Saltando...`,
       );
       continue;
     }
-    const groupExists = await prisma.groups.findUnique({ where: { id_group: expectedVenueId } });
+    const groupExists = await prisma.groups.findUnique({ where: { id_group: expectedGroupId } });
     if (!groupExists) {
       console.error(
-        `⚠️ Group con id_group ${expectedVenueId} no existe. Saltando collaborator: ${c.name}`,
+        `⚠️ Group con id_group ${expectedGroupId} no existe. Saltando collaborator: ${c.name}`,
       );
       continue;
     }

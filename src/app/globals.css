@@ -293,13 +293,13 @@
   width: 1200px;
 }
 
-.darkText {
-  color: black;
-}
-
 .label-input {
   font-size: 18px;
   color: var(--text-color);
+}
+
+.darkText {
+  color: black;
 }
 
 .description {

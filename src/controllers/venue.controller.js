@@ -2,6 +2,8 @@ const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
 const fs = require('fs').promises;
 const path = require('path');
+const { sendEmail } = require('../lib/emails/emailSender');
+
 
 // Utility function to transform flat keys into nested objects
 const parseNestedBody = (body) => {
@@ -163,20 +165,31 @@ const create = async (req, res) => {
       )
     `;
 
-    // Send registration confirmation email to venue coordinator
-    await sendEmail({
-      to: generalCoordinator.email,
-      subject: 'Confirmación de Solicitud de Sede - Patrones Hermosos',
-      template: 'sede/solicitud',
-      data: {
-        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
-        venueName: name,
-        representativeName: `${generalCoordinator.name} ${generalCoordinator.lastNameP || ''} ${generalCoordinator.lastNameM || ''}`.trim(),
-        email: generalCoordinator.email,
-        location: address || 'No especificado',
-        iEmail: 'rgparedes@tec.mx',
-      },
+    // Fetch the newly created venue to get its ID and details
+    const venue = await prisma.venues.findFirst({
+      where: { name: name, created_at: { gte: new Date(Date.now() - 60000) } }, // Assuming created within last minute
+      include: { venue_coordinators: true },
     });
+
+    if (venue && venue.venue_coordinators[0]) {
+      const coordinator = venue.venue_coordinators[0];
+      try {
+        await sendEmail({
+          to: coordinator.email,
+          subject: '¡Gracias por tu postulación como Sede!',
+          template: 'templates/sede/solicitud',
+          data: {
+            representativeName: coordinator.name,
+            venueName: venue.name,
+            email: coordinator.email,
+            location: `${venue.country || ''}, ${venue.state || ''}, ${venue.address || ''}`.trim(),
+          },
+        });
+        console.log(`Solicitud email sent to ${coordinator.email}`);
+      } catch (emailError) {
+        console.error(`Error sending solicitud email to ${coordinator.email}:`, emailError.message);
+      }
+    }
 
     res.status(201).json({
       message: 'Venue creado exitosamente',
@@ -306,20 +319,6 @@ const cancelVenue = async (req, res) => {
       CALL cancelar_sede(${parseInt(id)}, ${username})
     `;
 
-    // Send rejection email to venue coordinator
-      await sendEmail({
-        to: generalCoordinator.email,
-        subject: 'Resultados de tu Postulación de Sede - Patrones Hermosos',
-        template: 'sedes/rechazado',
-        data: {
-          name: `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
-          venue: venue.name,
-          reason: reason || 'No cumplió con los criterios de selección',
-          code: uuidv4().slice(0, 8),
-          iEmail: 'rgparedes@tec.mx',
-        },
-      });
-
     res.status(200).json({ message: `Sede con ID ${id} cancelada exitosamente` });
   } catch (error) {
     console.error('Error al cancelar la sede:', error);
@@ -333,41 +332,15 @@ const cancelVenue = async (req, res) => {
 
 const approveVenue = async (req, res) => {
   const { id } = req.params;
-  const username = req.user?.username; // Asumiendo que el username viene del token JWT
+  const username = req.user?.username || 'unknown'; // Asumiendo que el username viene del token JWT
 
-    try {
-    // Fetch venue, coordinator, and assistant coordinators
+  try {
+    // Verificar si la sede existe y obtener datos del coordinador general y asistentes
     const venue = await prisma.venues.findUnique({
       where: { id_venue: parseInt(id) },
       include: {
-        venue_coordinators: {
-          select: {
-            name: true,
-            paternal_name: true,
-            maternal_name: true,
-            email: true,
-            username: true,
-            password: true,
-          },
-        },
-        assistant_coordinators: {
-          select: {
-            name: true,
-            paternal_name: true,
-            maternal_name: true,
-            email: true,
-            role: true,
-          },
-        },
-        groups: {
-          include: {
-            participants: {
-              select: {
-                id_participant: true,
-              },
-            },
-          },
-        },
+        venue_coordinators: true, // Incluir datos del coordinador general
+        assistant_coordinators: true, // Incluir datos de los coordinadores asistentes
       },
     });
 
@@ -379,8 +352,6 @@ const approveVenue = async (req, res) => {
     if (venue.status !== 'Pendiente') {
       return res.status(400).json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
     }
-
-    const generalCoordinator = venue.venue_coordinators[0];
 
     // Actualizar el estado a Registrada sin participantes
     const updatedVenue = await prisma.venues.update({
@@ -397,49 +368,70 @@ const approveVenue = async (req, res) => {
         action: 'UPDATE',
         table_name: 'venues',
         message: `Se aprobó la sede con ID ${id}`,
-        username: username || 'unknown',
+        username,
         id_venue: parseInt(id),
       },
     });
 
-    // Send acceptance email to general coordinator
-    await sendEmail({
-      to: generalCoordinator.email,
-      subject: '¡Felicidades! Tu Sede ha sido Aceptada - Patrones Hermosos',
-      template: 'sedes/aceptado',
-      data: {
-        name: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
-        role: 'Coordinadora General',
-        venue: venue.name,
-        username: generalCoordinator.username,
-        email: generalCoordinator.email,
-        password: generalCoordinator.password, // Note: Sending passwords in email is insecure; consider a secure alternative
-        platformLink: `https://patroneshermosos.org/login/${uuidv4().slice(0, 8)}`,
-      },
-    });
+    // Enviar correo al coordinador general (non-critical)
+    const generalCoordinator = venue.venue_coordinators[0]; // Asumir que hay un solo coordinador general
+    if (generalCoordinator) {
+      try {
+        // Construct full name
+      const coordinatorFullName = [
+        generalCoordinator.name,
+        generalCoordinator.paternal_name,
+        generalCoordinator.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
 
-    // Send assignment emails to all assistant coordinators
-    for (const assistant of venue.assistant_coordinators) {
-      // Map role based on stored role
-      let teamRole = assistant.role;
-      if (!teamRole || teamRole === 'Pendiente') {
-        // Fallback: Infer role based on context (e.g., email matching from registrar_sede)
-        teamRole = assistant.role === 'Coordinadora_Asociada' ? 'Coordinadora_Asociada' : 'Coordinadora_de_informes';
+        await sendEmail({
+          to: generalCoordinator.email,
+          subject: '¡Tu solicitud de sede ha sido aprobada!',
+          template: 'templates/sede/aceptado',
+          data: {
+            name: coordinatorFullName,
+            role: 'Coordinador de Sede',
+            venue: venue.name,
+            username: generalCoordinator.username,
+            email: generalCoordinator.email,
+            password: generalCoordinator.password, // Considerar seguridad
+          },
+        });
+        console.log(`Approval email sent to ${generalCoordinator.email}`);
+      } catch (emailError) {
+        console.error(`Error sending approval email to ${generalCoordinator.email}:`, emailError.message);
       }
+    }
 
-      await sendEmail({
-        to: assistant.email,
-        subject: 'Asignación de Puesto en Sede - Patrones Hermosos',
-        template: 'lideres/aceptado',
-        data: {
-          pName: `${assistant.name} ${assistant.paternal_name || ''} ${assistant.maternal_name || ''}`.trim(),
-          venue: venue.name,
-          role: teamRole,
-          address: venue.address || 'No especificado',
-          cName: `${generalCoordinator.name} ${generalCoordinator.paternal_name || ''} ${generalCoordinator.maternal_name || ''}`.trim(),
-          cEmail: generalCoordinator.email || 'rgparedes@tec.mx',
-        },
-      });
+    // Enviar correos a los coordinadores asistentes (non-critical)
+    for (const assistant of venue.assistant_coordinators) {
+      try {
+        // Construct full name
+        const assistantFullName = [
+          assistant.name,
+          assistant.paternal_name,
+          assistant.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
+        await sendEmail({
+          to: assistant.email,
+          subject: '¡Asignación de Puesto en Patrones Hermosos!',
+          template: 'templates/lideres/coordinadoras/aceptado',
+          data: {
+            pName: assistantFullName,
+            venue: venue.name,
+            role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
+            address: venue.address || 'No especificada',
+            cEmail: generalCoordinator?.email || 'contacto@patroneshermosos.org',
+          },
+        });
+        console.log(`Assistant approval email sent to ${assistant.email}`);
+      } catch (emailError) {
+        console.error(`Error sending assistant approval email to ${assistant.email}:`, emailError.message);
+      }
     }
 
     return res.status(200).json({
@@ -455,13 +447,83 @@ const approveVenue = async (req, res) => {
 // Cancelar una sede
 const cancelarVenue = async (req, res) => {
   const { id } = req.params;
-  const username = req.user.username; // Usar username del token JWT
+  const username = req.user?.username || 'unknown'; // Usar username del token JWT
 
   try {
+    // Verificar si la sede existe y obtener datos del coordinador general y asistentes
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      include: {
+        venue_coordinators: true,
+        assistant_coordinators: true,
+      },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Sede no encontrada' });
+    }
+
     // Llamar al procedimiento almacenado
     await prisma.$queryRaw`
       CALL cancelar_sede(${parseInt(id)}, ${username})
     `;
+
+    // Enviar correo al coordinador general (non-critical)
+    const generalCoordinator = venue.venue_coordinators[0];
+    if (generalCoordinator) {
+      try {
+        // Construct full name
+      const coordinatorFullName = [
+        generalCoordinator.name,
+        generalCoordinator.paternal_name,
+        generalCoordinator.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+        await sendEmail({
+          to: generalCoordinator.email,
+          subject: 'Actualización sobre tu solicitud de sede',
+          template: 'templates/sede/rechazado',
+          data: {
+            name: coordinatorFullName,
+            venue: venue.name,
+            reason: 'Cancelación solicitada por el usuario o administrador.',
+            code: `REG-${id}-${new Date().getFullYear()}`,
+          },
+        });
+        console.log(`Cancellation email sent to ${generalCoordinator.email}`);
+      } catch (emailError) {
+        console.error(`Error sending cancellation email to ${generalCoordinator.email}:`, emailError.message);
+      }
+    }
+
+    // Enviar correos a los coordinadores asistentes (non-critical)
+    for (const assistant of venue.assistant_coordinators) {
+      try {
+        // Construct full name
+        const assistantFullName = [
+          assistant.name,
+          assistant.paternal_name,
+          assistant.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
+        await sendEmail({
+          to: assistant.email,
+          subject: 'Actualización de tu asignación en Patrones Hermosos',
+          template: 'templates/lideres/eliminado',
+          data: {
+            pName: assistantFullName,
+            venue: venue.name,
+            role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
+            iEmail: generalCoordinator?.email || 'contacto@patroneshermosos.org',
+          },
+        });
+        console.log(`Assistant cancellation email sent to ${assistant.email}`);
+      } catch (emailError) {
+        console.error(`Error sending assistant cancellation email to ${assistant.email}:`, emailError.message);
+      }
+    }
 
     res.status(200).json({
       message: `Sede con ID ${id} cancelada exitosamente`,
@@ -476,44 +538,148 @@ const cancelarVenue = async (req, res) => {
   }
 };
 
-// Get PDF for a venue
+const rejectVenue = async (req, res) => {
+  const { id } = req.params;
+  const { action, reasons } = req.body; // Incluir reasons desde el cuerpo de la solicitud
+  const username = req.user?.username || 'unknown';
+
+  // Validar acción
+  if (action !== 'desactivar') {
+    return res.status(400).json({ message: 'La acción debe ser "desactivar"' });
+  }
+
+  try {
+    // Fetch venue data
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: parseInt(id) },
+      include: {
+        venue_coordinators: true,
+        assistant_coordinators: true,
+      },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'Sede no encontrada' });
+    }
+
+    // Verificar estado Pendiente
+    if (venue.status !== 'Pendiente') {
+      return res.status(400).json({ message: 'Solo se pueden rechazar sedes con estatus Pendiente' });
+    }
+
+    // Actualizar estado a Rechazada
+    await prisma.venues.update({
+      where: { id_venue: parseInt(id) },
+      data: { status: 'Rechazada' },
+    });
+
+    // Crear registro en audit_log
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'venues',
+        message: `Se rechazó la sede con ID ${id}`,
+        username,
+        id_venue: parseInt(id),
+      },
+    });
+
+    // Enviar correo al coordinador general (non-critical)
+    const generalCoordinator = venue.venue_coordinators[0];
+    if (generalCoordinator) {
+      try {
+        // Construct full name
+      const coordinatorFullName = [
+        generalCoordinator.name,
+        generalCoordinator.paternal_name,
+        generalCoordinator.maternal_name
+      ]
+        .filter(Boolean)
+        .join(' ');
+        await sendEmail({
+          to: generalCoordinator.email,
+          subject: 'Actualización sobre tu solicitud de sede',
+          template: 'templates/sede/rechazado',
+          data: {
+            name: coordinatorFullName,
+            venue: venue.name,
+            reason: 'La sede no cumple con los criterios de aceptación.',
+            code: `REG-${id}-${new Date().getFullYear()}`,
+          },
+        });
+        console.log(`Cancellation email sent to ${generalCoordinator.email}`);
+      } catch (emailError) {
+        console.error(`Error sending cancellation email to ${generalCoordinator.email}:`, emailError.message);
+      }
+    }
+
+    // Enviar correos a los coordinadores asistentes (non-critical)
+    for (const assistant of venue.assistant_coordinators) {
+      try {
+        // Construct full name
+        const assistantFullName = [
+          assistant.name,
+          assistant.paternal_name,
+          assistant.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
+        await sendEmail({
+          to: assistant.email,
+          subject: 'Actualización de tu asignación en Patrones Hermosos',
+          template: 'templates/lideres/eliminado',
+          data: {
+            pName: assistantFullName,
+            venue: venue.name,
+            role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
+            iEmail: generalCoordinator?.email || 'contacto@patroneshermosos.org',
+          },
+        });
+        console.log(`Assistant cancellation email sent to ${assistant.email}`);
+      } catch (emailError) {
+        console.error(`Error sending assistant cancellation email to ${assistant.email}:`, emailError.message);
+      }
+    }
+
+    res.status(200).json({
+      message: `Sede con ID ${id} rechazada exitosamente`,
+    });
+  } catch (error) {
+    console.error('Error al rechazar sede:', error);
+    res.status(500).json({ message: 'Error interno al rechazar sede', error: error.message });
+  }
+};
+
+// venue.controller.js
 const getVenuePDF = async (req, res) => {
   const { id } = req.params;
+  const { download } = req.query; // Check for download query parameter
 
   try {
     const venue = await prisma.venues.findUnique({
       where: { id_venue: parseInt(id) },
-      select: { participation_file_path: true }, // For file system approach
-      // select: { participation_file: true }, // Uncomment for BLOB approach
+      select: { participation_file: true },
     });
 
     if (!venue) {
       return res.status(404).json({ message: 'Venue no encontrado' });
     }
 
-    // File System Approach
-    if (!venue.participation_file_path) {
-      return res.status(404).json({ message: 'No se encontró el archivo de participación' });
-    }
-
-    // Return the filename to be used with the /files/:filename route
-    res.json({ filename: venue.participation_file_path });
-
-    /*
-    // BLOB Approach (uncomment if preferred)
     if (!venue.participation_file) {
       return res.status(404).json({ message: 'No se encontró el archivo de participación' });
     }
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename=venue_${id}_participation.pdf`);
+    res.setHeader(
+      'Content-Disposition',
+      download === 'true' ? `attachment; filename=venue_${id}_participation.pdf` : `inline; filename=venue_${id}_participation.pdf`
+    );
     res.send(venue.participation_file);
-    */
   } catch (error) {
     console.error('Error al obtener el PDF de la sede:', error);
     res.status(500).json({ message: 'Error interno al obtener el PDF', error: error.message });
   }
 };
-
 
 module.exports = {
   getAll,
@@ -526,5 +692,6 @@ module.exports = {
   cancelVenue,
   approveVenue,
   cancelarVenue,
+  rejectVenue,
   getVenuePDF,
 };

@@ -285,7 +285,58 @@ const SolicitudesRegistroAdmin = () => {
     setSelectedItem(item);
     setIsPopupOpen(true);
 
-    // Fetch PDF filename for venues
+    // Clean up previous PDF URL
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(null);
+    }
+
+    // Fetch PDF for participants
+    if (section === 'PARTICIPANTES') {
+      try {
+        const token = localStorage.getItem('api_token');
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'No se encontró el token, redirigiendo al login',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/participants/${(item as Participante).id_participant}/pdf`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: `No se pudo cargar el PDF: ${errorData.message}`,
+            duration: 5000,
+          });
+          setPdfUrl(null);
+          return;
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
+      } catch (error: any) {
+        console.error('Error fetching participant PDF:', error);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudo cargar el PDF: ${error.message}`,
+          duration: 5000,
+        });
+        setPdfUrl(null);
+      }
+    }
+
     if (section === 'SEDES') {
       try {
         const token = localStorage.getItem('api_token');
@@ -316,19 +367,9 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        const data = await response.json();
-        if (data.filename) {
-          // Construct URL for the /files/:filename route
-          setPdfUrl(`/api/venues/files/${data.filename}`);
-        } else {
-          notify({
-            color: 'red',
-            title: 'Error',
-            message: 'No se encontró el archivo de participación',
-            duration: 5000,
-          });
-          setPdfUrl(null);
-        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
       } catch (error: any) {
         console.error('Error fetching PDF:', error);
         notify({
@@ -345,6 +386,9 @@ const SolicitudesRegistroAdmin = () => {
   const closePopup = () => {
     setIsPopupOpen(false);
     setSelectedItem(null);
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl); // Clean up object URL
+    }
     setPdfUrl(null);
   };
 
@@ -567,88 +611,209 @@ const SolicitudesRegistroAdmin = () => {
   };
 
   const handleReject = async () => {
-    if (!selectedItem) {
+  if (!selectedItem) {
+    closeRejectPopup();
+    return;
+  }
+
+  if (section === 'PARTICIPANTES') {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action: 'desactivar' }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al rechazar participante');
+      }
+
+      // Remove participant from list
+      setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
+
+      const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Participante ${fullName} rechazado exitosamente`,
+        duration: 5000,
+      });
+
       closeRejectPopup();
+    } catch (error: any) {
+      console.error('Error rejecting participant:', error);
+      const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo rechazar al participante ${fullName}: ${error.message}`,
+        duration: 5000,
+      });
+    }
+  } else if (section === 'APOYO & STAFF') {
+  try {
+    const token = localStorage.getItem('api_token');
+    if (!token) {
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: 'No se encontró el token, redirigiendo al login',
+        duration: 5000,
+      });
+      router.push('/login');
       return;
     }
 
-    if (section === 'PARTICIPANTES') {
-      try {
-        const token = localStorage.getItem('api_token');
-        if (!token) {
-          notify({
-            color: 'red',
-            title: 'Error',
-            message: 'No se encontró el token, redirigiendo al login',
-            duration: 5000,
-          });
-          router.push('/login');
-          return;
-        }
+    // Send request to reject collaborator
+    const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/reject`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'desactivar' }),
+    });
 
-        const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/status`, {
-          method: 'PATCH',
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al rechazar colaborador');
+    }
+
+    // Remove collaborator from list
+    setApoyoStaffData((prev: ApoyoStaff[]) => prev.filter((c: ApoyoStaff) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
+
+    const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    notify({
+      color: 'green',
+      title: 'Éxito',
+      message: `Colaborador ${fullName} rechazado exitosamente`,
+      duration: 5000,
+    });
+
+    closeRejectPopup();
+  } catch (error: any) {
+    console.error('Error rejecting collaborator:', error);
+    const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    let errorMessage = error.message;
+
+    // Handle specific error
+    if (errorMessage.includes('Solo se pueden rechazar colaboradores con estatus Pendiente')) {
+      errorMessage = 'El colaborador debe estar en estado Pendiente para ser rechazado.';
+    }
+
+    notify({
+      color: 'red',
+      title: 'Error',
+      message: `No se pudo rechazar al colaborador ${fullName}: ${errorMessage}`,
+      duration: 5000,
+    });
+    closeRejectPopup();
+  }
+  } else {
+    try {
+      const token = localStorage.getItem('api_token');
+      if (!token) {
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: 'No se encontró el token, redirigiendo al login',
+          duration: 5000,
+        });
+        router.push('/login');
+        return;
+      }
+
+      // Send request to reject venue
+      const response = await fetch(`/api/venues/${(selectedItem as Sede).id_venue}/reject`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action: 'desactivar' }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al rechazar sede');
+      }
+
+      // Remove venue from list
+      setSedesData((prev: Sede[]) => prev.filter((v: Sede) => v.id_venue !== (selectedItem as Sede).id_venue));
+
+      const venueName = (selectedItem as Sede).name.trim();
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `Sede ${venueName} rechazada exitosamente`,
+        duration: 5000,
+      });
+
+      closeRejectPopup();
+
+      // Attempt to create audit log (non-critical)
+      try {
+        const auditResponse = await fetch('/api/audit-logs', {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: 'Rechazada' }),
+          body: JSON.stringify({
+            action: 'UPDATE',
+            table_name: 'venues',
+            message: `Se rechazó la sede con ID ${(selectedItem as Sede).id_venue}`,
+            id_venue: (selectedItem as Sede).id_venue,
+          }),
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Error al rechazar participante');
+        if (!auditResponse.ok) {
+          const auditError = await auditResponse.json();
+          console.error('Error creating audit log:', auditError);
         }
-
-        // Remove participant from list
-        setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
-
-        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
-        notify({
-          color: 'green',
-          title: 'Éxito',
-          message: `Participante ${fullName} rechazado exitosamente`,
-          duration: 5000,
-        });
-
-        closeRejectPopup();
-      } catch (error: any) {
-        console.error('Error rejecting participant:', error);
-        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
-        notify({
-          color: 'red',
-          title: 'Error',
-          message: `No se pudo rechazar al participante ${fullName}: ${error.message}`,
-          duration: 5000,
-        });
+      } catch (auditError) {
+        console.error('Error creating audit log:', auditError);
       }
-    } else if (section === 'APOYO & STAFF') {
-      // Placeholder for Apoyo & Staff rejection
-      console.log('Solicitud rechazada para:', selectedItem);
-      const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+    } catch (error: any) {
+      console.error('Error rejecting venue:', error);
+      const venueName = (selectedItem as Sede).name.trim();
+      let errorMessage = error.message;
+
+      // Handle specific error
+      if (errorMessage.includes('Solo se pueden rechazar sedes con estatus Pendiente')) {
+        errorMessage = 'La sede debe estar en estado Pendiente para ser rechazada.';
+      }
+
       notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `Colaborador ${fullName} rechazado`,
-        duration: 5000,
-      });
-      closeRejectPopup();
-    } else {
-      // Placeholder for Sedes
-      console.log('Solicitud rechazada para:', selectedItem);
-      notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `Sede ${(selectedItem as Sede).name} rechazada`,
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo rechazar la sede ${venueName}: ${errorMessage}`,
         duration: 5000,
       });
       closeRejectPopup();
     }
-  };
-
-  if (error) {
-    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
   }
+};
+
+if (error) {
+  return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+}
 
   return (
     <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
@@ -820,8 +985,31 @@ const SolicitudesRegistroAdmin = () => {
                   <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).groups?.name || 'No asignado'}</p>
                   <p><strong>Sede:</strong> {(selectedItem as Participante).groups?.venues?.name || 'No asignado'}</p>
                   <p><strong>Estado:</strong> {(selectedItem as Participante).status}</p>
+                  {pdfUrl ? (
+                    <div className="mt-4">
+                      <p><strong>Archivo de participación:</strong></p>
+                      <iframe
+                        src={pdfUrl}
+                        className="w-full h-[400px] border rounded"
+                        title="Participation File"
+                      />
+                      <div className="mt-4 flex justify-center">
+                        <a
+                          href={`/api/participants/${(selectedItem as Participante).id_participant}/pdf?download=true`}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button label="Descargar PDF" variant="primary" />
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
+                  )}
                 </div>
               )}
+
               {section === 'APOYO & STAFF' && selectedItem && (
                 <div className='pt-6 pb-6'>
                   <p><strong>Nombre:</strong> {`${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}</p>
@@ -857,6 +1045,16 @@ const SolicitudesRegistroAdmin = () => {
                         className="w-full h-[400px] border rounded"
                         title="Participation File"
                       />
+                      <div className="mt-4 flex justify-center">
+                        <a
+                          href={`/api/venues/${(selectedItem as Sede).id_venue}/pdf?download=true`}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button label="Descargar PDF" variant="primary" />
+                        </a>
+                      </div>
                     </div>
                   ) : (
                     <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
