@@ -78,6 +78,23 @@ const createCollaborator = async (req, res) => {
     } catch (emailError) {
       console.error(`Error sending solicitud email to ${email}:`, emailError.message);
     }
+    await prisma.$queryRaw`
+      CALL registrar_colab(
+        ${name}, 
+        ${paternal_name}, 
+        ${maternal_name}, 
+        ${email}, 
+        ${phone_number},
+        ${college}, 
+        ${degree}, 
+        ${semester},
+        ${preferred_role}, 
+        ${preferred_language}, 
+        ${preferred_level},
+        ${preferred_group}, 
+        ${gender}
+      );
+    `;
 
     res.status(201).json({
       success: true,
