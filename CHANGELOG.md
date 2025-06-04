@@ -1,3 +1,21 @@
+## 1.15.0 (2025-06-04)
+
+* chore: manual conflict resolution after merge ([c1edd26](https://github.com/iiRoy/Patrones-Hermosos/commit/c1edd26))
+* chore(estadísticas): Corrección página de estadísticas coordinadores ([cb4d560](https://github.com/iiRoy/Patrones-Hermosos/commit/cb4d560))
+* Corrección de diseño de formulario Participante y corrección de tabla de grupos ([255913e](https://github.com/iiRoy/Patrones-Hermosos/commit/255913e))
+* Corrección de diseño formulario Participantes ([283e32d](https://github.com/iiRoy/Patrones-Hermosos/commit/283e32d))
+* Merge branch 'maggi_correciones' of https://github.com/iiRoy/Patrones-Hermosos into maggi_correcione ([f210895](https://github.com/iiRoy/Patrones-Hermosos/commit/f210895))
+* fix(BE): Forms functional again/Venue form requires email tho ([b61a9f1](https://github.com/iiRoy/Patrones-Hermosos/commit/b61a9f1))
+* fix(button): Buttons do not submit forms regardless of function ([4db3dc8](https://github.com/iiRoy/Patrones-Hermosos/commit/4db3dc8))
+* fix(button): removed unused buttons ([4c254f1](https://github.com/iiRoy/Patrones-Hermosos/commit/4c254f1))
+* fix(button): removed unused buttons x2 ([ab8da18](https://github.com/iiRoy/Patrones-Hermosos/commit/ab8da18))
+* fix(forms): All forms now use proper button type to prevent early submission/email sent when creatin ([8dfd3ad](https://github.com/iiRoy/Patrones-Hermosos/commit/8dfd3ad))
+* fix(pdf): Show pdf for registrations in Coordinator page/Some typos fixed ([8b8e2e2](https://github.com/iiRoy/Patrones-Hermosos/commit/8b8e2e2))
+* fix(prisma): Created a base line migration for Prisma ([dad63ce](https://github.com/iiRoy/Patrones-Hermosos/commit/dad63ce))
+* feat(button): Info popup for groups in forms ([e16a76a](https://github.com/iiRoy/Patrones-Hermosos/commit/e16a76a))
+* feat(files): Participation files downloadable in forms ([bd1b24d](https://github.com/iiRoy/Patrones-Hermosos/commit/bd1b24d))
+* improve(pages): formularios de colaborador y sede con diseño corregido apegado al mockup, rutas de b ([6ec4cc5](https://github.com/iiRoy/Patrones-Hermosos/commit/6ec4cc5))
+
 ## <small>1.14.1 (2025-06-03)</small>
 
 * chore: manual conflict resolution after merge ([ba29942](https://github.com/iiRoy/Patrones-Hermosos/commit/ba29942))
