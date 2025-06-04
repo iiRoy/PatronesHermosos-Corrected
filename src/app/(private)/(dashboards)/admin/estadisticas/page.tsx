@@ -114,7 +114,7 @@ const EstadisticasAdmin = () => {
           onExpand={() => setLineMinimized(false)}
           isResizing={isResizing}
           direction='row'
-          grow='md:flex-[2_2_0%] lg:flex-[24_3_15%] w-full h-full md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
+          grow='overflow-visible md:flex-[2_2_0%] lg:flex-[24_3_15%] w-full h-full md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
         >
           <GenericLineChart
             onMinimize={() => setLineMinimized(true)}

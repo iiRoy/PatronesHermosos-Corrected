@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GenericRadialChart from '@/components/graphics/bases/genericPieChart';
 import GenericBarChart from '@/components/graphics/bases/genericBarChart';
 import GenericLineChart from '@/components/graphics/bases/genericLineChart';
@@ -26,21 +26,24 @@ const ChartWrapper = ({
   className?: string;
   grow?: string;
 }) => {
-    const minimizedClasses =
+  const minimizedClasses =
     direction === 'column' && isMinimized
       ? 'max-h-[100px] min-h-[100px] h-[100px]'
-      : direction === 'column' && isResizing ? 'max-h-full min-h-full h-full' : 'flex flex-grow md:min-h-[380px] lg:min-h-[430px] md:max-h-[380px] lg:max-h-[430px] md:w-[100px]';
+      : direction === 'column' && isResizing
+      ? 'max-h-full min-h-full h-full'
+      : 'flex flex-grow md:min-h-[380px] lg:min-h-[430px] md:max-h-[380px] lg:max-h-[430px] md:w-[100px]';
 
-  const transitionClasses =
-    'transition-[max-width,max-height,flex-grow] duration-500 ease-in-out';
+  const transitionClasses = 'transition-[max-width,max-height,flex-grow] duration-500 ease-in-out';
 
   return (
     <div
       className={`relative bg-white rounded-xl shadow overflow-hidden ${transitionClasses}
-        ${isMinimized ? minimizedClasses : grow} ${className} items-center justify-center w-full flex`}
+        ${
+          isMinimized ? minimizedClasses : grow
+        } ${className} items-center justify-center w-full flex`}
     >
       {/* Contenido + Overlay */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className='relative w-full h-full flex items-center justify-center'>
         <div
           className={`
             w-full h-full items-center justify-center
@@ -60,15 +63,11 @@ const ChartWrapper = ({
             className={`absolute inset-0 z-10 w-full h-full flex items-center justify-center px-4
             ${isMinimized ? 'cursor-pointer hover:text-black' : ''}`}
           >
-            <div className="bg-white border border-gray-300 shadow rounded-xl px-6 py-4 text-center text-gray-600 text-sm max-w-xs w-full flex justify-center">
+            <div className='bg-white border border-gray-300 shadow rounded-xl px-6 py-4 text-center text-gray-600 text-sm max-w-xs w-full flex justify-center'>
               {isMinimized ? (
-                <>
-                  Expandir la gráfica.
-                </>
+                <>Expandir la gráfica.</>
               ) : (
-                <>
-                  Ajusta tu ventana para mostrar la gráfica.
-                </>
+                <>Ajusta tu ventana para mostrar la gráfica.</>
               )}
             </div>
           </div>
@@ -82,7 +81,12 @@ const EstadisticasAdmin = () => {
   const [radialMinimized, setRadialMinimized] = useState(false);
   const [lineMinimized, setLineMinimized] = useState(false);
   const [barMinimized, setBarMinimized] = useState(false);
+  const [userRole, setUserRole] = useState<string>('');
   const isResizing = useIsResizing(800); // se puede ajustar
+
+  useEffect(() => {
+    setUserRole(typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : '');
+  }, []);
 
   return (
     <div className='relative p-6 pl-9 flex flex-col gap-4 text-primaryShade'>
@@ -114,7 +118,7 @@ const EstadisticasAdmin = () => {
           onExpand={() => setLineMinimized(false)}
           isResizing={isResizing}
           direction='row'
-          grow='md:flex-[2_2_0%] lg:flex-[24_3_15%] w-full h-fit md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
+          grow='overflow-visible md:flex-[2_2_0%] lg:flex-[24_3_15%] w-full h-fit md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
         >
           <GenericLineChart
             onMinimize={() => setLineMinimized(true)}
@@ -139,8 +143,8 @@ const EstadisticasAdmin = () => {
           apiEndpoint='/api/data?page=sedes'
           dataPath='resumenSedes'
           xKey='sede'
-          title='Personas Aceptadas por SEDE'
-          labelFormatterPrefix='SEDE: '
+          title={'Personas Aceptadas en tu SEDE'}
+          labelFormatterPrefix={''}
           selectAll={false}
           deselectAll={true}
           maxItemsSelected={5}

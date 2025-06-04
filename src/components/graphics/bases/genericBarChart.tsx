@@ -63,10 +63,20 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   const [colors, setColors] = useState([...defaultColorPallete]);
   const [isVisible, setIsVisible] = useState(true);
   const chartRef = useRef<HTMLDivElement>(null);
+  const [userRole, setUserRole] = useState<string>('');
+  useEffect(() => {
+    setUserRole(
+      typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : ''
+    );
+  }, []);
+  const effectiveXKey = userRole === 'superuser' ? xKey : 'rol';
+
+  const shouldShowSedeFilter = userRole === 'superuser';
 
   useEffect(() => {
-    if (isFirstRender.current === true) {
+    if (isFirstRender.current) {
       setFade(true);
+
       const fetchData = async () => {
         const params = new URLSearchParams(filters as Record<string, string>);
         const fullUrl = `${apiEndpoint}${params.toString() ? `?${params.toString()}` : ''}`;
@@ -74,13 +84,13 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
         try {
           const res = await fetch(fullUrl, {
             headers: {
-              Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''}`,
+              Authorization: `Bearer ${
+                typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
+              }`,
             },
           });
 
           const json = await res.json();
-          console.log('📦 Respuesta JSON completa:', json);
-
           const rawData: GenericChartData[] = dataPath ? json[dataPath] : json;
 
           if (!rawData)
@@ -89,20 +99,50 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
             return setError(`La propiedad "${dataPath}" no contiene un arreglo válido.`);
           if (rawData.length === 0) return setError(`La lista está vacía.`);
 
-          const ItemsData = rawData.map((item) => {
+          const ItemsData: GenericChartData[] = rawData.map((item) => {
             const newItem: GenericChartData = {};
             for (const key in item) {
               const val = item[key];
-              newItem[key] = typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
+              newItem[key] =
+                typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
             }
             return newItem;
           });
 
-          const parsedData = ItemsData.slice(0, maxItems ?? ItemsData.length);
+          let finalData: GenericChartData[];
 
-          setData(ItemsData);
-          setFilteredData(parsedData);
-          setSelectedKeys(parsedData.map((d) => d[xKey] as string));
+          if (userRole === 'superuser') {
+            finalData = ItemsData;
+          } else {
+            const acumulador: Record<string, number> = {};
+
+            for (const item of ItemsData) {
+              for (const key in item) {
+                if (key === 'sede') continue;
+                const valorNum =
+                  typeof item[key] === 'number' ? (item[key] as number) : Number(item[key]);
+                if (!acumulador[key]) acumulador[key] = 0;
+                acumulador[key] += valorNum;
+              }
+            }
+            const roles = Object.keys(acumulador);
+            finalData = roles.map((role) => {
+              const row: GenericChartData = { rol: role.charAt(0).toUpperCase() +role.slice(1).replaceAll('_', ' ') };
+              roles.forEach((r) => {
+                row[r] = r === role ? acumulador[r] : 0;
+              });
+              return row;
+            });
+          }
+
+          const slicedData = finalData.slice(0, maxItems ?? finalData.length);
+
+          setData(finalData);
+          setFilteredData(slicedData);
+
+          setSelectedKeys(
+            slicedData.map((d) => d[effectiveXKey] as string)
+          );
           setError(null);
         } catch (err) {
           console.error('❌ Error cargando datos:', err);
@@ -111,10 +151,11 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
       };
 
       fetchData();
+
       setTimeout(() => {
         isFirstRender.current = false;
       }, 700);
-      if (isFirstRender) {
+      if (isFirstRender.current) {
         setTimeout(() => {
           setFade(false);
         }, 300);
@@ -133,25 +174,27 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [apiEndpoint, dataPath, xKey, JSON.stringify(filters), maxItems]);
+  }, [apiEndpoint, dataPath, JSON.stringify(filters), maxItems, userRole]);
 
   const handleFilterChange = (updated: string[]) => {
     setFade(true);
     setTimeout(() => {
       setSelectedKeys(updated);
-      setFilteredData(data.filter((d) => updated.includes(d[xKey] as string)));
+      setFilteredData(data.filter((d) => updated.includes(d[effectiveXKey] as string)));
       setFade(false);
     }, 250);
   };
 
   const options = data.map((d) => ({
-    value: d[xKey] as string,
-    label: d[xKey] as string,
+    value: d[effectiveXKey] as string,
+    label: d[effectiveXKey] as string,
   }));
 
   const seriesKeys =
     data.length > 0
-      ? Object.keys(data[0]).filter((key) => key !== xKey && typeof data[0][key] === 'number')
+      ? Object.keys(data[0]).filter(
+          (key) => key !== effectiveXKey && typeof data[0][key] === 'number'
+        )
       : [];
 
   return (
@@ -169,8 +212,9 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               }}
               disabled={showMenu}
               id='options-button'
-              className={`cursor-pointer transition-opacity ${showMenu ? 'opacity-50 pointer-events-none' : 'opacity-100'
-                }`}
+              className={`cursor-pointer transition-opacity ${
+                showMenu ? 'opacity-50 pointer-events-none' : 'opacity-100'
+              }`}
             >
               <Options
                 fillColor='var(--secondaryColor)'
@@ -180,7 +224,6 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 height={'3vmax'}
               />
             </button>
-            {/* Menú fuera del flujo flex, pero dentro de contenedor relative */}
             <div className='absolute top-full right-0 z-50'>
               <OptionsMenu
                 onMinimize={onMinimize}
@@ -195,12 +238,12 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 defaultColors={defaultColorPallete}
                 restoreDefaultColors={() => setColors(defaultColorPallete)}
                 filteredData={filteredData}
-                xKey={xKey}
+                xKey={effectiveXKey}
                 seriesKeys={seriesKeys}
                 title={title}
                 colors={colors}
                 elementLabels={seriesKeys.map(
-                  (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' '),
+                  (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' ')
                 )}
                 chartType='bar'
               />
@@ -209,89 +252,93 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
 
           <div className='flex flex-col-reverse md:flex-row-reverse gap-4 md:gap-2 justify-between items-center mt-4 mb-7 ml-7 mr-7'>
             <div
-              className={`custom-legend-container flex md:w-[60%] w-full transition duration-300 ease-in-out ${(fade && isFirstRender.current) || selectedKeys.length < 1
-                ? 'opacity-0'
-                : 'opacity-100'
-                }`}
+              className={`custom-legend-container flex md:w-[60%] w-full transition duration-300 ease-in-out ${
+                (fade && isFirstRender.current) || selectedKeys.length < 1
+                  ? 'opacity-0'
+                  : 'opacity-100'
+              }`}
             >
               <CustomLegend legendKeys={seriesKeys} colors={colors} />
             </div>
             <div className='flex justify-between md:w-[40%] w-[70%] items-center'>
-              <div className='filter-bar flex items-center w-full justify-end'>
-                <Filtro
-                  options={options}
-                  selected={selectedKeys}
-                  onChange={handleFilterChange}
-                  iconName={undefined}
-                  label='Filtros'
-                  labelOptions={xKey.toUpperCase()}
-                  selectAll={selectAll}
-                  deselectAll={deselectAll}
-                  maxSelectableOptions={maxItems}
-                />
-              </div>
+                <div className='filter-bar flex items-center w-full justify-end'>
+                  <Filtro
+                    options={options}
+                    selected={selectedKeys}
+                    onChange={handleFilterChange}
+                    iconName={undefined}
+                    label='Filtros'
+                    labelOptions={effectiveXKey.charAt(0).toUpperCase() + effectiveXKey.slice(1).replaceAll('_', ' ')}
+                    selectAll={selectAll}
+                    deselectAll={deselectAll}
+                    maxSelectableOptions={maxItems}
+                  />
+                </div>
             </div>
           </div>
 
           <div
-            className={`w-full h-full transform transition-all duration-300 ease-in-out ${fade ? 'opacity-0' : 'opacity-100'
-              }`}
->
-  {!isFrozen ? (
-    filteredData.length === 0 ? (
-      <div className='flex justify-center items-center h-full'>
-        <p className='text-textDim text-lg'>No hay datos para mostrar</p>
-      </div>
-    ) : (
-      <ResponsiveContainer>
-        <BarChart data={filteredData} barSize={20}>
-          <CartesianGrid strokeDasharray='3 3' vertical={false} stroke='#BBA5BDFF' />
-          <XAxis
-            dataKey={xKey}
-            axisLine={false}
-            tick={<CustomTick numElements={filteredData.length} />}
-            tickLine={false}
-            interval={0}
-            height={60}
-          />
-          <YAxis axisLine={false} tick={{ fill: '#8E76A3FF' }} tickLine={false} />
-          <Tooltip
-            labelFormatter={(label) => (
-              <span
-                style={{ fontWeight: 'bold' }}
-              >{`${labelFormatterPrefix}${label}`}</span>
+            className={`w-full h-full transform transition-all duration-300 ease-in-out ${
+              fade ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            {!isFrozen ? (
+              filteredData.length === 0 ? (
+                <div className='flex justify-center items-center h-full'>
+                  <p className='text-textDim text-lg'>No hay datos para mostrar</p>
+                </div>
+              ) : (
+                <ResponsiveContainer>
+                  <BarChart data={filteredData} barSize={20}>
+                    <CartesianGrid strokeDasharray='3 3' vertical={false} stroke='#BBA5BDFF' />
+                    <XAxis
+                      dataKey={effectiveXKey}
+                      axisLine={false}
+                      tick={<CustomTick numElements={filteredData.length} />}
+                      tickLine={false}
+                      interval={0}
+                      height={60}
+                    />
+                    <YAxis axisLine={false} tick={{ fill: '#8E76A3FF' }} tickLine={false} />
+                    {shouldShowSedeFilter ?
+                    <Tooltip
+                      labelFormatter={(label) => (
+                        <span style={{ fontWeight: 'bold' }}>
+                          {`${labelFormatterPrefix}${label}`}
+                        </span>
+                      )}
+                      formatter={(value, name) => {
+                        const upperName =
+                          typeof name === 'string'
+                            ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
+                            : name;
+                        return [`${value}`, upperName];
+                      }}
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        borderRadius: '5px',
+                        border: '1px solid #ccc',
+                      }}
+                    /> : ''
+                    }
+                    {seriesKeys.map((key, index) => (
+                      <Bar
+                        key={key}
+                        dataKey={key}
+                        fill={colors[index % colors.length]}
+                        style={{ transition: 'fill 0.3s ease-in-out' }}
+                        radius={[10, 10, 0, 0]}
+                        activeBar={<Rectangle />}
+                        isAnimationActive={isFirstRender.current}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              )
+            ) : (
+              <div className='w-full h-full' />
             )}
-            formatter={(value, name) => {
-              const upperName =
-                typeof name === 'string'
-                  ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
-                  : name;
-              return [`${value}`, upperName];
-            }}
-            contentStyle={{
-              backgroundColor: '#fff',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-            }}
-          />
-          {seriesKeys.map((key, index) => (
-            <Bar
-              key={key}
-              dataKey={key}
-              fill={colors[index % colors.length]}
-              style={{ transition: 'fill 0.3s ease-in-out' }}
-              radius={[10, 10, 0, 0]}
-              activeBar={<Rectangle />}
-              isAnimationActive={isFirstRender.current}
-            />
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
-    )
-  ) : (
-    <div className="w-full h-full" />
-  )}
-</div>
+          </div>
         </div>
       )}
     </>

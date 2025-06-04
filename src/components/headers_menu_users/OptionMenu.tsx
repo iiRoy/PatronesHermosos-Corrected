@@ -107,6 +107,14 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   // Listas de sedes/roles para FiltroEvento (pie/line)
   const [sedes, setSedes] = useState<{ label: string; value: string }[]>([]);
   const [roles, setRoles] = useState<{ label: string; value: string }[]>([]);
+  const [userRole, setUserRole] = useState<string>('');
+    useEffect(() => {
+      setUserRole(
+        typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : ''
+      );
+    }, []);
+  
+    const shouldShowSedeFilter = userRole === 'superuser';
 
   const fetchDashboardData = async (filters: { page: string; sede?: string; colab?: string }): Promise<any> => {
     const { page, sede, colab } = filters;
@@ -131,7 +139,6 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
       const res = await fetchDashboardData({ page: 'venues' });
       if (res?.venues && Array.isArray(res.venues)) {
         const opciones = res.venues
-          .filter((venues: any) => venues.status === 'Registrada con participantes')
           .map((sede: any) => ({
             value: sede.id.toString(),
             label: sede.name,
@@ -383,7 +390,6 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
       legendHtml = seriesKeys
         .map((key, i) => {
           const label = key.charAt(0).toUpperCase() + key.slice(1);
-          // <-- Usar colores personalizados primero
           const color = colors[i % colors.length] || defaultColors[i];
           return `
             <div style="
@@ -1070,7 +1076,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
       >
         {displayedView === 'customization' && (
           <>
-            {isBarChart && !isCustomizingColors && (
+            {isBarChart && !isCustomizingColors && shouldShowSedeFilter && (
               <MaxItemsInput
                 value={maxItemsSelected}
                 totalItems={totalItems}
@@ -1078,7 +1084,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
               />
             )}
 
-            {isPieChart && !isCustomizingColors && (
+            {isPieChart && !isCustomizingColors && shouldShowSedeFilter && (
               <div className="mb-2">
                 <FiltroEvento
                   disableCheckboxes
@@ -1100,11 +1106,15 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                   label="Personalización"
                   iconName="Star"
                   extraFilters={[
-                    {
-                      label: 'SEDE',
-                      key: 'sede',
-                      options: sedes,
-                    },
+                    ...(shouldShowSedeFilter
+                      ? [
+                          {
+                            label: 'SEDE',
+                            key: 'sede',
+                            options: sedes,
+                          },
+                        ]
+                      : []),
                     {
                       label: 'Frecuencia',
                       key: 'frecuencia',
