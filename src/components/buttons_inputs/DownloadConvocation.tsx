@@ -19,7 +19,6 @@ const DownloadConvocation: React.FC<DownloadConvocationProps> = ({ fileName, lab
       type="button"
       href={`/${fileName}`}
       className="px-4 py-2 rounded flex items-center"
-      download
     />
   </div>
 );
