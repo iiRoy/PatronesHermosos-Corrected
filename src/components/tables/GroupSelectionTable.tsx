@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import InputField from '@components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
+import FiltroEvento from '../headers_menu_users/FiltroEvento';
 import Pagination from '@components/buttons_inputs/Pagination';
 import Button from '@components/buttons_inputs/Button';
 import { MagnifyingGlass, Check, Eye, Star } from '@components/icons';
@@ -29,38 +30,48 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   const [inputValue, setInputValue] = useState('');
   const [section, setSection] = useState('__All__');
   const [currentPage, setCurrentPage] = useState(0);
+  const [filterActiva, setFilterActiva] = useState<Record<string, string>>({
+    sede: '__All__',
+    mode: '__All__',
+  });
 
   useEffect(() => {
-  const fetchGroups = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/api/groups');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+    const fetchGroups = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/groups');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
+        }
+        const transformedGroups = data.map((group: any) => ({
+          id_group: group.id_group,
+          name: group.name,
+          mode: group.mode || 'Presencial',
+          sede: group.venues?.name || 'N/A',
+          cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
+          horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
+        }));
+        setGroups(transformedGroups);
+      } catch (err) {
+        console.error('Error fetching groups:', err);
       }
-      const data = await response.json();
-      if (!Array.isArray(data)) {
-        throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
-      }
-      const transformedGroups = data.map((group: any) => ({
-        id_group: group.id_group,
-        name: group.name,
-        mode: group.mode || 'Presencial',
-        sede: group.venues?.name || 'N/A',
-        cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
-        horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
-      }));
-      setGroups(transformedGroups);
-    } catch (err) {
-      console.error('Error fetching groups:', err);
-    }
-  };
-  fetchGroups();
-}, []);
+    };
+    fetchGroups();
+  }, []);
 
   const uniqueModes = Array.from(new Set(groups.map(group => group.mode))).sort();
   const modeOptions = [
     { label: 'Todas', value: '__All__' },
     ...uniqueModes.map(mode => ({ label: mode, value: mode })),
+  ];
+
+  const uniqueVenues = Array.from(new Set(groups.map(group => group.sede))).sort();
+  const venueOptions = [
+    { label: 'Todas', value: '__All__' },
+    ...uniqueVenues.map(sede => ({ label: sede, value: sede })),
   ];
 
   const filteredData = useMemo(() => {
@@ -69,10 +80,11 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
       const matchesSearch = !searchTerm ||
         group.name.toLowerCase().includes(searchTerm) ||
         group.sede.toLowerCase().includes(searchTerm);
-      const matchesMode = section === '__All__' ? true : group.mode === section;
-      return matchesSearch && matchesMode;
+      const matchesSede = filterActiva.sede === '__All__' ? true : group.sede === filterActiva.sede;
+      const matchesMode = filterActiva.mode === '__All__' ? true : group.mode === filterActiva.mode;
+      return matchesSearch && matchesSede && matchesMode;
     });
-  }, [inputValue, section, groups]);
+  }, [inputValue, filterActiva, groups]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(
@@ -85,6 +97,27 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
     else if (totalPages === 0) setCurrentPage(0);
   }, [filteredData.length, currentPage, totalPages]);
 
+  const handleExtraFilterChange = (key: string, value: string) => {
+    setFilterActiva(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+    setCurrentPage(0); // Resetear a la primera página al cambiar el filtro
+  };
+
+  const extraFilters = [
+    {
+      label: 'Sede',
+      key: 'sede',
+      options: venueOptions,
+    },
+    {
+      label: 'Modalidad',
+      key: 'mode',
+      options: modeOptions,
+    },
+  ];
+
   const sectionFilterChange = (value: string) => {
     setSection(value);
     setInputValue('');
@@ -92,30 +125,33 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   };
 
   return (
-    <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh]">
-      <div className="flex flex-wrap justify-between gap-4">
-        <div className="flex flex-1 gap-4 top-0">
-          <InputField
-            label=""
-            showDescription={false}
-            placeholder="Search"
-            variant="primary"
-            icon="MagnifyingGlass"
-            value={inputValue}
-            onChangeText={setInputValue}
-          />
-          <Dropdown
-            label="Modalidad"
-            options={modeOptions}
-            value={section}
-            onChange={sectionFilterChange}
-            variant="primary"
-            Icon={MagnifyingGlass}
-          />
+    <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh] items-center justify-between">
+      <div className="flex flex-wrap justify-between gap-4 w-full">
+        <div className="flex flex-1 gap-4  items-center w-full">
+          <div className='basis-2/3'>
+            <InputField
+              label=""
+              showDescription={false}
+              placeholder="Search"
+              variant="secondary-shade"
+              icon="MagnifyingGlass"
+              value={inputValue}
+              onChangeText={setInputValue}
+            />
+          </div>
+          <div className='basis-1/3'>
+            <FiltroEvento
+              label="Filtros"
+              labelOptions="Opciones"
+              extraFilters={extraFilters}
+              filterActiva={filterActiva}
+              onExtraFilterChange={handleExtraFilterChange}
+            />
+          </div>
         </div>
       </div>
       <table className="min-w-full text-left text-sm">
-        <thead className="bg-gray-800 text-white">
+        <thead className="text-[#6E2D75] text-md">
           <tr>
             <th className="p-2 text-center">Grupo</th>
             <th className="p-2 text-center">Modalidad</th>
