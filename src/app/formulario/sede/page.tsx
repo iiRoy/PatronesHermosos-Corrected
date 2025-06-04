@@ -10,7 +10,7 @@ import Location from '@components/icons/Gps';
 import Send from '@components/icons/ArrowFatRight';
 import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
 import Navbar from '@/components/headers_menu_users/navbar';
-import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files, MapPin } from '@/components/icons';
+import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files, MapPin, Download } from '@/components/icons';
 
 interface Coordinator {
   name: string;
@@ -543,7 +543,7 @@ const VenueRegistrationForm: React.FC = () => {
               <div>
                 <InputField
                   label="Confirmar Contraseña*"
-                  description="Confirma de manera correcta e identica la contraseña previamente registrada"
+                  description="Confirma de manera correcta e identica la contraseña previamente registrada."
                   placeholder="********"
                   variant="secondary"
                   icon="Lock"
@@ -930,6 +930,22 @@ const VenueRegistrationForm: React.FC = () => {
                 Esta sección es obligatoria.
               </p>
             </div>
+
+            {/* Download Section */}
+        <div className="mb-6 flex items-center gap-4">
+          <p className="text-lg text-gray-400">
+            Descarga la convocatoria para sedes:
+          </p>
+          <a
+            href="/ConvocatoriaSEDES-PH2025.pdf"
+            download="ConvocatoriaSEDES-PH2025.pdf"
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            role="button"
+            aria-label="Descargar Convocatoria"
+          >
+            Descargar Convocatoria
+          </a>
+        </div>
 
             <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
               <div className="flex items-center titulo-tarjeta-archivo">

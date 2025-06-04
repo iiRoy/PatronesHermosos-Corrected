@@ -390,8 +390,24 @@ const ParticipantRegistrationForm: React.FC = () => {
           </h2>
           <p className="text-gray-400 text-sm md:text-base mb-4">
             Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá de estar firmada por tu tutor.
-            Esta sección es obligatoria..
+            Esta sección es obligatoria.
           </p>
+
+          {/* Download Section */}
+        <div className="mb-6 flex items-center gap-4">
+          <p className="text-lg text-gray-400">
+            Descarga la convocatoria para psrticipantes:
+          </p>
+          <a
+            href="/ConvocatoriaParticipantes-PH2025.pdf"
+            download="ConvocatoriaParticipantes-PH2025.pdf"
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            role="button"
+            aria-label="Descargar Convocatoria"
+          >
+            Descargar Convocatoria
+          </a>
+        </div>
           <div className="tarjeta-archivo p-4 bg-white text-black rounded-lg">
             <div className='flex items-center gap-4'>
               <div className='icono-tarjeta-archivo'>

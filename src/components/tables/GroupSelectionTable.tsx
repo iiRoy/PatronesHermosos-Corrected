@@ -182,7 +182,6 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
                   onClick={() => onSelect(group.id_group)}
                 />
                 <Button label="" variant="primary" round showLeftIcon IconLeft={Eye} />
-                <Button label="" variant="warning" round showLeftIcon IconLeft={Star} />
               </td>
             </tr>
           ))}
