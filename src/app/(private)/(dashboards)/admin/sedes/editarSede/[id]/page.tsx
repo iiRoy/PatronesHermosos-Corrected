@@ -11,6 +11,7 @@ interface Sede {
     id_venue: number;
     name: string;
     country: string;
+    location: string;
     state: string;
     address: string;
     status: string;
@@ -27,6 +28,7 @@ const EditarSede = () => {
     const [country, setCountry] = useState('');
     const [state, setState] = useState('');
     const [address, setAddress] = useState('');
+    const [location, setLocation] = useState('');
     const [status, setStatus] = useState('');
     const [error, setError] = useState<string | null>(null);
 
@@ -57,6 +59,7 @@ const EditarSede = () => {
                 setCountry(venueData.country || '');
                 setState(venueData.state || '');
                 setAddress(venueData.address || '');
+                setLocation(venueData.location || '');
                 setStatus(venueData.status || 'Pendiente');
             } catch (error: any) {
                 console.error('Error fetching data:', error);
@@ -82,6 +85,7 @@ const EditarSede = () => {
                 country,
                 state,
                 address,
+                location,
                 status,
             };
 
@@ -132,68 +136,29 @@ const EditarSede = () => {
         <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
             <PageTitle>Editar Sede</PageTitle>
 
-            <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
+            <div className='fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto'>
                 <div className='flex justify-between gap-4 items-center pb-2 mb-4'>
-                    <div className='basis-1/5'>
-                        <InputField
-                            label='ID'
-                            darkText={true}
-                            showDescription={false}
-                            placeholder={sede.id_venue.toString()}
-                            showError={false}
-                            variant='accent'
-                            value={sede.id_venue.toString()}
-                            disabled
-                        />
-                    </div>
 
-                    <div className='basis-2/5'>
+                    <div className='basis-1/2'>
                         <InputField
                             label='Nombre'
-                            darkText={true}
+                            icon='Bank'
                             showDescription={false}
                             placeholder={sede.name || 'Sin nombre'}
                             showError={false}
-                            variant='accent'
+                            variant='primary'
                             value={name}
                             onChangeText={(val) => setName(val)}
                         />
                     </div>
-                </div>
-
-                <div className='flex gap-4 justify-between mb-4'>
-                    <div className='basis-1/3'>
-                        <InputField
-                            label='País'
-                            darkText={true}
-                            showDescription={false}
-                            placeholder={sede.country || 'Sin país'}
-                            showError={false}
-                            variant='accent'
-                            value={country}
-                            onChangeText={(val) => setCountry(val)}
-                        />
-                    </div>
-                    <div className='basis-1/3'>
-                        <InputField
-                            label='Estado'
-                            darkText={true}
-                            showDescription={false}
-                            placeholder={sede.state || 'Sin estado'}
-                            showError={false}
-                            variant='accent'
-                            value={state}
-                            onChangeText={(val) => setState(val)}
-                        />
-                    </div>
-                    <div className='basis-1/3'>
+                    <div className='basis-1/2'>
                         <InputField
                             label='Dirección'
-                            darkText={true}
+                            icon='MapPin'
                             showDescription={false}
                             placeholder={sede.address || 'Sin dirección'}
                             showError={false}
-                            variant='accent'
+                            variant='primary'
                             value={address}
                             onChangeText={(val) => setAddress(val)}
                         />
@@ -203,22 +168,49 @@ const EditarSede = () => {
                 <div className='flex gap-4 justify-between mb-4'>
                     <div className='basis-1/2'>
                         <InputField
-                            label='Status'
-                            darkText={true}
+                            label='País'
+                            icon='Globe'
                             showDescription={false}
-                            placeholder={sede.status || 'Pendiente'}
+                            placeholder={sede.country || 'Sin país'}
                             showError={false}
                             variant='accent'
-                            value={status}
-                            onChangeText={(val) => setStatus(val)}
+                            value={country}
+                            onChangeText={(val) => setCountry(val)}
+                        />
+                    </div>
+                    <div className='basis-1/2'>
+                        <InputField
+                            label='Estado'
+                            icon='MapPin'
+                            showDescription={false}
+                            placeholder={sede.state || 'Sin estado'}
+                            showError={false}
+                            variant='accent'
+                            value={state}
+                            onChangeText={(val) => setState(val)}
+                        />
+                    </div>
+                </div>
+
+                <div className='flex gap-4 justify-between mb-4'>
+                    <div className='basis-1/2'>
+                        <InputField
+                            label='Ubicación'
+                            icon='MapPin'
+                            showDescription={false}
+                            placeholder={sede.location || 'Sin ubicación'}
+                            showError={false}
+                            variant='secondary'
+                            value={location}
+                            onChangeText={(val) => setLocation(val)}
                         />
                     </div>
                 </div>
 
                 <div className='flex gap-4 justify-between mt-auto'>
                     <div className='flex gap-4'>
-                        <Button label='Confirmar' variant='primary' onClick={handleSubmit} />
-                        <Button label='Cancelar' variant='secondary' href='/admin/sedes' />
+                        <Button label='Confirmar' variant='success' onClick={handleSubmit} />
+                        <Button label='Cancelar' variant='primary' href='/admin/sedes' />
                     </div>
                 </div>
             </div>

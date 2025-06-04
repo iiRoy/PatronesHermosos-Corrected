@@ -165,23 +165,23 @@ const create = async (req, res) => {
       )
     `;
 
-      try {
-        await sendEmail({
-          to: generalCoordinator.email,
-          subject: '¡Gracias por tu postulación como Sede!',
-          template: 'templates/sede/solicitud',
-          data: {
-            representativeName: generalCoordinator.name,
-            venueName: name,
-            email: generalCoordinator.email,
-            location: `${country || ''}, ${state || ''}, ${address || ''}`.trim(),
-          },
-        });
-        console.log(`Solicitud email sent to ${generalCoordinator.email}`);
-      } catch (emailError) {
-        console.error(`Error sending solicitud email to ${generalCoordinator.email}:`, emailError.message);
-      }
-    
+    try {
+      await sendEmail({
+        to: generalCoordinator.email,
+        subject: '¡Gracias por tu postulación como Sede!',
+        template: 'templates/sede/solicitud',
+        data: {
+          representativeName: generalCoordinator.name,
+          venueName: name,
+          email: generalCoordinator.email,
+          location: `${country || ''}, ${state || ''}, ${address || ''}`.trim(),
+        },
+      });
+      console.log(`Solicitud email sent to ${generalCoordinator.email}`);
+    } catch (emailError) {
+      console.error(`Error sending solicitud email to ${generalCoordinator.email}:`, emailError.message);
+    }
+
 
     res.status(201).json({
       message: 'Venue creado exitosamente',
@@ -370,13 +370,13 @@ const approveVenue = async (req, res) => {
     if (generalCoordinator) {
       try {
         // Construct full name
-      const coordinatorFullName = [
-        generalCoordinator.name,
-        generalCoordinator.paternal_name,
-        generalCoordinator.maternal_name
-      ]
-        .filter(Boolean)
-        .join(' ');
+        const coordinatorFullName = [
+          generalCoordinator.name,
+          generalCoordinator.paternal_name,
+          generalCoordinator.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
 
         await sendEmail({
           to: generalCoordinator.email,
@@ -465,13 +465,13 @@ const cancelarVenue = async (req, res) => {
     if (generalCoordinator) {
       try {
         // Construct full name
-      const coordinatorFullName = [
-        generalCoordinator.name,
-        generalCoordinator.paternal_name,
-        generalCoordinator.maternal_name
-      ]
-        .filter(Boolean)
-        .join(' ');
+        const coordinatorFullName = [
+          generalCoordinator.name,
+          generalCoordinator.paternal_name,
+          generalCoordinator.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
         await sendEmail({
           to: generalCoordinator.email,
           subject: 'Actualización sobre tu solicitud de sede',
@@ -581,13 +581,13 @@ const rejectVenue = async (req, res) => {
     if (generalCoordinator) {
       try {
         // Construct full name
-      const coordinatorFullName = [
-        generalCoordinator.name,
-        generalCoordinator.paternal_name,
-        generalCoordinator.maternal_name
-      ]
-        .filter(Boolean)
-        .join(' ');
+        const coordinatorFullName = [
+          generalCoordinator.name,
+          generalCoordinator.paternal_name,
+          generalCoordinator.maternal_name
+        ]
+          .filter(Boolean)
+          .join(' ');
         await sendEmail({
           to: generalCoordinator.email,
           subject: 'Actualización sobre tu solicitud de sede',
