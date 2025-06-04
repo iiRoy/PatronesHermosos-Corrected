@@ -1,78 +1,74 @@
 import { useState, useEffect, useMemo } from 'react';
 import InputField from '@components/buttons_inputs/InputField';
-import Dropdown from '@components/buttons_inputs/Dropdown';
 import Pagination from '@components/buttons_inputs/Pagination';
 import Button from '@components/buttons_inputs/Button';
-import { MagnifyingGlass, Check, Eye, Star } from '@components/icons';
+import { MagnifyingGlass, Check, Eye } from '@components/icons';
 
 interface Group {
   id_group: number;
   name: string;
   mode: string;
-  sede: string;
-  cupo: string;
-  horarios: string;
+  venue_name: string;
+  language: string;
+  level: string;
 }
 
-interface ParticipantGroupSelectionTableProps {
+interface GroupSelectionTableProps {
   onSelect: (id_group: number) => void;
   selectedGroupId?: number;
   rowsPerPage?: number;
 }
 
-const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTableProps> = ({
+const GroupSelectionTable: React.FC<GroupSelectionTableProps> = ({
   onSelect,
   selectedGroupId,
   rowsPerPage = 4,
 }) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__');
   const [currentPage, setCurrentPage] = useState(0);
 
+  // Fetch groups
   useEffect(() => {
-  const fetchGroups = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/api/groups');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+    const fetchGroups = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/groups');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
+        }
+        const transformedGroups = data.map((group: any) => ({
+          id_group: group.id_group,
+          name: group.name || 'N/A',
+          mode: group.mode || 'Presencial',
+          venue_name: group.venues?.name || 'N/A',
+          language: group.language || 'N/A',
+          level: group.level || 'N/A',
+        }));
+        setGroups(transformedGroups);
+      } catch (err) {
+        console.error('Error fetching groups:', err);
       }
-      const data = await response.json();
-      if (!Array.isArray(data)) {
-        throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
-      }
-      const transformedGroups = data.map((group: any) => ({
-        id_group: group.id_group,
-        name: group.name,
-        mode: group.mode || 'Presencial',
-        sede: group.venues?.name || 'N/A',
-        cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
-        horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
-      }));
-      setGroups(transformedGroups);
-    } catch (err) {
-      console.error('Error fetching groups:', err);
-    }
-  };
-  fetchGroups();
-}, []);
+    };
+    fetchGroups();
+  }, []);
 
-  const uniqueModes = Array.from(new Set(groups.map(group => group.mode))).sort();
-  const modeOptions = [
-    { label: 'Todas', value: '__All__' },
-    ...uniqueModes.map(mode => ({ label: mode, value: mode })),
-  ];
-
+  // Filter groups
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
     return groups.filter(group => {
-      const matchesSearch = !searchTerm ||
+      return (
+        !searchTerm ||
         group.name.toLowerCase().includes(searchTerm) ||
-        group.sede.toLowerCase().includes(searchTerm);
-      const matchesMode = section === '__All__' ? true : group.mode === section;
-      return matchesSearch && matchesMode;
+        group.venue_name.toLowerCase().includes(searchTerm) ||
+        group.language.toLowerCase().includes(searchTerm) ||
+        group.level.toLowerCase().includes(searchTerm)
+      );
     });
-  }, [inputValue, section, groups]);
+  }, [inputValue, groups]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(
@@ -80,15 +76,18 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
     (currentPage + 1) * rowsPerPage
   );
 
+  // Reset currentPage when filteredData changes
   useEffect(() => {
-    if (currentPage >= totalPages && totalPages > 0) setCurrentPage(totalPages - 1);
-    else if (totalPages === 0) setCurrentPage(0);
+    if (currentPage >= totalPages && totalPages > 0) {
+      setCurrentPage(totalPages - 1);
+    } else if (totalPages === 0) {
+      setCurrentPage(0);
+    }
   }, [filteredData.length, currentPage, totalPages]);
 
-  const sectionFilterChange = (value: string) => {
-    setSection(value);
-    setInputValue('');
-    setCurrentPage(0);
+  // Placeholder for viewing group details
+  const handleViewDetails = (group: Group) => {
+    alert(`Detalles del grupo:\nNombre: ${group.name}\nModalidad: ${group.mode}\nSede: ${group.venue_name}\nIdioma: ${group.language}\nNivel: ${group.level}`);
   };
 
   return (
@@ -98,60 +97,62 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
           <InputField
             label=""
             showDescription={false}
-            placeholder="Search"
+            placeholder="Buscar grupo, sede, idioma o nivel"
             variant="primary"
             icon="MagnifyingGlass"
             value={inputValue}
             onChangeText={setInputValue}
           />
-          <Dropdown
-            label="Modalidad"
-            options={modeOptions}
-            value={section}
-            onChange={sectionFilterChange}
-            variant="primary"
-            Icon={MagnifyingGlass}
-          />
         </div>
       </div>
-      <table className="min-w-full text-left text-sm">
-        <thead className="bg-gray-800 text-white">
-          <tr>
-            <th className="p-2 text-center">Grupo</th>
-            <th className="p-2 text-center">Modalidad</th>
-            <th className="p-2 text-center">Sede</th>
-            <th className="p-2 text-center">Cupo</th>
-            <th className="p-2 text-center">Horarios</th>
-            <th className="p-2 text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-700">
-          {paginatedData.map((group) => (
-            <tr
-              key={group.id_group}
-              className={`border-t border-gray-300 ${group.id_group === selectedGroupId ? 'bg-purple-100' : ''}`}
-            >
-              <td className="p-2 text-center">{group.name}</td>
-              <td className="p-2 text-center">{group.mode}</td>
-              <td className="p-2 text-center">{group.sede}</td>
-              <td className="p-2 text-center">{group.cupo}</td>
-              <td className="p-2 text-center">{group.horarios}</td>
-              <td className="p-2 flex gap-2 justify-center">
-                <Button
-                  label=""
-                  variant="success"
-                  round
-                  showLeftIcon
-                  IconLeft={Check}
-                  onClick={() => onSelect(group.id_group)}
-                />
-                <Button label="" variant="primary" round showLeftIcon IconLeft={Eye} />
-                <Button label="" variant="warning" round showLeftIcon IconLeft={Star} />
-              </td>
+      <div className="overflow-auto">
+        <table className="min-w-full text-left text-sm">
+          <thead className="sticky top-0 fondo-titulos-tabla text-purple-800 font-bold">
+            <tr className="texto-primary-shade">
+              <th className="p-2 text-center">Grupo</th>
+              <th className="p-2 text-center">Modalidad</th>
+              <th className="p-2 text-center">Sede</th>
+              <th className="p-2 text-center">Idioma</th>
+              <th className="p-2 text-center">Nivel</th>
+              <th className="p-2 text-center">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="text-gray-700">
+            {paginatedData.map((group) => (
+              <tr
+                key={group.id_group}
+                className={`border-t border-gray-300 ${group.id_group === selectedGroupId ? 'bg-purple-100' : ''}`}
+              >
+                <td className="p-2 text-center">{group.name}</td>
+                <td className="p-2 text-center">{group.mode}</td>
+                <td className="p-2 text-center">{group.venue_name}</td>
+                <td className="p-2 text-center">{group.language}</td>
+                <td className="p-2 text-center">{group.level}</td>
+                <td className="p-2 flex gap-2 justify-center">
+                  <Button
+                    label=""
+                    variant="success"
+                    round
+                    showLeftIcon
+                    IconLeft={Check}
+                    type="button" // Prevent form submission
+                    onClick={() => onSelect(group.id_group)}
+                  />
+                  <Button
+                    label=""
+                    variant="primary"
+                    round
+                    showLeftIcon
+                    IconLeft={Eye}
+                    type="button" // Prevent form submission
+                    onClick={() => handleViewDetails(group)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -163,4 +164,4 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   );
 };
 
-export default ParticipantGroupSelectionTable;
+export default GroupSelectionTable;

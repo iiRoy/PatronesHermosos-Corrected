@@ -172,6 +172,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 variant="error"
                 showLeftIcon
                 round
+                type= "button"
                 IconLeft={X}
                 onClick={() => router.push('../inicio')}
                 className="px-4 py-2 rounded-full flex items-center"
