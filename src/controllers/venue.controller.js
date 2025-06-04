@@ -165,13 +165,6 @@ const create = async (req, res) => {
       )
     `;
 
-    // Fetch the newly created venue to get its ID and details
-    const venue = await prisma.venues.findFirst({
-      where: { name: name, created_at: { gte: new Date(Date.now() - 60000) } }, // Assuming created within last minute
-      include: { venue_coordinators: true },
-    });
-
-
       try {
         await sendEmail({
           to: generalCoordinator.email,
@@ -179,16 +172,15 @@ const create = async (req, res) => {
           template: 'templates/sede/solicitud',
           data: {
             representativeName: generalCoordinator.name,
-            venueName: venue.name,
+            venueName: name,
             email: generalCoordinator.email,
-            location: `${venue.country || ''}, ${venue.state || ''}, ${venue.address || ''}`.trim(),
+            location: `${country || ''}, ${state || ''}, ${address || ''}`.trim(),
           },
         });
         console.log(`Solicitud email sent to ${generalCoordinator.email}`);
       } catch (emailError) {
         console.error(`Error sending solicitud email to ${generalCoordinator.email}:`, emailError.message);
       }
-    
 
     res.status(201).json({
       message: 'Venue creado exitosamente',
