@@ -203,20 +203,19 @@ const CollaboratorRegistrationForm: React.FC = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
-                <div className="w-2 rounded-full h-16 mr-4 notification-icon-purple"></div>
+                <div className="w-2 rounded-full h-16 mr-4 bg-[#683756]"></div>
                 <h1 className="text-2xl">
                   <span className="italic">Formulario de Registro</span><br />
                   <span className="font-bold text-3xl">Colaborador</span>
                 </h1>
               </div>
               <Button
-                label=""
+                label="Regresar"
                 variant="error"
                 showLeftIcon
-                round
                 type="button"
                 IconLeft={X}
-                href='/inicio'
+                href='/'
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>

@@ -404,7 +404,7 @@ const VenueRegistrationForm: React.FC = () => {
   };
 
   return (
-    <div className="pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white">
+    <div className="pagina-formulario flex flex-col min-h-screen text-white">
 
       <form onSubmit={handleSubmit}>
         <div className="info-formulario min-h-screen text-white p-4 md:p-8 flex justify-center items-center">
@@ -412,20 +412,19 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
-                <div className="w-2 rounded-full h-16 mr-4 notification-icon-purple"></div>
+                <div className="w-2 rounded-full h-16 mr-4 bg-[#683756]"></div>
                 <h1 className="text-2xl">
                   <span className="italic">Formulario de Registro</span><br />
                   <span className="font-bold text-3xl">Sede</span>
                 </h1>
               </div>
               <Button
-                label=""
+                label="Regresar"
                 variant="error"
                 showLeftIcon
-                round
                 type="button"
                 IconLeft={X}
-                href='/inicio'
+                href='/'
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
@@ -521,7 +520,7 @@ const VenueRegistrationForm: React.FC = () => {
               <div>
                 <InputField
                   label="Contraseña*"
-                  description="Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial."
+                  description="Debe tener un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial."
                   placeholder="********"
                   variant="secondary"
                   icon="Lock"
@@ -848,7 +847,7 @@ const VenueRegistrationForm: React.FC = () => {
                   handleInputChange('venue', 'country', value);
                   handleInputChange('venue', 'state', '');
                 }}
-                variant="accent"
+                variant="primary"
                 Icon={withIconDecorator(MapPin)}
               />
               {formData.venue.country === 'Mexico' ? (
@@ -874,18 +873,17 @@ const VenueRegistrationForm: React.FC = () => {
                   }
                 />
               )}
-              <div className="md:col-span-2">
-                <InputField
-                  label="Dirección*"
-                  placeholder="Dirección 123"
-                  variant="accent"
-                  icon="Flag"
-                  value={formData.venue.address}
-                  onChangeText={(value: string) =>
-                    handleInputChange('venue', 'address', value)
-                  }
-                />
-              </div>
+
+              <InputField
+                label="Dirección*"
+                placeholder="Dirección 123"
+                variant="accent"
+                icon="Flag"
+                value={formData.venue.address}
+                onChangeText={(value: string) =>
+                  handleInputChange('venue', 'address', value)
+                }
+              />
             </div>
 
             {/* Sube tu logo */}
