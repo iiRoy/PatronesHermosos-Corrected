@@ -5,7 +5,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { MagnifyingGlass, Trash, Highlighter } from '@/components/icons';
+import { Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
@@ -78,8 +78,13 @@ const GestionParticipantes = () => {
         setCurrentPage(0);
     };
 
-    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede || 'No asignado'))).sort();
-    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado'))).sort();
+    const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede || 'No asignado')))
+        .filter(sede => sede !== 'No asignado')
+        .sort();
+
+    const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado')))
+        .filter(grupo => grupo !== 'No asignado')
+        .sort();
 
     const sedeOptions = [
         { label: 'Todas', value: '__All__' },
