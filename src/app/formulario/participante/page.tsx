@@ -7,10 +7,10 @@ import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import withIconDecorator from '@/components/decorators/IconDecorator';
 import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
-import { FlowerLotus, AddressBook, X, User, Phone, Envelope, GraduationCap, Flag } from '@components/icons';
+import { FlowerLotus, AddressBook, X, User, Phone, Envelope, GraduationCap, Flag, SealWarning, Heart, Megaphone } from '@components/icons';
 import Send from '@components/icons/ArrowFatRight';
-import Navbar from '@components/headers_menu_users/navbar';
 import ParticipantGroupSelectionTable from '@components/tables/GroupSelectionTable';
+import { FilePdfIcon } from '@phosphor-icons/react';
 
 interface Group {
   id_group: number;
@@ -231,13 +231,13 @@ const ParticipantRegistrationForm: React.FC = () => {
   };
 
   return (
-    <form className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex flex-col items-center" onSubmit={handleSubmit}>
-      <Navbar />
-      <div className="w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
+    <form className="pagina-formulario overflow-x-auto min-h-screen bg-gray-900 text-white flex flex-col items-center custom-scrollbar-tabla" onSubmit={handleSubmit}>
+
+      <div className="info-formulario overflow-x-auto w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 custom-scrollbar-tabla">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
-            <div className="w-2 h-16 mr-4 bg-purple-600 rounded-full"></div>
+            <div className="w-2 h-16 mr-4 bg-[#683756] rounded-full"></div>
             <h1 className="text-2xl">
               <span className="italic">Formulario de Registro</span><br />
               <span className="font-bold text-3xl">Participantes</span>
@@ -254,9 +254,17 @@ const ParticipantRegistrationForm: React.FC = () => {
           />
         </div>
         {/* Datos del Participante */}
-        <div className="mb-6">
+        <div className="mt-12">
           <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-            <span className="mr-2"><FlowerLotus /></span> Datos del Participante
+            <span className="mr-2">
+              <FlowerLotus
+                width='1.5rem'
+                height='1.5rem'
+                fillColor='#ebe6eb'
+                strokeWidth={0}
+              />
+            </span>
+            Datos del Participante
           </h2>
           <p className="text-gray-400 text-sm md:text-base mb-4">
             Responde con sinceridad las siguientes preguntas. Campos con (*) son obligatorios.
@@ -315,9 +323,13 @@ const ParticipantRegistrationForm: React.FC = () => {
         </div>
 
         {/* Datos del Tutor */}
-        <div className="mb-6">
+        <div className="mt-12">
           <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-            <span className="mr-2"><FlowerLotus /></span> Datos del Tutor
+            <span className="mr-2"><SealWarning
+              width='1.5rem'
+              height='1.5rem'
+              fillColor='#ebe6eb'
+              strokeWidth={0} /></span> Datos del Tutor
           </h2>
           <p className="text-gray-400 text-sm md:text-base mb-4">
             Pídele a tu tutor que llene esta sección. Campos con (*) son obligatorios.
@@ -368,14 +380,32 @@ const ParticipantRegistrationForm: React.FC = () => {
         </div>
 
         {/* Permiso de Participación */}
-        <div className="mt-8">
+        <div className="mt-12">
           <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-            <span className="mr-2"><FlowerLotus /></span> Permiso de Participación
+            <span className="mr-2"><Heart
+              width='1.5rem'
+              height='1.5rem'
+              fillColor='#ebe6eb'
+              strokeWidth={0} /></span> Permiso de Participación
           </h2>
           <p className="text-gray-400 text-sm md:text-base mb-4">
-            Sube tu permiso firmado (PDF obligatorio).
+            Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá de estar firmada por tu tutor.
+            Esta sección es obligatoria..
           </p>
-          <div className="p-4 bg-white text-black rounded-lg">
+          <div className="tarjeta-archivo p-4 bg-white text-black rounded-lg">
+            <div className='flex items-center gap-4'>
+              <div className='icono-tarjeta-archivo'>
+                <FilePdfIcon
+                  width='2rem'
+                  height='2rem'
+                  strokeWidth={0}
+                />
+              </div>
+              <div className='titulo-tarjeta-archivo text-xl font-semibold'>
+                <h3>Sube tu permiso firmado (PDF obligatorio).</h3>
+              </div>
+            </div>
+            <p className='text-gray-700 my-8'>Selecciona un documento para subir.  Ten cuidado al subir tus documentos y verifica dos veces que se suba correctamente.</p>
             <input
               type="file"
               accept="application/pdf"
@@ -390,10 +420,46 @@ const ParticipantRegistrationForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Aviso de Privacidad */}
-        <div className="mt-8">
+        {/* Selección de Grupo */}
+        <div className="mt-12">
           <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-            <span className="mr-2"><FlowerLotus /></span> Aviso de Privacidad
+            <span className="mr-2"><AddressBook
+              width='1.5rem'
+              height='1.5rem'
+              fillColor='#ebe6eb'
+              strokeWidth={0} /></span> Selección de Grupo
+          </h2>
+          <p className="text-gray-400 text-sm md:text-base mb-4">
+            Selecciona el grupo que prefieres. Usa los botones para más detalles.
+          </p>
+        </div>
+
+        <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 text-xs sm:text-base md:text-lg lg:text-xl bg-[#683756] gap-12">
+          <div className='flex'>
+            <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
+            <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
+          </div>
+          <div className='flex'>
+            <h2 className="mx-4 font-semibold">Sede: </h2>
+            <p>{groups.find(g => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}</p>
+          </div>
+        </div>
+        <ParticipantGroupSelectionTable
+          onSelect={(id_group) => {
+            handleGroupSelect(id_group);
+          }}
+          selectedGroupId={formData.preferred_group ?? undefined}
+          rowsPerPage={4}
+        />
+
+        {/* Aviso de Privacidad */}
+        <div className="mt-12">
+          <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+            <span className="mr-2"><Megaphone
+              width='1.5rem'
+              height='1.5rem'
+              fillColor='#ebe6eb'
+              strokeWidth={0} /></span> Aviso de Privacidad
           </h2>
           <p className="text-gray-400 text-sm">
             Confirma que has leído y aceptas el aviso de privacidad:
@@ -410,28 +476,6 @@ const ParticipantRegistrationForm: React.FC = () => {
             />
           </div>
         </div>
-
-        {/* Selección de Grupo */}
-        <div className="mb-6">
-          <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-            <span className="mr-2"><AddressBook /></span> Selección de Grupo
-          </h2>
-          <p className="text-gray-400 text-sm md:text-base mb-4">
-            Selecciona el grupo que prefieres. Usa los botones para más detalles.
-          </p>
-        </div>
-
-        <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 bg-gray-700 text-xs sm:text-base md:text-lg lg:text-xl">
-          <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
-          <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
-        </div>
-        <ParticipantGroupSelectionTable
-          onSelect={(id_group) => {
-            handleGroupSelect(id_group);
-          }}
-          selectedGroupId={formData.preferred_group ?? undefined}
-          rowsPerPage={4}
-        />
 
         {/* Submit Button */}
         <div className="mt-6 flex justify-end">
