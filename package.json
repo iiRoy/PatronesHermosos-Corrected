@@ -25,6 +25,10 @@
     "clsx": "^2.1.1",
     "cypress": "^14.3.2",
     "d3-interpolate": "^3.0.1",
+<<<<<<< HEAD
+=======
+    "d3-shape": "^3.2.0",
+>>>>>>> 8dfd3adc1d53a30b0a71ba72037dcc2edf67d6dd
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
@@ -50,7 +54,7 @@
     "react-hot-toast": "^2.5.2",
     "react-router-dom": "^7.4.1",
     "react-select": "^5.10.1",
-    "recharts": "^2.15.2",
+    "recharts": "^2.15.3",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7"
   },
