@@ -112,14 +112,8 @@ const GestionAuditLogsCoordinadora = () => {
   }, [router, coordinatorVenueId, coordinatorUsername]);
 
   // Obtener opciones para filtros
-  const uniqueVenues = Array.from(new Set(auditLogsData.map((log) => log.venue_name || 'No especificada'))).sort();
   const uniqueActions = Array.from(new Set(auditLogsData.map((log) => log.action))).sort();
   const uniqueUsers = Array.from(new Set(auditLogsData.map((log) => log.username))).sort();
-
-  const venueOptions = [
-    { label: 'Todas', value: '__All__' },
-    ...uniqueVenues.map((venue) => ({ label: venue, value: venue })),
-  ];
 
   const actionOptions = [
     { label: 'Todas', value: '__All__' },
@@ -204,11 +198,6 @@ const GestionAuditLogsCoordinadora = () => {
               <FiltroEvento
                 disableCheckboxes
                 label="Filtros"
-                showSecciones
-                labelSecciones="Sedes"
-                secciones={venueOptions}
-                seccionActiva={section}
-                onChangeSeccion={sectionFilterChange}
                 extraFilters={[
                   { key: 'action', label: 'Acción', options: actionOptions },
                   { key: 'username', label: 'Usuario', options: userOptions },

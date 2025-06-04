@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
-const { sendEmail } = require('../lib/emails/emailSender')
 
 const prisma = new PrismaClient();
 
@@ -28,7 +27,7 @@ const login = async (req, res) => {
           OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
         },
       });
-      console.log('Coordinator user data:', user); // Add logging to verify id_venue
+
       if (user && (await bcrypt.compare(password, user.password))) {
         role = 'venue_coordinator';
         user.id = user.id_venue_coord;
@@ -37,7 +36,7 @@ const login = async (req, res) => {
     }
 
     if (!role) {
-      return res.status(401).json({ message: 'Los datos ingresados son incorrectos. Intenta de nuevo.' });
+      return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
     const token = jwt.sign(
@@ -47,26 +46,11 @@ const login = async (req, res) => {
         username: user.username,
         role,
         tokenVersion,
-        id_venue: role === 'venue_coordinator' ? user.id_venue : undefined,
       },
       process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' } // corto y seguro
+      { expiresIn: '1d' }, // corto y seguro
     );
-<<<<<<< HEAD
 
-=======
-/*
-    await sendEmail({
-      to: user.email,
-      subject: 'Nuevo inicio de sesión detectado',
-      template: 'welcome',
-      data: {
-        name: user.name || user.username,
-        date: new Date().toLocaleString()
-      }
-    })
-*/
->>>>>>> diego_sqlProcedures
     return res.json({
       message: 'Login exitoso',
       token,
@@ -75,8 +59,9 @@ const login = async (req, res) => {
         name: user.name,
         id: user.id,
         email: user.email,
+        name: user.name,
         username: user.username,
-        image: user.profile_image
+        image: user.profile_image,
       },
     });
   } catch (error) {
