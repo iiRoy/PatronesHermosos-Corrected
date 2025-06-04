@@ -251,7 +251,6 @@ const GestionApoyo = () => {
                 throw new Error(errorData.message || 'Error al cancelar la colaboradora');
             }
 
-            // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
             setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
 
             notify({
@@ -263,7 +262,7 @@ const GestionApoyo = () => {
 
             handleCloseDeletePopup();
         } catch (error: any) {
-            console.error('Error al cancelar la mentora:', error);
+            console.error('Error al cancelar la colaboradora:', error);
             notify({
                 color: 'red',
                 title: 'Error',
@@ -311,6 +310,7 @@ const GestionApoyo = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold">
                             <tr className="texto-primary-shade">
+                                <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Correo</th>
                                 <th className="p-2 text-center">Rol</th>
@@ -328,6 +328,19 @@ const GestionApoyo = () => {
                                         className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
                                         onClick={() => handleInfoClick(apoyo)}
                                     >
+                                        <td className="p-2 text-center">
+                                            <Button
+                                                label=""
+                                                variant="primary"
+                                                round
+                                                showLeftIcon
+                                                IconLeft={Eye}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleInfoClick(apoyo);
+                                                }}
+                                            />
+                                        </td>
                                         <td className="p-2 text-center">{fullName}</td>
                                         <td className="p-2 text-center">{apoyo.email}</td>
                                         <td className="p-2 text-center">{apoyo.role}</td>

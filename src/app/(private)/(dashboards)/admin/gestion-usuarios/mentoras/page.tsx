@@ -263,6 +263,7 @@ const GestionMentoras = () => {
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
               <tr className='texto-primary-shade'>
+                <th className="p-2 text-center"></th>
                 <th className="p-2 text-center">Nombre</th>
                 <th className="p-2 text-center">Correo</th>
                 <th className="p-2 text-center">Teléfono</th>
@@ -277,6 +278,19 @@ const GestionMentoras = () => {
                   className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
                   onClick={() => handleDetailsClick(mentora)}
                 >
+                  <td className="p-2 text-center">
+                    <Button
+                      label=""
+                      variant="primary"
+                      round
+                      showLeftIcon
+                      IconLeft={Eye}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDetailsClick(mentora);
+                      }}
+                    />
+                  </td>
                   <td className="p-2 text-center">{mentora.name}</td>
                   <td className="p-2 text-center">{mentora.email}</td>
                   <td className="p-2 text-center">{mentora.phone_number}</td>

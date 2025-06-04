@@ -10,14 +10,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
-// Interfaz ajustada para reflejar el formato devuelto por el backend
 interface Participante {
-    id: number; // Corresponde a id_participant
-    nombre: string; // Nombre completo ya formateado
-    sede: string; // groups.venues.name
-    grupo: string; // groups.name
-    correo: string; // email
-    status: string; // status
+    id: number;
+    nombre: string;
+    sede: string;
+    grupo: string;
+    correo: string;
+    status: string;
 }
 
 const GestionParticipantes = () => {
@@ -61,7 +60,7 @@ const GestionParticipantes = () => {
                 }
 
                 const data = await response.json();
-                setParticipantesData(data.data); // Usar data.data, que es formattedParticipants
+                setParticipantesData(data.data);
             } catch (error: any) {
                 console.error('Error al obtener participantes:', error);
                 setError(error.message);
@@ -142,6 +141,16 @@ const GestionParticipantes = () => {
         setSelectedParticipante(null);
     };
 
+    const handleDetailsClick = (participante: Participante) => {
+        setSelectedParticipante(participante);
+        setIsDetailsPopupOpen(true);
+    };
+
+    const handleCloseDetailsPopup = () => {
+        setIsDetailsPopupOpen(false);
+        setSelectedParticipante(null);
+    };
+
     const handleConfirmDelete = async () => {
         if (selectedParticipante) {
             try {
@@ -164,9 +173,8 @@ const GestionParticipantes = () => {
                     throw new Error(`Error rejecting participant: ${errorData.message || 'Unknown error'}`);
                 }
 
-                // Actualizar el estado local para reflejar el cambio
                 setParticipantesData((prev) =>
-                    prev.filter((p) => p.id !== selectedParticipante.id) // Remover de la lista, ya que filteredData excluye Cancelada
+                    prev.filter((p) => p.id !== selectedParticipante.id)
                 );
 
                 notify({
@@ -193,8 +201,7 @@ const GestionParticipantes = () => {
     const handleRowClick = (participante: Participante, event: React.MouseEvent<HTMLTableRowElement>) => {
         const isButtonClick = (event.target as HTMLElement).closest('button');
         if (!isButtonClick) {
-            setSelectedParticipante(participante);
-            setIsDetailsPopupOpen(true);
+            handleDetailsClick(participante);
         }
     };
 
@@ -249,6 +256,7 @@ const GestionParticipantes = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className="texto-primary-shade">
+                                <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
@@ -264,6 +272,19 @@ const GestionParticipantes = () => {
                                     className="border-t border-gray-300 hover:bg-gray-300 cursor-pointer"
                                     onClick={(event) => handleRowClick(participante, event)}
                                 >
+                                    <td className="p-2 text-center">
+                                        <Button
+                                            label=""
+                                            variant="primary"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Eye}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDetailsClick(participante);
+                                            }}
+                                        />
+                                    </td>
                                     <td className="p-2 text-center">{participante.nombre}</td>
                                     <td className="p-2 text-center">{participante.sede || 'No asignado'}</td>
                                     <td className="p-2 text-center">{participante.grupo || 'No asignado'}</td>
@@ -331,7 +352,7 @@ const GestionParticipantes = () => {
                                 <p><strong>Estado:</strong> {selectedParticipante.status}</p>
                             </div>
                             <div className="mt-4 flex justify-center">
-                                <Button label="Cerrar" variant="primary" onClick={() => setIsDetailsPopupOpen(false)} />
+                                <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
                             </div>
                         </div>
                     </div>

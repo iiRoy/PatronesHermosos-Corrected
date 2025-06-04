@@ -29,7 +29,7 @@ interface Apoyo {
   preferred_language: string;
   preferred_level: string;
   preferred_group: number | null;
-  groupName?: string; // Añadido para almacenar el nombre del grupo
+  groupName?: string;
 }
 
 const GestionApoyo = () => {
@@ -90,7 +90,7 @@ const GestionApoyo = () => {
           preferred_language: collab.preferred_language || 'Sin idioma preferido',
           preferred_level: collab.preferred_level || 'Sin nivel preferido',
           preferred_group: collab.preferred_group || null,
-          groupName: collab.groups?.name || undefined, // Intentar obtener el nombre del grupo
+          groupName: collab.groups?.name || undefined,
         }));
 
         setApoyoData(formattedData);
@@ -168,7 +168,6 @@ const GestionApoyo = () => {
 
       let groupName = apoyo.groupName;
       if (apoyo.preferred_group && !groupName) {
-        // Intentar obtener el nombre del grupo
         const response = await fetch(`/api/collaborators/${apoyo.id_collaborator}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -185,7 +184,7 @@ const GestionApoyo = () => {
       setIsInfoPopupOpen(true);
     } catch (error: any) {
       console.error('Error fetching group name:', error);
-      setSelectedApoyo(apoyo); // Fallback sin groupName
+      setSelectedApoyo(apoyo);
       setIsInfoPopupOpen(true);
       notify({
         color: 'red',
@@ -243,7 +242,6 @@ const GestionApoyo = () => {
         throw new Error(errorData.message || 'Error al cancelar la colaboradora');
       }
 
-      // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
       setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
 
       notify({
@@ -312,6 +310,7 @@ const GestionApoyo = () => {
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
               <tr className='texto-primary-shade'>
+                <th className="p-2 text-center"></th>
                 <th className="p-2 text-center">Nombre</th>
                 <th className="p-2 text-center">Correo</th>
                 <th className="p-2 text-center">Rol</th>
@@ -329,6 +328,19 @@ const GestionApoyo = () => {
                     className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
                     onClick={() => handleInfoClick(apoyo)}
                   >
+                    <td className="p-2 text-center">
+                      <Button
+                        label=""
+                        variant="primary"
+                        round
+                        showLeftIcon
+                        IconLeft={Eye}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleInfoClick(apoyo);
+                        }}
+                      />
+                    </td>
                     <td className="p-2 text-center">{fullName}</td>
                     <td className="p-2 text-center">{apoyo.email}</td>
                     <td className="p-2 text-center">{apoyo.role}</td>
@@ -336,7 +348,7 @@ const GestionApoyo = () => {
                     <td className="p-2 text-center">{apoyo.language}</td>
                     <td className="p-2 flex gap-2 justify-center">
                       <Button
-                        label=''
+                        label=""
                         variant="error"
                         round
                         showLeftIcon
@@ -344,7 +356,7 @@ const GestionApoyo = () => {
                         onClick={(event: React.MouseEvent) => handleDeleteClick(apoyo, event)}
                       />
                       <Button
-                        label=''
+                        label=""
                         variant="warning"
                         round
                         showLeftIcon
