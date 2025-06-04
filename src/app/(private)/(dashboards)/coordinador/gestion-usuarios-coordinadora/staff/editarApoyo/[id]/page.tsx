@@ -8,7 +8,7 @@ import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { FlowerLotus, AddressBook, X, UserSound, ChatTeardropText, Grains, Student, Megaphone } from '@/components/icons';
+import { UserSound, ChatTeardropText, Grains } from '@/components/icons';
 
 interface Collaborator {
   id_collaborator: number;

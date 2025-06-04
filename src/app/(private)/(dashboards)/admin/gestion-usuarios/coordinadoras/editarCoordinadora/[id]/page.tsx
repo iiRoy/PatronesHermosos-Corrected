@@ -179,17 +179,17 @@ const EditarCoordinadora = () => {
     <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
       <PageTitle>Editar Coordinadora</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+      <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
         <div className="flex justify-between gap-4  pb-2 mb-4">
 
           <div className="basis-1/3">
             <InputField
               label="Nombre"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={coordinadora.name}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={name}
               onChangeText={(val) => setName(val)}
             />
@@ -198,11 +198,11 @@ const EditarCoordinadora = () => {
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={coordinadora.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
@@ -210,11 +210,11 @@ const EditarCoordinadora = () => {
           <div className="basis-1/3">
             <InputField
               label="Apellido Materno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={coordinadora.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
@@ -227,7 +227,7 @@ const EditarCoordinadora = () => {
           <div className="basis-1/2">
             <InputField
               label="Username"
-              darkText={true}
+              icon='User'
               showDescription={false}
               placeholder={coordinadora.username}
               showError={false}
@@ -240,7 +240,7 @@ const EditarCoordinadora = () => {
           <div className="basis-1/2">
             <InputField
               label="Correo"
-              darkText={true}
+              icon='At'
               showDescription={false}
               placeholder={coordinadora.email}
               showError={false}
@@ -255,11 +255,11 @@ const EditarCoordinadora = () => {
           <div className="basis-1/2">
             <InputField
               label="Teléfono"
-              darkText={true}
+              icon='Phone'
               showDescription={false}
               placeholder={coordinadora.phone_number}
               showError={false}
-              variant="accent"
+              variant="secondary"
               value={phoneNumber}
               onChangeText={(val) => setPhoneNumber(val)}
             />
@@ -271,8 +271,7 @@ const EditarCoordinadora = () => {
               options={venueOptions}
               value={selectedVenue}
               onChange={handleVenueChange}
-              variant="accent"
-              darkText
+              variant="secondary"
               Icon={withIconDecorator(MapPin)} // Ícono decorativo para la sede
             />
           </div>
@@ -281,8 +280,8 @@ const EditarCoordinadora = () => {
         {/* Botón Listo */}
         <div className="flex gap-4 justify-between mt-auto">
           <div className="flex gap-4">
-            <Button label="Confirmar" variant="primary" onClick={handleSubmit} />
-            <Button label="Cancelar" variant="secondary" href="/admin/gestion-usuarios/coordinadoras" />
+            <Button label="Confirmar" variant="success" onClick={handleSubmit} />
+            <Button label="Cancelar" variant="primary" href="/admin/gestion-usuarios/coordinadoras" />
           </div>
         </div>
       </div>
