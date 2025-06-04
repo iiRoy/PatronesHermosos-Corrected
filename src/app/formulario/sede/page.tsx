@@ -416,6 +416,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Regresar"
                 variant="error"
                 showRightIcon
+                type="button"
                 IconRight={() => <span className="text-white">✕</span>}
                 href='../inicio'
                 className="px-4 py-2 rounded-full flex items-center"
@@ -928,6 +929,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Enviar Registro"
                 variant="success"
                 showRightIcon
+                type='submit'
                 IconRight={withIconDecorator(Send)}
                 className="px-6 py-2 rounded-full flex items-center text-white"
               />
