@@ -927,7 +927,6 @@ const VenueRegistrationForm: React.FC = () => {
                   }}
                 />
               </div>
-              <div className="md:col-span-2">
                 <InputField
                   label="Dirección*"
                   placeholder="Dirección 123"
@@ -938,7 +937,6 @@ const VenueRegistrationForm: React.FC = () => {
                     handleInputChange('venue', 'address', value)
                   }
                 />
-              </div>
             </div>
 
             {/* Sube tu logo */}
