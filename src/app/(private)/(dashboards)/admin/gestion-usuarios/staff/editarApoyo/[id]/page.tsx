@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
-import Dropdown from '@components/buttons_inputs/Dropdown';
+import Dropdown from '@/components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
@@ -18,18 +18,33 @@ interface Collaborator {
   college: string;
   degree: string;
   semester: string;
-  preferred_role: string;
-  preferred_language: string;
-  preferred_level: string;
   gender: string;
   role: string;
   status: string;
   level: string;
   language: string;
   preferred_group: number | null;
+  groups: {
+    name: string;
+    venues: { name: string };
+  } | null;
 }
 
-const EditarApoyo = () => {
+interface GroupOption {
+  id_group: number;
+  name: string;
+  level: string;
+  mode: string;
+  language: string;
+  available_places: number;
+  role_availability: {
+    Instructora: number;
+    Facilitadora: number;
+    Staff: number;
+  };
+}
+
+const EditarStaff = () => {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
@@ -44,17 +59,14 @@ const EditarApoyo = () => {
   const [college, setCollege] = useState('');
   const [degree, setDegree] = useState('');
   const [semester, setSemester] = useState('');
-  const [preferredRole, setPreferredRole] = useState('');
-  const [preferredLanguage, setPreferredLanguage] = useState('');
-  const [preferredLevel, setPreferredLevel] = useState('');
   const [gender, setGender] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState('');
+  const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  // Opciones para los select de enums
-  const roleOptions = ['Staff', 'Instructora', 'Facilitadora', 'Pendiente'];
-  const languageOptions = ['Inglés', 'Español', 'Pendiente'];
-  const levelOptions = ['Básico', 'Avanzado', 'Pendiente'];
+  const roleOptions = ['Staff', 'Instructora', 'Facilitadora'];
   const genderOptions = ['Masculino', 'Femenino', 'Otro'];
 
   useEffect(() => {
@@ -62,10 +74,17 @@ const EditarApoyo = () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
         if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Sesión no iniciada. Redirigiendo al login.',
+            duration: 5000,
+          });
           router.push('/login');
           return;
         }
 
+        // Fetch collaborator data
         const collaboratorResponse = await fetch(`/api/collaborators/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -76,11 +95,11 @@ const EditarApoyo = () => {
           if (collaboratorResponse.status === 404) {
             throw new Error('Colaborador no encontrado');
           }
-          throw new Error(`Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`);
+          throw new Error(`Error al obtener colaborador: ${errorData.message || 'Error desconocido'}`);
         }
         const collaboratorData = await collaboratorResponse.json();
         const collab = collaboratorData.data;
-        console.log('Datos recibidos del API:', collab); // Log para depurar
+        console.log('Colaborador recibido:', collab);
 
         setCollaborator(collab);
         setName(collab.name || '');
@@ -91,22 +110,41 @@ const EditarApoyo = () => {
         setCollege(collab.college || '');
         setDegree(collab.degree || '');
         setSemester(collab.semester || '');
-        setPreferredRole(collab.preferred_role || '');
-        setPreferredLanguage(collab.preferred_language || '');
-        setPreferredLevel(collab.preferred_level || '');
         setGender(collab.gender || '');
+        setSelectedRole(collab.role || '');
+        setSelectedGroup(collab.preferred_group?.toString() || '');
+
+        // Fetch available groups
+        const groupsResponse = await fetch(`/api/collaborators/${id}/available-groups`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!groupsResponse.ok) {
+          const errorData = await groupsResponse.json().catch(() => ({ message: 'Respuesta no válida del servidor' }));
+          throw new Error(`Error al obtener grupos: ${errorData.message || 'Error desconocido'}`);
+        }
+        const groupsData = await groupsResponse.json();
+        console.log('Grupos disponibles:', groupsData.groups);
+        setAvailableGroups(groupsData.groups || []);
       } catch (error: any) {
-        console.error('Error fetching data:', error);
+        console.error('Error al obtener datos:', error);
         setError(error.message);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: error.message,
+          duration: 5000,
+        });
       }
     };
 
     if (id) {
       fetchData();
     }
-  }, [id, router]);
+  }, [id, router, notify]);
 
-  const validateForm = () => {
+  const validateBasicInfo = () => {
     const errors: string[] = [];
 
     if (!name.trim()) {
@@ -133,7 +171,7 @@ const EditarApoyo = () => {
       errors.push('La universidad no debe exceder 255 caracteres');
     }
 
-    if (degree && degree.length > 255) {
+    if (degree && college.length > 255) {
       errors.push('La carrera no debe exceder 255 caracteres');
     }
 
@@ -141,26 +179,32 @@ const EditarApoyo = () => {
       errors.push('El semestre debe ser un número entre 1 y 99');
     }
 
-    if (preferredRole && !roleOptions.includes(preferredRole)) {
-      errors.push('El rol preferido no es válido');
-    }
-
-    if (preferredLanguage && !languageOptions.includes(preferredLanguage)) {
-      errors.push('El idioma preferido no es válido');
-    }
-
-    if (preferredLevel && !levelOptions.includes(preferredLevel)) {
-      errors.push('El nivel preferido no es válido');
-    }
-
-    setValidationErrors(errors);
-    return errors.length === 0;
+    return errors;
   };
 
-  const handleSubmit = async () => {
-    setValidationErrors([]); // Limpiamos errores previos
+  const validateAssignment = () => {
+    const errors: string[] = [];
 
-    if (!validateForm()) {
+    if (!selectedRole) {
+      errors.push('El rol es obligatorio');
+    } else if (!roleOptions.includes(selectedRole)) {
+      errors.push('El rol seleccionado no es válido');
+    }
+
+    if (!selectedGroup) {
+      errors.push('El grupo es obligatorio');
+    } else if (!availableGroups.some(group => group.id_group.toString() === selectedGroup)) {
+      errors.push('El grupo seleccionado no es válido');
+    }
+
+    return errors;
+  };
+
+  const handleUpdateBasicInfo = async () => {
+    setValidationErrors([]);
+    const errors = validateBasicInfo();
+    if (errors.length > 0) {
+      setValidationErrors(errors);
       return;
     }
 
@@ -182,12 +226,9 @@ const EditarApoyo = () => {
         degree: degree.trim() || null,
         semester: semester.trim() || null,
         gender: gender.trim() || null,
-        preferred_role: preferredRole.trim() || null,
-        preferred_language: preferredLanguage.trim() || null,
-        preferred_level: preferredLevel.trim() || null,
       };
 
-      console.log('Datos enviados al API:', updatedCollaborator); // Log para depurar
+      console.log('Actualizando info básica:', updatedCollaborator);
 
       const response = await fetch(`/api/collaborators/basic/${id}`, {
         method: 'PATCH',
@@ -205,20 +246,83 @@ const EditarApoyo = () => {
 
       notify({
         color: 'green',
-        title: 'Colaborador Actualizado',
-        message: `El colaborador ${name} ha sido actualizado exitosamente`,
+        title: 'Éxito',
+        message: `La información básica de ${name} ha sido actualizada`,
+        duration: 5000,
+      });
+    } catch (error: any) {
+      console.error('Error al actualizar info básica:', error);
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: `No se pudo actualizar la información: ${error.message}`,
+        duration: 5000,
+      });
+      setValidationErrors([error.message]);
+    }
+  };
+
+  const handleUpdateAssignment = async () => {
+    setValidationErrors([]);
+    const errors = validateAssignment();
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+      if (!token) {
+        setValidationErrors(['No se encontró el token, redirigiendo al login']);
+        router.push('/login');
+        return;
+      }
+
+      const assignmentData = {
+        role: selectedRole,
+        groupId: parseInt(selectedGroup),
+      };
+
+      console.log('Actualizando asignación:', assignmentData);
+
+      const response = await fetch(`/api/collaborators/assignment/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(assignmentData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error al actualizar asignación: ${errorData.message || 'Error desconocido'}`);
+      }
+
+      notify({
+        color: 'green',
+        title: 'Éxito',
+        message: `La asignación de ${name} ha sido actualizada`,
         duration: 5000,
       });
 
       router.push('/admin/gestion-usuarios/staff');
     } catch (error: any) {
-      console.error('Error al actualizar colaborador:', error);
+      console.error('Error al actualizar asignación:', error);
       notify({
         color: 'red',
         title: 'Error',
-        message: `No se pudo actualizar el colaborador: ${error.message}`,
+        message: `No se pudo actualizar la asignación: ${error.message}`,
         duration: 5000,
       });
+      setValidationErrors([error.message]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    await handleUpdateBasicInfo();
+    if (selectedRole && selectedGroup) {
+      await handleUpdateAssignment();
     }
   };
 
@@ -232,7 +336,7 @@ const EditarApoyo = () => {
 
   return (
     <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
-      <PageTitle>Editar Colaborador</PageTitle>
+      <PageTitle>Editar Staff</PageTitle>
 
       {validationErrors.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -246,15 +350,14 @@ const EditarApoyo = () => {
       )}
 
       <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        {/* Primera fila: ID, Nombre, Apellidos */}
+        {/* Primera fila: Nombre, Apellidos */}
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-
           <div className="basis-1/3">
             <InputField
               label="Nombre"
               darkText={true}
               showDescription={false}
-              placeholder={collaborator.name}
+              placeholder={collaborator.name || 'Sin nombre'}
               showError={false}
               variant="accent"
               value={name}
@@ -294,7 +397,7 @@ const EditarApoyo = () => {
               label="Correo"
               darkText={true}
               showDescription={false}
-              placeholder={collaborator.email}
+              placeholder={collaborator.email || 'Sin correo'}
               showError={false}
               variant="accent"
               value={email}
@@ -365,34 +468,27 @@ const EditarApoyo = () => {
           </div>
         </div>
 
-        {/* Cuarta fila: Rol Preferido, Idioma Preferido, Nivel Preferido */}
+        {/* Cuarta fila: Asignación de Rol y Grupo */}
         <div className="flex gap-4 justify-between mb-4">
-          <div className="basis-1/3">
+          <div className="basis-1/2">
             <Dropdown
-              label="Rol Preferido"
+              label="Rol Asignado"
               options={roleOptions.map((option) => ({ label: option, value: option }))}
-              value={preferredRole}
-              onChange={setPreferredRole}
+              value={selectedRole}
+              onChange={setSelectedRole}
               variant="accent"
               darkText
             />
           </div>
-          <div className="basis-1/3">
+          <div className="basis-1/2">
             <Dropdown
-              label="Idioma Preferido"
-              options={languageOptions.map((option) => ({ label: option, value: option }))}
-              value={preferredLanguage}
-              onChange={setPreferredLanguage}
-              variant="accent"
-              darkText
-            />
-          </div>
-          <div className="basis-1/3">
-            <Dropdown
-              label="Nivel Preferido"
-              options={levelOptions.map((option) => ({ label: option, value: option }))}
-              value={preferredLevel}
-              onChange={setPreferredLevel}
+              label="Grupo Asignado"
+              options={availableGroups.map((group) => ({
+                label: `${group.name} (${group.level}, ${group.language})`,
+                value: group.id_group.toString(),
+              }))}
+              value={selectedGroup}
+              onChange={setSelectedGroup}
               variant="accent"
               darkText
             />
@@ -411,4 +507,4 @@ const EditarApoyo = () => {
   );
 };
 
-export default EditarApoyo;
+export default EditarStaff;

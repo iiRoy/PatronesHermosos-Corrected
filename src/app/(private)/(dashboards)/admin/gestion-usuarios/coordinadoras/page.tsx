@@ -225,7 +225,13 @@ const GestionCoordinadoras = () => {
     if (!newCoordinatorData.name) errors.name = 'El nombre es obligatorio';
     if (!newCoordinatorData.email) errors.email = 'El correo es obligatorio';
     else if (!/\S+@\S+\.\S+/.test(newCoordinatorData.email)) errors.email = 'El correo no es válido';
-    if (!newCoordinatorData.phone_number) errors.phone_number = 'El teléfono es obligatorio';
+    
+    if (!newCoordinatorData.phone_number) {
+     errors.phone_number = 'El teléfono es obligatorio';
+     } else if (!/^\+?[1-9]\d{1,14}$/.test(newCoordinatorData.phone_number)) {
+     errors.phone_number = 'El teléfono no es válido';
+    }
+
     if (!newCoordinatorData.username) errors.username = 'El nombre de usuario es obligatorio';
     if (!newCoordinatorData.password) errors.password = 'La contraseña es obligatoria';
     if (!newCoordinatorData.gender) errors.gender = 'El género es obligatorio';
@@ -364,6 +370,7 @@ const GestionCoordinadoras = () => {
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
               <tr className="texto-primary-shade">
+                <th className="p-2 text-center"></th>
                 <th className="p-2 text-center">Nombre</th>
                 <th className="p-2 text-center">Correo</th>
                 <th className="p-2 text-center">Teléfono</th>
@@ -383,6 +390,19 @@ const GestionCoordinadoras = () => {
                     }
                   }}
                 >
+                  <td className="p-2 text-center">
+                    <Button
+                      label=""
+                      variant="primary"
+                      round
+                      showLeftIcon
+                      IconLeft={Eye}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDetailsClick(coordinadora);
+                      }}
+                    />
+                  </td>
                   <td className="p-2 text-center">{coordinadora.nombre}</td>
                   <td className="p-2 text-center">{coordinadora.email}</td>
                   <td className="p-2 text-center">{coordinadora.phone_number}</td>

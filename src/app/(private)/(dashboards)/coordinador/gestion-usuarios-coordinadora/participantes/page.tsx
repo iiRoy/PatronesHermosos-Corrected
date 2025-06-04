@@ -5,7 +5,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
+import { MagnifyingGlass, Trash, Highlighter, Eye } from '@/components/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
@@ -36,7 +36,7 @@ interface Group {
     status: string;
 }
 
-const gestionParticipantes = () => {
+const GestionParticipantes = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__');
     const [currentPage, setCurrentPage] = useState(0);
@@ -44,13 +44,40 @@ const gestionParticipantes = () => {
     const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
     const [selectedParticipante, setSelectedParticipante] = useState<Participante | null>(null);
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
-    const [approvedGroups, setApprovedGroups] = useState<string[]>([]); // Nueva lista para grupos aprobados
+    const [approvedGroups, setApprovedGroups] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
     const router = useRouter();
     const { notify } = useNotification();
 
     const rowsPerPage = 10;
+
+    useEffect(() => {
+        const fetchCoordinatorData = () => {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
+            if (!token) {
+                setError('No se encontró el token, por favor inicia sesión');
+                router.push('/login');
+                return;
+            }
+
+            try {
+                const decoded: DecodedToken = jwtDecode(token);
+                if (decoded.role === 'venue_coordinator') {
+                    setCoordinatorVenueId(decoded.userId);
+                } else {
+                    setError('Este dashboard es solo para coordinadores de sede');
+                    router.push('/login');
+                }
+            } catch (err) {
+                console.error('Error al decodificar el token:', err);
+                setError('Token inválido');
+                router.push('/login');
+            }
+        };
+
+        fetchCoordinatorData();
+    }, [router]);
 
     useEffect(() => {
         const fetchParticipantes = async () => {
@@ -72,7 +99,7 @@ const gestionParticipantes = () => {
                     if (response.status === 403) {
                         localStorage.removeItem('api_token');
                         router.push('/login');
-                        return;
+                        throw new Error('Sesión no autorizada');
                     }
                     throw new Error(`Error fetching participants: ${response.status} - ${errorData.message || 'Unknown error'}`);
                 }
@@ -105,7 +132,6 @@ const gestionParticipantes = () => {
                 }
 
                 const data = await response.json();
-                // Filtrar grupos con status = "Aprobada" y que pertenezcan a la sede del coordinador
                 const approved = data
                     .filter((group: Group) => group.status === 'Aprobada' && group.id_venue === coordinatorVenueId)
                     .map((group: Group) => group.name);
@@ -116,29 +142,6 @@ const gestionParticipantes = () => {
             }
         };
 
-        const fetchCoordinatorVenue = () => {
-            const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-            if (token) {
-                try {
-                    const decoded: DecodedToken = jwtDecode(token);
-                    if (decoded.role === 'venue_coordinator') {
-                        setCoordinatorVenueId(decoded.userId);
-                    } else {
-                        setError('Este dashboard es solo para coordinadores de sede');
-                        router.push('/login');
-                    }
-                } catch (err) {
-                    console.error('Error al decodificar el token:', err);
-                    setError('Token inválido');
-                    router.push('/login');
-                }
-            } else {
-                setError('No se encontró el token, por favor inicia sesión');
-                router.push('/login');
-            }
-        };
-
-        fetchCoordinatorVenue();
         if (coordinatorVenueId !== null) {
             fetchParticipantes();
             fetchGroups();
@@ -151,12 +154,11 @@ const gestionParticipantes = () => {
         setCurrentPage(0);
     };
 
-    // Extraer sedes y grupos únicos para los filtros
     const uniqueSedes = Array.from(new Set(participantesData.map((participante) => participante.sede || 'No asignado')))
         .filter(sede => sede && sede !== 'No asignado')
         .sort();
     const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado')))
-        .filter(grupo => grupo && grupo !== 'No asignado' && approvedGroups.includes(grupo)) // Filtrar por grupos aprobados
+        .filter(grupo => grupo && grupo !== 'No asignado' && approvedGroups.includes(grupo))
         .sort();
 
     const grupoOptions = [
@@ -196,15 +198,15 @@ const gestionParticipantes = () => {
         router.push(`/coordinador/gestion-usuarios-coordinadora/participantes/editarParticipante/${participante.id}`);
     };
 
+    const handleDetailsClick = (participante: Participante) => {
+        setSelectedParticipante(participante);
+        setIsDetailsPopupOpen(true);
+    };
+
     const handleClosePopup = (type: 'delete' | 'details') => {
         if (type === 'delete') setIsDeletePopupOpen(false);
         if (type === 'details') setIsDetailsPopupOpen(false);
         setSelectedParticipante(null);
-    };
-
-    const handleRowClick = (participante: Participante) => {
-        setSelectedParticipante(participante);
-        setIsDetailsPopupOpen(true);
     };
 
     const handleConfirmDelete = async () => {
@@ -229,13 +231,8 @@ const gestionParticipantes = () => {
                     throw new Error(`Error updating participant status: ${errorData.message || 'Unknown error'}`);
                 }
 
-                // Se actualiza manualmente el estado a "Cancelada"
                 setParticipantesData((prev) =>
-                    prev.map((p) =>
-                        p.id === selectedParticipante.id
-                            ? { ...p, status: 'Cancelada' }
-                            : p
-                    )
+                    prev.filter((p) => p.id !== selectedParticipante.id)
                 );
 
                 notify({
@@ -301,12 +298,13 @@ const gestionParticipantes = () => {
                     <table className="min-w-full text-left text-sm custom-scrollbar-tabla">
                         <thead className="text-purple-800 font-bold">
                             <tr className="texto-primary-shade">
+                                <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
                                 <th className="p-2 text-center">Correo</th>
                                 <th className="p-2 text-center">Estatus</th>
-                                <th className="p-2 text-center">Acciones</th>
+                                <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">
@@ -314,16 +312,49 @@ const gestionParticipantes = () => {
                                 <tr
                                     key={index}
                                     className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
-                                    onClick={() => handleRowClick(participante)}
+                                    onClick={() => handleDetailsClick(participante)}
                                 >
+                                    <td className="p-2 text-center">
+                                        <Button
+                                            label=""
+                                            variant="primary"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Eye}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDetailsClick(participante);
+                                            }}
+                                        />
+                                    </td>
                                     <td className="p-2 text-center">{participante.nombre}</td>
                                     <td className="p-2 text-center">{participante.sede}</td>
                                     <td className="p-2 text-center">{participante.grupo}</td>
                                     <td className="p-2 text-center">{participante.correo}</td>
                                     <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
-                                        <Button label="" variant="error" round showLeftIcon IconLeft={Trash} onClick={(e) => { e.stopPropagation(); handleDeleteClick(participante); }} />
-                                        <Button label="" variant="warning" round showLeftIcon IconLeft={Highlighter} onClick={(e) => { e.stopPropagation(); handleEditClick(participante); }} />
+                                        <Button
+                                            label=""
+                                            variant="error"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Trash}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteClick(participante);
+                                            }}
+                                        />
+                                        <Button
+                                            label=""
+                                            variant="warning"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Highlighter}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditClick(participante);
+                                            }}
+                                        />
                                     </td>
                                 </tr>
                             ))}
@@ -343,8 +374,8 @@ const gestionParticipantes = () => {
 
                 {isDeletePopupOpen && selectedParticipante && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center text-gray-800">
+                            <h2 className="text-lg font-bold mb-4">Confirmar</h2>
                             <p className="mt-12 mb-12">
                                 ¿Estás segura de que quieres eliminar a la participante{' '}
                                 {selectedParticipante.nombre}?
@@ -379,4 +410,4 @@ const gestionParticipantes = () => {
     );
 };
 
-export default gestionParticipantes;
+export default GestionParticipantes;
