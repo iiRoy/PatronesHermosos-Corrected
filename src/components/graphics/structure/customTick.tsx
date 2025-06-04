@@ -85,7 +85,7 @@ const CustomTick: React.FC<CustomTickProps> = ({
     <text x={x} y={y + 15} textAnchor='middle' fill='#8E76A3FF' fontSize={fontSize}>
       {lines.map((line, index) => (
         <tspan key={index} x={x} dy={index * lineHeight}>
-          {line}
+          {line.charAt(0).toUpperCase() + line.slice(1).replaceAll('_', ' ')}
         </tspan>
       ))}
     </text>
