@@ -129,6 +129,7 @@ model participants {
   year               String?             @db.VarChar(255)
   education          String?             @db.VarChar(255)
   participation_file Bytes               @db.Blob
+  participation_file_path String?                  @db.VarChar(255)
   preferred_group    Int?                @db.UnsignedInt
   status             participants_status @default(Pendiente)
   id_group           Int?                @db.UnsignedInt
