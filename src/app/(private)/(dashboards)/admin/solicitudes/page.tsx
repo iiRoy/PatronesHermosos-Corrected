@@ -911,7 +911,6 @@ if (error) {
                         <div className='flex gap-4 justify-center'>
                           <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
                           <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
-                          <Button label='' variant="primary" round showLeftIcon IconLeft={Envelope} />
                         </div>
                       </td>
                     </>
