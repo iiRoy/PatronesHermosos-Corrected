@@ -29,6 +29,13 @@ interface DecodedToken {
     tokenVersion: number;
 }
 
+interface Group {
+    id_group: number;
+    name: string;
+    id_venue: number;
+    status: string;
+}
+
 const gestionParticipantes = () => {
     const [inputValue, setInputValue] = useState('');
     const [section, setSection] = useState('__All__');
@@ -37,6 +44,7 @@ const gestionParticipantes = () => {
     const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
     const [selectedParticipante, setSelectedParticipante] = useState<Participante | null>(null);
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
+    const [approvedGroups, setApprovedGroups] = useState<string[]>([]); // Nueva lista para grupos aprobados
     const [error, setError] = useState<string | null>(null);
     const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
     const router = useRouter();
@@ -77,6 +85,37 @@ const gestionParticipantes = () => {
             }
         };
 
+        const fetchGroups = async () => {
+            try {
+                const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+                if (!token) {
+                    router.push('/login');
+                    return;
+                }
+
+                const response = await fetch('/api/groups', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error fetching groups: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                // Filtrar grupos con status = "Aprobada" y que pertenezcan a la sede del coordinador
+                const approved = data
+                    .filter((group: Group) => group.status === 'Aprobada' && group.id_venue === coordinatorVenueId)
+                    .map((group: Group) => group.name);
+                setApprovedGroups(approved);
+            } catch (error: any) {
+                console.error('Error al obtener grupos:', error);
+                setError(error.message);
+            }
+        };
+
         const fetchCoordinatorVenue = () => {
             const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
             if (token) {
@@ -102,6 +141,7 @@ const gestionParticipantes = () => {
         fetchCoordinatorVenue();
         if (coordinatorVenueId !== null) {
             fetchParticipantes();
+            fetchGroups();
         }
     }, [router, coordinatorVenueId]);
 
@@ -116,7 +156,7 @@ const gestionParticipantes = () => {
         .filter(sede => sede && sede !== 'No asignado')
         .sort();
     const uniqueGrupos = Array.from(new Set(participantesData.map((participante) => participante.grupo || 'No asignado')))
-        .filter(grupo => grupo && grupo !== 'No asignado')
+        .filter(grupo => grupo && grupo !== 'No asignado' && approvedGroups.includes(grupo)) // Filtrar por grupos aprobados
         .sort();
 
     const grupoOptions = [

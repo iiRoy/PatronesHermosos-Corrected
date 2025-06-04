@@ -216,6 +216,145 @@ const cancelVenueCoordinator = async (req, res) => {
   }
 };
 
+const replaceVenueCoordinator = async (req, res) => {
+  const { id } = req.params; // ID de la coordinadora actual
+  const {
+    name,
+    paternal_name,
+    maternal_name,
+    email,
+    phone_number,
+    gender,
+    username,
+    password, // Nuevo campo para la contraseña
+  } = req.body;
+  const userUsername = req.user.username; // Username del usuario autenticado (desde JWT)
+
+  // Validar campos requeridos
+  if (!email || !username || !password || !phone_number) {
+    return res.status(400).json({
+      message: 'Faltan datos necesarios: correo, nombre de usuario, contraseña y teléfono son obligatorios.',
+    });
+  }
+
+  try {
+    // Verificar si la coordinadora actual existe y está Aprobada
+    const currentCoordinator = await prisma.venue_coordinators.findUnique({
+      where: { id_venue_coord: parseInt(id) },
+      select: {
+        id_venue_coord: true,
+        status: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        id_venue: true,
+      },
+    });
+
+    if (!currentCoordinator) {
+      return res.status(404).json({ message: 'La coordinadora actual no existe.' });
+    }
+
+    if (currentCoordinator.status !== 'Aprobada') {
+      return res.status(400).json({
+        message: 'Solo se pueden reemplazar coordinadoras con status Aprobada.',
+      });
+    }
+
+    // Verificar si la sede existe
+    const venue = await prisma.venues.findUnique({
+      where: { id_venue: currentCoordinator.id_venue },
+    });
+
+    if (!venue) {
+      return res.status(404).json({ message: 'La sede asociada no existe.' });
+    }
+
+    // Verificar si el email ya está en uso
+    const existingEmail = await prisma.venue_coordinators.findFirst({
+      where: { email, id_venue_coord: { not: parseInt(id) } }, // Excluir la coordinadora actual
+    });
+
+    if (existingEmail) {
+      return res.status(400).json({ message: 'El correo ya está en uso por otro coordinador.' });
+    }
+
+    // Verificar si el username ya está en uso
+    const existingUsername = await prisma.venue_coordinators.findFirst({
+      where: { username, id_venue_coord: { not: parseInt(id) } }, // Excluir la coordinadora actual
+    });
+
+    if (existingUsername) {
+      return res.status(400).json({ message: 'El nombre de usuario ya está en uso.' });
+    }
+
+    // Realizar la creación y cancelación en una transacción
+    const result = await prisma.$transaction(async (tx) => {
+      // Crear la nueva coordinadora
+      const newCoordinator = await tx.venue_coordinators.create({
+        data: {
+          name,
+          paternal_name,
+          maternal_name,
+          email,
+          phone_number,
+          gender,
+          username,
+          password, // Contraseña en texto plano, según tu instrucción
+          id_venue: currentCoordinator.id_venue,
+          status: 'Aprobada', // Nueva coordinadora empieza como Aprobada
+        },
+        select: {
+          id_venue_coord: true,
+          name: true,
+          paternal_name: true,
+          maternal_name: true,
+        },
+      });
+
+      // Actualizar el status de la coordinadora actual a Cancelada
+      await tx.venue_coordinators.update({
+        where: { id_venue_coord: parseInt(id) },
+        data: { 
+          status: 'Cancelada',
+        },
+      });
+
+      // Registrar la creación en audit_log
+      await tx.audit_log.create({
+        data: {
+          action: 'UPDATE',
+          table_name: 'venue_coordinators',
+          message: `Se creó una nueva coordinadora con ID ${newCoordinator.id_venue_coord} (${newCoordinator.name || ''} ${newCoordinator.paternal_name || ''} ${newCoordinator.maternal_name || ''}) para la sede ID ${currentCoordinator.id_venue}`,
+          username: userUsername,
+          id_venue: currentCoordinator.id_venue,
+        },
+      });
+
+      // Registrar la cancelación en audit_log
+      await tx.audit_log.create({
+        data: {
+          action: 'UPDATE',
+          table_name: 'venue_coordinators',
+          message: `Se canceló la coordinadora con ID ${id} (${currentCoordinator.name || ''} ${currentCoordinator.paternal_name || ''} ${currentCoordinator.maternal_name || ''})`,
+          username: userUsername,
+          id_venue: currentCoordinator.id_venue,
+        },
+      });
+
+      return newCoordinator;
+    });
+
+    res.status(200).json({
+      message: `Coordinadora con ID ${id} reemplazada exitosamente por nueva coordinadora con ID ${result.id_venue_coord}`,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error al reemplazar la coordinadora:', error);
+    res.status(500).json({ message: 'Error interno al reemplazar la coordinadora', error: error.message });
+  }
+};
+
 module.exports = {
   createCoordinator,
   getAllCoordinators,
@@ -225,4 +364,5 @@ module.exports = {
   updateCoordinatorFields,
   deleteCoordinator,
   cancelVenueCoordinator,
+  replaceVenueCoordinator,
 };
