@@ -172,6 +172,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
                 variant="error"
                 showLeftIcon
                 round
+                type= "button"
                 IconLeft={X}
                 onClick={() => router.push('../inicio')}
                 className="px-4 py-2 rounded-full flex items-center"
@@ -308,6 +309,23 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
             </div>
 
+            {/* Section: Selección de Sede */}
+            <div className="mt-8">
+              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
+                <span className="mr-2"><AddressBook /></span> Selección de Sede
+              </h2>
+              <p className="text-gray-400 text-sm md:text-base mb-4">
+                Selecciona la sede que prefieres para apoyar.<br />
+                Puedes ver los detalles de la sede usando los botones del lado derecho.
+              </p>
+            </div>
+
+            <GroupSelectionTable
+              onSelect={handleGroupSelect}
+              selectedGroupId={formData.preferred_group ?? undefined}
+              rowsPerPage={4}
+            />
+
             {/* Aviso de Privacidad */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
@@ -332,32 +350,15 @@ const CollaboratorRegistrationForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Section: Selección de Sede */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><AddressBook /></span> Selección de Sede
-              </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Selecciona la sede que prefieres para apoyar.<br />
-                Puedes ver los detalles de la sede usando los botones del lado derecho.
-              </p>
-            </div>
-
-            <GroupSelectionTable
-              onSelect={handleGroupSelect}
-              selectedGroupId={formData.preferred_group ?? undefined}
-              rowsPerPage={4}
-            />
-
             {/* Submit Button */}
             <div className="mt-6 flex justify-end">
               <Button
                 label="Enviar Registro"
                 variant="success"
                 showRightIcon
+                type="submit"
                 IconRight={withIconDecorator(Send)}
                 className="px-6 py-2 rounded-full flex items-center"
-
               />
             </div>
           </div>

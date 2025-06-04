@@ -171,25 +171,24 @@ const create = async (req, res) => {
       include: { venue_coordinators: true },
     });
 
-    if (venue && venue.venue_coordinators[0]) {
-      const coordinator = venue.venue_coordinators[0];
+
       try {
         await sendEmail({
-          to: coordinator.email,
+          to: generalCoordinator.email,
           subject: '¡Gracias por tu postulación como Sede!',
           template: 'templates/sede/solicitud',
           data: {
-            representativeName: coordinator.name,
+            representativeName: generalCoordinator.name,
             venueName: venue.name,
-            email: coordinator.email,
+            email: generalCoordinator.email,
             location: `${venue.country || ''}, ${venue.state || ''}, ${venue.address || ''}`.trim(),
           },
         });
-        console.log(`Solicitud email sent to ${coordinator.email}`);
+        console.log(`Solicitud email sent to ${generalCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending solicitud email to ${coordinator.email}:`, emailError.message);
+        console.error(`Error sending solicitud email to ${generalCoordinator.email}:`, emailError.message);
       }
-    }
+    
 
     res.status(201).json({
       message: 'Venue creado exitosamente',
