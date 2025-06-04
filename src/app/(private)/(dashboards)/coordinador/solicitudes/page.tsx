@@ -87,6 +87,7 @@ const SolicitudesRegistroAdmin = () => {
     const [apoyoStaffData, setApoyoStaffData] = useState<ApoyoStaff[]>([]);
     const [sedesData, setSedesData] = useState<Sede[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
     const router = useRouter();
@@ -329,14 +330,70 @@ const SolicitudesRegistroAdmin = () => {
         }
     }, [filteredData.length, currentPage, totalPages]);
 
-    const openPopup = (item: Participante | ApoyoStaff | Sede) => {
+    const openPopup = async (item: Participante | ApoyoStaff | Sede) => {
         setSelectedItem(item);
         setIsPopupOpen(true);
+
+        // Clean up previous PDF URL
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+            setPdfUrl(null);
+        }
+
+        // Fetch PDF for participants
+        if (section === 'PARTICIPANTES') {
+            try {
+                const token = localStorage.getItem('api_token');
+                if (!token) {
+                    notify({
+                        color: 'red',
+                        title: 'Error',
+                        message: 'No se encontró el token, redirigiendo al login',
+                        duration: 5000,
+                    });
+                    router.push('/login');
+                    return;
+                }
+
+                const response = await fetch(`/api/participants/${(item as Participante).id_participant}/pdf`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    notify({
+                        color: 'red',
+                        title: 'Error',
+                        message: `No se pudo cargar el PDF: ${errorData.message}`,
+                        duration: 5000,
+                    });
+                    setPdfUrl(null);
+                    return;
+                }
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                setPdfUrl(url);
+            } catch (error: any) {
+                console.error('Error fetching participant PDF:', error);
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: `No se pudo cargar el PDF: ${error.message}`,
+                    duration: 5000,
+                });
+                setPdfUrl(null);
+            }
+        }
     };
 
     const closePopup = () => {
         setIsPopupOpen(false);
         setSelectedItem(null);
+        if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl); // Clean up object URL
+    }
+    setPdfUrl(null);
     };
 
     const openConfirmPopup = (item: Participante | ApoyoStaff | Sede) => {
@@ -899,6 +956,18 @@ const SolicitudesRegistroAdmin = () => {
                                     <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).groups?.name || 'No asignado'}</p>
                                     <p><strong>Sede:</strong> {(selectedItem as Participante).groups?.venues?.name || 'No asignado'}</p>
                                     <p><strong>Estado:</strong> {(selectedItem as Participante).status}</p>
+                                    {pdfUrl ? (
+                                        <div className="mt-4">
+                                        <p><strong>Carta de Convocatoria:</strong></p>
+                                        <iframe
+                                            src={pdfUrl}
+                                            className="w-full h-[400px] border rounded"
+                                            title="Participation File"
+                                        />
+                                    </div>
+                                    ) : (
+                                        <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
+                                    )}
                                 </div>
                             )}
                             {section === 'APOYO & STAFF' && selectedItem && (
