@@ -69,4 +69,10 @@ router.patch(
   coordinatorController.cancelVenueCoordinator
 );
 
+router.patch(
+  '/:id/replace',
+   authMiddleware,
+   roleMiddleware(['superuser']), 
+   coordinatorController.replaceVenueCoordinator
+  );
 module.exports = router;

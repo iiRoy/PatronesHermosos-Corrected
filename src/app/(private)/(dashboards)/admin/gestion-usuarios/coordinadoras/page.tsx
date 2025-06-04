@@ -12,14 +12,14 @@ import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Coordinadora {
   id_venue_coord: number;
-  nombre: string; // Combinación de name, paternal_name, maternal_name
+  nombre: string;
   email: string;
   phone_number: string;
-  venue: string; // Nombre de la sede
-  name: string; // Campo separado para el popup
+  venue: string;
+  name: string;
   paternal_name: string;
   maternal_name: string;
-  status: string; // Añadido para manejar el estado
+  status: string;
 }
 
 interface Venue {
@@ -37,6 +37,17 @@ const GestionCoordinadoras = () => {
   const [coordinadorasData, setCoordinadorasData] = useState<Coordinadora[]>([]);
   const [venuesMap, setVenuesMap] = useState<Map<number, string>>(new Map());
   const [error, setError] = useState<string | null>(null);
+  const [newCoordinatorData, setNewCoordinatorData] = useState({
+    name: '',
+    paternal_name: '',
+    maternal_name: '',
+    email: '',
+    phone_number: '',
+    gender: '',
+    username: '',
+    password: '',
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const router = useRouter();
   const { notify } = useNotification();
 
@@ -57,7 +68,6 @@ const GestionCoordinadoras = () => {
           return;
         }
 
-        // Obtener coordinadoras (con token)
         const coordResponse = await fetch('/api/venue-coordinators/specific', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -81,7 +91,6 @@ const GestionCoordinadoras = () => {
           throw new Error(`Error fetching coordinators: ${coordResponse.status} - ${coordData.message || 'Unknown error'}`);
         }
 
-        // Obtener sedes (con token)
         const venuesResponse = await fetch('/api/venues', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -120,7 +129,7 @@ const GestionCoordinadoras = () => {
           name: coordinator.name || 'Sin nombre',
           paternal_name: coordinator.paternal_name || 'Sin apellido paterno',
           maternal_name: coordinator.maternal_name || 'Sin apellido materno',
-          status: coordinator.status || 'Pendiente', // Añadido para el estado
+          status: coordinator.status || 'Pendiente',
         }));
         setCoordinadorasData(formattedData);
       } catch (error: any) {
@@ -153,7 +162,7 @@ const GestionCoordinadoras = () => {
         coordinadora.phone_number.toLowerCase().includes(searchTerm) ||
         coordinadora.venue.toLowerCase().includes(searchTerm);
       const matchesVenue = section === '__All__' ? true : coordinadora.venue === section;
-      const matchesStatus = coordinadora.status === 'Aprobada'; // Filtrar solo Aprobada
+      const matchesStatus = coordinadora.status === 'Aprobada';
       return matchesSearch && matchesVenue && matchesStatus;
     });
   }, [inputValue, section, coordinadorasData]);
@@ -178,6 +187,17 @@ const GestionCoordinadoras = () => {
   const handleDeleteClick = (coordinadora: Coordinadora) => {
     setSelectedCoordinadora(coordinadora);
     setIsDeletePopupOpen(true);
+    setNewCoordinatorData({
+      name: '',
+      paternal_name: '',
+      maternal_name: '',
+      email: '',
+      phone_number: '',
+      gender: '',
+      username: '',
+      password: '',
+    });
+    setFormErrors({});
   };
 
   const handleDetailsClick = (coordinadora: Coordinadora) => {
@@ -192,6 +212,7 @@ const GestionCoordinadoras = () => {
   const handleCloseDeletePopup = () => {
     setIsDeletePopupOpen(false);
     setSelectedCoordinadora(null);
+    setFormErrors({});
   };
 
   const handleCloseDetailsPopup = () => {
@@ -199,9 +220,32 @@ const GestionCoordinadoras = () => {
     setSelectedCoordinadora(null);
   };
 
-  const handleConfirmDelete = async () => {
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!newCoordinatorData.name) errors.name = 'El nombre es obligatorio';
+    if (!newCoordinatorData.email) errors.email = 'El correo es obligatorio';
+    else if (!/\S+@\S+\.\S+/.test(newCoordinatorData.email)) errors.email = 'El correo no es válido';
+    if (!newCoordinatorData.phone_number) errors.phone_number = 'El teléfono es obligatorio';
+    if (!newCoordinatorData.username) errors.username = 'El nombre de usuario es obligatorio';
+    if (!newCoordinatorData.password) errors.password = 'La contraseña es obligatoria';
+    if (!newCoordinatorData.gender) errors.gender = 'El género es obligatorio';
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleConfirmReplace = async () => {
     if (!selectedCoordinadora) {
       handleCloseDeletePopup();
+      return;
+    }
+
+    if (!validateForm()) {
+      notify({
+        color: 'red',
+        title: 'Error',
+        message: 'Por favor, completa todos los campos requeridos correctamente',
+        duration: 5000,
+      });
       return;
     }
 
@@ -218,38 +262,63 @@ const GestionCoordinadoras = () => {
         return;
       }
 
-      const response = await fetch(`/api/venue-coordinators/${selectedCoordinadora.id_venue_coord}/cancel`, {
+      const response = await fetch(`/api/venue-coordinators/${selectedCoordinadora.id_venue_coord}/replace`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify(newCoordinatorData),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al cancelar la coordinadora');
+        throw new Error(result.message || 'Error al reemplazar la coordinadora');
       }
 
-      // Remover la coordinadora de la lista (ya que cambia a Cancelada y no cumple el filtro)
-      setCoordinadorasData(prev => prev.filter(c => c.id_venue_coord !== selectedCoordinadora.id_venue_coord));
+      setCoordinadorasData(prev => {
+        const newCoordinator = result.data;
+        const formattedNewCoordinator: Coordinadora = {
+          id_venue_coord: newCoordinator.id_venue_coord,
+          nombre: `${newCoordinator.name || ''} ${newCoordinator.paternal_name || ''} ${newCoordinator.maternal_name || ''}`.trim(),
+          email: newCoordinatorData.email,
+          phone_number: newCoordinatorData.phone_number,
+          venue: selectedCoordinadora.venue,
+          name: newCoordinatorData.name,
+          paternal_name: newCoordinatorData.paternal_name || 'Sin apellido paterno',
+          maternal_name: newCoordinatorData.maternal_name || 'Sin apellido materno',
+          status: 'Aprobada',
+        };
+        return [
+          ...prev.filter(c => c.id_venue_coord !== selectedCoordinadora.id_venue_coord),
+          formattedNewCoordinator,
+        ];
+      });
 
       notify({
         color: 'green',
-        title: 'Usuario Eliminado',
-        message: `Coordinadora ${selectedCoordinadora.nombre} eliminada exitosamente`,
+        title: 'Coordinadora Reemplazada',
+        message: `Coordinadora ${selectedCoordinadora.nombre} reemplazada exitosamente por ${newCoordinatorData.name}`,
         duration: 5000,
       });
 
       handleCloseDeletePopup();
     } catch (error: any) {
-      console.error('Error al cancelar la coordinadora:', error);
+      console.error('Error al reemplazar la coordinadora:', error);
       notify({
         color: 'red',
         title: 'Error',
-        message: `No se pudo cancelar la coordinadora ${selectedCoordinadora.nombre}: ${error.message}`,
+        message: `No se pudo reemplazar la coordinadora ${selectedCoordinadora.nombre}: ${error.message}`,
         duration: 5000,
       });
+    }
+  };
+
+  const handleInputChange = (field: keyof typeof newCoordinatorData, value: string) => {
+    setNewCoordinatorData(prev => ({ ...prev, [field]: value }));
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -294,7 +363,7 @@ const GestionCoordinadoras = () => {
         <div className="overflow-x-auto custom-scrollbar-tabla">
           <table className="min-w-full text-left text-sm">
             <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
-              <tr className='texto-primary-shade'>
+              <tr className="texto-primary-shade">
                 <th className="p-2 text-center">Nombre</th>
                 <th className="p-2 text-center">Correo</th>
                 <th className="p-2 text-center">Teléfono</th>
@@ -307,23 +376,25 @@ const GestionCoordinadoras = () => {
                 <tr
                   key={index}
                   className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
-                  onClick={() => handleDetailsClick(coordinadora)}
+                  onClick={(e) => {
+                    const isButtonClick = (e.target as HTMLElement).closest('button');
+                    if (!isButtonClick) {
+                      handleDetailsClick(coordinadora);
+                    }
+                  }}
                 >
                   <td className="p-2 text-center">{coordinadora.nombre}</td>
                   <td className="p-2 text-center">{coordinadora.email}</td>
                   <td className="p-2 text-center">{coordinadora.phone_number}</td>
                   <td className="p-2 text-center">{coordinadora.venue}</td>
-                  <td className="p-2 flex gap-2 justify-center">
+                  <td className="p-2 flex gap-2 items-center justify-center">
                     <Button
                       label=""
                       variant="error"
                       round
                       showLeftIcon
                       IconLeft={Trash}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(coordinadora);
-                      }}
+                      onClick={() => handleDeleteClick(coordinadora)}
                     />
                     <Button
                       label=""
@@ -331,10 +402,7 @@ const GestionCoordinadoras = () => {
                       round
                       showLeftIcon
                       IconLeft={Highlighter}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditClick(coordinadora);
-                      }}
+                      onClick={() => handleEditClick(coordinadora)}
                     />
                   </td>
                 </tr>
@@ -353,21 +421,99 @@ const GestionCoordinadoras = () => {
           />
         </div>
 
-        {/* Popup de cancelación */}
         {isDeletePopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
-              <p className="my-12">¿Estás segura de que quieres eliminar a la coordinadora {selectedCoordinadora.nombre}?</p>
-              <div className="flex justify-center gap-4">
-                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-gray-800 max-h-[80vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold mb-6 text-center">Reemplazar Coordinadora</h2>
+              <p className="mb-4 text-center">
+                Para eliminar a <strong>{selectedCoordinadora.nombre}</strong>, crea una nueva coordinadora para la sede <strong>{selectedCoordinadora.venue}</strong>.
+              </p>
+
+              <div className="space-y-4">
+                <InputField
+                  label="Nombre"
+                  placeholder="Nombre"
+                  value={newCoordinatorData.name}
+                  onChangeText={(text) => handleInputChange('name', text)}
+                  showDescription={!!formErrors.name}
+                  description={formErrors.name}
+                  variant="accent"
+                />
+                <InputField
+                  label="Apellido Paterno"
+                  placeholder="Apellido Paterno"
+                  value={newCoordinatorData.paternal_name}
+                  onChangeText={(text) => handleInputChange('paternal_name', text)}
+                  showDescription={!!formErrors.paternal_name}
+                  description={formErrors.paternal_name}
+                  variant="accent"
+                />
+                <InputField
+                  label="Apellido Materno"
+                  placeholder="Apellido Materno"
+                  value={newCoordinatorData.maternal_name}
+                  onChangeText={(text) => handleInputChange('maternal_name', text)}
+                  showDescription={!!formErrors.maternal_name}
+                  description={formErrors.maternal_name}
+                  variant="accent"
+                />
+                <InputField
+                  label="Correo Electrónico"
+                  placeholder="Correo electrónico"
+                  type="email"
+                  value={newCoordinatorData.email}
+                  onChangeText={(text) => handleInputChange('email', text)}
+                  showDescription={!!formErrors.email}
+                  description={formErrors.email}
+                  variant="accent"
+                />
+                <InputField
+                  label="Teléfono"
+                  placeholder="Número de teléfono"
+                  value={newCoordinatorData.phone_number}
+                  onChangeText={(text) => handleInputChange('phone_number', text)}
+                  showDescription={!!formErrors.phone_number}
+                  description={formErrors.phone_number}
+                  variant="accent"
+                />
+                <InputField
+                  label="Género"
+                  placeholder="Género (Femenino/Masculino)"
+                  value={newCoordinatorData.gender}
+                  onChangeText={(text) => handleInputChange('gender', text)}
+                  showDescription={!!formErrors.gender}
+                  description={formErrors.gender}
+                  variant="accent"
+                />
+                <InputField
+                  label="Nombre de usuario"
+                  placeholder="Usuario"
+                  value={newCoordinatorData.username}
+                  onChangeText={(text) => handleInputChange('username', text)}
+                  showDescription={!!formErrors.username}
+                  description={formErrors.username}
+                  variant="accent"
+                />
+                <InputField
+                  label="Contraseña"
+                  placeholder="Contraseña"
+                  type="password"
+                  value={newCoordinatorData.password}
+                  onChangeText={(text) => handleInputChange('password', text)}
+                  showDescription={!!formErrors.password}
+                  description={formErrors.password}
+                  variant="accent"
+                />
+              </div>
+
+              <div className="flex justify-between mt-6">
+                <Button label="Confirmar Reemplazo" variant="primary" onClick={handleConfirmReplace} />
+                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
         )}
 
-        {/* Popup de detalles */}
         {isDetailsPopupOpen && selectedCoordinadora && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">

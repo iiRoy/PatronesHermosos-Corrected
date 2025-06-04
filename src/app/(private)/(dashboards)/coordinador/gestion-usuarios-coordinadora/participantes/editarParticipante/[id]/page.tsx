@@ -85,7 +85,7 @@ const EditarParticipante = () => {
                 setApellidoPaternoValue(data.paternal_name);
                 setApellidoMaternoValue(data.maternal_name);
                 setCorreoValue(data.email);
-                setTelefonoValue(data.tutors?.phone_number || ''); // Prellenar con el número de teléfono del tutor
+                setTelefonoValue(data.tutors?.phone_number || '');
                 setStatusValue(data.status);
                 setGrupoValue(data.id_group || null);
                 setSedeValue(data.groups?.venues?.name || 'No asignado');
@@ -116,13 +116,17 @@ const EditarParticipante = () => {
 
                 const data = await response.json();
                 setAvailableGroups(data.groups);
-                if (data.groups.length > 0 && !grupoValue) {
-                    const currentGroup = data.groups.find((group: GroupOption) => group.id_group === participante?.id_group);
+
+                // Establecer el grupo actual del participante si está en los grupos disponibles
+                if (data.groups.length > 0 && participante?.id_group) {
+                    const currentGroup = data.groups.find((group: GroupOption) => group.id_group === participante.id_group);
                     if (currentGroup) {
                         setGrupoValue(currentGroup.id_group);
                     } else {
-                        setGrupoValue(data.groups[0].id_group);
+                        setGrupoValue(data.groups[0].id_group); // Fallback al primer grupo disponible
                     }
+                } else if (data.groups.length > 0) {
+                    setGrupoValue(data.groups[0].id_group); // Fallback si no hay grupo asignado
                 }
             } catch (error: any) {
                 console.error('Error al obtener grupos disponibles:', error);
@@ -133,7 +137,7 @@ const EditarParticipante = () => {
         if (id) {
             fetchParticipante().then(() => fetchAvailableGroups());
         }
-    }, [id, router, participante?.id_group]);
+    }, [id, router]);
 
     const handleConfirm = async () => {
         try {
@@ -149,7 +153,7 @@ const EditarParticipante = () => {
                 maternal_name: apellidoMaternoValue,
                 email: correoValue,
                 id_group: grupoValue,
-                phone_number: telefonoValue, // Incluir el número de teléfono
+                phone_number: telefonoValue,
             };
 
             const response = await fetch(`/api/participants/${id}/basic-info`, {
