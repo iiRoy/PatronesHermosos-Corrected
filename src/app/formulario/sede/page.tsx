@@ -10,7 +10,7 @@ import Location from '@components/icons/Gps';
 import Send from '@components/icons/ArrowFatRight';
 import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
 import Navbar from '@/components/headers_menu_users/navbar';
-import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files } from '@/components/icons';
+import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files, MapPin, Download } from '@/components/icons';
 
 interface Coordinator {
   name: string;
@@ -404,47 +404,54 @@ const VenueRegistrationForm: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-      <Navbar />
-      {/* Header */}
-            <div className="flex justify-evenly items-center mb-6">
+    <div className="pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white">
+
+      <form onSubmit={handleSubmit}>
+        <div className="info-formulario min-h-screen text-white p-4 md:p-8 flex justify-center items-center">
+          <div className="w-full max-w-6xl  rounded-lg shadow-lg p-6 md:p-8">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
-                <div className="w-2 h-12 bg-purple-600 mr-4"></div>
-                <h1 className="text-2xl md:text-3xl font-bold">Formulario de Registro<br />SEDE</h1>
+                <div className="w-2 rounded-full h-16 mr-4 notification-icon-purple"></div>
+                <h1 className="text-2xl">
+                  <span className="italic">Formulario de Registro</span><br />
+                  <span className="font-bold text-3xl">Sede</span>
+                </h1>
               </div>
               <Button
-                label="Regresar"
+                label=""
                 variant="error"
-                showRightIcon
-                IconRight={() => <span className="text-white">✕</span>}
-                href='../inicio'
+                showLeftIcon
+                round
+                type="button"
+                IconLeft={X}
+                href='/inicio'
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
-      <form onSubmit={handleSubmit}>
-        <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
-            {/* Section: Datos Coordinadora General */}
+            {/* Section: Datos Coordinadora de Sede */}
             <div className="mb-6">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><FlowerLotus /></span> Datos Coordinadora General
+                <span className="mr-2"><FlowerLotus
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Datos Coordinadora de Sede
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
-                Si no se crean coordinadoras asociadas o de informes, la coordinadora general asumirá los roles faltantes automáticamente.
-              </p>
             </div>
 
-            {/* Form Fields: Datos Coordinadora General */}
+            {/* Form Fields: Datos Coordinadora de Sede */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputField
                 label="Nombre(s)*"
                 placeholder="Nombre(s)"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.generalCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'name', value)
@@ -454,7 +461,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Paterno*"
                 placeholder="Apellido Paterno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.generalCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'lastNameP', value)
@@ -464,7 +471,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Materno"
                 placeholder="Apellido Materno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.generalCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'lastNameM', value)
@@ -474,7 +481,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Correo Electrónico*"
                 placeholder="correo1@ejemplo.com"
                 variant="accent"
-                icon="Envelope"
+                icon="At"
                 value={formData.generalCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'email', value)
@@ -498,14 +505,14 @@ const VenueRegistrationForm: React.FC = () => {
                   handleInputChange('generalCoordinator', 'gender', value)
                 }
                 variant="accent"
-                Icon={withIconDecorator(User)}
+                Icon={withIconDecorator(Grains)}
               />
               <InputField
                 label="Nombre de Usuario*"
                 description="El nombre de usuario solo puede contener letras, números y guiones bajos."
                 placeholder="Us3r_n4me"
                 variant="secondary"
-                icon="User"
+                icon="UserPlus"
                 value={formData.generalCoordinator.username}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'username', value)
@@ -536,7 +543,7 @@ const VenueRegistrationForm: React.FC = () => {
               <div>
                 <InputField
                   label="Confirmar Contraseña*"
-                  description="Confirma de manera correcta e identica la contraseña previamente registrada"
+                  description="Confirma de manera correcta e identica la contraseña previamente registrada."
                   placeholder="********"
                   variant="secondary"
                   icon="Lock"
@@ -560,7 +567,12 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Sube tu foto de perfil */}
             <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo-amarilla">
               <div className="flex items-center titulo-tarjeta-archivo-amarilla">
-                <span className="text-purple-600 text-2xl mr-2 icono-tarjeta-archivo-amarilla"><FileJpg /></span>
+                <span className="text-purple-600 text-2xl mr-2 icono-tarjeta-archivo-amarilla"><FileJpg
+                  width='2rem'
+                  height='2rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span>
                 <h3 className="text-lg font-semibold">Sube tu foto de perfil</h3>
               </div>
               <p className="text-sm my-6">
@@ -582,11 +594,19 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Section: Datos Coordinadora Asociada */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Sparkle /></span> Datos Coordinadora Asociada
+                <span className="mr-2"><Sparkle
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Datos Coordinadora Asociada
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
+                Responde con veracidad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              </p>
+              <p className="text-gray-400 text-sm italic">
+                Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
 
@@ -595,7 +615,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Nombre(s)*"
                 placeholder="Nombre(s)"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.associatedCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'name', value)
@@ -605,7 +625,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Paterno*"
                 placeholder="Apellido Paterno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.associatedCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'lastNameP', value)
@@ -615,7 +635,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Materno"
                 placeholder="Apellido Materno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.associatedCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'lastNameM', value)
@@ -627,7 +647,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Correo Electrónico*"
                 placeholder="correo1@ejemplo.com"
                 variant="accent"
-                icon="Envelope"
+                icon="At"
                 value={formData.associatedCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'email', value)
@@ -648,11 +668,19 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Section: Datos Coordinadora de Informes (Staff) */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Student /></span> Datos Coordinadora de Informes (Staff)
+                <span className="mr-2"><Student
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Datos Coordinadora de Informes (Staff)
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              </p>
+              <p className="text-gray-400 text-sm italic">
+                Si no se registra una coordinadora de informes, la coordinadora de sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
 
@@ -661,7 +689,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Nombre(s)*"
                 placeholder="Nombre(s)"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.staffCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'name', value)
@@ -671,7 +699,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Paterno*"
                 placeholder="Apellido  Paterno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.staffCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'lastNameP', value)
@@ -681,7 +709,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Materno"
                 placeholder="Apellido Materno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.staffCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'lastNameM', value)
@@ -693,7 +721,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Correo Electrónico*"
                 placeholder="correo1@ejemplo.com"
                 variant="accent"
-                icon="Envelope"
+                icon="At"
                 value={formData.staffCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'email', value)
@@ -714,11 +742,19 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Section: Datos Coordinadora de Informes (Participantes) */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><UsersFour /></span> Datos Coordinadora de Informes (Participantes)
+                <span className="mr-2"><UsersFour
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Datos Coordinadora de Informes (Participantes)
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              </p>
+              <p className="text-gray-400 text-sm italic">
+                Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
 
@@ -727,7 +763,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Nombre(s)*"
                 placeholder="Nombre(s)"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.participantsCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'name', value)
@@ -737,7 +773,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Paterno*"
                 placeholder="Apellido Paterno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.participantsCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'lastNameP', value)
@@ -747,7 +783,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Apellido Materno"
                 placeholder="Apellido Materno"
                 variant="primary"
-                icon="User"
+                icon="Fingerprint"
                 value={formData.participantsCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'lastNameM', value)
@@ -759,7 +795,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Correo Electrónico*"
                 placeholder="correo1@ejemplo.com"
                 variant="accent"
-                icon="Envelope"
+                icon="At"
                 value={formData.participantsCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'email', value)
@@ -780,7 +816,12 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Section: Datos SEDE */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Bank /></span> Datos SEDE
+                <span className="mr-2"><Bank
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Datos SEDE
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de tu SEDE.<br />
@@ -808,7 +849,7 @@ const VenueRegistrationForm: React.FC = () => {
                   handleInputChange('venue', 'state', '');
                 }}
                 variant="accent"
-                Icon={withIconDecorator(Location)}
+                Icon={withIconDecorator(MapPin)}
               />
               {formData.venue.country === 'Mexico' ? (
                 <Dropdown
@@ -819,14 +860,14 @@ const VenueRegistrationForm: React.FC = () => {
                     handleInputChange('venue', 'state', value)
                   }
                   variant="primary"
-                  Icon={withIconDecorator(Location)}
+                  Icon={withIconDecorator(MapPin)}
                 />
               ) : (
                 <InputField
                   label="Provincia/Región*"
                   placeholder="Región"
                   variant="accent"
-                  icon="Gps"
+                  icon="MapPin"
                   value={formData.venue.state}
                   onChangeText={(value: string) =>
                     handleInputChange('venue', 'state', value)
@@ -850,7 +891,12 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Sube tu logo */}
             <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
               <div className="flex items-center titulo-tarjeta-archivo">
-                <span className="text-2xl mr-2 icono-tarjeta-archivo"><FileJpg /></span>
+                <span className="text-2xl mr-2 icono-tarjeta-archivo"><FileJpg
+                  width='2rem'
+                  height='2rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span>
                 <h3 className="text-lg font-semibold">Sube tu logo</h3>
               </div>
               <p className="text-sm my-6">
@@ -872,7 +918,12 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Convocatoria SEDE */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Files /></span> Convocatoria SEDE
+                <span className="mr-2"><Files
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Convocatoria SEDE
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá de estar firmado por un representante legal de la institución participante.<br />
@@ -880,9 +931,30 @@ const VenueRegistrationForm: React.FC = () => {
               </p>
             </div>
 
+            {/* Download Section */}
+        <div className="mb-6 flex items-center gap-4">
+          <p className="text-lg text-gray-400">
+            Descarga la convocatoria para sedes:
+          </p>
+          <a
+            href="/ConvocatoriaSEDES-PH2025.pdf"
+            download="ConvocatoriaSEDES-PH2025.pdf"
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            role="button"
+            aria-label="Descargar Convocatoria"
+          >
+            Descargar Convocatoria
+          </a>
+        </div>
+
             <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
               <div className="flex items-center titulo-tarjeta-archivo">
-                <span className="text-2xl mr-2 icono-tarjeta-archivo"><FilePdf /></span>
+                <span className="text-2xl mr-2 icono-tarjeta-archivo"><FilePdf
+                  width='2rem'
+                  height='2rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span>
                 <h3 className="text-lg font-semibold">Sube tu convocatoria</h3>
               </div>
               <p className="text-gray-600 text-sm my-6">
@@ -904,7 +976,12 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Aviso de Privacidad */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Megaphone /></span> Aviso de Privacidad
+                <span className="mr-2"><Megaphone
+                  width='1.5rem'
+                  height='1.5rem'
+                  fillColor='#ebe6eb'
+                  strokeWidth={0}
+                /></span> Aviso de Privacidad
               </h2>
               <p className="text-gray-400 text-sm">
                 Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
@@ -928,6 +1005,7 @@ const VenueRegistrationForm: React.FC = () => {
                 label="Enviar Registro"
                 variant="success"
                 showRightIcon
+                type='submit'
                 IconRight={withIconDecorator(Send)}
                 className="px-6 py-2 rounded-full flex items-center text-white"
               />

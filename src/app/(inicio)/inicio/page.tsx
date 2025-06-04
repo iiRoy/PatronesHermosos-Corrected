@@ -73,12 +73,12 @@ export default function PatronesHermosos() {
                       variant="primary"
                       showLeftIcon
                       IconLeft={BookBookmark}
-                      href="/admin/gestion-usuarios/participantes"
+                      href="/formulario/participante"
                       className="mb-4"
                     />
                   </span>
                   <div
-                    className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:${hoveredButton === 'participante' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:opacity-0 ${hoveredButton === 'participante' ? 'md:opacity-100' : ''}`}
                   >
                     <div className='flex justify-center items-center m-4'>
                       <MedalMilitary width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeColor='currentColor' />
@@ -101,12 +101,12 @@ export default function PatronesHermosos() {
                       variant="secondary"
                       showLeftIcon
                       IconLeft={Medal}
-                      href="/admin/gestion-usuarios/colaboradoras"
+                      href="/formulario/colaborador"
                       className="mb-4"
                     />
                   </span>
                   <div
-                    className={`description-box-secondary bg-[#683756] transition-opacity duration-300 opacity-100 md:${hoveredButton === 'colaborador' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    className={`description-box-secondary bg-[#683756] transition-opacity duration-300 opacity-100 md:opacity-0 ${hoveredButton === 'colaborador' ? 'md:opacity-100' : ''}`}
                   >
                     <div className='flex justify-center items-center m-4'>
                       <LightbulbFilament width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeColor='currentColor' />
@@ -129,12 +129,12 @@ export default function PatronesHermosos() {
                       variant="primary"
                       showLeftIcon
                       IconLeft={Student}
-                      href="formulario/sede"
+                      href="/formulario/sede"
                       className="mb-4"
                     />
                   </span>
                   <div
-                    className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:${hoveredButton === 'sede' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:opacity-0 ${hoveredButton === 'sede' ? 'md:opacity-100' : ''}`}
                   >
                     <div className='flex justify-center items-center m-4'>
                       <Certificate width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeColor='currentColor' />
