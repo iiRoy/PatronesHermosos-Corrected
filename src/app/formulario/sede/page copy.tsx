@@ -1,16 +1,16 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import InputField from '@components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import Select from 'react-select';
-import { Country, State } from 'country-state-city';
-import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
+import Location from '@components/icons/Gps';
 import Send from '@components/icons/ArrowFatRight';
-import { FlowerLotus, FileJpg, FilePdf, Sparkle, UsersFour, Bank, Files, Megaphone, X, Grains, MapPin } from '@/components/icons';
+import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
+import Navbar from '@/components/headers_menu_users/navbar';
+import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files, MapPin, Download } from '@/components/icons';
 
 interface Coordinator {
   name: string;
@@ -41,6 +41,41 @@ interface FormData {
   participantsCoordinator: Coordinator;
   venue: Venue;
 }
+
+const mexicanStates = [
+  'Aguascalientes',
+  'Baja California',
+  'Baja California Sur',
+  'Campeche',
+  'Chiapas',
+  'Chihuahua',
+  'Ciudad de México',
+  'Coahuila',
+  'Colima',
+  'Durango',
+  'Estado de México',
+  'Guanajuato',
+  'Guerrero',
+  'Hidalgo',
+  'Jalisco',
+  'Michoacán',
+  'Morelos',
+  'Nayarit',
+  'Nuevo León',
+  'Oaxaca',
+  'Puebla',
+  'Querétaro',
+  'Quintana Roo',
+  'San Luis Potosí',
+  'Sinaloa',
+  'Sonora',
+  'Tabasco',
+  'Tamaulipas',
+  'Tlaxcala',
+  'Veracruz',
+  'Yucatán',
+  'Zacatecas',
+].sort();
 
 const VenueRegistrationForm: React.FC = () => {
   const router = useRouter();
@@ -96,17 +131,6 @@ const VenueRegistrationForm: React.FC = () => {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
 
-  // Country and region options from country-state-city
-  const allowedCountries = ['Mexico', 'Ecuador', 'Costa Rica'];
-  const countryOptions = useMemo(() =>
-    Country.getAllCountries()
-      .filter(country => allowedCountries.includes(country.name))
-      .map(country => ({
-        value: country.isoCode,
-        label: country.name,
-      })), []);
-  const [regionOptions, setRegionOptions] = useState<{ value: string; label: string }[]>([]);
-
   type GeneralCoordinatorKeys = keyof GeneralCoordinator;
   type CoordinatorKeys = keyof Coordinator;
   type VenueKeys = keyof Venue;
@@ -118,6 +142,7 @@ const VenueRegistrationForm: React.FC = () => {
     participantsCoordinator: CoordinatorKeys;
     venue: VenueKeys;
   };
+
 
   const handleInputChange = <S extends Section>(
     section: S,
@@ -158,33 +183,11 @@ const VenueRegistrationForm: React.FC = () => {
     }
   };
 
-  // Handle country change
-  const handleCountryChange = (selectedOption: { value: string; label: string } | null) => {
-    const country = selectedOption ? selectedOption.label : '';
-    handleInputChange('venue', 'country', country);
-    handleInputChange('venue', 'state', ''); // Reset state
-    if (selectedOption) {
-      const regions = State.getStatesOfCountry(selectedOption.value).map(state => ({
-        value: state.isoCode,
-        label: state.name,
-      }));
-      setRegionOptions(regions);
-    } else {
-      setRegionOptions([]);
-    }
-  };
-
-  // Handle region change
-  const handleRegionChange = (selectedOption: { value: string; label: string } | null) => {
-    const state = selectedOption ? selectedOption.label : '';
-    handleInputChange('venue', 'state', state);
-  };
-
   const validateForm = () => {
     const newErrors: string[] = [];
 
     if (!formData.venue.name) newErrors.push('El nombre de la SEDE es obligatorio');
-    if (!formData.venue.country) newErrors.push('El país de la SEDE es obligatorio');
+    //if (!formData.venue.country) newErrors.push('El país de la SEDE es obligatorio');
     if (!formData.venue.state) newErrors.push('El estado/provincia de la SEDE es obligatorio');
     if (!formData.venue.address) newErrors.push('La dirección de la SEDE es obligatoria');
     if (!participationFile) newErrors.push('El archivo de participación es obligatorio');
@@ -196,7 +199,7 @@ const VenueRegistrationForm: React.FC = () => {
     if (!formData.generalCoordinator.email)
       newErrors.push('El correo electrónico de la Coordinadora de Sede es obligatorio');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.generalCoordinator.email))
-      newErrors.push('El correo electrónico de la Coordinadora de Sede debe ser válido');
+      newErrors.push('El correo electrónico de la Coordinadora de Sede debe be válido');
     if (!formData.generalCoordinator.phone)
       newErrors.push('El celular de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.gender)
@@ -204,7 +207,7 @@ const VenueRegistrationForm: React.FC = () => {
     if (!formData.generalCoordinator.username)
       newErrors.push('El nombre de usuario de la Coordinadora de Sede es obligatorio');
     if (!formData.generalCoordinator.password)
-      newErrors.push('La contraseña de la Coordinadora de Sede es obligatorio');
+      newErrors.push('La contraseña de la Coordinadora de Sede es obligatoria');
     else {
       if (formData.generalCoordinator.password.length < 8)
         newErrors.push('La contraseña debe tener al menos 8 caracteres');
@@ -241,7 +244,7 @@ const VenueRegistrationForm: React.FC = () => {
         newErrors.push('El correo electrónico de la coordinadora de informes (participantes) es obligatorio');
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.participantsCoordinator.email))
         newErrors.push('El correo electrónico de la coordinadora de informes (participantes) debe ser válido');
-      if (!formData.staffCoordinator.phone)
+      if (!formData.participantsCoordinator.phone)
         newErrors.push('El celular de la coordinadora de informes (participantes) es obligatorio');
     }
 
@@ -400,73 +403,12 @@ const VenueRegistrationForm: React.FC = () => {
     }
   };
 
-  // Custom styles for react-select to match Dropdown
-  const selectStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: '#1a1a2e', // match dark bg
-      borderColor: state.isFocused ? '#a259e6' : '#4a4a6a',
-      borderRadius: '0.5rem',
-      minHeight: '2.5rem',
-      boxShadow: state.isFocused ? '0 0 0 2px #a259e6' : 'none',
-      color: '#ebe6eb',
-      '&:hover': { borderColor: '#a259e6' },
-      fontSize: '1rem',
-    }),
-    option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
-      ...provided,
-      backgroundColor: state.isSelected
-        ? '#a259e6'
-        : state.isFocused
-        ? '#2d2d44'
-        : '#1a1a2e',
-      color: state.isSelected ? '#fff' : '#ebe6eb',
-      fontSize: '1rem',
-      cursor: 'pointer',
-    }),
-    singleValue: (provided: any) => ({
-      ...provided,
-      color: '#ebe6eb',
-      fontWeight: 500,
-    }),
-    menu: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#1a1a2e',
-      borderRadius: '0.5rem',
-      zIndex: 1000,
-      color: '#ebe6eb',
-    }),
-    placeholder: (provided: any) => ({
-      ...provided,
-      color: '#a3a3c2',
-      fontStyle: 'italic',
-    }),
-    input: (provided: any) => ({
-      ...provided,
-      color: '#ebe6eb',
-    }),
-    dropdownIndicator: (provided: any, state: any) => ({
-      ...provided,
-      color: state.isFocused ? '#a259e6' : '#ebe6eb',
-      '&:hover': { color: '#a259e6' },
-    }),
-    indicatorSeparator: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#4a4a6a',
-    }),
-    menuList: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#1a1a2e',
-      borderRadius: '0.5rem',
-      color: '#ebe6eb',
-    }),
-  };
-
   return (
     <div className="pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white">
+
       <form onSubmit={handleSubmit}>
         <div className="info-formulario min-h-screen text-white p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-6xl rounded-lg shadow-lg p-6 md:p-8">
+          <div className="w-full max-w-6xl  rounded-lg shadow-lg p-6 md:p-8">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
@@ -726,7 +668,7 @@ const VenueRegistrationForm: React.FC = () => {
             {/* Section: Datos Coordinadora de Informes (Staff) */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><UsersFour
+                <span className="mr-2"><Student
                   width='1.5rem'
                   height='1.5rem'
                   fillColor='#ebe6eb'
@@ -755,7 +697,7 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <InputField
                 label="Apellido Paterno*"
-                placeholder="Apellido Paterno"
+                placeholder="Apellido  Paterno"
                 variant="primary"
                 icon="Fingerprint"
                 value={formData.staffCoordinator.lastNameP}
@@ -898,35 +840,40 @@ const VenueRegistrationForm: React.FC = () => {
                   handleInputChange('venue', 'name', value)
                 }
               />
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">País*</label>
-                <Select
-                  options={countryOptions}
-                  value={countryOptions.find(option => option.label === formData.venue.country) || null}
-                  onChange={handleCountryChange}
-                  placeholder="Selecciona un país"
-                  styles={selectStyles}
-                  isClearable
-                  components={{
-                    DropdownIndicator: () => <MapPin width="1.5rem" height="1.5rem" fillColor="#ebe6eb" strokeWidth={0} />,
-                  }}
+              <Dropdown
+                label="País*"
+                options={['Mexico', 'Costa Rica', 'Ecuador']}
+                value={formData.venue.country}
+                onChange={(value: string) => {
+                  handleInputChange('venue', 'country', value);
+                  handleInputChange('venue', 'state', '');
+                }}
+                variant="accent"
+                Icon={withIconDecorator(MapPin)}
+              />
+              {formData.venue.country === 'Mexico' ? (
+                <Dropdown
+                  label="Estado*"
+                  options={mexicanStates}
+                  value={formData.venue.state}
+                  onChange={(value: string) =>
+                    handleInputChange('venue', 'state', value)
+                  }
+                  variant="primary"
+                  Icon={withIconDecorator(MapPin)}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Estado/Provincia*</label>
-                <Select
-                  options={regionOptions}
-                  value={regionOptions.find(option => option.label === formData.venue.state) || null}
-                  onChange={handleRegionChange}
-                  placeholder="Selecciona un estado/provincia"
-                  styles={selectStyles}
-                  isClearable
-                  isDisabled={!formData.venue.country}
-                  components={{
-                    DropdownIndicator: () => <MapPin width="1.5rem" height="1.5rem" fillColor="#ebe6eb" strokeWidth={0} />,
-                  }}
+              ) : (
+                <InputField
+                  label="Provincia/Región*"
+                  placeholder="Región"
+                  variant="accent"
+                  icon="MapPin"
+                  value={formData.venue.state}
+                  onChangeText={(value: string) =>
+                    handleInputChange('venue', 'state', value)
+                  }
                 />
-              </div>
+              )}
               <div className="md:col-span-2">
                 <InputField
                   label="Dirección*"
@@ -985,20 +932,20 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             {/* Download Section */}
-            <div className="mb-6 flex items-center gap-4">
-              <p className="text-lg text-gray-400">
-                Descarga la convocatoria para sedes:
-              </p>
-              <a
-                href="/ConvocatoriaSEDES-PH2025.pdf"
-                download="ConvocatoriaSEDES-PH2025.pdf"
-                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                role="button"
-                aria-label="Descargar Convocatoria"
-              >
-                Descargar Convocatoria
-              </a>
-            </div>
+        <div className="mb-6 flex items-center gap-4">
+          <p className="text-lg text-gray-400">
+            Descarga la convocatoria para sedes:
+          </p>
+          <a
+            href="/ConvocatoriaSEDES-PH2025.pdf"
+            download="ConvocatoriaSEDES-PH2025.pdf"
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            role="button"
+            aria-label="Descargar Convocatoria"
+          >
+            Descargar Convocatoria
+          </a>
+        </div>
 
             <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
               <div className="flex items-center titulo-tarjeta-archivo">
