@@ -195,6 +195,7 @@ export default function LoginForm() {
           <Button
             label={loading ? 'Entrando...' : 'Validar'}
             variant='success'
+            type='submit'
             disabled={loading || isLocked || !emailOrUsername || !password}
             showLeftIcon
             IconLeft={Icons.StarFour}
