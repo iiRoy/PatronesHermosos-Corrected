@@ -97,7 +97,7 @@ const EstadisticasAdmin = () => {
           onExpand={() => setRadialMinimized(false)}
           isResizing={isResizing}
           direction='row'
-          grow='md:flex-[2_2_0%] lg:flex-[19_3_0%] w-full h-full md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px] overflow-visible'
+          grow='md:flex-[2_2_0%] lg:flex-[19_3_0%] w-full h-full md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
         >
           <GenericRadialChart
             onMinimize={() => setRadialMinimized(true)}
@@ -114,7 +114,7 @@ const EstadisticasAdmin = () => {
           onExpand={() => setLineMinimized(false)}
           isResizing={isResizing}
           direction='row'
-          grow='overflow-visible md:flex-[2_2_0%] lg:flex-[24_3_15%] w-full h-full md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
+          grow='md:flex-[2_2_0%] lg:flex-[24_3_15%] w-full h-full md:max-h-[380px] lg:max-h-[430px] md:min-h-[380px] lg:min-h-[430px]'
         >
           <GenericLineChart
             onMinimize={() => setLineMinimized(true)}
