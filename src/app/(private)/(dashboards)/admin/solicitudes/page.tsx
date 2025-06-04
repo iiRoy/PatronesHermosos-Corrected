@@ -987,25 +987,15 @@ if (error) {
                   <p><strong>Estado:</strong> {(selectedItem as Participante).status}</p>
                   {pdfUrl ? (
                     <div className="mt-4">
-                      <p><strong>Archivo de participación:</strong></p>
+                      <p><strong>Carta de Convocatoria:</strong></p>
                       <iframe
                         src={pdfUrl}
                         className="w-full h-[400px] border rounded"
                         title="Participation File"
                       />
-                      <div className="mt-4 flex justify-center">
-                        <a
-                          href={`/api/participants/${(selectedItem as Participante).id_participant}/pdf?download=true`}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button label="Descargar PDF" variant="primary" />
-                        </a>
-                      </div>
                     </div>
                   ) : (
-                    <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
+                    <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
                   )}
                 </div>
               )}
@@ -1039,25 +1029,15 @@ if (error) {
                   <p><strong>Estado:</strong> {(selectedItem as Sede).status}</p>
                   {pdfUrl ? (
                     <div className="mt-4">
-                      <p><strong>Archivo de participación:</strong></p>
+                      <p><strong>Carta de Convocatoria:</strong></p>
                       <iframe
                         src={pdfUrl}
                         className="w-full h-[400px] border rounded"
                         title="Participation File"
                       />
-                      <div className="mt-4 flex justify-center">
-                        <a
-                          href={`/api/venues/${(selectedItem as Sede).id_venue}/pdf?download=true`}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button label="Descargar PDF" variant="primary" />
-                        </a>
-                      </div>
                     </div>
                   ) : (
-                    <p className="mt-4 text-red-500"><strong>Archivo de participación:</strong> No disponible</p>
+                    <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
                   )}
                 </div>
               )}

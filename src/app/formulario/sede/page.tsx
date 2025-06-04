@@ -406,7 +406,11 @@ const VenueRegistrationForm: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <Navbar />
-      {/* Header */}
+      
+      <form onSubmit={handleSubmit}>
+        <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
+          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
+            {/* Header */}
             <div className="flex justify-evenly items-center mb-6">
               <div className="flex items-center">
                 <div className="w-2 h-12 bg-purple-600 mr-4"></div>
@@ -422,24 +426,18 @@ const VenueRegistrationForm: React.FC = () => {
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
-      <form onSubmit={handleSubmit}>
-        <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
-            {/* Section: Datos Coordinadora General */}
+            {/* Section: Datos Coordinadora de Sede */}
             <div className="mb-6">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><FlowerLotus /></span> Datos Coordinadora General
+                <span className="mr-2"><FlowerLotus /></span> Datos Coordinadora de Sede
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
-                Si no se crean coordinadoras asociadas o de informes, la coordinadora general asumirá los roles faltantes automáticamente.
-              </p>
             </div>
 
-            {/* Form Fields: Datos Coordinadora General */}
+            {/* Form Fields: Datos Coordinadora de Sede */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <InputField
                 label="Nombre(s)*"
@@ -586,8 +584,11 @@ const VenueRegistrationForm: React.FC = () => {
                 <span className="mr-2"><Sparkle /></span> Datos Coordinadora Asociada
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
+                Responde con veracidad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              </p>
+              <p className="text-gray-400 text-sm italic">
+                Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
 
@@ -655,6 +656,9 @@ const VenueRegistrationForm: React.FC = () => {
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
               </p>
+              <p className="text-gray-400 text-sm italic">
+                Si no se registra una coordinadora de informes, la coordinadora de sede asumirá los roles faltantes automáticamente.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -720,6 +724,9 @@ const VenueRegistrationForm: React.FC = () => {
               <p className="text-gray-400 text-sm md:text-base mb-4">
                 Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
                 Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              </p>
+              <p className="text-gray-400 text-sm italic">
+                Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
               </p>
             </div>
 

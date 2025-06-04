@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import InputField from '@components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
@@ -28,6 +28,16 @@ interface Collaborator {
   preferred_group: number | null;
 }
 
+interface Group {
+  id_group: number;
+  name: string;
+  mode: string;
+  sede: string;
+  cupo: string;
+  horarios: string;
+  fechas: string;
+}
+
 const CollaboratorRegistrationForm: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<Collaborator>({
@@ -46,11 +56,44 @@ const CollaboratorRegistrationForm: React.FC = () => {
     preferred_group: null,
   });
 
+  const [groups, setGroups] = useState<Group[]>([]);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
+
+
+  // Fetch groups from API
+    useEffect(() => {
+      const fetchGroups = async () => {
+        try {
+          const response = await fetch('http://localhost:3000/api/groups');
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          if (!Array.isArray(data)) {
+            throw new Error('Expected an array of groups, but received: ' + JSON.stringify(data));
+          }
+          const transformedGroups = data.map((group: any) => ({
+            id_group: group.id_group,
+            name: group.name,
+            mode: group.mode || 'Presencial',
+            sede: group.venues?.name || 'N/A',
+            cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
+            horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
+            fechas: `${group.start_date ? new Date(group.start_date).toLocaleDateString('es-MX') : 'N/A'} - ${group.end_date ? new Date(group.end_date).toLocaleDateString('es-MX') : 'N/A'}`,
+          }));
+          setGroups(transformedGroups);
+        } catch (err) {
+          console.error('Error fetching groups:', err);
+          setErrors(['Error al cargar los grupos: ' + (err instanceof Error ? err.message : 'Unknown error')]);
+          setIsErrorModalOpen(true);
+        }
+      };
+      fetchGroups();
+    }, []);
 
   // Handle input changes
   const handleInputChange = (field: keyof Collaborator, value: string | number) => {
@@ -301,7 +344,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
               <Dropdown
                 label="Dificultad preferida*"
-                options={['Básico', 'Intermedio', 'Avanzado']}
+                options={['Básico', 'Avanzado']}
                 value={formData.preferred_level}
                 onChange={(value: string) => handleInputChange('preferred_level', value)}
                 variant="primary"
@@ -309,17 +352,20 @@ const CollaboratorRegistrationForm: React.FC = () => {
               />
             </div>
 
-            {/* Section: Selección de Sede */}
+            {/* Section: Selección de Grupo */}
             <div className="mt-8">
               <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
                 <span className="mr-2"><AddressBook /></span> Selección de Sede
               </h2>
               <p className="text-gray-400 text-sm md:text-base mb-4">
-                Selecciona la sede que prefieres para apoyar.<br />
-                Puedes ver los detalles de la sede usando los botones del lado derecho.
+                Selecciona el grupo que prefieres para apoyar.<br />
+                Puedes ver los detalles del grupo usando los botones del lado derecho.
               </p>
             </div>
-
+            <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 bg-gray-700 text-xs sm:text-base md:text-lg lg:text-xl">
+          <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
+          <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
+        </div>
             <GroupSelectionTable
               onSelect={handleGroupSelect}
               selectedGroupId={formData.preferred_group ?? undefined}
