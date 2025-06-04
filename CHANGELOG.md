@@ -1,3 +1,7 @@
+## <small>1.15.2 (2025-06-04)</small>
+
+* fix(email): Email when creating venue ([5ff9c22](https://github.com/iiRoy/Patrones-Hermosos/commit/5ff9c22))
+
 ## <small>1.15.1 (2025-06-04)</small>
 
 * fix(forms): Button of part form with type ([5feacda](https://github.com/iiRoy/Patrones-Hermosos/commit/5feacda))
