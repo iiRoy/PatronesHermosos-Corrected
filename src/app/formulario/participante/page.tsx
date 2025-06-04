@@ -499,6 +499,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Enviar Registro"
             variant="success"
             showRightIcon
+            type='submit'
             IconRight={withIconDecorator(Send)}
             className="px-6 py-2 rounded-full flex items-center"
           />
