@@ -1,3 +1,10 @@
+## <small>1.15.1 (2025-06-04)</small>
+
+* fix(forms): Button of part form with type ([5feacda](https://github.com/iiRoy/Patrones-Hermosos/commit/5feacda))
+* chore: manual conflict resolution after merge ([e361d73](https://github.com/iiRoy/Patrones-Hermosos/commit/e361d73))
+* feat(venue_coord) se remplaza la coordinadora de sede ([ca9f92b](https://github.com/iiRoy/Patrones-Hermosos/commit/ca9f92b))
+* fix(filtrado) se arreglo el filtrado de participantes y mentoras, para que no mostraran [No asignado ([6780973](https://github.com/iiRoy/Patrones-Hermosos/commit/6780973))
+
 ## 1.15.0 (2025-06-04)
 
 * chore: manual conflict resolution after merge ([c1edd26](https://github.com/iiRoy/Patrones-Hermosos/commit/c1edd26))
