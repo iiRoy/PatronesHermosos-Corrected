@@ -7,7 +7,7 @@ import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import withIconDecorator from '@/components/decorators/IconDecorator';
 import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
-import { FlowerLotus, AddressBook, X, User, Phone, Envelope, GraduationCap, Flag, SealWarning, Heart, Megaphone } from '@components/icons';
+import { FlowerLotus, AddressBook, X, User, Phone, Envelope, GraduationCap, Flag, SealWarning, Heart, Megaphone, BookOpenText } from '@components/icons';
 import Send from '@components/icons/ArrowFatRight';
 import ParticipantGroupSelectionTable from '@components/tables/GroupSelectionTable';
 import { FilePdfIcon } from '@phosphor-icons/react';
@@ -249,7 +249,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             round
             showLeftIcon
             IconLeft={X}
-            onClick={() => router.push('/inicio')}
+            href='/inicio'
             className="px-4 py-2 rounded-full flex items-center"
           />
         </div>
@@ -276,7 +276,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Nombre(s)*"
             placeholder="Nombre(s)"
             variant="primary"
-            icon="User"
+            icon="FingerprintSimple"
             value={formData.participant.name}
             onChangeText={(value) => handleInputChange('participant', 'name', value)}
           />
@@ -284,7 +284,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Apellido Paterno*"
             placeholder="Apellido Paterno"
             variant="primary"
-            icon="User"
+            icon="FingerprintSimple"
             value={formData.participant.paternal_name}
             onChangeText={(value) => handleInputChange('participant', 'paternal_name', value)}
           />
@@ -292,7 +292,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Apellido Materno"
             placeholder="Apellido Materno"
             variant="primary"
-            icon="User"
+            icon="FingerprintSimple"
             value={formData.participant.maternal_name}
             onChangeText={(value) => handleInputChange('participant', 'maternal_name', value)}
           />
@@ -300,7 +300,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Correo Electrónico*"
             placeholder="correo1@ejemplo.com"
             variant="accent"
-            icon="Envelope"
+            icon="At"
             value={formData.participant.email}
             onChangeText={(value) => handleInputChange('participant', 'email', value)}
           />
@@ -318,7 +318,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             value={formData.participant.education}
             onChange={(value) => handleInputChange('participant', 'education', value)}
             variant="accent"
-            Icon={withIconDecorator(GraduationCap)}
+            Icon={withIconDecorator(BookOpenText)}
           />
         </div>
 
@@ -341,7 +341,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Nombre(s)*"
             placeholder="Nombre(s)"
             variant="primary"
-            icon="User"
+            icon="FingerprintSimple"
             value={formData.tutor.name}
             onChangeText={(value) => handleInputChange('tutor', 'name', value)}
           />
@@ -349,7 +349,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Apellido Paterno*"
             placeholder="Apellido Paterno"
             variant="primary"
-            icon="User"
+            icon="FingerprintSimple"
             value={formData.tutor.paternal_name}
             onChangeText={(value) => handleInputChange('tutor', 'paternal_name', value)}
           />
@@ -357,7 +357,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Apellido Materno"
             placeholder="Apellido Materno"
             variant="primary"
-            icon="User"
+            icon="FingerprintSimple"
             value={formData.tutor.maternal_name}
             onChangeText={(value) => handleInputChange('tutor', 'maternal_name', value)}
           />
@@ -365,7 +365,7 @@ const ParticipantRegistrationForm: React.FC = () => {
             label="Correo Electrónico*"
             placeholder="correo1@ejemplo.com"
             variant="accent"
-            icon="Envelope"
+            icon="At"
             value={formData.tutor.email}
             onChangeText={(value) => handleInputChange('tutor', 'email', value)}
           />
