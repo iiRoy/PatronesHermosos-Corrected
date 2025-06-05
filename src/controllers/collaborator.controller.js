@@ -998,30 +998,8 @@ const updateCollaboratorAssignment = async (req, res) => {
       },
     });
 
-    try {
-      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
-      await sendEmail({
-        to: collaborator.email,
-        subject: 'Actualización de Asignación - Patrones Hermosos',
-        template: 'templates/collaborators/actualizado',
-        data: {
-          pName: fullName,
-          role: updatedCollaborator.role,
-          sede: group.venues?.name || 'No asignada',
-          grupo: group.name || 'No asignado',
-          direccion: group.venues?.address || 'No disponible',
-          mName: group.mentors?.name || 'No asignada',
-          mEmail: group.mentors?.email || 'no-reply@patroneshermosos.org',
-          iName: 'Soporte Patrones Hermosos',
-          iEmail: process.env.EMAIL_USER || 'soporte@patroneshermosos.org',
-        },
-      });
-      console.log(`Update notification email sent to ${collaborator.email}`);
-    } catch (emailError) {
-      console.error(`Error sending update notification email to ${collaborator.email}:`, emailError.message);
-    }
-
-    res.json({
+    const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+    return res.status(200).json({
       success: true,
       message: 'Asignación de colaborador actualizada exitosamente',
       collaborator: {
@@ -1036,7 +1014,7 @@ const updateCollaboratorAssignment = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating collaborator assignment:', JSON.stringify(error, null, 2));
-    res.status(500).json({ message: 'Error al actualizar asignación de colaborador', error: error.message });
+    return res.status(500).json({ message: 'Error al actualizar asignación de colaborador', error: error.message });
   }
 };
 

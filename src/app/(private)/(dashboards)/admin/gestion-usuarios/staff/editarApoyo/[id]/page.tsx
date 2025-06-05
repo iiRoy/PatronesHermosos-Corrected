@@ -23,19 +23,12 @@ interface Collaborator {
   status: string;
   level: string;
   language: string;
-  preferred_group: number | null;
-  groups: {
-    name: string;
-    venues: { name: string };
-  } | null;
+  id_group: number | null;
 }
 
 interface GroupOption {
   id_group: number;
   name: string;
-  level: string;
-  mode: string;
-  language: string;
   available_places: number;
   role_availability: {
     Instructora: number;
@@ -61,12 +54,14 @@ const EditarStaff = () => {
   const [semester, setSemester] = useState('');
   const [gender, setGender] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState('');
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
+  const [venueName, setVenueName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  const roleOptions = ['Staff', 'Instructora', 'Facilitadora'];
+  // Opciones para los select
+  const roleOptions = ['Instructora', 'Facilitadora', 'Staff'];
   const genderOptions = ['Masculino', 'Femenino', 'Otro'];
 
   useEffect(() => {
@@ -84,7 +79,6 @@ const EditarStaff = () => {
           return;
         }
 
-        // Fetch collaborator data
         const collaboratorResponse = await fetch(`/api/collaborators/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +93,6 @@ const EditarStaff = () => {
         }
         const collaboratorData = await collaboratorResponse.json();
         const collab = collaboratorData.data;
-        console.log('Colaborador recibido:', collab);
 
         setCollaborator(collab);
         setName(collab.name || '');
@@ -111,22 +104,8 @@ const EditarStaff = () => {
         setDegree(collab.degree || '');
         setSemester(collab.semester || '');
         setGender(collab.gender || '');
-        setSelectedRole(collab.role || '');
-        setSelectedGroup(collab.preferred_group?.toString() || '');
-
-        // Fetch available groups
-        const groupsResponse = await fetch(`/api/collaborators/${id}/available-groups`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!groupsResponse.ok) {
-          const errorData = await groupsResponse.json().catch(() => ({ message: 'Respuesta no válida del servidor' }));
-          throw new Error(`Error al obtener grupos: ${errorData.message || 'Error desconocido'}`);
-        }
-        const groupsData = await groupsResponse.json();
-        console.log('Grupos disponibles:', groupsData.groups);
-        setAvailableGroups(groupsData.groups || []);
+        setSelectedRole(collab.role || 'Instructora');
+        setSelectedGroupId(collab.id_group || null);
       } catch (error: any) {
         console.error('Error al obtener datos:', error);
         setError(error.message);
@@ -144,7 +123,56 @@ const EditarStaff = () => {
     }
   }, [id, router, notify]);
 
-  const validateBasicInfo = () => {
+  // Fetch available groups
+  useEffect(() => {
+    const fetchAvailableGroups = async () => {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Sesión no iniciada. Redirigiendo al login.',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/collaborators/${id}/available-groups`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al obtener grupos disponibles');
+        }
+
+        const data = await response.json();
+        setAvailableGroups(data.groups || []);
+        setVenueName(data.collaborator?.venue || 'No asignado');
+        // Set default group if current group is in available groups
+        const currentGroupId = collaborator?.id_group;
+        const defaultGroup = data.groups.find((g: GroupOption) => g.id_group === currentGroupId);
+        setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
+      } catch (error: any) {
+        console.error('Error al obtener grupos disponibles:', error);
+        setValidationErrors([`No se pudieron cargar los grupos disponibles: ${error.message}`]);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudieron cargar los grupos disponibles: ${error.message}`,
+          duration: 5000,
+        });
+      }
+    };
+
+    if (collaborator) {
+      fetchAvailableGroups();
+    }
+  }, [collaborator, id, router, notify]);
+
+  const validateForm = () => {
     const errors: string[] = [];
 
     if (!name.trim()) {
@@ -171,7 +199,7 @@ const EditarStaff = () => {
       errors.push('La universidad no debe exceder 255 caracteres');
     }
 
-    if (degree && college.length > 255) {
+    if (degree && degree.length > 255) {
       errors.push('La carrera no debe exceder 255 caracteres');
     }
 
@@ -179,32 +207,22 @@ const EditarStaff = () => {
       errors.push('El semestre debe ser un número entre 1 y 99');
     }
 
-    return errors;
-  };
-
-  const validateAssignment = () => {
-    const errors: string[] = [];
-
-    if (!selectedRole) {
-      errors.push('El rol es obligatorio');
-    } else if (!roleOptions.includes(selectedRole)) {
-      errors.push('El rol seleccionado no es válido');
+    if (!selectedRole || !roleOptions.includes(selectedRole)) {
+      errors.push('Debe seleccionar un rol válido');
     }
 
-    if (!selectedGroup) {
-      errors.push('El grupo es obligatorio');
-    } else if (!availableGroups.some(group => group.id_group.toString() === selectedGroup)) {
-      errors.push('El grupo seleccionado no es válido');
+    if (!selectedGroupId && availableGroups.length > 0) {
+      errors.push('Debe seleccionar un grupo');
     }
 
-    return errors;
+    setValidationErrors(errors);
+    return errors.length === 0;
   };
 
-  const handleUpdateBasicInfo = async () => {
-    setValidationErrors([]);
-    const errors = validateBasicInfo();
-    if (errors.length > 0) {
-      setValidationErrors(errors);
+  const handleSubmit = async () => {
+    setValidationErrors([]); // Limpiamos errores previos
+
+    if (!validateForm()) {
       return;
     }
 
@@ -216,6 +234,7 @@ const EditarStaff = () => {
         return;
       }
 
+      // Update personal information
       const updatedCollaborator = {
         name: name.trim() || null,
         paternal_name: paternalName.trim() || null,
@@ -228,9 +247,7 @@ const EditarStaff = () => {
         gender: gender.trim() || null,
       };
 
-      console.log('Actualizando info básica:', updatedCollaborator);
-
-      const response = await fetch(`/api/collaborators/basic/${id}`, {
+      const personalInfoResponse = await fetch(`/api/collaborators/basic/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -239,90 +256,48 @@ const EditarStaff = () => {
         body: JSON.stringify(updatedCollaborator),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error al actualizar colaborador: ${errorData.message || 'Error desconocido'}`);
+      if (!personalInfoResponse.ok) {
+        const errorData = await personalInfoResponse.json();
+        throw new Error(`Error al actualizar información personal: ${errorData.message || 'Error desconocido'}`);
+      }
+
+      // Update role and group assignment
+      if (selectedRole && selectedGroupId) {
+        const assignmentResponse = await fetch(`/api/collaborators/${id}/update-assignment`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            role: selectedRole,
+            groupId: selectedGroupId,
+          }),
+        });
+
+        if (!assignmentResponse.ok) {
+          const errorData = await assignmentResponse.json();
+          throw new Error(`Error al actualizar asignación: ${errorData.message || 'Error desconocido'}`);
+        }
       }
 
       notify({
         color: 'green',
-        title: 'Éxito',
-        message: `La información básica de ${name} ha sido actualizada`,
-        duration: 5000,
-      });
-    } catch (error: any) {
-      console.error('Error al actualizar info básica:', error);
-      notify({
-        color: 'red',
-        title: 'Error',
-        message: `No se pudo actualizar la información: ${error.message}`,
-        duration: 5000,
-      });
-      setValidationErrors([error.message]);
-    }
-  };
-
-  const handleUpdateAssignment = async () => {
-    setValidationErrors([]);
-    const errors = validateAssignment();
-    if (errors.length > 0) {
-      setValidationErrors(errors);
-      return;
-    }
-
-    try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-      if (!token) {
-        setValidationErrors(['No se encontró el token, redirigiendo al login']);
-        router.push('/login');
-        return;
-      }
-
-      const assignmentData = {
-        role: selectedRole,
-        groupId: parseInt(selectedGroup),
-      };
-
-      console.log('Actualizando asignación:', assignmentData);
-
-      const response = await fetch(`/api/collaborators/assignment/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(assignmentData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error al actualizar asignación: ${errorData.message || 'Error desconocido'}`);
-      }
-
-      notify({
-        color: 'green',
-        title: 'Éxito',
-        message: `La asignación de ${name} ha sido actualizada`,
+        title: 'Colaborador Actualizado',
+        message: `El colaborador ${name} ha sido actualizado exitosamente`,
         duration: 5000,
       });
 
       router.push('/admin/gestion-usuarios/staff');
     } catch (error: any) {
-      console.error('Error al actualizar asignación:', error);
+      console.error('Error al actualizar colaborador:', error);
       notify({
         color: 'red',
         title: 'Error',
-        message: `No se pudo actualizar la asignación: ${error.message}`,
+        message: `No se pudo actualizar el colaborador: ${error.message}`,
         duration: 5000,
       });
       setValidationErrors([error.message]);
-    }
-  };
-
-  const handleSubmit = async () => {
-    await handleUpdateBasicInfo();
-    if (selectedRole && selectedGroup) {
-      await handleUpdateAssignment();
     }
   };
 
@@ -336,7 +311,7 @@ const EditarStaff = () => {
 
   return (
     <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
-      <PageTitle>Editar Staff</PageTitle>
+      <PageTitle>Editar Colaborador</PageTitle>
 
       {validationErrors.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -357,7 +332,7 @@ const EditarStaff = () => {
               label="Nombre"
               darkText={true}
               showDescription={false}
-              placeholder={collaborator.name || 'Sin nombre'}
+              placeholder={collaborator.name}
               showError={false}
               variant="accent"
               value={name}
@@ -397,7 +372,7 @@ const EditarStaff = () => {
               label="Correo"
               darkText={true}
               showDescription={false}
-              placeholder={collaborator.email || 'Sin correo'}
+              placeholder={collaborator.email}
               showError={false}
               variant="accent"
               value={email}
@@ -468,11 +443,11 @@ const EditarStaff = () => {
           </div>
         </div>
 
-        {/* Cuarta fila: Asignación de Rol y Grupo */}
+        {/* Cuarta fila: Rol, Grupo */}
         <div className="flex gap-4 justify-between mb-4">
-          <div className="basis-1/2">
+          <div className="basis-1/3">
             <Dropdown
-              label="Rol Asignado"
+              label="Rol"
               options={roleOptions.map((option) => ({ label: option, value: option }))}
               value={selectedRole}
               onChange={setSelectedRole}
@@ -480,18 +455,47 @@ const EditarStaff = () => {
               darkText
             />
           </div>
-          <div className="basis-1/2">
-            <Dropdown
-              label="Grupo Asignado"
-              options={availableGroups.map((group) => ({
-                label: `${group.name} (${group.level}, ${group.language})`,
-                value: group.id_group.toString(),
-              }))}
-              value={selectedGroup}
-              onChange={setSelectedGroup}
-              variant="accent"
-              darkText
-            />
+          <div className="basis-2/3">
+            <div className="flex flex-col gap-2">
+              {availableGroups.length === 0 ? (
+                <div className="mt-1 block w-full border rounded-md p-2 bg-gray-100 text-gray-500 cursor-not-allowed">
+                  No hay grupos disponibles
+                </div>
+              ) : (
+                <Dropdown
+                  label="Grupo"
+                  options={availableGroups.map((group) => ({
+                    label: group.name,
+                    value: group.id_group.toString(),
+                  }))}
+                  value={selectedGroupId?.toString() || ''}
+                  onChange={(val) => setSelectedGroupId(val ? parseInt(val) : null)}
+                  variant="accent"
+                  darkText
+                />
+              )}
+              {selectedGroupId && availableGroups.length > 0 && (
+                <div className="mt-2 text-sm text-gray-600">
+                  <p>
+                    <strong>Sede:</strong> {venueName}
+                  </p>
+                  <p>
+                    <strong>Cupo disponible:</strong>{' '}
+                    {availableGroups.find((g) => g.id_group === selectedGroupId)?.available_places || 0}
+                  </p>
+                  <p className="mt-1">
+                    <strong>Disponibilidad por rol:</strong>
+                  </p>
+                  {Object.entries(
+                    availableGroups.find((g) => g.id_group === selectedGroupId)?.role_availability || {}
+                  ).map(([role, count]) => (
+                    <p key={role} className="ml-4">
+                      {role}: {count}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
