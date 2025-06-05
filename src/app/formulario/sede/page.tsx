@@ -484,7 +484,7 @@ const VenueRegistrationForm: React.FC = () => {
                   showLeftIcon
                   type="button"
                   IconLeft={X}
-                  href='/inicio'
+                  href='/'
                   className="px-4 py-2 rounded-full flex items-center"
                 />
               </div>
@@ -1079,6 +1079,7 @@ const VenueRegistrationForm: React.FC = () => {
           message={success || ''}
         />
       </div>
+      );
     </div>
   );
 };
