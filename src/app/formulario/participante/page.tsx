@@ -231,7 +231,7 @@ const ParticipantRegistrationForm: React.FC = () => {
   };
 
   return (
-    <form className="pagina-formulario overflow-x-auto min-h-screen bg-gray-900 text-white flex flex-col items-center custom-scrollbar-tabla" onSubmit={handleSubmit}>
+    <form className="pagina-formulario overflow-x-auto min-h-screen bg-gray-900 text-white flex flex-col items-center custom-scrollbar-tabla mt-8" onSubmit={handleSubmit}>
 
       <div className="info-formulario overflow-x-auto w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 custom-scrollbar-tabla">
         {/* Header */}
@@ -244,12 +244,11 @@ const ParticipantRegistrationForm: React.FC = () => {
             </h1>
           </div>
           <Button
-            label=""
+            label="Regresar"
             variant="error"
-            round
             showLeftIcon
             IconLeft={X}
-            href='/inicio'
+            href='/'
             className="px-4 py-2 rounded-full flex items-center"
           />
         </div>
@@ -267,7 +266,8 @@ const ParticipantRegistrationForm: React.FC = () => {
             Datos del Participante
           </h2>
           <p className="text-gray-400 text-sm md:text-base mb-4">
-            Responde con sinceridad las siguientes preguntas. Campos con (*) son obligatorios.
+            Responde con sinceridad las siguientes preguntas acerca de tus datos personales y de contacto.
+            Las secciones que contienen un asterisco (*) deben de responderse de manera obligatoria.
           </p>
         </div>
 

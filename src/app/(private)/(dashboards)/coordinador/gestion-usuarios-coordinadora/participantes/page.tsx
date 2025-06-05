@@ -276,7 +276,7 @@ const gestionParticipantes = () => {
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
                                 <th className="p-2 text-center">Correo</th>
-                                <th className="p-2 text-center">Estatus</th>
+                                <th className="p-2 text-center">Estado</th>
                                 <th className="p-2 text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -337,7 +337,7 @@ const gestionParticipantes = () => {
                                 <p><strong>Sede:</strong> {selectedParticipante.sede}</p>
                                 <p><strong>Grupo:</strong> {selectedParticipante.grupo}</p>
                                 <p><strong>Correo:</strong> {selectedParticipante.correo}</p>
-                                <p><strong>Estatus:</strong> {selectedParticipante.status}</p>
+                                <p><strong>Estado:</strong> {selectedParticipante.status}</p>
                             </div>
                             <div className="mt-4 flex justify-center">
                                 <Button label="Cerrar" variant="primary" onClick={() => handleClosePopup('details')} />

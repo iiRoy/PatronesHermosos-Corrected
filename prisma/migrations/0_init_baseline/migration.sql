@@ -35,6 +35,8 @@ CREATE TABLE `collaborators` (
     `status` ENUM('Pendiente', 'Aprobada', 'Rechazada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
     `level` ENUM('Pendiente', 'Básico', 'Avanzado') NOT NULL DEFAULT 'Pendiente',
     `language` ENUM('Pendiente', 'Inglés', 'Español') NOT NULL DEFAULT 'Pendiente',
+    `level` ENUM('Pendiente', 'Básico', 'Avanzado') NOT NULL DEFAULT 'Pendiente',
+    `language` ENUM('Pendiente', 'Inglés', 'Español') NOT NULL DEFAULT 'Pendiente',
     `id_group` INTEGER UNSIGNED NULL,
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
