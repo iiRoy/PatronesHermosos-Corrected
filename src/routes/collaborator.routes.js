@@ -3,6 +3,7 @@ const router = express.Router();
 const collaboratorsController = require('../controllers/collaborator.controller');
 const { validateCollaborator } = require('../validators/collaboratorValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
+const { sendCustomEmailToCollaborator } = require('../controllers/collaborator.controller');
 
 // Get all collaborators (superuser only)
 router.get('/', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getAllCollaborators);
@@ -34,6 +35,8 @@ router.patch(
 
 // Delete a collaborator (superuser only)
 router.delete('/:id', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.deleteCollaborator);
+
+router.post('/:id/send-email', sendCustomEmailToCollaborator);
 
 router.get('/:collaboratorId/available-groups', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.getAvailableGroups);
 router.patch('/:collaboratorId/approve', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), collaboratorsController.approveCollaborator);

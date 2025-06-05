@@ -884,6 +884,51 @@ const rejectCollaborator = async (req, res) => {
   }
 };
 
+const sendCustomEmailToCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const { template, data } = req.body;
+
+  try {
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: parseInt(id) },
+    });
+    if (!collaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
+    let emailTemplate = '';
+    let subject = '';
+    switch (template) {
+      case 'sol_cambio':
+        emailTemplate = 'templates/colaboradores/sol_cambio';
+        subject = 'Solicitud de Cambio de Preferencias';
+        break;
+      case 'interview':
+        emailTemplate = 'templates/colaboradores/interview';
+        subject = '¡Agenda tu entrevista!';
+        break;
+      default:
+        return res.status(400).json({ message: 'Plantilla no válida' });
+    }
+
+    await sendEmail({
+      to: collaborator.email,
+      subject,
+      template: emailTemplate,
+      data: {
+        cName: `${collaborator.name} ${collaborator.paternal_name} ${collaborator.maternal_name}`.trim(),
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        ...data, // extra data from frontend (dates, links, etc.)
+      },
+    });
+
+    res.json({ success: true, message: 'Correo enviado exitosamente' });
+  } catch (error) {
+    console.error('Error sending custom email:', error);
+    res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
+  }
+};
+
 module.exports = {
   createCollaborator,
   getAllCollaborators,
@@ -893,6 +938,7 @@ module.exports = {
   getCollaboratorsTable,
   updateCollaboratorBasicInfo,
   getAvailableGroups,
+  sendCustomEmailToCollaborator,
   approveCollaborator,
   cancelCollaborator,
   rejectCollaborator,
