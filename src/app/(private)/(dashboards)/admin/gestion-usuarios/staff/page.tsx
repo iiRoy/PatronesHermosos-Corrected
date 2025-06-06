@@ -30,6 +30,8 @@ interface Apoyo {
   preferred_level: string;
   preferred_group: number | null;
   groupName?: string;
+  venue: string;
+  id_venue: number | null;
 }
 
 const GestionApoyo = () => {
@@ -91,6 +93,8 @@ const GestionApoyo = () => {
           preferred_level: collab.preferred_level || 'Sin nivel preferido',
           preferred_group: collab.preferred_group || null,
           groupName: collab.groups?.name || undefined,
+          venue: collab.venue || 'Sin sede',
+          id_venue: collab.id_venue || null,
         }));
 
         setApoyoData(formattedData);
@@ -313,9 +317,8 @@ const GestionApoyo = () => {
                 <th className="p-2 text-center"></th>
                 <th className="p-2 text-center">Nombre</th>
                 <th className="p-2 text-center">Correo</th>
+                <th className="p-2 text-center">Sede</th>
                 <th className="p-2 text-center">Rol</th>
-                <th className="p-2 text-center">Level</th>
-                <th className="p-2 text-center">Language</th>
                 <th className="p-2 text-center">Acciones</th>
               </tr>
             </thead>
@@ -343,9 +346,8 @@ const GestionApoyo = () => {
                     </td>
                     <td className="p-2 text-center">{fullName}</td>
                     <td className="p-2 text-center">{apoyo.email}</td>
+                    <td className="p-2 text-center">{apoyo.venue || 'Sin asignado'}</td>
                     <td className="p-2 text-center">{apoyo.role}</td>
-                    <td className="p-2 text-center">{apoyo.level}</td>
-                    <td className="p-2 text-center">{apoyo.language}</td>
                     <td className="p-2 flex gap-2 justify-center">
                       <Button
                         label=""
