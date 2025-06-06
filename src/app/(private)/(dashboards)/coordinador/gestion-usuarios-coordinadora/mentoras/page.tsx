@@ -241,7 +241,7 @@ const GestionMentoras = () => {
               <InputField
                 label=""
                 showDescription={false}
-                placeholder="Search"
+                placeholder="Buscar mentora"
                 showError={false}
                 variant="primary"
                 icon="MagnifyingGlass"
@@ -254,7 +254,7 @@ const GestionMentoras = () => {
 
         <div className="overflow-x-auto custom-scrollbar-tabla">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold">
+            <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
               <tr className="texto-primary-shade">
                 <th className="p-2 text-center"></th>
                 <th className="p-2 text-center">Nombre</th>

@@ -271,7 +271,7 @@ const GestionParticipantes = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar participante"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -296,15 +296,14 @@ const GestionParticipantes = () => {
 
                 <div className="overflow-x-auto custom-scrollbar-tabla">
                     <table className="min-w-full text-left text-sm custom-scrollbar-tabla">
-                        <thead className="text-purple-800 font-bold">
+                        <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className="texto-primary-shade">
                                 <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
                                 <th className="p-2 text-center">Correo</th>
-                                <th className="p-2 text-center">Estatus</th>
-                                <th className="p-2 text-center"></th>
+                                <th className="p-2 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">
@@ -331,7 +330,6 @@ const GestionParticipantes = () => {
                                     <td className="p-2 text-center">{participante.sede}</td>
                                     <td className="p-2 text-center">{participante.grupo}</td>
                                     <td className="p-2 text-center">{participante.correo}</td>
-                                    <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button
                                             label=""
@@ -397,7 +395,7 @@ const GestionParticipantes = () => {
                                 <p><strong>Sede:</strong> {selectedParticipante.sede}</p>
                                 <p><strong>Grupo:</strong> {selectedParticipante.grupo}</p>
                                 <p><strong>Correo:</strong> {selectedParticipante.correo}</p>
-                                <p><strong>Estatus:</strong> {selectedParticipante.status}</p>
+                                <p><strong>Estado:</strong> {selectedParticipante.status}</p>
                             </div>
                             <div className="mt-4 flex justify-center">
                                 <Button label="Cerrar" variant="primary" onClick={() => handleClosePopup('details')} />

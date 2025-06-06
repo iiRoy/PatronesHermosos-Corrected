@@ -236,7 +236,7 @@ const GestionMentoras = () => {
               <InputField
                 label=""
                 showDescription={false}
-                placeholder="Search"
+                placeholder="Buscar mentora"
                 showError={false}
                 variant="primary"
                 icon="MagnifyingGlass"
@@ -361,7 +361,7 @@ const GestionMentoras = () => {
                 <p><strong>Correo:</strong> {selectedMentora.email}</p>
                 <p><strong>Teléfono:</strong> {selectedMentora.phone_number}</p>
                 <p><strong>Sede:</strong> {selectedMentora.venue}</p>
-                <p><strong>Status:</strong> {selectedMentora.status}</p>
+                <p><strong>Estado:</strong> {selectedMentora.status}</p>
                 <p><strong>Número de Grupos:</strong> {selectedMentora.number_of_groups}</p>
               </div>
               <div className="mt-4 flex justify-center">

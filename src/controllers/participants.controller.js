@@ -96,7 +96,7 @@ const createParticipant = async (req, res) => {
     await sendEmail({
       to: email,
       subject: 'Confirmación de Solicitud - Patrones Hermosos',
-      template: 'participantes/solicitud',
+      template: 'templates/participantes/solicitud',
       data: {
         pName: `${name} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
         pEmail: email,
@@ -858,6 +858,36 @@ const getParticipantPDF = async (req, res) => {
   }
 };
 
+const sendCustomEmailToParticipant = async (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+
+  try {
+    const participant = await prisma.participants.findUnique({
+      where: { id_participant: parseInt(id) },
+    });
+    if (!participant) {
+      return res.status(404).json({ message: 'Participante no encontrado' });
+    }
+
+    await sendEmail({
+      to: participant.email,
+      subject: 'Solicitud de Cambio de Grupo - Patrones Hermosos',
+      template: 'templates/participantes/sol_cambio',
+      data: {
+        pName: `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
+        ...data, // Campos personalizados desde el frontend
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+      },
+    });
+
+    res.json({ success: true, message: 'Correo enviado exitosamente' });
+  } catch (error) {
+    console.error('Error sending custom email to participant:', error);
+    res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
+  }
+};
+
 module.exports = {
   createParticipant,
   getAllParticipants,
@@ -871,4 +901,5 @@ module.exports = {
   changeParticipantStatus,
   rejectParticipant,
   getParticipantPDF,
+  sendCustomEmailToParticipant,
 };

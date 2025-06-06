@@ -7,6 +7,8 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Dropdown from '@/components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
+import withIconDecorator from '@/components/decorators/IconDecorator';
+import { UserSound, ChatTeardropText, Grains } from '@/components/icons';
 
 interface Collaborator {
   id_collaborator: number;
@@ -305,23 +307,23 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Nombre"
-              darkText={true}
               showDescription={false}
               placeholder={collaborator.name}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={name}
+              icon='Fingerprint'
               onChangeText={(val) => setName(val)}
             />
           </div>
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
@@ -329,11 +331,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Apellido Materno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
@@ -345,7 +347,7 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Correo"
-              darkText={true}
+              icon='At'
               showDescription={false}
               placeholder={collaborator.email}
               showError={false}
@@ -357,7 +359,7 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Teléfono"
-              darkText={true}
+              icon='Phone'
               showDescription={false}
               placeholder={collaborator.phone_number || 'Sin teléfono'}
               showError={false}
@@ -373,7 +375,8 @@ const EditarApoyo = () => {
               value={gender}
               onChange={setGender}
               variant="accent"
-              darkText
+              Icon={withIconDecorator(Grains)}
+
             />
           </div>
         </div>
@@ -383,11 +386,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Universidad"
-              darkText={true}
+              icon='Student'
               showDescription={false}
               placeholder={collaborator.college || 'Sin universidad'}
               showError={false}
-              variant="accent"
+              variant="secondary-shade"
               value={college}
               onChangeText={(val) => setCollege(val)}
             />
@@ -395,11 +398,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Carrera"
-              darkText={true}
+              icon='Books'
               showDescription={false}
               placeholder={collaborator.degree || 'Sin carrera'}
               showError={false}
-              variant="accent"
+              variant="secondary-shade"
               value={degree}
               onChangeText={(val) => setDegree(val)}
             />
@@ -407,11 +410,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Semestre"
-              darkText={true}
+              icon='Medal'
               showDescription={false}
               placeholder={collaborator.semester || 'Sin semestre'}
               showError={false}
-              variant="accent"
+              variant="secondary-shade"
               value={semester}
               onChangeText={(val) => setSemester(val)}
             />
@@ -477,8 +480,8 @@ const EditarApoyo = () => {
         {/* Botones */}
         <div className="flex gap-4 justify-between mt-auto">
           <div className="flex gap-4">
-            <Button label="Confirmar" variant="primary" onClick={handleSubmit} />
-            <Button label="Cancelar" variant="secondary" href="/coordinador/gestion-usuarios-coordinadora/staff" />
+            <Button label="Confirmar" variant="success" onClick={handleSubmit} />
+            <Button label="Cancelar" variant="primary" href="/coordinador/gestion-usuarios-coordinadora/staff" />
           </div>
         </div>
       </div>

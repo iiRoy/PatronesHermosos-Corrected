@@ -6,8 +6,9 @@ import withIconDecorator from '../decorators/IconDecorator';
 import { useTransition } from '../TransitionContext';
 
 interface ButtonProps {
-  label: string;
+  label?: string; // Made optional since some buttons (e.g., icons) may not have labels
   variant: 'primary' | 'secondary' | 'success' | 'error' | 'warning';
+  type?: 'button' | 'submit' | 'reset'; // New type prop
   disabled?: boolean;
   round?: boolean;
   showLeftIcon?: boolean;
@@ -26,7 +27,7 @@ interface ButtonProps {
     fillColor?: string;
     className?: string;
   }>;
-  onClick?: (event: React.MouseEvent) => void; // Actualizado para aceptar un evento
+  onClick?: (event: React.MouseEvent) => void;
   href?: string;
   className?: string;
   activeTransition?: boolean;
@@ -35,6 +36,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({
   label,
   variant,
+  type = 'button', // Default to button
   disabled = false,
   round = false,
   showLeftIcon = false,
@@ -53,7 +55,7 @@ const Button: React.FC<ButtonProps> = ({
   const DecoratedIconL = IconLeft ? withIconDecorator(IconLeft) : null;
   const DecoratedIconR = IconRight ? withIconDecorator(IconRight) : null;
 
-    const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     if (disabled) return;
 
     if (href && href !== pathname && activeTransition) {
@@ -64,10 +66,9 @@ const Button: React.FC<ButtonProps> = ({
     }
 
     if (onClick) {
-      onClick(e); // Pasar el evento a la función onClick
+      onClick(e);
     }
   };
-
 
   const buttonClass = round ? 'round-button' : 'custom-button';
   const variantClass = `button-${variant}`;
@@ -86,9 +87,10 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={classes}
+      type={type} // Pass type prop
       onClick={handleClick}
       disabled={disabled}
-      aria-label={label}
+      aria-label={label || 'Button'} // Fallback for accessibility
       data-variant={variant}
     >
       {showLeftIcon && DecoratedIconL && (
@@ -101,8 +103,8 @@ const Button: React.FC<ButtonProps> = ({
           />
         </div>
       )}
-      {!round && (
-        <span className='option-label text-[var(--text-color)] hidden lg:inline'>{label}</span>
+      {!round && label && ( // Only render label if provided
+        <span className='option-label text-[var(--text-color)]'>{label}</span>
       )}
       {showRightIcon && DecoratedIconR && (
         <div className='ease-in-out duration-300 transition-colors'>
