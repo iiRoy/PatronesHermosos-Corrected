@@ -108,6 +108,7 @@ const createCollaborator = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
+}
 
 const getAllCollaborators = async (req, res) => {
   try {
