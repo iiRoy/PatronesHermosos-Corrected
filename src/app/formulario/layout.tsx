@@ -10,8 +10,9 @@ export default function DashboardLayout({
 }>) {
     return (
         <div className='min-h-screen flex flex-col text-text bg-back'>
-
             <Navbar />
+
+
             {/* RIGHT: Main content */}
             <div className='w-[100%] relative overflow-x-hidden custom-scrollbar'>
 

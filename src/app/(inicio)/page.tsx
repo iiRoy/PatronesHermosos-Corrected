@@ -26,21 +26,21 @@ export default function PatronesHermosos() {
           <div className="absolute top-[12%] left-[2%] w-[275px] h-[275px] bg-[#C57FAB] z-20 rounded-full hidden lg:block"></div>
           <div className="absolute top-[14%] left-[4%] w-[250px] h-[250px] z-30 hidden lg:block">
             <Image
-              src="/images/top-image.png"
+              src="/assets/imagen-inicio1.png"
               alt="Top Circular Image"
               width={300}
               height={300}
-              className="rounded-full border-4 border-white shadow-custom-dark"
+              className="rounded-full  shadow-custom-dark"
             />
           </div>
           <div className="absolute top-[45%] left-[10%] w-[220px] h-[220px] bg-[#97639C] z-20 rounded-full hidden lg:block"></div>
           <div className="absolute top-[50%] left-[12%] w-[200px] h-[200px] z-30 hidden lg:block">
             <Image
-              src="/images/bottom-image.png"
+              src="/assets/imagen-inicio2.png"
               alt="Bottom Circular Image"
               width={200}
               height={200}
-              className="rounded-full border-4 border-white shadow-custom-dark"
+              className="rounded-full  shadow-custom-dark"
             />
           </div>
 

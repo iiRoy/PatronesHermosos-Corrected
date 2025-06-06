@@ -376,15 +376,15 @@ const CollaboratorRegistrationForm: React.FC = () => {
               </p>
             </div>
             <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 text-xs sm:text-base md:text-lg lg:text-xl bg-[#683756] gap-12">
-                      <div className='flex'>
-                        <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
-                        <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
-                      </div>
-                      <div className='flex'>
-                        <h2 className="mx-4 font-semibold">Sede: </h2>
-                        <p>{groups.find(g => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}</p>
-                      </div>
-                    </div>
+              <div className='flex'>
+                <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
+                <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
+              </div>
+              <div className='flex'>
+                <h2 className="mx-4 font-semibold">Sede: </h2>
+                <p>{groups.find(g => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}</p>
+              </div>
+            </div>
             <GroupSelectionTable
               onSelect={handleGroupSelect}
               selectedGroupId={formData.preferred_group ?? undefined}
