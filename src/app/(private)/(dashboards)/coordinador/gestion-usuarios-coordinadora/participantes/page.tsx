@@ -246,7 +246,7 @@ const gestionParticipantes = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar participante"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -270,13 +270,12 @@ const gestionParticipantes = () => {
 
                 <div className="overflow-x-auto custom-scrollbar-tabla">
                     <table className="min-w-full text-left text-sm custom-scrollbar-tabla">
-                        <thead className="text-purple-800 font-bold">
+                        <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className="texto-primary-shade">
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
                                 <th className="p-2 text-center">Correo</th>
-                                <th className="p-2 text-center">Estado</th>
                                 <th className="p-2 text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -291,7 +290,6 @@ const gestionParticipantes = () => {
                                     <td className="p-2 text-center">{participante.sede}</td>
                                     <td className="p-2 text-center">{participante.grupo}</td>
                                     <td className="p-2 text-center">{participante.correo}</td>
-                                    <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button label="" variant="error" round showLeftIcon IconLeft={Trash} onClick={(e) => { e.stopPropagation(); handleDeleteClick(participante); }} />
                                         <Button label="" variant="warning" round showLeftIcon IconLeft={Highlighter} onClick={(e) => { e.stopPropagation(); handleEditClick(participante); }} />

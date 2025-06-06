@@ -268,7 +268,7 @@ const GestionCoordinadoras = () => {
               <InputField
                 label=""
                 showDescription={false}
-                placeholder="Search"
+                placeholder="Buscar coordinadora"
                 showError={false}
                 variant="primary"
                 icon="MagnifyingGlass"
@@ -379,7 +379,7 @@ const GestionCoordinadoras = () => {
                 <p><strong>Correo:</strong> {selectedCoordinadora.email}</p>
                 <p><strong>Teléfono:</strong> {selectedCoordinadora.phone_number}</p>
                 <p><strong>Sede:</strong> {selectedCoordinadora.venue}</p>
-                <p><strong>Status:</strong> {selectedCoordinadora.status}</p>
+                <p><strong>Estado:</strong> {selectedCoordinadora.status}</p>
               </div>
               <div className="mt-4 flex justify-center">
                 <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />

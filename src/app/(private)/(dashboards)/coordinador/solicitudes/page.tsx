@@ -55,22 +55,22 @@ interface Sede {
 }
 
 interface GroupOption {
-  id_group: number;
-  name: string;
-  available_places: number;
-  location?: string;
-  language?: string;
-  level?: string;
-  mode?: string;
-  start_date?: string;
-  end_date?: string;
-  start_hour?: string;
-  end_hour?: string;
-  role_availability?: {
-    Instructora: number;
-    Facilitadora: number;
-    Staff: number;
-  };
+    id_group: number;
+    name: string;
+    available_places: number;
+    location?: string;
+    language?: string;
+    level?: string;
+    mode?: string;
+    start_date?: string;
+    end_date?: string;
+    start_hour?: string;
+    end_hour?: string;
+    role_availability?: {
+        Instructora: number;
+        Facilitadora: number;
+        Staff: number;
+    };
 }
 
 interface DecodedToken {
@@ -221,23 +221,23 @@ const SolicitudesRegistroAdmin = () => {
         }
     };
 
-   const fetchGroupsByVenue = async (venueName: string) => {
-  try {
-    const token = localStorage.getItem('api_token');
-    if (!token) return;
-    // Busca la sede en la lista de todas las sedes
-    const venue = allSedesData.find(v => v.name === venueName);
-    if (!venue) return;
-    const response = await fetch(`/api/venues/${venue.id_venue}/groups`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) return;
-    const data = await response.json();
-    setEmailVenueGroups(Array.isArray(data) ? data : data.groups || []);
-  } catch (error) {
-    setEmailVenueGroups([]);
-  }
-};
+    const fetchGroupsByVenue = async (venueName: string) => {
+        try {
+            const token = localStorage.getItem('api_token');
+            if (!token) return;
+            // Busca la sede en la lista de todas las sedes
+            const venue = allSedesData.find(v => v.name === venueName);
+            if (!venue) return;
+            const response = await fetch(`/api/venues/${venue.id_venue}/groups`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            setEmailVenueGroups(Array.isArray(data) ? data : data.groups || []);
+        } catch (error) {
+            setEmailVenueGroups([]);
+        }
+    };
 
     // Obtener datos de la base de datos y filtrar por sede
     useEffect(() => {
@@ -365,28 +365,28 @@ const SolicitudesRegistroAdmin = () => {
         }
     }, [filteredData.length, currentPage, totalPages]);
 
-  useEffect(() => {
-  if (emailSelectedGroupId && emailVenueGroups.length > 0) {
-    const group = emailVenueGroups.find(g => g.id_group === emailSelectedGroupId);
-    if (group) {
-      setEmailGroupInfo(group);
-      setEmailFormData({
-        venue: emailSelectedVenue,
-        group: group.name,
-        location: group.location || '',
-        language: group.language || '',
-        level: group.level || '',
-        mode: group.mode || '',
-        sDate: group.start_date ? new Date(group.start_date).toLocaleDateString() : '',
-        eDate: group.end_date ? new Date(group.end_date).toLocaleDateString() : '',
-        sHour: group.start_hour || '',
-        eHour: group.end_hour || '',
-        lDate: '', // Puedes dejarlo para que el usuario lo llene
-        platformLink: '', // Puedes dejarlo para que el usuario lo llene
-      });
-    }
-  }
-}, [emailSelectedGroupId, emailVenueGroups, emailSelectedVenue]);
+    useEffect(() => {
+        if (emailSelectedGroupId && emailVenueGroups.length > 0) {
+            const group = emailVenueGroups.find(g => g.id_group === emailSelectedGroupId);
+            if (group) {
+                setEmailGroupInfo(group);
+                setEmailFormData({
+                    venue: emailSelectedVenue,
+                    group: group.name,
+                    location: group.location || '',
+                    language: group.language || '',
+                    level: group.level || '',
+                    mode: group.mode || '',
+                    sDate: group.start_date ? new Date(group.start_date).toLocaleDateString() : '',
+                    eDate: group.end_date ? new Date(group.end_date).toLocaleDateString() : '',
+                    sHour: group.start_hour || '',
+                    eHour: group.end_hour || '',
+                    lDate: '', // Puedes dejarlo para que el usuario lo llene
+                    platformLink: '', // Puedes dejarlo para que el usuario lo llene
+                });
+            }
+        }
+    }, [emailSelectedGroupId, emailVenueGroups, emailSelectedVenue]);
 
     const openPopup = async (item: Participante | ApoyoStaff | Sede) => {
         setSelectedItem(item);
@@ -449,9 +449,9 @@ const SolicitudesRegistroAdmin = () => {
         setIsPopupOpen(false);
         setSelectedItem(null);
         if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl); // Clean up object URL
-    }
-    setPdfUrl(null);
+            URL.revokeObjectURL(pdfUrl); // Clean up object URL
+        }
+        setPdfUrl(null);
     };
 
     const openConfirmPopup = (item: Participante | ApoyoStaff | Sede) => {
@@ -485,25 +485,25 @@ const SolicitudesRegistroAdmin = () => {
         setSelectedItem(null);
     };
 
-const openSendEmailPopup = (item: Participante | ApoyoStaff) => {
-  setSelectedItem(item);
-  setIsSendEmailPopupOpen(true);
-  setSelectedTemplate('sol_cambio');
-  setEmailFormData({});
-  // Usa la sede preferida del usuario seleccionado
-  const venueName = item.groups?.venues?.name || '';
-  setEmailSelectedVenue(venueName);
-  fetchGroupsByVenue(venueName);
-  setEmailSelectedGroupId(null);
-  setEmailGroupInfo(null);
-};
+    const openSendEmailPopup = (item: Participante | ApoyoStaff) => {
+        setSelectedItem(item);
+        setIsSendEmailPopupOpen(true);
+        setSelectedTemplate('sol_cambio');
+        setEmailFormData({});
+        // Usa la sede preferida del usuario seleccionado
+        const venueName = item.groups?.venues?.name || '';
+        setEmailSelectedVenue(venueName);
+        fetchGroupsByVenue(venueName);
+        setEmailSelectedGroupId(null);
+        setEmailGroupInfo(null);
+    };
 
-const closeSendEmailPopup = () => {
-  setIsSendEmailPopupOpen(false);
-  setSelectedItem(null);
-  setSelectedTemplate('sol_cambio');
-  setEmailFormData({});
-};
+    const closeSendEmailPopup = () => {
+        setIsSendEmailPopupOpen(false);
+        setSelectedItem(null);
+        setSelectedTemplate('sol_cambio');
+        setEmailFormData({});
+    };
 
     const handleAccept = async () => {
         if (!selectedItem) {
@@ -895,52 +895,52 @@ const closeSendEmailPopup = () => {
         try {
             const token = localStorage.getItem('api_token');
             if (!token) {
-            notify({
-                color: 'red',
-                title: 'Error',
-                message: 'No se encontró el token, redirigiendo al login',
-                duration: 5000,
-            });
-            router.push('/login');
-            return;
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: 'No se encontró el token, redirigiendo al login',
+                    duration: 5000,
+                });
+                router.push('/login');
+                return;
             }
             // Use correct endpoint based on section
             const url =
-            section === 'PARTICIPANTES'
-                ? `/api/participants/${(selectedItem as Participante).id_participant}/send-email`
-                : `/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/send-email`;
+                section === 'PARTICIPANTES'
+                    ? `/api/participants/${(selectedItem as Participante).id_participant}/send-email`
+                    : `/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/send-email`;
 
             const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-                template: selectedTemplate, // For participants, only 'sol_cambio'
-                data: emailFormData,
-            }),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    template: selectedTemplate, // For participants, only 'sol_cambio'
+                    data: emailFormData,
+                }),
             });
             if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al enviar correo');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al enviar correo');
             }
             notify({
-            color: 'green',
-            title: 'Éxito',
-            message: 'Correo enviado exitosamente',
-            duration: 5000,
+                color: 'green',
+                title: 'Éxito',
+                message: 'Correo enviado exitosamente',
+                duration: 5000,
             });
             closeSendEmailPopup();
         } catch (error: any) {
             notify({
-            color: 'red',
-            title: 'Error',
-            message: `No se pudo enviar el correo: ${error.message}`,
-            duration: 5000,
+                color: 'red',
+                title: 'Error',
+                message: `No se pudo enviar el correo: ${error.message}`,
+                duration: 5000,
             });
         }
-        };
+    };
 
     if (error) {
         return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
@@ -965,7 +965,7 @@ const closeSendEmailPopup = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -993,7 +993,7 @@ const closeSendEmailPopup = () => {
 
                 <div className="overflow-x-auto custom-scrollbar-tabla">
                     <table className="overflow-x-auto min-w-full text-left text-sm custom-scrollbar">
-                        <thead className="text-purple-800 font-bold">
+                        <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className='texto-primary-shade'>
                                 <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center"></th>
@@ -1002,6 +1002,7 @@ const closeSendEmailPopup = () => {
                                         <th className="p-2 text-center">Nombre</th>
                                         <th className="p-2 text-center">Grupo Preferido</th>
                                         <th className="p-2 text-center">Sede</th>
+                                        <th></th>
                                     </>
                                 )}
                                 {section === 'APOYO & STAFF' && (
@@ -1012,6 +1013,7 @@ const closeSendEmailPopup = () => {
                                         <th className="p-2 text-center">Nivel Preferido</th>
                                         <th className="p-2 text-center">Grupo Preferido</th>
                                         <th className="p-2 text-center">Sede</th>
+                                        <th></th>
                                     </>
                                 )}
                             </tr>
@@ -1032,7 +1034,7 @@ const closeSendEmailPopup = () => {
                                                 <div className='flex gap-4 justify-center'>
                                                     <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
                                                     <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
-                                                    <Button label="" variant="warning" round showLeftIcon IconLeft={Envelope} onClick={() => openSendEmailPopup(item as Participante)}/>
+                                                    <Button label="" variant="primary" round showLeftIcon IconLeft={Envelope} onClick={() => openSendEmailPopup(item as Participante)} />
                                                 </div>
                                             </td>
                                         </>
@@ -1053,7 +1055,7 @@ const closeSendEmailPopup = () => {
                                                 <div className='flex gap-4 justify-center'>
                                                     <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
                                                     <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
-                                                    <Button label="" variant="warning" round showLeftIcon IconLeft={Envelope} onClick={() => openSendEmailPopup(item as ApoyoStaff)}/>
+                                                    <Button label="" variant="primary" round showLeftIcon IconLeft={Envelope} onClick={() => openSendEmailPopup(item as ApoyoStaff)} />
                                                 </div>
                                             </td>
                                         </>
@@ -1069,7 +1071,7 @@ const closeSendEmailPopup = () => {
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={setCurrentPage}
-                        variant="secondary-shade"
+                        variant="primary"
                         pageLinks={Array(totalPages).fill('#')}
                     />
                 </div>
@@ -1088,13 +1090,13 @@ const closeSendEmailPopup = () => {
                                     <p><strong>Estado:</strong> {(selectedItem as Participante).status}</p>
                                     {pdfUrl ? (
                                         <div className="mt-4">
-                                        <p><strong>Carta de Convocatoria:</strong></p>
-                                        <iframe
-                                            src={pdfUrl}
-                                            className="w-full h-[400px] border rounded"
-                                            title="Participation File"
-                                        />
-                                    </div>
+                                            <p><strong>Carta de Convocatoria:</strong></p>
+                                            <iframe
+                                                src={pdfUrl}
+                                                className="w-full h-[400px] border rounded"
+                                                title="Participation File"
+                                            />
+                                        </div>
                                     ) : (
                                         <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
                                     )}
@@ -1239,151 +1241,145 @@ const closeSendEmailPopup = () => {
                 )}
 
                 {isSendEmailPopupOpen && selectedItem && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative max-h-[90vh] overflow-y-auto text-gray-800">
-                        <button
-                        className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-2xl font-bold"
-                        onClick={closeSendEmailPopup}
-                        aria-label="Cerrar"
-                        type="button"
-                        >
-                        ×
-                        </button>
-                      {section === 'PARTICIPANTES' && selectedItem &&(
-                        <h2 className="text-2xl font-bold mb-4 text-center">
-                        Enviar correo de cambio de grupo a {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
-                      </h2>)}
-                      {section === 'APOYO & STAFF' && selectedItem && (<div className="mb-4">
-                        <h2 className="text-2xl font-bold mb-4 text-center">
-                        Enviar correo a {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
-                      </h2>
-                        <label className="block mb-2 font-semibold">Plantilla:</label>
-                        <select
-                          className="w-full p-2 border rounded bg-purple-100"
-                          value={selectedTemplate}
-                          onChange={e => setSelectedTemplate(e.target.value)}
-                        >
-                          <option value="sol_cambio">Solicitud de Cambio</option>
-                          <option value="interview">Entrevista</option>
-                        </select>
-                      </div>)}
-                      {selectedTemplate === 'sol_cambio' && section === 'PARTICIPANTES' && (
-                        <>
-                            <p className="w-full p-2 border rounded bg-purple-100">
-                            {(selectedItem as Participante)?.groups?.venues?.name || 'No asignado'}
-                            </p>
-                            <label className="block mt-2 font-semibold">Grupo destino:</label>
-                            <select
-                                className="w-full p-2 border rounded bg-purple-100"
-                                value={emailSelectedGroupId || ''}
-                                onChange={e => setEmailSelectedGroupId(Number(e.target.value))}
-                                disabled={!emailSelectedVenue}
-                            >
-                                <option value="">Selecciona un grupo</option>
-                                {emailVenueGroups.map(group => (
-                                <option key={group.id_group} value={group.id_group}>{group.name}</option>
-                                ))}
-                            </select>
-                            {emailGroupInfo && (
-                            <div className="mt-4 space-y-1">
-                            <p><strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}</p>
-                            <p><strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}</p>
-                            <p><strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}</p>
-                            <p><strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}</p>
-                            <p><strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}</p>
-                            <p><strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}</p>
-                            </div>
-                        )}
-                        <label className="block mt-4 font-semibold">Fecha límite de confirmación:</label>
-                        <input
-                            className="w-full p-2 border rounded"
-                            value={emailFormData.lDate || ''}
-                            onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
-                            placeholder="Ej: 10/06/2025"
-                        />
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative max-h-[90vh] overflow-y-auto text-gray-800">
 
-                        <label className="block mt-2 font-semibold">Enlace de confirmación:</label>
-                        <input
-                            className="w-full p-2 border rounded"
-                            value={emailFormData.platformLink || ''}
-                            onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })}
-                            placeholder="https://..."
-                        />
-                        </>
-                    )}
-                    {selectedTemplate === 'sol_cambio' && section === 'APOYO & STAFF' && (
-                    <>
-                      <label className="block mt-2 font-semibold">Sede:</label>
-                        <p className="w-full p-2 border rounded bg-purple-100">
-                        {(selectedItem as ApoyoStaff)?.groups?.venues?.name || 'No asignado'}
-                        </p>
-                    <label className="block mt-2 font-semibold">Grupo destino:</label>
-                    <select
-                    className="w-full p-2 border rounded bg-purple-100"
-                    value={emailSelectedGroupId || ''}
-                    onChange={e => {
-                        setEmailSelectedGroupId(Number(e.target.value));
-                        setEmailGroupInfo(null);
-                        setEmailFormData((prev: any) => ({ ...prev, role: '' }));
-                    }}
-                    disabled={!emailSelectedVenue}
-                    >
-                    <option value="">Selecciona un grupo</option>
-                    {emailVenueGroups.map(group => (
-                        <option key={group.id_group} value={group.id_group}>{group.name}</option>
-                    ))}
-                    </select>
-                    <label className="block mt-2 font-semibold">Rol a asignar:</label>
-                    <select
-                    className="w-full p-2 border rounded bg-purple-100"
-                    value={emailFormData.role || ''}
-                    onChange={e => setEmailFormData((prev: any) => ({ ...prev, role: e.target.value }))}
-                    disabled={!emailSelectedGroupId}
-                    >
-                    <option value="">Selecciona un rol</option>
-                    <option value="Instructora">Instructora</option>
-                    <option value="Facilitadora">Facilitadora</option>
-                    <option value="Staff">Staff</option>
-                    </select>
-                      {emailGroupInfo && (
-                        <div className="mt-4 space-y-1">
-                          <p><strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}</p>
-                          <p><strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}</p>
-                          <p><strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}</p>
-                          <p><strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}</p>
-                          <p><strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}</p>
-                          <p><strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}</p>
+                            {section === 'PARTICIPANTES' && selectedItem && (
+                                <h2 className="text-2xl font-bold mb-4 text-center">
+                                    Enviar correo de cambio de grupo a {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
+                                </h2>)}
+                            {section === 'APOYO & STAFF' && selectedItem && (<div className="mb-4">
+                                <h2 className="text-2xl font-bold mb-4 text-center">
+                                    Enviar correo a {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
+                                </h2>
+                                <label className="block mb-2 font-semibold">Plantilla:</label>
+                                <select
+                                    className="w-full p-2 border rounded bg-purple-100"
+                                    value={selectedTemplate}
+                                    onChange={e => setSelectedTemplate(e.target.value)}
+                                >
+                                    <option value="sol_cambio">Solicitud de Cambio</option>
+                                    <option value="interview">Entrevista</option>
+                                </select>
+                            </div>)}
+                            {selectedTemplate === 'sol_cambio' && section === 'PARTICIPANTES' && (
+                                <>
+                                    <p className="w-full p-2 border rounded bg-purple-100">
+                                        {(selectedItem as Participante)?.groups?.venues?.name || 'No asignado'}
+                                    </p>
+                                    <label className="block mt-2 font-semibold">Grupo destino:</label>
+                                    <select
+                                        className="w-full p-2 border rounded bg-purple-100"
+                                        value={emailSelectedGroupId || ''}
+                                        onChange={e => setEmailSelectedGroupId(Number(e.target.value))}
+                                        disabled={!emailSelectedVenue}
+                                    >
+                                        <option value="">Selecciona un grupo</option>
+                                        {emailVenueGroups.map(group => (
+                                            <option key={group.id_group} value={group.id_group}>{group.name}</option>
+                                        ))}
+                                    </select>
+                                    {emailGroupInfo && (
+                                        <div className="mt-4 space-y-1">
+                                            <p><strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}</p>
+                                            <p><strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}</p>
+                                            <p><strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}</p>
+                                            <p><strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}</p>
+                                            <p><strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}</p>
+                                            <p><strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}</p>
+                                        </div>
+                                    )}
+                                    <label className="block mt-4 font-semibold">Fecha límite de confirmación:</label>
+                                    <input
+                                        className="w-full p-2 border rounded"
+                                        value={emailFormData.lDate || ''}
+                                        onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
+                                        placeholder="Ej: 10/06/2025"
+                                    />
+
+                                    <label className="block mt-2 font-semibold">Enlace de confirmación:</label>
+                                    <input
+                                        className="w-full p-2 border rounded"
+                                        value={emailFormData.platformLink || ''}
+                                        onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })}
+                                        placeholder="https://..."
+                                    />
+                                </>
+                            )}
+                            {selectedTemplate === 'sol_cambio' && section === 'APOYO & STAFF' && (
+                                <>
+                                    <label className="block mt-2 font-semibold">Sede:</label>
+                                    <p className="w-full p-2 border rounded bg-purple-100">
+                                        {(selectedItem as ApoyoStaff)?.groups?.venues?.name || 'No asignado'}
+                                    </p>
+                                    <label className="block mt-2 font-semibold">Grupo destino:</label>
+                                    <select
+                                        className="w-full p-2 border rounded bg-purple-100"
+                                        value={emailSelectedGroupId || ''}
+                                        onChange={e => {
+                                            setEmailSelectedGroupId(Number(e.target.value));
+                                            setEmailGroupInfo(null);
+                                            setEmailFormData((prev: any) => ({ ...prev, role: '' }));
+                                        }}
+                                        disabled={!emailSelectedVenue}
+                                    >
+                                        <option value="">Selecciona un grupo</option>
+                                        {emailVenueGroups.map(group => (
+                                            <option key={group.id_group} value={group.id_group}>{group.name}</option>
+                                        ))}
+                                    </select>
+                                    <label className="block mt-2 font-semibold">Rol a asignar:</label>
+                                    <select
+                                        className="w-full p-2 border rounded bg-purple-100"
+                                        value={emailFormData.role || ''}
+                                        onChange={e => setEmailFormData((prev: any) => ({ ...prev, role: e.target.value }))}
+                                        disabled={!emailSelectedGroupId}
+                                    >
+                                        <option value="">Selecciona un rol</option>
+                                        <option value="Instructora">Instructora</option>
+                                        <option value="Facilitadora">Facilitadora</option>
+                                        <option value="Staff">Staff</option>
+                                    </select>
+                                    {emailGroupInfo && (
+                                        <div className="mt-4 space-y-1">
+                                            <p><strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}</p>
+                                            <p><strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}</p>
+                                            <p><strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}</p>
+                                            <p><strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}</p>
+                                            <p><strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}</p>
+                                            <p><strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}</p>
+                                        </div>
+                                    )}
+                                    <label className="block mt-4 font-semibold">Fecha límite de confirmación:</label>
+                                    <input
+                                        className="w-full p-2 border rounded"
+                                        value={emailFormData.lDate || ''}
+                                        onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
+                                        placeholder="Ej: 10/06/2025"
+                                    />
+                                    <label className="block mt-2 font-semibold">Enlace de confirmación:</label>
+                                    <input
+                                        className="w-full p-2 border rounded"
+                                        value={emailFormData.platformLink || ''}
+                                        onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })}
+                                        placeholder="https://..."
+                                    />
+                                </>
+                            )}
+                            {selectedTemplate === 'interview' && (
+                                <>
+                                    <label className="block mt-2">Fecha límite:</label>
+                                    <input className="w-full p-2 border rounded" value={emailFormData.lDate || ''} onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })} />
+                                    <label className="block mt-2">Enlace de plataforma:</label>
+                                    <input className="w-full p-2 border rounded" value={emailFormData.platformLink || ''} onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })} />
+                                </>
+                            )}
+                            <div className="mt-4 flex justify-center gap-4">
+                                <Button label="Enviar" variant="success" onClick={handleSendEmail} />
+                                <Button label="Cancelar" variant="error" onClick={closeSendEmailPopup} />
+                            </div>
                         </div>
-                      )}
-                      <label className="block mt-4 font-semibold">Fecha límite de confirmación:</label>
-                      <input
-                        className="w-full p-2 border rounded"
-                        value={emailFormData.lDate || ''}
-                        onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
-                        placeholder="Ej: 10/06/2025"
-                      />
-                      <label className="block mt-2 font-semibold">Enlace de confirmación:</label>
-                      <input
-                        className="w-full p-2 border rounded"
-                        value={emailFormData.platformLink || ''}
-                        onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })}
-                        placeholder="https://..."
-                      />
-                    </>
-                  )}
-                      {selectedTemplate === 'interview' && (
-                        <>
-                          <label className="block mt-2">Fecha límite:</label>
-                          <input className="w-full p-2 border rounded" value={emailFormData.lDate || ''} onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })} />
-                          <label className="block mt-2">Enlace de plataforma:</label>
-                          <input className="w-full p-2 border rounded" value={emailFormData.platformLink || ''} onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })} />
-                        </>
-                      )}
-                      <div className="mt-4 flex justify-center gap-4">
-                        <Button label="Enviar" variant="success" onClick={handleSendEmail} />
-                      </div>
                     </div>
-                  </div>
                 )}
             </div>
         </div>
