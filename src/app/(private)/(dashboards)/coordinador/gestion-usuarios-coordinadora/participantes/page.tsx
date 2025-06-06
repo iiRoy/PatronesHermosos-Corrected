@@ -13,12 +13,24 @@ import { jwtDecode } from 'jwt-decode';
 
 interface Participante {
     id: number;
-    nombre: string;
+    name: string;
+    paternal_name: string;
+    maternal_name: string;
+    nombre: string; // Computed full name
     sede: string;
     id_venue: number | null;
     grupo: string;
     correo: string;
     status: string;
+    tutors?: {
+        phone_number: string;
+    };
+    groups?: {
+        name: string;
+        venues?: {
+            name: string;
+        };
+    };
 }
 
 interface DecodedToken {
@@ -47,6 +59,7 @@ const GestionParticipantes = () => {
     const [approvedGroups, setApprovedGroups] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const router = useRouter();
     const { notify } = useNotification();
 
@@ -66,8 +79,8 @@ const GestionParticipantes = () => {
                 if (decoded.role === 'venue_coordinator') {
                     setCoordinatorVenueId(decoded.userId);
                 } else {
-                    setError('Este dashboard es solo para coordinadores de sede');
-                    router.push('/login');
+                    setError('Este dashboard es obligatorio para coordinadores de sede');
+                    router.push('/api');
                 }
             } catch (err) {
                 console.error('Error al decodificar el token:', err);
@@ -99,7 +112,7 @@ const GestionParticipantes = () => {
                     if (response.status === 403) {
                         localStorage.removeItem('api_token');
                         router.push('/login');
-                        throw new Error('Sesión no autorizada');
+                        return;
                     }
                     throw new Error(`Error fetching participants: ${response.status} - ${errorData.message || 'Unknown error'}`);
                 }
@@ -198,14 +211,70 @@ const GestionParticipantes = () => {
         router.push(`/coordinador/gestion-usuarios-coordinadora/participantes/editarParticipante/${participante.id}`);
     };
 
-    const handleDetailsClick = (participante: Participante) => {
+    const handleDetailsClick = async (participante: Participante) => {
         setSelectedParticipante(participante);
         setIsDetailsPopupOpen(true);
+
+        // Clean up previous PDF URL
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+            setPdfUrl(null);
+        }
+
+        // Fetch PDF
+        try {
+            const token = localStorage.getItem('api_token');
+            if (!token) {
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: 'No se encontró el token, redirigiendo al login',
+                    duration: 5000,
+                });
+                router.push('/login');
+                return;
+            }
+
+            const response = await fetch(`/api/participants/${participante.id}/pdf`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: `No se pudo cargar el PDF: ${errorData.message || 'Error desconocido'}`,
+                    duration: 5000,
+                });
+                setPdfUrl(null);
+                return;
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setPdfUrl(url);
+        } catch (error: any) {
+            console.error('Error fetching participant PDF:', error);
+            notify({
+                color: 'red',
+                title: 'Error',
+                message: `No se pudo cargar el PDF: ${error.message}`,
+                duration: 5000,
+            });
+            setPdfUrl(null);
+        }
     };
 
     const handleClosePopup = (type: 'delete' | 'details') => {
         if (type === 'delete') setIsDeletePopupOpen(false);
-        if (type === 'details') setIsDetailsPopupOpen(false);
+        if (type === 'details') {
+            setIsDetailsPopupOpen(false);
+            if (pdfUrl) {
+                URL.revokeObjectURL(pdfUrl); // Clean up object URL
+                setPdfUrl(null);
+            }
+        }
         setSelectedParticipante(null);
     };
 
@@ -388,14 +457,27 @@ const GestionParticipantes = () => {
 
                 {isDetailsPopupOpen && selectedParticipante && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
+                        <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
                             <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Participante</h2>
                             <div className="pt-6 pb-6">
-                                <p><strong>Nombre:</strong> {selectedParticipante.nombre}</p>
-                                <p><strong>Sede:</strong> {selectedParticipante.sede}</p>
-                                <p><strong>Grupo:</strong> {selectedParticipante.grupo}</p>
+                                <p><strong>Nombre Completo:</strong> {`${selectedParticipante.name} ${selectedParticipante.paternal_name || ''} ${selectedParticipante.maternal_name || ''}`.trim()}</p>
                                 <p><strong>Correo:</strong> {selectedParticipante.correo}</p>
+                                <p><strong>Teléfono del Tutor:</strong> {selectedParticipante.tutors?.phone_number || 'No asignado'}</p>
+                                <p><strong>Grupo:</strong> {selectedParticipante.groups?.name || 'No asignado'}</p>
+                                <p><strong>Sede:</strong> {selectedParticipante.groups?.venues?.name || 'No asignado'}</p>
                                 <p><strong>Estado:</strong> {selectedParticipante.status}</p>
+                                {pdfUrl ? (
+                                    <div className="mt-4">
+                                        <p><strong>Carta de Convocatoria:</strong></p>
+                                        <iframe
+                                            src={pdfUrl}
+                                            className="w-full h-[400px] border rounded"
+                                            title="Participation File"
+                                        />
+                                    </div>
+                                ) : (
+                                    <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
+                                )}
                             </div>
                             <div className="mt-4 flex justify-center">
                                 <Button label="Cerrar" variant="primary" onClick={() => handleClosePopup('details')} />
