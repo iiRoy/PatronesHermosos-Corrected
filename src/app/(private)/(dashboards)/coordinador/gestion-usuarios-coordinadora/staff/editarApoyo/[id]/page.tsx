@@ -8,7 +8,7 @@ import Dropdown from '@/components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { UserSound, ChatTeardropText, Grains } from '@/components/icons';
+import { User, ChatTeardropText, Grains, Books } from '@/components/icons';
 
 interface Collaborator {
   id_collaborator: number;
@@ -301,7 +301,7 @@ const EditarApoyo = () => {
         </div>
       )}
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+      <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
         {/* Primera fila: Nombre, Apellidos */}
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
           <div className="basis-1/3">
@@ -429,8 +429,8 @@ const EditarApoyo = () => {
               options={roleOptions.map((option) => ({ label: option, value: option }))}
               value={selectedRole}
               onChange={setSelectedRole}
-              variant="accent"
-              darkText
+              variant="secondary"
+              Icon={withIconDecorator(User)}
             />
           </div>
           <div className="basis-2/3">
@@ -448,12 +448,12 @@ const EditarApoyo = () => {
                   }))}
                   value={selectedGroupId?.toString() || ''}
                   onChange={(val) => setSelectedGroupId(val ? parseInt(val) : null)}
-                  variant="accent"
-                  darkText
+                  variant="secondary"
+                  Icon={withIconDecorator(Books)}
                 />
               )}
               {selectedGroupId && availableGroups.length > 0 && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-sm text-gray-200">
                   <p>
                     <strong>Sede:</strong> {venueName}
                   </p>
