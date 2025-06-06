@@ -225,7 +225,7 @@ const SedesAdmin = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar sede"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -239,7 +239,7 @@ const SedesAdmin = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Status"
+                                labelSecciones="Estado"
                                 secciones={statusOptions}
                                 seccionActiva={section}
                                 onChangeSeccion={sectionFilterChange}
