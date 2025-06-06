@@ -313,9 +313,8 @@ const GestionApoyo = () => {
                                 <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Correo</th>
+                                <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Rol</th>
-                                <th className="p-2 text-center">Nivel</th>
-                                <th className="p-2 text-center">Idioma</th>
                                 <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
@@ -343,9 +342,8 @@ const GestionApoyo = () => {
                                         </td>
                                         <td className="p-2 text-center">{fullName}</td>
                                         <td className="p-2 text-center">{apoyo.email}</td>
+                                        <td className="p-2 text-center">{apoyo.venue || 'Sin asignado'}</td>
                                         <td className="p-2 text-center">{apoyo.role}</td>
-                                        <td className="p-2 text-center">{apoyo.level}</td>
-                                        <td className="p-2 text-center">{apoyo.language}</td>
                                         <td className="p-2 flex gap-2 justify-center">
                                             <Button
                                                 label=""
