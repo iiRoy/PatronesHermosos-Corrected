@@ -39,6 +39,7 @@ interface Participante {
 const EditarParticipante = () => {
     const [participante, setParticipante] = useState<Participante | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [validationErrors, setValidationErrors] = useState<string[]>([]);
     const [idValue, setIdValue] = useState('');
     const [nombreValue, setNombreValue] = useState('');
     const [apellidoPaternoValue, setApellidoPaternoValue] = useState('');
@@ -85,7 +86,7 @@ const EditarParticipante = () => {
                 setApellidoPaternoValue(data.paternal_name);
                 setApellidoMaternoValue(data.maternal_name);
                 setCorreoValue(data.email);
-                setTelefonoValue(data.tutors?.phone_number || ''); // Prellenar con el número de teléfono del tutor
+                setTelefonoValue(data.tutors?.phone_number || '');
                 setStatusValue(data.status);
                 setGrupoValue(data.id_group || null);
                 setSedeValue(data.groups?.venues?.name || 'No asignado');
@@ -116,13 +117,16 @@ const EditarParticipante = () => {
 
                 const data = await response.json();
                 setAvailableGroups(data.groups);
-                if (data.groups.length > 0 && !grupoValue) {
-                    const currentGroup = data.groups.find((group: GroupOption) => group.id_group === participante?.id_group);
+
+                if (data.groups.length > 0 && participante?.id_group) {
+                    const currentGroup = data.groups.find((group: GroupOption) => group.id_group === participante.id_group);
                     if (currentGroup) {
                         setGrupoValue(currentGroup.id_group);
                     } else {
                         setGrupoValue(data.groups[0].id_group);
                     }
+                } else if (data.groups.length > 0) {
+                    setGrupoValue(data.groups[0].id_group);
                 }
             } catch (error: any) {
                 console.error('Error al obtener grupos disponibles:', error);
@@ -135,7 +139,30 @@ const EditarParticipante = () => {
         }
     }, [id, router, participante?.id_group]);
 
+    const validateForm = () => {
+        const errors: string[] = [];
+
+        if (!correoValue.trim()) {
+            errors.push('El correo es obligatorio');
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correoValue)) {
+            errors.push('El correo no tiene un formato válido');
+        }
+
+        if (telefonoValue && !/^\+?\d{10,15}$/.test(telefonoValue)) {
+            errors.push('El número de teléfono debe contener entre 10 y 15 dígitos');
+        }
+
+        setValidationErrors(errors);
+        return errors.length === 0;
+    };
+
     const handleConfirm = async () => {
+        setValidationErrors([]);
+
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const token = typeof window !== "undefined" ? localStorage.getItem("api_token") : "";
             if (!token) {
@@ -149,7 +176,7 @@ const EditarParticipante = () => {
                 maternal_name: apellidoMaternoValue,
                 email: correoValue,
                 id_group: grupoValue,
-                phone_number: telefonoValue, // Incluir el número de teléfono
+                phone_number: telefonoValue || null,
             };
 
             const response = await fetch(`/api/participants/${id}/basic-info`, {
@@ -201,6 +228,17 @@ const EditarParticipante = () => {
     return (
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
             <PageTitle>Editar Participante</PageTitle>
+
+            {validationErrors.length > 0 && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    <strong className="font-bold">Errores de validación:</strong>
+                    <ul className="list-disc list-inside">
+                        {validationErrors.map((err, index) => (
+                            <li key={index}>{err}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
                 <div className="flex justify-between gap-4 items-center pb-2 mb-4">
@@ -279,7 +317,6 @@ const EditarParticipante = () => {
                             value={grupoValue?.toString() || ''}
                             onChange={(value: string) => setGrupoValue(parseInt(value))}
                             variant="secondary"
-                            darkText
                             Icon={withIconDecorator(Users)}
                         />
                     </div>
