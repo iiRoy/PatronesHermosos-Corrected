@@ -21,27 +21,23 @@ const createCollaborator = async (req, res) => {
   } = req.body;
 
   try {
-    const newCollaborator = await prisma.collaborators.create({
-      data: {
-        name,
-        paternal_name,
-        maternal_name,
-        email,
-        phone_number,
-        college,
-        degree,
-        semester,
-        preferred_role,
-        preferred_language,
-        preferred_level,
-        gender,
-        role: 'Pendiente',
-        status: 'Pendiente',
-        level: 'Pendiente',
-        language: 'Pendiente',
-        preferred_group: preferred_group ? parseInt(preferred_group) : null,
-      },
-    });
+  await prisma.$queryRaw`
+      CALL registrar_colab(
+        ${name}, 
+        ${paternal_name}, 
+        ${maternal_name}, 
+        ${email}, 
+        ${phone_number},
+        ${college}, 
+        ${degree}, 
+        ${semester},
+        ${preferred_role}, 
+        ${preferred_language}, 
+        ${preferred_level},
+        ${preferred_group}, 
+        ${gender}
+      );
+    `;
 
     try {
       let venueName = 'No asignada';
@@ -53,6 +49,7 @@ const createCollaborator = async (req, res) => {
         });
         if (group) {
           groupName = group.name || 'No asignado';
+          groupMode = group.mode || 'No asignado';
           venueName = group.venues?.name || 'No asignada';
         }
       }
@@ -64,10 +61,12 @@ const createCollaborator = async (req, res) => {
         data: {
           cName: `${name || ''} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
           venueName: venueName,
+          cEmail: email || 'No especificado',
           cEmail: email,
           role: preferred_role || 'No especificado',
           language: preferred_language || 'No especificado',
           level: preferred_level || 'No especificado',
+          mode: groupMode || 'No determinado', // Assuming mode is not provided in request
           mode: 'No especificado',
           iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
         },
@@ -98,9 +97,10 @@ const createCollaborator = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Colaborador creado',
-      data: newCollaborator,
     });
   } catch (error) {
+    if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
+      return res.status(422).json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
     if (error instanceof Prisma.PrismaClientValidationError) {
       return res.status(422).json({ success: false, message: 'Datos inválidos', errorData: error.message });
     }
@@ -1018,6 +1018,51 @@ const updateCollaboratorAssignment = async (req, res) => {
   }
 };
 
+const sendCustomEmailToCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const { template, data } = req.body;
+
+  try {
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: parseInt(id) },
+    });
+    if (!collaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
+    let emailTemplate = '';
+    let subject = '';
+    switch (template) {
+      case 'sol_cambio':
+        emailTemplate = 'templates/colaboradores/sol_cambio';
+        subject = 'Solicitud de Cambio de Preferencias';
+        break;
+      case 'interview':
+        emailTemplate = 'templates/colaboradores/interview';
+        subject = '¡Agenda tu entrevista!';
+        break;
+      default:
+        return res.status(400).json({ message: 'Plantilla no válida' });
+    }
+
+    await sendEmail({
+      to: collaborator.email,
+      subject,
+      template: emailTemplate,
+      data: {
+        cName: `${collaborator.name} ${collaborator.paternal_name} ${collaborator.maternal_name}`.trim(),
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        ...data, // extra data from frontend (dates, links, etc.)
+      },
+    });
+
+    res.json({ success: true, message: 'Correo enviado exitosamente' });
+  } catch (error) {
+    console.error('Error sending custom email:', error);
+    res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
+  }
+};
+
 module.exports = {
   createCollaborator,
   getAllCollaborators,
@@ -1027,6 +1072,7 @@ module.exports = {
   getCollaboratorsTable,
   updateCollaboratorBasicInfo,
   getAvailableGroups,
+  sendCustomEmailToCollaborator,
   approveCollaborator,
   cancelCollaborator,
   rejectCollaborator,

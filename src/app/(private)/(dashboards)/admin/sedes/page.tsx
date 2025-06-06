@@ -13,6 +13,8 @@ import { useNotification } from '@/components/buttons_inputs/Notification';
 interface Sede {
     id_venue: number;
     name: string;
+    estado: string;
+    pais: string;
     location: string;
     address: string;
     status: string;
@@ -222,7 +224,7 @@ const SedesAdmin = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar sede"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -236,7 +238,7 @@ const SedesAdmin = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Status"
+                                labelSecciones="Estado"
                                 secciones={statusOptions}
                                 seccionActiva={section}
                                 onChangeSeccion={sectionFilterChange}
@@ -255,7 +257,7 @@ const SedesAdmin = () => {
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Ubicación</th>
                                 <th className="p-2 text-center">Dirección</th>
-                                <th className="p-2 text-center">Status</th>
+                                <th className="p-2 text-center">Estado</th>
                                 <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
@@ -326,7 +328,7 @@ const SedesAdmin = () => {
                                 <p><strong>Nombre:</strong> {selectedSede.name}</p>
                                 <p><strong>Ubicación:</strong> {selectedSede.location}</p>
                                 <p><strong>Dirección:</strong> {selectedSede.address}</p>
-                                <p><strong>Status:</strong> {selectedSede.status}</p>
+                                <p><strong>Estado:</strong> {selectedSede.status}</p>
                             </div>
                             <div className="mt-6 flex justify-center">
                                 <Button

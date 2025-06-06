@@ -220,7 +220,7 @@ const GestionParticipantes = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar participante"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -261,7 +261,6 @@ const GestionParticipantes = () => {
                                 <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Grupo</th>
                                 <th className="p-2 text-center">Correo</th>
-                                <th className="p-2 text-center">Estatus</th>
                                 <th className="p-2 text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -289,7 +288,6 @@ const GestionParticipantes = () => {
                                     <td className="p-2 text-center">{participante.sede || 'No asignado'}</td>
                                     <td className="p-2 text-center">{participante.grupo || 'No asignado'}</td>
                                     <td className="p-2 text-center">{participante.correo}</td>
-                                    <td className="p-2 text-center">{participante.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button
                                             label=""

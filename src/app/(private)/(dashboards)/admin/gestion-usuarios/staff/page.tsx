@@ -278,7 +278,7 @@ const GestionApoyo = () => {
               <InputField
                 label=""
                 showDescription={false}
-                placeholder="Search"
+                placeholder="Buscar colaboradora"
                 showError={false}
                 variant="primary"
                 icon="MagnifyingGlass"

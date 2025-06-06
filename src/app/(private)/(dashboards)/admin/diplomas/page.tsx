@@ -150,6 +150,7 @@ const DiplomasPage = () => {
               <InputField
                 label=''
                 placeholder='Buscar por nombre'
+                variant='primary'
                 value={search}
                 onChangeText={setSearch}
                 icon='MagnifyingGlass'

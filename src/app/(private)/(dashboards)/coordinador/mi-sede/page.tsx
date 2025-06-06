@@ -285,7 +285,7 @@ const verSede = () => {
                         />
                     </div>
                     <div>
-                        <Button label='Crear Grupo' variant='warning' href='/coordinador/mi-sede/crear-grupo' />
+                        <Button label='Crear Grupo' variant='secondary' href='/coordinador/mi-sede/crear-grupo' />
                     </div>
                 </div>
 
@@ -297,7 +297,6 @@ const verSede = () => {
                                 <th className='pb-2 text-center'>Sede</th>
                                 <th className='pb-2 text-center'>Grupo</th>
                                 <th className='pb-2 text-center'>Correo</th>
-                                <th className='pb-2 text-center'>Status</th>
                             </tr>
                         </thead>
                         <tbody className='text-gray-800'>
@@ -307,7 +306,6 @@ const verSede = () => {
                                     <td className='py-2 text-center'>{p.sede}</td>
                                     <td className='py-2 text-center'>{p.grupo}</td>
                                     <td className='py-2 text-center'>{p.correo}</td>
-                                    <td className='py-2 text-center'>{p.status}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -316,12 +314,12 @@ const verSede = () => {
 
                 <div className='flex justify-between mt-6'>
                     <div>
-                        <Button label='Volver' variant='primary' href='../' />
+
                     </div>
                     <div className='flex gap-4'>
                         <Button
                             label='Editar Grupo'
-                            variant='secondary'
+                            variant='warning'
                             href={getGroupId() ? `/coordinador/mi-sede/editar-grupo/${getGroupId()}` : '#'}
                             disabled={isButtonsDisabled}
                         />
