@@ -12,11 +12,23 @@ import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Participante {
     id: number;
-    nombre: string;
+    name: string;
+    paternal_name: string;
+    maternal_name: string;
+    nombre: string; // Computed full name
     sede: string;
     grupo: string;
     correo: string;
     status: string;
+    tutors?: {
+        phone_number: string;
+    };
+    groups?: {
+        name: string;
+        venues?: {
+            name: string;
+        };
+    };
 }
 
 const GestionParticipantes = () => {
@@ -29,6 +41,7 @@ const GestionParticipantes = () => {
     const [selectedParticipante, setSelectedParticipante] = useState<Participante | null>(null);
     const [participantesData, setParticipantesData] = useState<Participante[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const router = useRouter();
     const { notify } = useNotification();
 
@@ -136,19 +149,73 @@ const GestionParticipantes = () => {
         router.push(`/admin/gestion-usuarios/participantes/editarParticipante/${participante.id}`);
     };
 
+    const handleDetailsClick = async (participante: Participante) => {
+        setSelectedParticipante(participante);
+        setIsDetailsPopupOpen(true);
+
+        // Clean up previous PDF URL
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+            setPdfUrl(null);
+        }
+
+        // Fetch PDF
+        try {
+            const token = localStorage.getItem('api_token');
+            if (!token) {
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: 'No se encontró el token, redirigiendo al login',
+                    duration: 5000,
+                });
+                router.push('/login');
+                return;
+            }
+
+            const response = await fetch(`/api/participants/${participante.id}/pdf`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                notify({
+                    color: 'red',
+                    title: 'Error',
+                    message: `No se pudo cargar el PDF: ${errorData.message || 'Error desconocido'}`,
+                    duration: 5000,
+                });
+                setPdfUrl(null);
+                return;
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setPdfUrl(url);
+        } catch (error: any) {
+            console.error('Error fetching participant PDF:', error);
+            notify({
+                color: 'red',
+                title: 'Error',
+                message: `No se pudo cargar el PDF: ${error.message}`,
+                duration: 5000,
+            });
+            setPdfUrl(null);
+        }
+    };
+
     const handleClosePopup = () => {
         setIsPopupOpen(false);
         setSelectedParticipante(null);
     };
 
-    const handleDetailsClick = (participante: Participante) => {
-        setSelectedParticipante(participante);
-        setIsDetailsPopupOpen(true);
-    };
-
     const handleCloseDetailsPopup = () => {
         setIsDetailsPopupOpen(false);
         setSelectedParticipante(null);
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl); // Clean up object URL
+            setPdfUrl(null);
+        }
     };
 
     const handleConfirmDelete = async () => {
@@ -339,15 +406,28 @@ const GestionParticipantes = () => {
                 )}
 
                 {isDetailsPopupOpen && selectedParticipante && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
-                            <h2 className="text-3xl font-bold mb-4 text-center">Detalles del Participante</h2>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-200">
+                        <div className="texto-popup bg-white p-6 rounded-lg shadow-lg-3 w-[1000px] relative max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
+                            <h2 className="text-3xl font-title font-bold mb-4 text-center">Detalles del Participante</h2>
                             <div className="pt-6 pb-6">
-                                <p><strong>Nombre Completo:</strong> {selectedParticipante.nombre}</p>
+                                <p><strong>Nombre Completo:</strong> {`${selectedParticipante.name} ${selectedParticipante.paternal_name || ''} ${selectedParticipante.maternal_name || ''}`.trim()}</p>
                                 <p><strong>Correo:</strong> {selectedParticipante.correo}</p>
-                                <p><strong>Sede:</strong> {selectedParticipante.sede || 'No asignado'}</p>
-                                <p><strong>Grupo:</strong> {selectedParticipante.grupo || 'No asignado'}</p>
+                                <p><strong>Teléfono del Tutor:</strong> {selectedParticipante.tutors?.phone_number || 'No asignado'}</p>
+                                <p><strong>Grupo:</strong> {selectedParticipante.groups?.name || 'No asignado'}</p>
+                                <p><strong>Sede:</strong> {selectedParticipante.groups?.venues?.name || 'No asignado'}</p>
                                 <p><strong>Estado:</strong> {selectedParticipante.status}</p>
+                                {pdfUrl ? (
+                                    <div className="mt-4">
+                                        <p><strong>Carta de Selección:</strong></p>
+                                        <iframe
+                                            src={pdfUrl}
+                                            className="w-full h-[500px] border rounded-lg"
+                                            title="Participation File"
+                                        />
+                                    </div>
+                                ) : (
+                                    <p className="mt-4 text-red-600"><strong>Carta de Selección:</strong> No disponible</p>
+                                )}
                             </div>
                             <div className="mt-4 flex justify-center">
                                 <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
