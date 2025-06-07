@@ -1,3 +1,10 @@
+## 1.16.0 (2025-06-07)
+
+* feat(diplomas): Sección de diplomas corregido ([71fa594](https://github.com/iiRoy/Patrones-Hermosos/commit/71fa594))
+* chore(mail): Cambios de Maggi ([3752a48](https://github.com/iiRoy/Patrones-Hermosos/commit/3752a48))
+* fix(estadísticas): Página de estadísticas adaptada y terminada para colaboradoras ([d6c4e06](https://github.com/iiRoy/Patrones-Hermosos/commit/d6c4e06))
+* fix(estadísticas): Página de estadísticas adaptada y terminada para colaboradoras ([0e52e23](https://github.com/iiRoy/Patrones-Hermosos/commit/0e52e23))
+
 ## <small>1.15.2 (2025-06-04)</small>
 
 * fix(email): Email when creating venue ([5ff9c22](https://github.com/iiRoy/Patrones-Hermosos/commit/5ff9c22))
