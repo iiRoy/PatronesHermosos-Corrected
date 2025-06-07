@@ -486,7 +486,7 @@ const ParticipantRegistrationForm: React.FC = () => {
           <div className="mt-2">
             <Checkbox
               label=""
-              color="purple"
+              variant='primary'
               checked={formData.privacy_accepted}
               onChange={(checked) => setFormData((prev) => ({ ...prev, privacy_accepted: checked }))}
             />

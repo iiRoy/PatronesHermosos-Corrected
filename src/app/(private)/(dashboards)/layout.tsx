@@ -115,7 +115,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Contenido principal */}
-        <div className='relative overflow-x-hidden z-0'>{children}</div>
+        <div className='relative overflow-x-hidden'>{children}</div>
       </div>
     </div>
   );

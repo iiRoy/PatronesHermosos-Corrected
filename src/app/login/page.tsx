@@ -185,7 +185,6 @@ export default function LoginForm() {
           <div className={`mt-2 ${isLocked ? 'hidden' : 'block'}`}>
             <Checkbox
               label='Mostrar Contraseña'
-              color={error ? 'yellow' : 'purple'}
               checked={showConfirmPassword}
               onChange={setShowConfirmPassword}
             />

@@ -882,6 +882,18 @@
   border-color: var(--secondary-shade);
 }
 
+.checkbox-accent {
+  background-color: #eee;
+  border: 0.5vh solid var(--accent-disabled);
+  /* Violeta oscuro */
+}
+
+.checkbox-accent:checked {
+  background-color: var(--accent-disabled);
+  /* Violeta oscuro cuando está seleccionado */
+  border-color: var(--accent-disabled);
+}
+
 /*Checkboxes*/
 .checkbox-container {
   display: inline-flex;

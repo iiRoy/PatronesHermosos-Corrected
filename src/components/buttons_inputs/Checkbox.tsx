@@ -1,35 +1,32 @@
+// components/buttons_inputs/Checkbox.tsx
 'use client';
 
 import React from 'react';
 
 interface CheckboxProps {
-  label: string;
-  color: 'white' | 'purple' | 'red' | 'green' | 'yellow';
+  label?: string;
   checked: boolean;
   bordered?: boolean;
   onChange: (checked: boolean) => void;
+  variant?: 'primary' | 'secondary' | 'accent';
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
-  label,
-  color,
+  label = '',
   checked,
-  bordered = false,
   onChange,
+  bordered = false,
+  variant = 'primary'
 }) => {
-  const colorClass = `${color}-checkbox`;
-  const borderClass = bordered ? 'with-border' : '';
-
   return (
-    <label className={`checkbox-container ${colorClass} ${borderClass} transition-all duration-500 ease-in-out`}>
+    <label className={`flex items-center cursor-pointer ${bordered ? 'with-border' : ''}`}>
       <input
-        type='checkbox'
+        type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className='hidden-checkbox'
+        className={`${variant === 'primary' ? 'checkbox-odd' : variant === 'secondary' ? 'checkbox-even' : 'checkbox-accent'} checkbox-circle mr-2`}
       />
-      <span className='custom-checkbox' />
-      <span className='label-text'>{label}</span>
+      {label && <span className="text-sm">{label}</span>}
     </label>
   );
 };
