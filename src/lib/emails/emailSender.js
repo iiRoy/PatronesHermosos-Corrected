@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function sendEmail({ to, subject, template, data }) {
+async function sendEmail({ to, cc, subject, template, data, attachments = [] }) {
   try {
     // Construir la ruta del template dinámicamente
     const templatePath = path.join(__dirname, `${template}.ejs`);
@@ -25,13 +25,20 @@ async function sendEmail({ to, subject, template, data }) {
     // Renderizar el template con los datos
     const html = await ejs.renderFile(templatePath, data);
 
-    // Enviar el correo
-    await transporter.sendMail({
+    // Construir opciones de mail, incluyendo adjuntos
+    const mailOptions = {
       from: `"Equipo Patrones Hermosos" <${process.env.EMAIL_USER}>`,
       to,
+      ...(cc ? { cc } : {}),
       subject,
-      html
-    });
+      html,
+      attachments,
+    };
+
+    console.log('Enviando correo con opciones:', mailOptions);
+
+    // Enviar el correo
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error('Error al enviar correo:', error);
     throw error; // Propagar el error para que el controlador lo maneje

@@ -534,7 +534,7 @@ const VenueRegistrationForm: React.FC = () => {
                 <div className="flex items-center mt-2">
                   <Checkbox
                     label="Mostrar Contraseña"
-                    color="purple"
+                    variant='primary'
                     checked={showPassword}
                     onChange={setShowPassword}
                   />
@@ -556,7 +556,7 @@ const VenueRegistrationForm: React.FC = () => {
                 <div className="flex items-center mt-2">
                   <Checkbox
                     label="Mostrar Contraseña"
-                    color="purple"
+                    variant='primary'
                     checked={showConfirmPassword}
                     onChange={setShowConfirmPassword}
                   />
@@ -992,7 +992,7 @@ const VenueRegistrationForm: React.FC = () => {
               <div className="mt-2">
                 <Checkbox
                   label=""
-                  color="purple"
+                  variant='primary'
                   checked={privacyAccepted}
                   onChange={setPrivacyAccepted}
                 />

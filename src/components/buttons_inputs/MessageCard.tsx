@@ -1,49 +1,43 @@
+// components/ui/MessageCard.tsx
 import React from 'react';
 import Button from '@/components/buttons_inputs/Button';
 import Checkbox from '@/components/buttons_inputs/Checkbox';
+import withIconDecorator from '../decorators/IconDecorator';
+import * as Icons from '../icons';
 
 type Variant = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
 
-type IconComponent = React.FC<{
-  width?: number | string;
-  height?: number | string;
-  color?: string;
-}>;
-
-type MessageCardProps = {
+interface MessageCardProps {
   color: 'purple' | 'green' | 'red' | 'yellow';
-  Icon: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
-  title: string;
-  description: string;
+  icon: keyof typeof Icons;
+  // Ahora pueden ser ReactNode para meter formularios dentro
+  title: React.ReactNode;
+  description: React.ReactNode;
   checkboxLabel?: string;
   checkboxChecked: boolean;
   onCheckboxChange: (checked: boolean) => void;
 
   // Mostrar botones
   showAccept?: boolean;
-  showDoubt?: boolean;
   showDecline?: boolean;
 
   // Configuración para cada botón
   acceptVariant?: Variant;
   acceptLabel?: string;
-  acceptIcon?: IconComponent;
   onAccept?: () => void;
-
-  doubtVariant?: Variant;
-  doubtLabel?: string;
-  doubtIcon?: IconComponent;
-  onDoubt?: () => void;
 
   declineVariant?: Variant;
   declineLabel?: string;
-  declineIcon?: IconComponent;
   onDecline?: () => void;
-};
+
+  showToggle?: boolean;
+  toggleLabel?: string;
+  onToggle?: () => void;
+}
 
 export const MessageCard: React.FC<MessageCardProps> = ({
   color,
-  Icon,
+  icon,
   title,
   description,
   checkboxLabel,
@@ -51,67 +45,59 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   onCheckboxChange,
 
   showAccept = false,
-  showDoubt = false,
   showDecline = false,
 
   acceptVariant = 'success',
-  acceptLabel = 'Accept',
-  acceptIcon,
+  acceptLabel = 'Enviar',
   onAccept,
 
-  doubtVariant = 'warning',
-  doubtLabel = 'Doubt',
-  doubtIcon,
-  onDoubt,
-
   declineVariant = 'error',
-  declineLabel = 'Decline',
-  declineIcon,
+  declineLabel = 'Cancelar',
   onDecline,
+
+  showToggle = false,
+  toggleLabel = 'Destinatarios',
+  onToggle,
 }) => {
+  const IconComponent: React.ComponentType<any> | null = icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
   return (
     <div className={`message-card border-${color}`}>
       <div className='icon-title'>
-        <div className={`message-icon icon-${color}`}>{<Icon width={25} height={25} />}</div>
-        <h2 className={`title title-${color}`}>{title}</h2>
+        <div className={`message-icon icon-${color}`}>
+          {IconComponent && <IconComponent width={35} height={35} strokeWidth={0.7} strokeColor={'var(--primaryColor)'} fillColor={'var(--text-color)'} />}
+        </div>
+        <div className={`title title-${color}`}>{title}</div>
       </div>
-      <p className='description'>{description}</p>
+
+      <div className='description'>{description}</div>
 
       {checkboxLabel && (
         <div className='checkbox-row'>
           <Checkbox
-            color={color}
             label={checkboxLabel}
             checked={checkboxChecked}
             onChange={onCheckboxChange}
           />
         </div>
       )}
-
       <div className='button-row'>
+        {showToggle && (
+          <Button
+            variant="secondary"
+            label={toggleLabel}
+            onClick={onToggle}
+          />
+        )}
         {showAccept && (
           <Button
             variant={acceptVariant}
-            showLeftIcon
-            IconLeft={acceptIcon}
             label={acceptLabel}
             onClick={onAccept}
-          />
-        )}
-        {showDoubt && (
-          <Button
-            variant={doubtVariant}
-            showLeftIcon
-            IconLeft={doubtIcon}
-            label={doubtLabel}
-            onClick={onDoubt}
           />
         )}
         {showDecline && (
           <Button
             variant={declineVariant}
-            showLeftIcon
-            IconLeft={declineIcon}
             label={declineLabel}
             onClick={onDecline}
           />

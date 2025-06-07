@@ -1,3 +1,4 @@
+const { Request, Response } = require ('express');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -231,6 +232,49 @@ const data = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  // authMiddleware ya inyectó aquí: req.user = { id, email, username, role }
+  const { id: userId, role } = req.user;
+
+  try {
+    let userRecord;
+    if (role === 'superuser') {
+      userRecord = await prisma.superusers.findUnique({
+        where: { id_superuser: userId },
+        select: {
+          name: true,
+          paternal_name: true,
+          maternal_name: true,
+          email: true,
+        },
+      });
+    } else if (role === 'venue_coordinator') {
+      userRecord = await prisma.venue_coordinators.findUnique({
+        where: { id_venue_coord: userId },
+        select: {
+          name: true,
+          paternal_name: true,
+          maternal_name: true,
+          email: true,
+        },
+      });
+    } else {
+      return res.status(403).json({ message: 'Rol no soportado' });
+    }
+
+    if (!userRecord) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    return res.json(userRecord);
+  } catch (error) {
+    console.error('Error al obtener perfil:', error);
+    return res.status(500).json({ message: 'Error del servidor' });
+  }
+};
+
+
 module.exports = {
   data,
+  getProfile
 };

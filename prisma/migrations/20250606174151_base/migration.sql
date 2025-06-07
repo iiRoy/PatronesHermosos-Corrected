@@ -116,6 +116,7 @@ CREATE TABLE `participants` (
     `year` VARCHAR(255) NULL,
     `education` VARCHAR(255) NULL,
     `participation_file` BLOB NOT NULL,
+    `participation_file_path` VARCHAR(255) NULL,
     `preferred_group` INTEGER UNSIGNED NULL,
     `status` ENUM('Pendiente', 'Aprobada', 'Rechazada', 'Cancelada') NOT NULL DEFAULT 'Pendiente',
     `id_group` INTEGER UNSIGNED NULL,

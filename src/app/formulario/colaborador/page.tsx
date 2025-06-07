@@ -414,7 +414,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
               <div className="mt-2">
                 <Checkbox
                   label=""
-                  color="purple"
+                  variant='primary'
                   checked={privacyAccepted}
                   onChange={setPrivacyAccepted}
                 />
