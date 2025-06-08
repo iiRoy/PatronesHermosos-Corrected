@@ -28,10 +28,8 @@ type UsuarioDiploma = {
 const DiplomasPage = () => {
   const [users, setUsers] = useState<UsuarioDiploma[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [filterSede, setFilterSede] = useState('all');
   const [filterRol, setFilterRol] = useState('all');
   const [search, setSearch] = useState('');
-  const [opcionesSede, setOpcionesSede] = useState<{ label: string; value: string }[]>([]);
   const [opcionesRol, setOpcionesRol] = useState<{ label: string; value: string }[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -74,10 +72,6 @@ const DiplomasPage = () => {
         const userRole = localStorage.getItem('user_role') || '';
         const res = await fetch(`/api/diplomas/filtros?user_id=${userId}&user_role=${userRole}`);
         const data = await res.json();
-      setOpcionesSede([
-        { label: 'Todas las SEDES', value: 'all' },
-        ...data.sedes.map((s: string) => ({ label: s, value: s })),
-      ]);
       setOpcionesRol([
         { label: 'Todos los roles', value: 'all' },
         ...data.roles.map((r: string) => ({
@@ -124,14 +118,13 @@ useEffect(() => {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const sedeParam = filterSede === 'all' ? '' : filterSede;
         const rolParam = filterRol === 'all' ? '' : filterRol;
         const userId = localStorage.getItem('user_id') || '';
         const userRole = localStorage.getItem('user_role') || '';
         const res = await fetch(
           `/api/diplomas/users?search=${encodeURIComponent(
             search
-          )}&sede=${encodeURIComponent(sedeParam)}&role=${encodeURIComponent(
+          )}&role=${encodeURIComponent(
             rolParam
           )}&user_id=${userId}&user_role=${userRole}`
         );
@@ -149,7 +142,7 @@ useEffect(() => {
       }
     }
     fetchUsers();
-  }, [search, filterSede, filterRol]);
+  }, [search, filterRol]);
 
   // Seleccionar/deseleccionar visibles
   const toggleSelectAll = () => {
@@ -339,10 +332,6 @@ const sendByEmail = async () => {
                 disableCheckboxes
                 label="Filtros"
                 showSecciones
-                labelSecciones="SEDE"
-                secciones={opcionesSede}
-                seccionActiva={filterSede}
-                onChangeSeccion={setFilterSede}
                 extraFilters={[
                   {
                     label: 'Rol',
