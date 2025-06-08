@@ -1,6 +1,6 @@
 {
   "name": "patrones-hermosos",
-  "version": "1.14.1",
+  "version": "1.17.0",
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.js",
@@ -28,7 +28,6 @@
     "country-state-city": "^3.2.1",
     "cypress": "^14.3.2",
     "d3-interpolate": "^3.0.1",
-
     "d3-shape": "^3.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
