@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/iiRoy/Patrones-Hermosos/compare/v1.17.0...v2.0.0) (2025-06-08)
+
+
+* feat(style)!: formateo de todos los códigos ([fa99d12](https://github.com/iiRoy/Patrones-Hermosos/commit/fa99d1240da0a72f123b81952db3919a8561645b))
+
+
+### BREAKING CHANGES
+
+* Se reformatearon todos los archivos, puede haber incompatibilidades.
+
 ## 1.17.0 (2025-06-08)
 
 - chore: manual conflict resolution after merge ([8de5f2f](https://github.com/iiRoy/Patrones-Hermosos/commit/8de5f2f))
