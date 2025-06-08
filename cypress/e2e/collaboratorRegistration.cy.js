@@ -65,9 +65,11 @@ describe('Collaborator Registration Form - E2E', () => {
     cy.get('div[role="option"]').contains('Básico').click();
 
     // Selección de grupo (elige el primero de la tabla si existe)
-    cy.get('table tbody tr').first().within(() => {
-      cy.contains(/Seleccionar|Elegir|Select/i).click({ force: true });
-    });
+    cy.get('table tbody tr')
+      .first()
+      .within(() => {
+        cy.contains(/Seleccionar|Elegir|Select/i).click({ force: true });
+      });
 
     cy.get('input[type="checkbox"]').check({ force: true });
 
@@ -103,9 +105,11 @@ describe('Collaborator Registration Form - E2E', () => {
     cy.get('div[role="option"]').contains('Básico').click();
 
     // Selección de grupo (elige el primero de la tabla si existe)
-    cy.get('table tbody tr').first().within(() => {
-      cy.contains(/Seleccionar|Elegir|Select/i).click({ force: true });
-    });
+    cy.get('table tbody tr')
+      .first()
+      .within(() => {
+        cy.contains(/Seleccionar|Elegir|Select/i).click({ force: true });
+      });
 
     cy.get('input[type="checkbox"]').check({ force: true });
 

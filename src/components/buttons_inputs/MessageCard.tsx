@@ -59,12 +59,21 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   toggleLabel = 'Destinatarios',
   onToggle,
 }) => {
-  const IconComponent: React.ComponentType<any> | null = icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
+  const IconComponent: React.ComponentType<any> | null =
+    icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
   return (
     <div className={`message-card border-${color}`}>
       <div className='icon-title'>
         <div className={`message-icon icon-${color}`}>
-          {IconComponent && <IconComponent width={35} height={35} strokeWidth={0.7} strokeColor={'var(--primaryColor)'} fillColor={'var(--text-color)'} />}
+          {IconComponent && (
+            <IconComponent
+              width={35}
+              height={35}
+              strokeWidth={0.7}
+              strokeColor={'var(--primaryColor)'}
+              fillColor={'var(--text-color)'}
+            />
+          )}
         </div>
         <div className={`title title-${color}`}>{title}</div>
       </div>
@@ -73,34 +82,14 @@ export const MessageCard: React.FC<MessageCardProps> = ({
 
       {checkboxLabel && (
         <div className='checkbox-row'>
-          <Checkbox
-            label={checkboxLabel}
-            checked={checkboxChecked}
-            onChange={onCheckboxChange}
-          />
+          <Checkbox label={checkboxLabel} checked={checkboxChecked} onChange={onCheckboxChange} />
         </div>
       )}
       <div className='button-row'>
-        {showToggle && (
-          <Button
-            variant="secondary"
-            label={toggleLabel}
-            onClick={onToggle}
-          />
-        )}
-        {showAccept && (
-          <Button
-            variant={acceptVariant}
-            label={acceptLabel}
-            onClick={onAccept}
-          />
-        )}
+        {showToggle && <Button variant='secondary' label={toggleLabel} onClick={onToggle} />}
+        {showAccept && <Button variant={acceptVariant} label={acceptLabel} onClick={onAccept} />}
         {showDecline && (
-          <Button
-            variant={declineVariant}
-            label={declineLabel}
-            onClick={onDecline}
-          />
+          <Button variant={declineVariant} label={declineLabel} onClick={onDecline} />
         )}
       </div>
     </div>

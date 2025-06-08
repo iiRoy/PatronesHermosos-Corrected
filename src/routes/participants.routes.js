@@ -43,13 +43,13 @@ router.get(
   '/:participantId/available-groups',
   authMiddleware,
   roleMiddleware(['superuser', 'venue_coordinator']),
-  participantsController.getAvailableGroups
+  participantsController.getAvailableGroups,
 );
 router.patch(
   '/:participantId/approve',
   authMiddleware,
   roleMiddleware(['superuser', 'venue_coordinator']),
-  participantsController.approveParticipant
+  participantsController.approveParticipant,
 );
 
 router.put(
@@ -97,13 +97,18 @@ router.get('/files/:filename', async (req, res) => {
 
 router.get('/:id/pdf', authMiddleware, participantsController.getParticipantPDF);
 
-router.post('/:id/send-email',authMiddleware,roleMiddleware(['superuser', 'venue_coordinator']),sendCustomEmailToParticipant);
+router.post(
+  '/:id/send-email',
+  authMiddleware,
+  roleMiddleware(['superuser', 'venue_coordinator']),
+  sendCustomEmailToParticipant,
+);
 
 router.patch(
   '/:id/reject',
   authMiddleware,
   roleMiddleware(['venue_coordinator', 'superuser']),
-  participantsController.rejectParticipant
+  participantsController.rejectParticipant,
 );
 
 module.exports = router;

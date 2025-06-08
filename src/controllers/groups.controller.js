@@ -58,7 +58,8 @@ const createGroup = async (req, res) => {
     const missingFields = [];
     if (!name) missingFields.push('name');
     if (max_places === undefined || max_places === null) missingFields.push('max_places');
-    if (occupied_places === undefined || occupied_places === null) missingFields.push('occupied_places');
+    if (occupied_places === undefined || occupied_places === null)
+      missingFields.push('occupied_places');
     if (!location) missingFields.push('location');
     if (!start_date) missingFields.push('start_date');
     if (!end_date) missingFields.push('end_date');
@@ -147,7 +148,9 @@ const createGroup = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creando grupo:', error);
-    res.status(500).json({ message: 'Error interno del servidor al crear el grupo', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno del servidor al crear el grupo', error: error.message });
   }
 };
 
@@ -205,7 +208,8 @@ const updateGroup = async (req, res) => {
       // Usar valores actuales si no se proporcionan nuevos
       const startDateStr = start_date || currentGroup.start_date.toISOString().split('T')[0];
       const endDateStr = end_date || currentGroup.end_date.toISOString().split('T')[0];
-      const startHourStr = start_hour || currentGroup.start_hour.toISOString().split('T')[1].slice(0, 5);
+      const startHourStr =
+        start_hour || currentGroup.start_hour.toISOString().split('T')[1].slice(0, 5);
       const endHourStr = end_hour || currentGroup.end_hour.toISOString().split('T')[1].slice(0, 5);
 
       const startDateBase = new Date(`${startDateStr}T00:00:00.000Z`);
@@ -260,7 +264,9 @@ const updateGroup = async (req, res) => {
     });
   } catch (error) {
     console.error('Error actualizando grupo:', error);
-    res.status(500).json({ message: 'Error interno del servidor al actualizar el grupo', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno del servidor al actualizar el grupo', error: error.message });
   }
 };
 
@@ -302,7 +308,9 @@ const changeGroupStatus = async (req, res) => {
       return res.status(400).json({ message: error.message });
     }
     console.error('Full error details:', JSON.stringify(error, null, 2));
-    res.status(500).json({ message: 'Error interno al cambiar estado del grupo', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al cambiar estado del grupo', error: error.message });
   }
 };
 

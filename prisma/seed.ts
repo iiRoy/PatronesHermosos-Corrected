@@ -212,7 +212,7 @@ async function main() {
     });
   }
 
-   // 10. COLLABORATORS
+  // 10. COLLABORATORS
   console.log('📌 Insertando collaborators...');
   const collaborators = JSON.parse(fs.readFileSync('./prisma/seed/collaborators.json', 'utf-8'));
   for (const c of collaborators) {

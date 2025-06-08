@@ -74,7 +74,9 @@ interface GroupOption {
 
 const SolicitudesRegistroAdmin = () => {
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES'>('PARTICIPANTES');
+  const [section, setSection] = useState<'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES'>(
+    'PARTICIPANTES',
+  );
   const [currentPage, setCurrentPage] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
@@ -131,7 +133,7 @@ const SolicitudesRegistroAdmin = () => {
       setAvailableGroups(data.groups || []);
       setVenueName(data.venue || 'No asignado');
       // Set default group to preferred group if available
-      const participant = participantesData.find(p => p.id_participant === participantId);
+      const participant = participantesData.find((p) => p.id_participant === participantId);
       const preferredGroupId = participant?.preferred_group;
       const defaultGroup = data.groups.find((g: GroupOption) => g.id_group === preferredGroupId);
       setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
@@ -174,7 +176,7 @@ const SolicitudesRegistroAdmin = () => {
       setAvailableGroups(data.groups || []);
       setVenueName(data.venue || 'No asignado');
       // Set default group to preferred group if available
-      const collaborator = apoyoStaffData.find(c => c.id_collaborator === collaboratorId);
+      const collaborator = apoyoStaffData.find((c) => c.id_collaborator === collaboratorId);
       const preferredGroupId = collaborator?.preferred_group;
       const defaultGroup = data.groups.find((g: GroupOption) => g.id_group === preferredGroupId);
       setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
@@ -194,7 +196,7 @@ const SolicitudesRegistroAdmin = () => {
       const token = localStorage.getItem('api_token');
       if (!token) return;
       // Busca la sede en la lista de sedes
-      const venue = allSedesData.find(v => v.name === venueName);
+      const venue = allSedesData.find((v) => v.name === venueName);
       if (!venue) return;
       // Busca grupos de la sede
       const response = await fetch(`/api/venues/${venue.id_venue}/groups`, {
@@ -203,7 +205,12 @@ const SolicitudesRegistroAdmin = () => {
       if (!response.ok) return;
       const data = await response.json();
       setEmailVenueGroups(Array.isArray(data) ? data : data.groups || []);
-      console.log('Fetched groups:', data, 'emailVenueGroups:', Array.isArray(data) ? data : data.groups);
+      console.log(
+        'Fetched groups:',
+        data,
+        'emailVenueGroups:',
+        Array.isArray(data) ? data : data.groups,
+      );
     } catch (error) {
       setEmailVenueGroups([]);
     }
@@ -226,10 +233,14 @@ const SolicitudesRegistroAdmin = () => {
         });
         if (!participantsResponse.ok) {
           const errorData = await participantsResponse.json();
-          throw new Error(`Error fetching participants: ${participantsResponse.status} - ${errorData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching participants: ${participantsResponse.status} - ${errorData.message || 'Unknown error'}`,
+          );
         }
         const participantsData = await participantsResponse.json();
-        const pendingParticipants = participantsData.dataForRequests.filter((p: Participante) => p.status === 'Pendiente');
+        const pendingParticipants = participantsData.dataForRequests.filter(
+          (p: Participante) => p.status === 'Pendiente',
+        );
         setParticipantesData(pendingParticipants);
 
         // Obtener colaboradores
@@ -238,10 +249,14 @@ const SolicitudesRegistroAdmin = () => {
         });
         if (!collaboratorsResponse.ok) {
           const errorData = await collaboratorsResponse.json();
-          throw new Error(`Error fetching collaborators: ${collaboratorsResponse.status} - ${errorData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching collaborators: ${collaboratorsResponse.status} - ${errorData.message || 'Unknown error'}`,
+          );
         }
         const collaboratorsData = await collaboratorsResponse.json();
-        const pendingCollaborators = collaboratorsData.dataForRequests.filter((c: ApoyoStaff) => c.status === 'Pendiente');
+        const pendingCollaborators = collaboratorsData.dataForRequests.filter(
+          (c: ApoyoStaff) => c.status === 'Pendiente',
+        );
         setApoyoStaffData(pendingCollaborators);
 
         // Obtener sedes
@@ -250,7 +265,9 @@ const SolicitudesRegistroAdmin = () => {
         });
         if (!venuesResponse.ok) {
           const errorData = await venuesResponse.json();
-          throw new Error(`Error fetching venues: ${venuesResponse.status} - ${errorData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching venues: ${venuesResponse.status} - ${errorData.message || 'Unknown error'}`,
+          );
         }
         const venuesData = await venuesResponse.json();
         setAllSedesData(venuesData); // todas las sedes
@@ -269,12 +286,18 @@ const SolicitudesRegistroAdmin = () => {
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
     if (!searchTerm) {
-      return section === 'PARTICIPANTES' ? participantesData : section === 'APOYO & STAFF' ? apoyoStaffData : sedesData;
+      return section === 'PARTICIPANTES'
+        ? participantesData
+        : section === 'APOYO & STAFF'
+          ? apoyoStaffData
+          : sedesData;
     }
 
     if (section === 'PARTICIPANTES') {
-      return participantesData.filter(item => {
-        const fullName = `${item.name} ${item.paternal_name} ${item.maternal_name}`.toLowerCase().trim();
+      return participantesData.filter((item) => {
+        const fullName = `${item.name} ${item.paternal_name} ${item.maternal_name}`
+          .toLowerCase()
+          .trim();
         return (
           fullName.includes(searchTerm) ||
           (item.groups?.venues?.name || '').toLowerCase().includes(searchTerm) ||
@@ -282,8 +305,10 @@ const SolicitudesRegistroAdmin = () => {
         );
       });
     } else if (section === 'APOYO & STAFF') {
-      return apoyoStaffData.filter(item => {
-        const fullName = `${item.name} ${item.paternal_name} ${item.maternal_name}`.toLowerCase().trim();
+      return apoyoStaffData.filter((item) => {
+        const fullName = `${item.name} ${item.paternal_name} ${item.maternal_name}`
+          .toLowerCase()
+          .trim();
         return (
           fullName.includes(searchTerm) ||
           (item.groups?.venues?.name || '').toLowerCase().includes(searchTerm) ||
@@ -294,10 +319,11 @@ const SolicitudesRegistroAdmin = () => {
         );
       });
     } else {
-      return sedesData.filter(item =>
-        item.name.toLowerCase().includes(searchTerm) ||
-        item.state.toLowerCase().includes(searchTerm) ||
-        item.address.toLowerCase().includes(searchTerm)
+      return sedesData.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm) ||
+          item.state.toLowerCase().includes(searchTerm) ||
+          item.address.toLowerCase().includes(searchTerm),
       );
     }
   }, [inputValue, section, participantesData, apoyoStaffData, sedesData]);
@@ -309,7 +335,10 @@ const SolicitudesRegistroAdmin = () => {
   };
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+  const paginatedData = filteredData.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage,
+  );
 
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
@@ -321,7 +350,7 @@ const SolicitudesRegistroAdmin = () => {
 
   useEffect(() => {
     if (emailSelectedGroupId && emailVenueGroups.length > 0) {
-      const group = emailVenueGroups.find(g => g.id_group === emailSelectedGroupId);
+      const group = emailVenueGroups.find((g) => g.id_group === emailSelectedGroupId);
       if (group) {
         setEmailGroupInfo(group);
         setEmailFormData({
@@ -367,9 +396,12 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        const response = await fetch(`/api/participants/${(item as Participante).id_participant}/pdf`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `/api/participants/${(item as Participante).id_participant}/pdf`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -460,7 +492,9 @@ const SolicitudesRegistroAdmin = () => {
     } else if (section === 'APOYO & STAFF') {
       const collaborator = item as ApoyoStaff;
       fetchAvailableGroupsForCollaborator(collaborator.id_collaborator);
-      setSelectedRole(collaborator.preferred_role !== 'Pendiente' ? collaborator.preferred_role : 'Instructora');
+      setSelectedRole(
+        collaborator.preferred_role !== 'Pendiente' ? collaborator.preferred_role : 'Instructora',
+      );
     }
     setIsConfirmPopupOpen(true);
   };
@@ -535,14 +569,17 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/approve`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `/api/participants/${(selectedItem as Participante).id_participant}/approve`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ groupId: selectedGroupId }),
           },
-          body: JSON.stringify({ groupId: selectedGroupId }),
-        });
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -550,9 +587,12 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Remove participant from list
-        setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
+        setParticipantesData((prev) =>
+          prev.filter((p) => p.id_participant !== (selectedItem as Participante).id_participant),
+        );
 
-        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'green',
           title: 'Éxito',
@@ -563,7 +603,8 @@ const SolicitudesRegistroAdmin = () => {
         closeConfirmPopup();
       } catch (error: any) {
         console.error('Error approving participant:', error);
-        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'red',
           title: 'Error',
@@ -605,14 +646,17 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/approve`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/approve`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ role: selectedRole, groupId: selectedGroupId }),
           },
-          body: JSON.stringify({ role: selectedRole, groupId: selectedGroupId }),
-        });
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -620,10 +664,14 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Remove collaborator from list
-        setApoyoStaffData(prev => prev.filter(c => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
+        setApoyoStaffData((prev) =>
+          prev.filter((c) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator),
+        );
 
-        const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
-        const groupName = availableGroups.find(g => g.id_group === selectedGroupId)?.name || 'Desconocido';
+        const fullName =
+          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const groupName =
+          availableGroups.find((g) => g.id_group === selectedGroupId)?.name || 'Desconocido';
         notify({
           color: 'green',
           title: 'Éxito',
@@ -634,7 +682,8 @@ const SolicitudesRegistroAdmin = () => {
         closeConfirmPopup();
       } catch (error: any) {
         console.error('Error approving collaborator:', error);
-        const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         notify({
           color: 'red',
           title: 'Error',
@@ -670,7 +719,7 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Remove venue from list
-        setSedesData(prev => prev.filter(v => v.id_venue !== (selectedItem as Sede).id_venue));
+        setSedesData((prev) => prev.filter((v) => v.id_venue !== (selectedItem as Sede).id_venue));
 
         notify({
           color: 'green',
@@ -712,14 +761,17 @@ const SolicitudesRegistroAdmin = () => {
           return;
         }
 
-        const response = await fetch(`/api/participants/${(selectedItem as Participante).id_participant}/status`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `/api/participants/${(selectedItem as Participante).id_participant}/status`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ action: 'desactivar' }),
           },
-          body: JSON.stringify({ action: 'desactivar' }),
-        });
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -727,9 +779,12 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Remove participant from list
-        setParticipantesData(prev => prev.filter(p => p.id_participant !== (selectedItem as Participante).id_participant));
+        setParticipantesData((prev) =>
+          prev.filter((p) => p.id_participant !== (selectedItem as Participante).id_participant),
+        );
 
-        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'green',
           title: 'Éxito',
@@ -740,7 +795,8 @@ const SolicitudesRegistroAdmin = () => {
         closeRejectPopup();
       } catch (error: any) {
         console.error('Error rejecting participant:', error);
-        const fullName = `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'red',
           title: 'Error',
@@ -763,14 +819,17 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Send request to reject collaborator
-        const response = await fetch(`/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/reject`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `/api/collaborators/${(selectedItem as ApoyoStaff).id_collaborator}/reject`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ action: 'desactivar' }),
           },
-          body: JSON.stringify({ action: 'desactivar' }),
-        });
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -778,9 +837,14 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Remove collaborator from list
-        setApoyoStaffData((prev: ApoyoStaff[]) => prev.filter((c: ApoyoStaff) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator));
+        setApoyoStaffData((prev: ApoyoStaff[]) =>
+          prev.filter(
+            (c: ApoyoStaff) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator,
+          ),
+        );
 
-        const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         notify({
           color: 'green',
           title: 'Éxito',
@@ -791,7 +855,8 @@ const SolicitudesRegistroAdmin = () => {
         closeRejectPopup();
       } catch (error: any) {
         console.error('Error rejecting collaborator:', error);
-        const fullName = `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName =
+          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         let errorMessage = error.message;
 
         // Handle specific error
@@ -837,7 +902,9 @@ const SolicitudesRegistroAdmin = () => {
         }
 
         // Remove venue from list
-        setSedesData((prev: Sede[]) => prev.filter((v: Sede) => v.id_venue !== (selectedItem as Sede).id_venue));
+        setSedesData((prev: Sede[]) =>
+          prev.filter((v: Sede) => v.id_venue !== (selectedItem as Sede).id_venue),
+        );
 
         const venueName = (selectedItem as Sede).name.trim();
         notify({
@@ -946,25 +1013,25 @@ const SolicitudesRegistroAdmin = () => {
   };
 
   if (error) {
-    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
   }
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Solicitudes de Registro</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
         {/* Fila de búsqueda */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
+                label=''
                 showDescription={false}
-                placeholder="Buscar"
+                placeholder='Buscar'
                 showError={false}
-                variant="primary"
-                icon="MagnifyingGlass"
+                variant='primary'
+                icon='MagnifyingGlass'
                 value={inputValue}
                 onChangeText={(val) => setInputValue(val)}
               />
@@ -973,7 +1040,7 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Section Headers */}
-        <div className="flex justify-center gap-48 mt-2 pb-2">
+        <div className='flex justify-center gap-48 mt-2 pb-2'>
           <div
             className={`cursor-pointer text-lg font-bold ${section === 'PARTICIPANTES' ? 'text-purple-800' : 'text-gray-500'}`}
             onClick={() => sectionFilterChange('PARTICIPANTES')}
@@ -995,95 +1062,184 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Tabla */}
-        <div className="overflow-x-auto custom-scrollbar-tabla">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
+        <div className='overflow-x-auto custom-scrollbar-tabla'>
+          <table className='min-w-full text-left text-sm'>
+            <thead className='text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]'>
               <tr className='texto-primary-shade'>
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center"></th>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'></th>
                 {section === 'PARTICIPANTES' && (
                   <>
-                    <th className="p-2 text-center">Nombre</th>
-                    <th className="p-2 text-center">Grupo Preferido</th>
-                    <th className="p-2 text-center">Sede</th>
+                    <th className='p-2 text-center'>Nombre</th>
+                    <th className='p-2 text-center'>Grupo Preferido</th>
+                    <th className='p-2 text-center'>Sede</th>
                   </>
                 )}
                 {section === 'APOYO & STAFF' && (
                   <>
-                    <th className="p-2 text-center">Nombre</th>
-                    <th className="p-2 text-center">Rol Preferido</th>
-                    <th className="p-2 text-center">Idioma Preferido</th>
-                    <th className="p-2 text-center">Nivel Preferido</th>
-                    <th className="p-2 text-center">Grupo Preferido</th>
-                    <th className="p-2 text-center">Sede</th>
+                    <th className='p-2 text-center'>Nombre</th>
+                    <th className='p-2 text-center'>Rol Preferido</th>
+                    <th className='p-2 text-center'>Idioma Preferido</th>
+                    <th className='p-2 text-center'>Nivel Preferido</th>
+                    <th className='p-2 text-center'>Grupo Preferido</th>
+                    <th className='p-2 text-center'>Sede</th>
                   </>
                 )}
                 {section === 'SEDES' && (
                   <>
-                    <th className="p-2 text-center">Nombre</th>
-                    <th className="p-2 text-center">Ubicación</th>
-                    <th className="p-2 text-center">Dirección</th>
+                    <th className='p-2 text-center'>Nombre</th>
+                    <th className='p-2 text-center'>Ubicación</th>
+                    <th className='p-2 text-center'>Dirección</th>
                   </>
                 )}
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center"></th>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'></th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {paginatedData.map((item, index) => (
-                <tr key={index} className="border-t border-gray-300">
+                <tr key={index} className='border-t border-gray-300'>
                   {section === 'PARTICIPANTES' && (
                     <>
-                      <td className="p-2 text-center"></td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as Participante)} />
+                      <td className='p-2 text-center'></td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='warning'
+                          round
+                          showLeftIcon
+                          IconLeft={Eye}
+                          onClick={() => openPopup(item as Participante)}
+                        />
                       </td>
-                      <td className="p-2 text-center">{`${(item as Participante).name} ${(item as Participante).paternal_name} ${(item as Participante).maternal_name}`.trim()}</td>
-                      <td className="p-2 text-center">{(item as Participante).groups?.name || 'No asignado'}</td>
-                      <td className="p-2 text-center">{(item as Participante).groups?.venues?.name || 'No asignado'}</td>
-                      <td className="p-2 text-center">
+                      <td className='p-2 text-center'>
+                        {`${(item as Participante).name} ${(item as Participante).paternal_name} ${(item as Participante).maternal_name}`.trim()}
+                      </td>
+                      <td className='p-2 text-center'>
+                        {(item as Participante).groups?.name || 'No asignado'}
+                      </td>
+                      <td className='p-2 text-center'>
+                        {(item as Participante).groups?.venues?.name || 'No asignado'}
+                      </td>
+                      <td className='p-2 text-center'>
                         <div className='flex gap-4 justify-center'>
-                          <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Participante)} />
-                          <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Participante)} />
-                          <Button label="" variant="primary" round showLeftIcon IconLeft={Envelope} onClick={() => openSendEmailPopup(item as Participante)} />
+                          <Button
+                            label=''
+                            variant='success'
+                            round
+                            showLeftIcon
+                            IconLeft={Check}
+                            onClick={() => openConfirmPopup(item as Participante)}
+                          />
+                          <Button
+                            label=''
+                            variant='error'
+                            round
+                            showLeftIcon
+                            IconLeft={X}
+                            onClick={() => openRejectPopup(item as Participante)}
+                          />
+                          <Button
+                            label=''
+                            variant='primary'
+                            round
+                            showLeftIcon
+                            IconLeft={Envelope}
+                            onClick={() => openSendEmailPopup(item as Participante)}
+                          />
                         </div>
                       </td>
                     </>
                   )}
                   {section === 'APOYO & STAFF' && (
                     <>
-                      <td className="p-2 text-center"></td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as ApoyoStaff)} />
+                      <td className='p-2 text-center'></td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='warning'
+                          round
+                          showLeftIcon
+                          IconLeft={Eye}
+                          onClick={() => openPopup(item as ApoyoStaff)}
+                        />
                       </td>
-                      <td className="p-2 text-center">{`${(item as ApoyoStaff).name} ${(item as ApoyoStaff).paternal_name} ${(item as ApoyoStaff).maternal_name}`.trim()}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).preferred_role}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).preferred_language}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).preferred_level}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).groups?.name || 'No asignado'}</td>
-                      <td className="p-2 text-center">{(item as ApoyoStaff).groups?.venues?.name || 'No asignado'}</td>
-                      <td className="p-2 text-center">
+                      <td className='p-2 text-center'>
+                        {`${(item as ApoyoStaff).name} ${(item as ApoyoStaff).paternal_name} ${(item as ApoyoStaff).maternal_name}`.trim()}
+                      </td>
+                      <td className='p-2 text-center'>{(item as ApoyoStaff).preferred_role}</td>
+                      <td className='p-2 text-center'>{(item as ApoyoStaff).preferred_language}</td>
+                      <td className='p-2 text-center'>{(item as ApoyoStaff).preferred_level}</td>
+                      <td className='p-2 text-center'>
+                        {(item as ApoyoStaff).groups?.name || 'No asignado'}
+                      </td>
+                      <td className='p-2 text-center'>
+                        {(item as ApoyoStaff).groups?.venues?.name || 'No asignado'}
+                      </td>
+                      <td className='p-2 text-center'>
                         <div className='flex gap-4 justify-center'>
-                          <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as ApoyoStaff)} />
-                          <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as ApoyoStaff)} />
-                          <Button label="" variant="primary" round showLeftIcon IconLeft={Envelope} onClick={() => openSendEmailPopup(item as ApoyoStaff)} />
+                          <Button
+                            label=''
+                            variant='success'
+                            round
+                            showLeftIcon
+                            IconLeft={Check}
+                            onClick={() => openConfirmPopup(item as ApoyoStaff)}
+                          />
+                          <Button
+                            label=''
+                            variant='error'
+                            round
+                            showLeftIcon
+                            IconLeft={X}
+                            onClick={() => openRejectPopup(item as ApoyoStaff)}
+                          />
+                          <Button
+                            label=''
+                            variant='primary'
+                            round
+                            showLeftIcon
+                            IconLeft={Envelope}
+                            onClick={() => openSendEmailPopup(item as ApoyoStaff)}
+                          />
                         </div>
                       </td>
                     </>
                   )}
                   {section === 'SEDES' && (
                     <>
-                      <td className="p-2 text-center"></td>
-                      <td className="p-2 text-center">
-                        <Button label='' variant="warning" round showLeftIcon IconLeft={Eye} onClick={() => openPopup(item as Sede)} />
+                      <td className='p-2 text-center'></td>
+                      <td className='p-2 text-center'>
+                        <Button
+                          label=''
+                          variant='warning'
+                          round
+                          showLeftIcon
+                          IconLeft={Eye}
+                          onClick={() => openPopup(item as Sede)}
+                        />
                       </td>
-                      <td className="p-2 text-center">{(item as Sede).name}</td>
-                      <td className="p-2 text-center">{(item as Sede).state}</td>
-                      <td className="p-2 text-center">{(item as Sede).address}</td>
-                      <td className="p-2 text-center">
+                      <td className='p-2 text-center'>{(item as Sede).name}</td>
+                      <td className='p-2 text-center'>{(item as Sede).state}</td>
+                      <td className='p-2 text-center'>{(item as Sede).address}</td>
+                      <td className='p-2 text-center'>
                         <div className='flex gap-4 justify-center'>
-                          <Button label='' variant="success" round showLeftIcon IconLeft={Check} onClick={() => openConfirmPopup(item as Sede)} />
-                          <Button label='' variant="error" round showLeftIcon IconLeft={X} onClick={() => openRejectPopup(item as Sede)} />
+                          <Button
+                            label=''
+                            variant='success'
+                            round
+                            showLeftIcon
+                            IconLeft={Check}
+                            onClick={() => openConfirmPopup(item as Sede)}
+                          />
+                          <Button
+                            label=''
+                            variant='error'
+                            round
+                            showLeftIcon
+                            IconLeft={X}
+                            onClick={() => openRejectPopup(item as Sede)}
+                          />
                         </div>
                       </td>
                     </>
@@ -1095,87 +1251,157 @@ const SolicitudesRegistroAdmin = () => {
         </div>
 
         {/* Paginación */}
-        <div className="mt-auto pt-4 flex justify-center">
+        <div className='mt-auto pt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            variant="primary"
+            variant='primary'
             pageLinks={Array(totalPages).fill('#')}
           />
         </div>
 
         {/* Pop-up de información */}
         {isPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
-              <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Solicitud de Registro</h2>
               {section === 'PARTICIPANTES' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>Nombre:</strong> {`${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim()}</p>
-                  <p><strong>Correo:</strong> {(selectedItem as Participante).email}</p>
-                  <p><strong>Teléfono del tutor:</strong> {(selectedItem as Participante).tutors?.phone_number || 'No asignado'}</p>
-                  <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).groups?.name || 'No asignado'}</p>
-                  <p><strong>Sede:</strong> {(selectedItem as Participante).groups?.venues?.name || 'No asignado'}</p>
-                  <p><strong>Estado:</strong> {(selectedItem as Participante).status}</p>
+                  <p>
+                    <strong>Nombre:</strong>{' '}
+                    {`${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim()}
+                  </p>
+                  <p>
+                    <strong>Correo:</strong> {(selectedItem as Participante).email}
+                  </p>
+                  <p>
+                    <strong>Teléfono del tutor:</strong>{' '}
+                    {(selectedItem as Participante).tutors?.phone_number || 'No asignado'}
+                  </p>
+                  <p>
+                    <strong>Grupo preferido:</strong>{' '}
+                    {(selectedItem as Participante).groups?.name || 'No asignado'}
+                  </p>
+                  <p>
+                    <strong>Sede:</strong>{' '}
+                    {(selectedItem as Participante).groups?.venues?.name || 'No asignado'}
+                  </p>
+                  <p>
+                    <strong>Estado:</strong> {(selectedItem as Participante).status}
+                  </p>
                   {pdfUrl ? (
-                    <div className="mt-4">
-                      <p><strong>Carta de Convocatoria:</strong></p>
+                    <div className='mt-4'>
+                      <p>
+                        <strong>Carta de Convocatoria:</strong>
+                      </p>
                       <iframe
                         src={pdfUrl}
-                        className="w-full h-[400px] border rounded"
-                        title="Participation File"
+                        className='w-full h-[400px] border rounded'
+                        title='Participation File'
                       />
                     </div>
                   ) : (
-                    <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
+                    <p className='mt-4 text-red-500'>
+                      <strong>Carta de Convocatoria:</strong> No disponible
+                    </p>
                   )}
                 </div>
               )}
 
               {section === 'APOYO & STAFF' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>Nombre:</strong> {`${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}</p>
-                  <p><strong>Correo:</strong> {(selectedItem as ApoyoStaff).email}</p>
-                  <p><strong>Teléfono:</strong> {(selectedItem as ApoyoStaff).phone_number}</p>
-                  <p><strong>Universidad:</strong> {(selectedItem as ApoyoStaff).college}</p>
-                  <p><strong>Carrera:</strong> {(selectedItem as ApoyoStaff).degree}</p>
-                  <p><strong>Semestre:</strong> {(selectedItem as ApoyoStaff).semester}</p>
-                  <p><strong>Género:</strong> {(selectedItem as ApoyoStaff).gender}</p>
-                  <p><strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).preferred_role}</p>
-                  <p><strong>Idioma preferido:</strong> {(selectedItem as ApoyoStaff).preferred_language}</p>
-                  <p><strong>Nivel preferido:</strong> {(selectedItem as ApoyoStaff).preferred_level}</p>
-                  <p><strong>Grupo preferido:</strong> {(selectedItem as ApoyoStaff).groups?.name || 'No asignado'}</p>
-                  <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).groups?.venues?.name || 'No asignado'}</p>
-                  <p><strong>Rol asignado:</strong> {(selectedItem as ApoyoStaff).role}</p>
-                  <p><strong>Nivel asignado:</strong> {(selectedItem as ApoyoStaff).level}</p>
-                  <p><strong>Idioma asignado:</strong> {(selectedItem as ApoyoStaff).language}</p>
-                  <p><strong>Estado:</strong> {(selectedItem as ApoyoStaff).status}</p>
+                  <p>
+                    <strong>Nombre:</strong>{' '}
+                    {`${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}
+                  </p>
+                  <p>
+                    <strong>Correo:</strong> {(selectedItem as ApoyoStaff).email}
+                  </p>
+                  <p>
+                    <strong>Teléfono:</strong> {(selectedItem as ApoyoStaff).phone_number}
+                  </p>
+                  <p>
+                    <strong>Universidad:</strong> {(selectedItem as ApoyoStaff).college}
+                  </p>
+                  <p>
+                    <strong>Carrera:</strong> {(selectedItem as ApoyoStaff).degree}
+                  </p>
+                  <p>
+                    <strong>Semestre:</strong> {(selectedItem as ApoyoStaff).semester}
+                  </p>
+                  <p>
+                    <strong>Género:</strong> {(selectedItem as ApoyoStaff).gender}
+                  </p>
+                  <p>
+                    <strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).preferred_role}
+                  </p>
+                  <p>
+                    <strong>Idioma preferido:</strong>{' '}
+                    {(selectedItem as ApoyoStaff).preferred_language}
+                  </p>
+                  <p>
+                    <strong>Nivel preferido:</strong> {(selectedItem as ApoyoStaff).preferred_level}
+                  </p>
+                  <p>
+                    <strong>Grupo preferido:</strong>{' '}
+                    {(selectedItem as ApoyoStaff).groups?.name || 'No asignado'}
+                  </p>
+                  <p>
+                    <strong>Sede:</strong>{' '}
+                    {(selectedItem as ApoyoStaff).groups?.venues?.name || 'No asignado'}
+                  </p>
+                  <p>
+                    <strong>Rol asignado:</strong> {(selectedItem as ApoyoStaff).role}
+                  </p>
+                  <p>
+                    <strong>Nivel asignado:</strong> {(selectedItem as ApoyoStaff).level}
+                  </p>
+                  <p>
+                    <strong>Idioma asignado:</strong> {(selectedItem as ApoyoStaff).language}
+                  </p>
+                  <p>
+                    <strong>Estado:</strong> {(selectedItem as ApoyoStaff).status}
+                  </p>
                 </div>
               )}
               {section === 'SEDES' && selectedItem && (
                 <div className='pt-6 pb-6'>
-                  <p><strong>Nombre:</strong> {(selectedItem as Sede).name}</p>
-                  <p><strong>País:</strong> {(selectedItem as Sede).country}</p>
-                  <p><strong>Ubicación:</strong> {(selectedItem as Sede).state}</p>
-                  <p><strong>Dirección:</strong> {(selectedItem as Sede).address}</p>
-                  <p><strong>Estado:</strong> {(selectedItem as Sede).status}</p>
+                  <p>
+                    <strong>Nombre:</strong> {(selectedItem as Sede).name}
+                  </p>
+                  <p>
+                    <strong>País:</strong> {(selectedItem as Sede).country}
+                  </p>
+                  <p>
+                    <strong>Ubicación:</strong> {(selectedItem as Sede).state}
+                  </p>
+                  <p>
+                    <strong>Dirección:</strong> {(selectedItem as Sede).address}
+                  </p>
+                  <p>
+                    <strong>Estado:</strong> {(selectedItem as Sede).status}
+                  </p>
                   {pdfUrl ? (
-                    <div className="mt-4">
-                      <p><strong>Carta de Convocatoria:</strong></p>
+                    <div className='mt-4'>
+                      <p>
+                        <strong>Carta de Convocatoria:</strong>
+                      </p>
                       <iframe
                         src={pdfUrl}
-                        className="w-full h-[400px] border rounded"
-                        title="Participation File"
+                        className='w-full h-[400px] border rounded'
+                        title='Participation File'
                       />
                     </div>
                   ) : (
-                    <p className="mt-4 text-red-500"><strong>Carta de Convocatoria:</strong> No disponible</p>
+                    <p className='mt-4 text-red-500'>
+                      <strong>Carta de Convocatoria:</strong> No disponible
+                    </p>
                   )}
                 </div>
               )}
-              <div className="mt-4 flex justify-center">
-                <Button label="Cerrar" variant="primary" onClick={closePopup} />
+              <div className='mt-4 flex justify-center'>
+                <Button label='Cerrar' variant='primary' onClick={closePopup} />
               </div>
             </div>
           </div>
@@ -1183,27 +1409,38 @@ const SolicitudesRegistroAdmin = () => {
 
         {/* Pop-up de confirmación (Aceptar) */}
         {isConfirmPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">
-                ¿Aceptar a {section === 'SEDES' ? (selectedItem as Sede).name : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}?
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-800'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>
+                ¿Aceptar a{' '}
+                {section === 'SEDES'
+                  ? (selectedItem as Sede).name
+                  : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}
+                ?
               </h2>
-              <div className="pt-6 pb-6">
+              <div className='pt-6 pb-6'>
                 {section === 'PARTICIPANTES' && selectedItem && (
                   <>
-                    <p><strong>Sede:</strong> {venueName}</p>
-                    <p><strong>Grupo preferido:</strong> {(selectedItem as Participante).groups?.name || 'No asignado'}</p>
-                    <p className="mt-4"><strong>Asignar a un grupo</strong></p>
+                    <p>
+                      <strong>Sede:</strong> {venueName}
+                    </p>
+                    <p>
+                      <strong>Grupo preferido:</strong>{' '}
+                      {(selectedItem as Participante).groups?.name || 'No asignado'}
+                    </p>
+                    <p className='mt-4'>
+                      <strong>Asignar a un grupo</strong>
+                    </p>
                     <select
-                      className="w-full p-2 border rounded mt-2 bg-purple-100"
+                      className='w-full p-2 border rounded mt-2 bg-purple-100'
                       value={selectedGroupId || ''}
                       onChange={(e) => setSelectedGroupId(parseInt(e.target.value))}
                       disabled={availableGroups.length === 0}
                     >
                       {availableGroups.length === 0 ? (
-                        <option value="">No hay grupos disponibles</option>
+                        <option value=''>No hay grupos disponibles</option>
                       ) : (
-                        availableGroups.map(group => (
+                        availableGroups.map((group) => (
                           <option key={group.id_group} value={group.id_group}>
                             {group.name}
                           </option>
@@ -1211,38 +1448,48 @@ const SolicitudesRegistroAdmin = () => {
                       )}
                     </select>
                     {selectedGroupId && (
-                      <p className="mt-2">
+                      <p className='mt-2'>
                         <strong>Cupo disponible:</strong>{' '}
-                        {availableGroups.find(g => g.id_group === selectedGroupId)?.available_places || 0}
+                        {availableGroups.find((g) => g.id_group === selectedGroupId)
+                          ?.available_places || 0}
                       </p>
                     )}
                   </>
                 )}
                 {section === 'APOYO & STAFF' && selectedItem && (
                   <>
-                    <p><strong>Sede:</strong> {(selectedItem as ApoyoStaff).groups?.venues?.name || 'No asignado'}</p>
-                    <p><strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).preferred_role}</p>
-                    <p className="mt-4"><strong>Asignar un rol</strong></p>
+                    <p>
+                      <strong>Sede:</strong>{' '}
+                      {(selectedItem as ApoyoStaff).groups?.venues?.name || 'No asignado'}
+                    </p>
+                    <p>
+                      <strong>Rol preferido:</strong> {(selectedItem as ApoyoStaff).preferred_role}
+                    </p>
+                    <p className='mt-4'>
+                      <strong>Asignar un rol</strong>
+                    </p>
                     <select
-                      className="w-full p-2 border rounded mt-2 bg-purple-100"
+                      className='w-full p-2 border rounded mt-2 bg-purple-100'
                       value={selectedRole}
                       onChange={(e) => setSelectedRole(e.target.value)}
                     >
-                      <option value="Instructora">Instructora</option>
-                      <option value="Facilitadora">Facilitadora</option>
-                      <option value="Staff">Staff</option>
+                      <option value='Instructora'>Instructora</option>
+                      <option value='Facilitadora'>Facilitadora</option>
+                      <option value='Staff'>Staff</option>
                     </select>
-                    <p className="mt-4"><strong>Asignar a un grupo</strong></p>
+                    <p className='mt-4'>
+                      <strong>Asignar a un grupo</strong>
+                    </p>
                     <select
-                      className="w-full p-2 border rounded mt-2 bg-purple-100"
+                      className='w-full p-2 border rounded mt-2 bg-purple-100'
                       value={selectedGroupId || ''}
                       onChange={(e) => setSelectedGroupId(parseInt(e.target.value))}
                       disabled={availableGroups.length === 0}
                     >
                       {availableGroups.length === 0 ? (
-                        <option value="">No hay grupos disponibles</option>
+                        <option value=''>No hay grupos disponibles</option>
                       ) : (
-                        availableGroups.map(group => (
+                        availableGroups.map((group) => (
                           <option key={group.id_group} value={group.id_group}>
                             {group.name}
                           </option>
@@ -1250,14 +1497,20 @@ const SolicitudesRegistroAdmin = () => {
                       )}
                     </select>
                     {selectedGroupId && (
-                      <div className="mt-2">
+                      <div className='mt-2'>
                         <p>
                           <strong>Cupo disponible:</strong>{' '}
-                          {availableGroups.find(g => g.id_group === selectedGroupId)?.available_places || 0}
+                          {availableGroups.find((g) => g.id_group === selectedGroupId)
+                            ?.available_places || 0}
                         </p>
-                        <p className="mt-1"><strong>Disponibilidad por rol:</strong></p>
-                        {Object.entries(availableGroups.find(g => g.id_group === selectedGroupId)?.role_availability || {}).map(([role, count]) => (
-                          <p key={role} className="ml-2">
+                        <p className='mt-1'>
+                          <strong>Disponibilidad por rol:</strong>
+                        </p>
+                        {Object.entries(
+                          availableGroups.find((g) => g.id_group === selectedGroupId)
+                            ?.role_availability || {},
+                        ).map(([role, count]) => (
+                          <p key={role} className='ml-2'>
                             {role}: {count}
                           </p>
                         ))}
@@ -1267,20 +1520,28 @@ const SolicitudesRegistroAdmin = () => {
                 )}
                 {section === 'SEDES' && selectedItem && (
                   <>
-                    <p><strong>Nombre:</strong> {(selectedItem as Sede).name}</p>
-                    <p><strong>Ubicación:</strong> {(selectedItem as Sede).state}</p>
-                    <p><strong>Dirección:</strong> {(selectedItem as Sede).address}</p>
+                    <p>
+                      <strong>Nombre:</strong> {(selectedItem as Sede).name}
+                    </p>
+                    <p>
+                      <strong>Ubicación:</strong> {(selectedItem as Sede).state}
+                    </p>
+                    <p>
+                      <strong>Dirección:</strong> {(selectedItem as Sede).address}
+                    </p>
                   </>
                 )}
               </div>
-              <div className="mt-4 flex justify-center gap-4">
+              <div className='mt-4 flex justify-center gap-4'>
                 <Button
-                  label="Aceptar"
-                  variant="success"
+                  label='Aceptar'
+                  variant='success'
                   onClick={handleAccept}
-                  disabled={(section === 'PARTICIPANTES' || section === 'APOYO & STAFF') && !selectedGroupId}
+                  disabled={
+                    (section === 'PARTICIPANTES' || section === 'APOYO & STAFF') && !selectedGroupId
+                  }
                 />
-                <Button label="Cancelar" variant="error" onClick={closeConfirmPopup} />
+                <Button label='Cancelar' variant='error' onClick={closeConfirmPopup} />
               </div>
             </div>
           </div>
@@ -1288,105 +1549,130 @@ const SolicitudesRegistroAdmin = () => {
 
         {/* Pop-up de rechazo */}
         {isRejectPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-800">
-              <h2 className="text-2xl font-bold mx-4 mt-6 mb-12 text-center">
-                ¿Seguro que quieres rechazar la solicitud de {section === 'SEDES' ? (selectedItem as Sede).name : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}?
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative text-gray-800'>
+              <h2 className='text-2xl font-bold mx-4 mt-6 mb-12 text-center'>
+                ¿Seguro que quieres rechazar la solicitud de{' '}
+                {section === 'SEDES'
+                  ? (selectedItem as Sede).name
+                  : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}
+                ?
               </h2>
-              <div className="mt-4 flex justify-center gap-4">
-                <Button label="Rechazar" variant="error" onClick={handleReject} />
-                <Button label="Cancelar" variant="primary" onClick={closeRejectPopup} />
+              <div className='mt-4 flex justify-center gap-4'>
+                <Button label='Rechazar' variant='error' onClick={handleReject} />
+                <Button label='Cancelar' variant='primary' onClick={closeRejectPopup} />
               </div>
             </div>
           </div>
         )}
 
         {isSendEmailPopupOpen && selectedItem && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative max-h-[90vh] overflow-y-auto text-gray-800">
-
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative max-h-[90vh] overflow-y-auto text-gray-800'>
               {section === 'PARTICIPANTES' && selectedItem && (
-                <h2 className="text-2xl font-bold mb-4 text-center">
-                  Enviar correo de cambio de grupo a {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
-                </h2>)}
-              {section === 'APOYO & STAFF' && selectedItem && (<div className="mb-4">
-                <h2 className="text-2xl font-bold mb-4 text-center">
-                  Enviar correo a {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
+                <h2 className='text-2xl font-bold mb-4 text-center'>
+                  Enviar correo de cambio de grupo a{' '}
+                  {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
                 </h2>
-                <label className="block mb-2 font-semibold">Plantilla:</label>
-                <select
-                  className="w-full p-2 border rounded bg-purple-100"
-                  value={selectedTemplate}
-                  onChange={e => setSelectedTemplate(e.target.value)}
-                >
-                  <option value="sol_cambio">Solicitud de Cambio</option>
-                  <option value="interview">Entrevista</option>
-                </select>
-              </div>)}
+              )}
+              {section === 'APOYO & STAFF' && selectedItem && (
+                <div className='mb-4'>
+                  <h2 className='text-2xl font-bold mb-4 text-center'>
+                    Enviar correo a{' '}
+                    {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
+                  </h2>
+                  <label className='block mb-2 font-semibold'>Plantilla:</label>
+                  <select
+                    className='w-full p-2 border rounded bg-purple-100'
+                    value={selectedTemplate}
+                    onChange={(e) => setSelectedTemplate(e.target.value)}
+                  >
+                    <option value='sol_cambio'>Solicitud de Cambio</option>
+                    <option value='interview'>Entrevista</option>
+                  </select>
+                </div>
+              )}
               {selectedTemplate === 'sol_cambio' && section === 'PARTICIPANTES' && (
                 <>
-                  <label className="block mt-2 font-semibold">Sede:</label>
+                  <label className='block mt-2 font-semibold'>Sede:</label>
                   <select
-                    className="w-full p-2 border rounded bg-purple-100"
+                    className='w-full p-2 border rounded bg-purple-100'
                     value={emailSelectedVenue}
-                    onChange={e => {
+                    onChange={(e) => {
                       setEmailSelectedVenue(e.target.value);
                       fetchGroupsByVenue(e.target.value);
                       setEmailSelectedGroupId(null);
                       setEmailGroupInfo(null);
                     }}
-
                   >
-                    <option value="">Selecciona una sede</option>
-                    {allSedesData.map(venue => (
-                      <option key={venue.id_venue} value={venue.name}>{venue.name}</option>
+                    <option value=''>Selecciona una sede</option>
+                    {allSedesData.map((venue) => (
+                      <option key={venue.id_venue} value={venue.name}>
+                        {venue.name}
+                      </option>
                     ))}
                   </select>
-                  <label className="block mt-2 font-semibold">Grupo destino:</label>
+                  <label className='block mt-2 font-semibold'>Grupo destino:</label>
                   <select
-                    className="w-full p-2 border rounded bg-purple-100"
+                    className='w-full p-2 border rounded bg-purple-100'
                     value={emailSelectedGroupId || ''}
-                    onChange={e => setEmailSelectedGroupId(Number(e.target.value))}
+                    onChange={(e) => setEmailSelectedGroupId(Number(e.target.value))}
                     disabled={!emailSelectedVenue}
                   >
-                    <option value="">Selecciona un grupo</option>
-                    {emailVenueGroups.map(group => (
-                      <option key={group.id_group} value={group.id_group}>{group.name}</option>
+                    <option value=''>Selecciona un grupo</option>
+                    {emailVenueGroups.map((group) => (
+                      <option key={group.id_group} value={group.id_group}>
+                        {group.name}
+                      </option>
                     ))}
                   </select>
                   {emailGroupInfo && (
-                    <div className="mt-4 space-y-1">
-                      <p><strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}</p>
-                      <p><strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}</p>
-                      <p><strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}</p>
-                      <p><strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}</p>
-                      <p><strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}</p>
-                      <p><strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}</p>
+                    <div className='mt-4 space-y-1'>
+                      <p>
+                        <strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}
+                      </p>
+                      <p>
+                        <strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}
+                      </p>
                     </div>
                   )}
-                  <label className="block mt-4 font-semibold">Fecha límite de confirmación:</label>
+                  <label className='block mt-4 font-semibold'>Fecha límite de confirmación:</label>
                   <input
-                    className="w-full p-2 border rounded"
+                    className='w-full p-2 border rounded'
                     value={emailFormData.lDate || ''}
-                    onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
-                    placeholder="Ej: 10/06/2025"
+                    onChange={(e) => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
+                    placeholder='Ej: 10/06/2025'
                   />
-                  <label className="block mt-2 font-semibold">Enlace de confirmación:</label>
+                  <label className='block mt-2 font-semibold'>Enlace de confirmación:</label>
                   <input
-                    className="w-full p-2 border rounded"
+                    className='w-full p-2 border rounded'
                     value={emailFormData.platformLink || ''}
-                    onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })}
-                    placeholder="https://..."
+                    onChange={(e) =>
+                      setEmailFormData({ ...emailFormData, platformLink: e.target.value })
+                    }
+                    placeholder='https://...'
                   />
                 </>
               )}
               {selectedTemplate === 'sol_cambio' && section === 'APOYO & STAFF' && (
                 <>
-                  <label className="block mt-2 font-semibold">Sede:</label>
+                  <label className='block mt-2 font-semibold'>Sede:</label>
                   <select
-                    className="w-full p-2 border rounded bg-purple-100"
+                    className='w-full p-2 border rounded bg-purple-100'
                     value={emailSelectedVenue}
-                    onChange={e => {
+                    onChange={(e) => {
                       setEmailSelectedVenue(e.target.value);
                       fetchGroupsByVenue(e.target.value);
                       setEmailSelectedGroupId(null);
@@ -1394,76 +1680,106 @@ const SolicitudesRegistroAdmin = () => {
                       setEmailFormData((prev: any) => ({ ...prev, role: '' }));
                     }}
                   >
-                    <option value="">Selecciona una sede</option>
-                    {allSedesData.map(venue => (
-                      <option key={venue.id_venue} value={venue.name}>{venue.name}</option>
+                    <option value=''>Selecciona una sede</option>
+                    {allSedesData.map((venue) => (
+                      <option key={venue.id_venue} value={venue.name}>
+                        {venue.name}
+                      </option>
                     ))}
                   </select>
-                  <label className="block mt-2 font-semibold">Grupo destino:</label>
+                  <label className='block mt-2 font-semibold'>Grupo destino:</label>
                   <select
-                    className="w-full p-2 border rounded bg-purple-100"
+                    className='w-full p-2 border rounded bg-purple-100'
                     value={emailSelectedGroupId || ''}
-                    onChange={e => {
+                    onChange={(e) => {
                       setEmailSelectedGroupId(Number(e.target.value));
                       setEmailGroupInfo(null);
                       setEmailFormData((prev: any) => ({ ...prev, role: '' }));
                     }}
                     disabled={!emailSelectedVenue}
                   >
-                    <option value="">Selecciona un grupo</option>
-                    {emailVenueGroups.map(group => (
-                      <option key={group.id_group} value={group.id_group}>{group.name}</option>
+                    <option value=''>Selecciona un grupo</option>
+                    {emailVenueGroups.map((group) => (
+                      <option key={group.id_group} value={group.id_group}>
+                        {group.name}
+                      </option>
                     ))}
                   </select>
-                  <label className="block mt-2 font-semibold">Rol a asignar:</label>
+                  <label className='block mt-2 font-semibold'>Rol a asignar:</label>
                   <select
-                    className="w-full p-2 border rounded bg-purple-100"
+                    className='w-full p-2 border rounded bg-purple-100'
                     value={emailFormData.role || ''}
-                    onChange={e => setEmailFormData((prev: any) => ({ ...prev, role: e.target.value }))}
+                    onChange={(e) =>
+                      setEmailFormData((prev: any) => ({ ...prev, role: e.target.value }))
+                    }
                     disabled={!emailSelectedGroupId}
                   >
-                    <option value="">Selecciona un rol</option>
-                    <option value="Instructora">Instructora</option>
-                    <option value="Facilitadora">Facilitadora</option>
-                    <option value="Staff">Staff</option>
+                    <option value=''>Selecciona un rol</option>
+                    <option value='Instructora'>Instructora</option>
+                    <option value='Facilitadora'>Facilitadora</option>
+                    <option value='Staff'>Staff</option>
                   </select>
                   {emailGroupInfo && (
-                    <div className="mt-4 space-y-1">
-                      <p><strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}</p>
-                      <p><strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}</p>
-                      <p><strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}</p>
-                      <p><strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}</p>
-                      <p><strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}</p>
-                      <p><strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}</p>
+                    <div className='mt-4 space-y-1'>
+                      <p>
+                        <strong>Ubicación:</strong> {emailGroupInfo.location || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Idioma:</strong> {emailGroupInfo.language || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Nivel:</strong> {emailGroupInfo.level || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Modalidad:</strong> {emailGroupInfo.mode || 'No disponible'}
+                      </p>
+                      <p>
+                        <strong>Duración:</strong> {emailGroupInfo.sDate} - {emailGroupInfo.eDate}
+                      </p>
+                      <p>
+                        <strong>Horario:</strong> {emailGroupInfo.sHour} - {emailGroupInfo.eHour}
+                      </p>
                     </div>
                   )}
-                  <label className="block mt-4 font-semibold">Fecha límite de confirmación:</label>
+                  <label className='block mt-4 font-semibold'>Fecha límite de confirmación:</label>
                   <input
-                    className="w-full p-2 border rounded"
+                    className='w-full p-2 border rounded'
                     value={emailFormData.lDate || ''}
-                    onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
-                    placeholder="Ej: 10/06/2025"
+                    onChange={(e) => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
+                    placeholder='Ej: 10/06/2025'
                   />
-                  <label className="block mt-2 font-semibold">Enlace de confirmación:</label>
+                  <label className='block mt-2 font-semibold'>Enlace de confirmación:</label>
                   <input
-                    className="w-full p-2 border rounded"
+                    className='w-full p-2 border rounded'
                     value={emailFormData.platformLink || ''}
-                    onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })}
-                    placeholder="https://..."
+                    onChange={(e) =>
+                      setEmailFormData({ ...emailFormData, platformLink: e.target.value })
+                    }
+                    placeholder='https://...'
                   />
                 </>
               )}
               {selectedTemplate === 'interview' && (
                 <>
-                  <label className="block mt-2">Fecha límite:</label>
-                  <input className="w-full p-2 border rounded" value={emailFormData.lDate || ''} onChange={e => setEmailFormData({ ...emailFormData, lDate: e.target.value })} />
-                  <label className="block mt-2">Enlace de plataforma:</label>
-                  <input className="w-full p-2 border rounded" value={emailFormData.platformLink || ''} onChange={e => setEmailFormData({ ...emailFormData, platformLink: e.target.value })} />
+                  <label className='block mt-2'>Fecha límite:</label>
+                  <input
+                    className='w-full p-2 border rounded'
+                    value={emailFormData.lDate || ''}
+                    onChange={(e) => setEmailFormData({ ...emailFormData, lDate: e.target.value })}
+                  />
+                  <label className='block mt-2'>Enlace de plataforma:</label>
+                  <input
+                    className='w-full p-2 border rounded'
+                    value={emailFormData.platformLink || ''}
+                    onChange={(e) =>
+                      setEmailFormData({ ...emailFormData, platformLink: e.target.value })
+                    }
+                  />
                 </>
               )}
-              <div className="mt-4 flex justify-center gap-4">
-                <Button label="Enviar" variant="success" onClick={handleSendEmail} />
-                <Button label="Cancelar" variant="error" onClick={closeSendEmailPopup} />
+              <div className='mt-4 flex justify-center gap-4'>
+                <Button label='Enviar' variant='success' onClick={handleSendEmail} />
+                <Button label='Cancelar' variant='error' onClick={closeSendEmailPopup} />
               </div>
             </div>
           </div>

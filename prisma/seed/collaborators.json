@@ -131,13 +131,9 @@
     "preferred_role": "Instructora",
     "preferred_language": "Español",
     "preferred_level": "Básico",
-<<<<<<< HEAD
 
-"preferred_group": 2,
-
-=======
     "preferred_group": 2,
->>>>>>> diego_correciones
+
     "gender": "Femenino",
     "role": "Instructora",
     "status": "Aprobada",
@@ -179,13 +175,9 @@
     "preferred_role": "Facilitadora",
     "preferred_language": "Español",
     "preferred_level": "Avanzado",
-<<<<<<< HEAD
 
-"preferred_group": 2,
-
-=======
     "preferred_group": 2,
->>>>>>> diego_correciones
+
     "gender": "Femenino",
     "role": "Facilitadora",
     "status": "Aprobada",
@@ -205,13 +197,9 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
 
-"preferred_group": 2,
-
-=======
     "preferred_group": 2,
->>>>>>> diego_correciones
+
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",
@@ -231,13 +219,7 @@
     "preferred_role": "Staff",
     "preferred_language": "Inglés",
     "preferred_level": "Básico",
-<<<<<<< HEAD
-
-"preferred_group": 2,
-
-=======
     "preferred_group": 2,
->>>>>>> diego_correciones
     "gender": "Masculino",
     "role": "Staff",
     "status": "Aprobada",
@@ -257,13 +239,7 @@
     "preferred_role": "Staff",
     "preferred_language": null,
     "preferred_level": null,
-<<<<<<< HEAD
-
-"preferred_group": 2,
-
-=======
     "preferred_group": 2,
->>>>>>> diego_correciones
     "gender": "Femenino",
     "role": "Pendiente",
     "status": "Pendiente",

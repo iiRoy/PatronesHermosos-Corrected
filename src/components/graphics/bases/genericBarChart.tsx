@@ -65,9 +65,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   const chartRef = useRef<HTMLDivElement>(null);
   const [userRole, setUserRole] = useState<string>('');
   useEffect(() => {
-    setUserRole(
-      typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : ''
-    );
+    setUserRole(typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : '');
   }, []);
   const effectiveXKey = userRole === 'superuser' ? xKey : 'rol';
 
@@ -103,8 +101,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
             const newItem: GenericChartData = {};
             for (const key in item) {
               const val = item[key];
-              newItem[key] =
-                typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
+              newItem[key] = typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val;
             }
             return newItem;
           });
@@ -127,7 +124,9 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
             }
             const roles = Object.keys(acumulador);
             finalData = roles.map((role) => {
-              const row: GenericChartData = { rol: role.charAt(0).toUpperCase() +role.slice(1).replaceAll('_', ' ') };
+              const row: GenericChartData = {
+                rol: role.charAt(0).toUpperCase() + role.slice(1).replaceAll('_', ' '),
+              };
               roles.forEach((r) => {
                 row[r] = r === role ? acumulador[r] : 0;
               });
@@ -140,9 +139,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
           setData(finalData);
           setFilteredData(slicedData);
 
-          setSelectedKeys(
-            slicedData.map((d) => d[effectiveXKey] as string)
-          );
+          setSelectedKeys(slicedData.map((d) => d[effectiveXKey] as string));
           setError(null);
         } catch (err) {
           console.error('❌ Error cargando datos:', err);
@@ -193,7 +190,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
   const seriesKeys =
     data.length > 0
       ? Object.keys(data[0]).filter(
-          (key) => key !== effectiveXKey && typeof data[0][key] === 'number'
+          (key) => key !== effectiveXKey && typeof data[0][key] === 'number',
         )
       : [];
 
@@ -243,7 +240,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                 title={title}
                 colors={colors}
                 elementLabels={seriesKeys.map(
-                  (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' ')
+                  (key) => key.charAt(0).toUpperCase() + key.slice(1).replaceAll('_', ' '),
                 )}
                 chartType='bar'
               />
@@ -261,19 +258,22 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
               <CustomLegend legendKeys={seriesKeys} colors={colors} />
             </div>
             <div className='flex justify-between md:w-[40%] w-[70%] items-center'>
-                <div className='filter-bar flex items-center w-full justify-end'>
-                  <Filtro
-                    options={options}
-                    selected={selectedKeys}
-                    onChange={handleFilterChange}
-                    iconName={undefined}
-                    label='Filtros'
-                    labelOptions={effectiveXKey.charAt(0).toUpperCase() + effectiveXKey.slice(1).replaceAll('_', ' ')}
-                    selectAll={selectAll}
-                    deselectAll={deselectAll}
-                    maxSelectableOptions={maxItems}
-                  />
-                </div>
+              <div className='filter-bar flex items-center w-full justify-end'>
+                <Filtro
+                  options={options}
+                  selected={selectedKeys}
+                  onChange={handleFilterChange}
+                  iconName={undefined}
+                  label='Filtros'
+                  labelOptions={
+                    effectiveXKey.charAt(0).toUpperCase() +
+                    effectiveXKey.slice(1).replaceAll('_', ' ')
+                  }
+                  selectAll={selectAll}
+                  deselectAll={deselectAll}
+                  maxSelectableOptions={maxItems}
+                />
+              </div>
             </div>
           </div>
 
@@ -300,27 +300,29 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                       height={60}
                     />
                     <YAxis axisLine={false} tick={{ fill: '#8E76A3FF' }} tickLine={false} />
-                    {shouldShowSedeFilter ?
-                    <Tooltip
-                      labelFormatter={(label) => (
-                        <span style={{ fontWeight: 'bold' }}>
-                          {`${labelFormatterPrefix}${label}`}
-                        </span>
-                      )}
-                      formatter={(value, name) => {
-                        const upperName =
-                          typeof name === 'string'
-                            ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
-                            : name;
-                        return [`${value}`, upperName];
-                      }}
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        borderRadius: '5px',
-                        border: '1px solid #ccc',
-                      }}
-                    /> : ''
-                    }
+                    {shouldShowSedeFilter ? (
+                      <Tooltip
+                        labelFormatter={(label) => (
+                          <span style={{ fontWeight: 'bold' }}>
+                            {`${labelFormatterPrefix}${label}`}
+                          </span>
+                        )}
+                        formatter={(value, name) => {
+                          const upperName =
+                            typeof name === 'string'
+                              ? name.charAt(0).toUpperCase() + name.slice(1).replaceAll('_', ' ')
+                              : name;
+                          return [`${value}`, upperName];
+                        }}
+                        contentStyle={{
+                          backgroundColor: '#fff',
+                          borderRadius: '5px',
+                          border: '1px solid #ccc',
+                        }}
+                      />
+                    ) : (
+                      ''
+                    )}
                     {seriesKeys.map((key, index) => (
                       <Bar
                         key={key}

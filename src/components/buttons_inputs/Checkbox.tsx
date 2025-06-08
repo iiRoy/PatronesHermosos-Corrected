@@ -16,17 +16,17 @@ const Checkbox: React.FC<CheckboxProps> = ({
   checked,
   onChange,
   bordered = false,
-  variant = 'primary'
+  variant = 'primary',
 }) => {
   return (
     <label className={`flex items-center cursor-pointer ${bordered ? 'with-border' : ''}`}>
       <input
-        type="checkbox"
+        type='checkbox'
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         className={`${variant === 'primary' ? 'checkbox-odd' : variant === 'secondary' ? 'checkbox-even' : 'checkbox-accent'} checkbox-circle mr-2`}
       />
-      {label && <span className="text-sm">{label}</span>}
+      {label && <span className='text-sm'>{label}</span>}
     </label>
   );
 };

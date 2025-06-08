@@ -66,13 +66,13 @@ router.patch(
   '/:id/cancel',
   authMiddleware,
   roleMiddleware(['superuser']),
-  coordinatorController.cancelVenueCoordinator
+  coordinatorController.cancelVenueCoordinator,
 );
 
 router.patch(
   '/:id/replace',
-   authMiddleware,
-   roleMiddleware(['superuser']), 
-   coordinatorController.replaceVenueCoordinator
-  );
+  authMiddleware,
+  roleMiddleware(['superuser']),
+  coordinatorController.replaceVenueCoordinator,
+);
 module.exports = router;

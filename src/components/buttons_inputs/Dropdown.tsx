@@ -20,16 +20,16 @@ interface DropdownProps {
   darkText?: boolean;
   onChange: (value: string) => void;
   variant?:
-  | 'accent'
-  | 'primary'
-  | 'secondary'
-  | 'secondary-shade'
-  | 'text-color'
-  | 'warning'
-  | 'accent-disabled'
-  | 'primary-disabled'
-  | 'secondary-shade-disabled'
-  | 'text-color-disabled';
+    | 'accent'
+    | 'primary'
+    | 'secondary'
+    | 'secondary-shade'
+    | 'text-color'
+    | 'warning'
+    | 'accent-disabled'
+    | 'primary-disabled'
+    | 'secondary-shade-disabled'
+    | 'text-color-disabled';
   dim?: boolean;
   Icon?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
 }
@@ -50,9 +50,9 @@ const Dropdown: React.FC<DropdownProps> = ({
   const labelClass = `label-input ${darkText ? ' darkText' : ''}`;
 
   return (
-    <div className="container-input">
+    <div className='container-input'>
       <div className={labelClass}>{label}</div>
-      {showDescription && description && <div className="description-input">{description}</div>}
+      {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={selectClass}>
         {Icon && (
           <div className='icon-input'>
@@ -62,7 +62,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-10 py-2 bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer z-30"
+          className='w-full pl-10 pr-10 py-2 bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer z-30'
           disabled={variant?.includes('disabled')}
         >
           {options.map((option, index) => {
@@ -78,7 +78,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             );
           })}
         </select>
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2">
+        <span className='absolute right-3 top-1/2 transform -translate-y-1/2'>
           <CaretDoubleDown height={20} width={20} fillColor='#FFFFFF' strokeWidth={0} />
         </span>
       </div>

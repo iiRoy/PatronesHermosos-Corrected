@@ -42,7 +42,7 @@ const upload = multer({
 const router = express.Router();
 
 // Routes
-router.get('/',venueController.getAll);
+router.get('/', venueController.getAll);
 //router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
 router.post(
   '/',
@@ -71,7 +71,7 @@ router.put(
   '/basic/:id',
   authMiddleware,
   roleMiddleware(['admin', 'superuser']),
-  venueController.updateBasic // Nueva ruta para actualización básica
+  venueController.updateBasic, // Nueva ruta para actualización básica
 );
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), venueController.remove);
 router.post('/:id/cancel', authMiddleware, roleMiddleware(['admin']), venueController.cancelVenue);
@@ -92,7 +92,9 @@ router.get('/files/:filename', authMiddleware, (req, res) => {
       // Use 'attachment' for download, 'inline' for preview
       res.setHeader(
         'Content-Disposition',
-        download === 'true' ? `attachment; filename="${filename}"` : `inline; filename="${filename}"`
+        download === 'true'
+          ? `attachment; filename="${filename}"`
+          : `inline; filename="${filename}"`,
       );
 
       // Serve the file
@@ -108,7 +110,7 @@ router.patch(
   '/:id/cancelar',
   authMiddleware,
   roleMiddleware(['superuser']),
-  venueController.cancelarVenue
+  venueController.cancelarVenue,
 );
 
 router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
@@ -145,6 +147,11 @@ router.get('/:id/groups', async (req, res) => {
 });
 
 router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
-router.patch('/:id/reject', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), venueController.rejectVenue);
+router.patch(
+  '/:id/reject',
+  authMiddleware,
+  roleMiddleware(['superuser', 'venue_coordinator']),
+  venueController.rejectVenue,
+);
 
 module.exports = router;

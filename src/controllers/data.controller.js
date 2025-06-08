@@ -1,4 +1,4 @@
-const { Request, Response } = require ('express');
+const { Request, Response } = require('express');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -273,8 +273,7 @@ const getProfile = async (req, res) => {
   }
 };
 
-
 module.exports = {
   data,
-  getProfile
+  getProfile,
 };

@@ -91,8 +91,7 @@ const getCoordinatorById = async (req, res) => {
 // Actualizar todos los datos de coordinador
 const updateCoordinator = async (req, res) => {
   const { id } = req.params;
-  const { name, paternal_name, maternal_name, phone_number, username, profile_image } =
-    req.body;
+  const { name, paternal_name, maternal_name, phone_number, username, profile_image } = req.body;
 
   if (!name || !phone_number || !username || !profile_image) {
     return res.status(400).json({
@@ -179,7 +178,14 @@ const cancelVenueCoordinator = async (req, res) => {
     // Verificar si la coordinadora existe y está Aprobada
     const coordinator = await prisma.venue_coordinators.findUnique({
       where: { id_venue_coord: parseInt(id) },
-      select: { id_venue_coord: true, status: true, name: true, paternal_name: true, maternal_name: true, id_venue: true },
+      select: {
+        id_venue_coord: true,
+        status: true,
+        name: true,
+        paternal_name: true,
+        maternal_name: true,
+        id_venue: true,
+      },
     });
 
     if (!coordinator) {
@@ -187,7 +193,9 @@ const cancelVenueCoordinator = async (req, res) => {
     }
 
     if (coordinator.status !== 'Aprobada') {
-      return res.status(400).json({ message: 'Solo se pueden cancelar coordinadoras con status Aprobada.' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden cancelar coordinadoras con status Aprobada.' });
     }
 
     // Actualizar el status a Cancelada
@@ -212,7 +220,9 @@ const cancelVenueCoordinator = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al cancelar la coordinadora:', error);
-    res.status(500).json({ message: 'Error interno al cancelar la coordinadora', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al cancelar la coordinadora', error: error.message });
   }
 };
 
@@ -233,7 +243,8 @@ const replaceVenueCoordinator = async (req, res) => {
   // Validar campos requeridos
   if (!email || !username || !password || !phone_number) {
     return res.status(400).json({
-      message: 'Faltan datos necesarios: correo, nombre de usuario, contraseña y teléfono son obligatorios.',
+      message:
+        'Faltan datos necesarios: correo, nombre de usuario, contraseña y teléfono son obligatorios.',
     });
   }
 
@@ -315,7 +326,7 @@ const replaceVenueCoordinator = async (req, res) => {
       // Actualizar el status de la coordinadora actual a Cancelada
       await tx.venue_coordinators.update({
         where: { id_venue_coord: parseInt(id) },
-        data: { 
+        data: {
           status: 'Cancelada',
         },
       });
@@ -351,7 +362,9 @@ const replaceVenueCoordinator = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al reemplazar la coordinadora:', error);
-    res.status(500).json({ message: 'Error interno al reemplazar la coordinadora', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al reemplazar la coordinadora', error: error.message });
   }
 };
 

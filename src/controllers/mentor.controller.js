@@ -2,7 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { sendEmail } = require('../lib/emails/emailSender');
 
-
 // Obtener todas las mentoras con los datos necesarios para la tabla
 const getAll = async (req, res) => {
   try {
@@ -14,7 +13,7 @@ const getAll = async (req, res) => {
     });
 
     // Formatear los datos para la tabla
-    const formattedMentors = mentors.map(mentor => ({
+    const formattedMentors = mentors.map((mentor) => ({
       id_mentor: mentor.id_mentor,
       name: `${mentor.name} ${mentor.paternal_name || ''} ${mentor.maternal_name || ''}`.trim(),
       email: mentor.email || 'Sin correo',
@@ -173,10 +172,16 @@ const updateBasicData = async (req, res) => {
       data: updateData,
     });
 
-    res.json({ success: true, message: 'Mentora actualizada (datos básicos)', data: updatedMentor });
+    res.json({
+      success: true,
+      message: 'Mentora actualizada (datos básicos)',
+      data: updatedMentor,
+    });
   } catch (error) {
     console.error('Error updating mentor basic data:', error);
-    res.status(500).json({ success: false, message: 'Error al actualizar datos básicos de la mentora' });
+    res
+      .status(500)
+      .json({ success: false, message: 'Error al actualizar datos básicos de la mentora' });
   }
 };
 
@@ -233,13 +238,16 @@ const removeMentorFromGroup = async (req, res) => {
       },
     });
 
-    res.json({ success: true, message: 'Mentora removida del grupo correctamente', data: updatedGroup });
+    res.json({
+      success: true,
+      message: 'Mentora removida del grupo correctamente',
+      data: updatedGroup,
+    });
   } catch (error) {
     console.error('Error removing mentor from group:', error);
     res.status(500).json({ success: false, message: 'Error al remover mentora del grupo' });
   }
 };
-
 
 // Cancelar una mentora (cambiar status de Aprobada a Cancelada)
 const cancelMentor = async (req, res) => {
@@ -266,7 +274,9 @@ const cancelMentor = async (req, res) => {
     }
 
     if (mentor.status !== 'Aprobada') {
-      return res.status(400).json({ message: 'Solo se pueden cancelar mentoras con status Aprobada.' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden cancelar mentoras con status Aprobada.' });
     }
 
     // Actualizar el status a Cancelada
@@ -289,11 +299,7 @@ const cancelMentor = async (req, res) => {
     // Send cancellation email (non-critical)
     try {
       // Construct full name
-      const fullName = [
-        mentor.name,
-        mentor.paternal_name,
-        mentor.maternal_name
-      ]
+      const fullName = [mentor.name, mentor.paternal_name, mentor.maternal_name]
         .filter(Boolean)
         .join(' ');
 
@@ -308,7 +314,7 @@ const cancelMentor = async (req, res) => {
         pName: fullName || 'Mentora',
         venue: venue?.name || 'Sede no especificada',
         role: 'Mentora', // Hardcoded role
-        iEmail: 'soporte@patroneshermosos.org'
+        iEmail: 'soporte@patroneshermosos.org',
       };
 
       // Validate email before sending
@@ -317,7 +323,7 @@ const cancelMentor = async (req, res) => {
           to: mentor.email,
           subject: 'Notificación de Cancelación - Patrones Hermosos',
           template: 'templates/lideres/eliminado',
-          data: emailData
+          data: emailData,
         });
         console.log(`Cancellation email sent to ${mentor.email}`);
       } else {
@@ -336,7 +342,6 @@ const cancelMentor = async (req, res) => {
     res.status(500).json({ message: 'Error interno al cancelar la mentora', error: error.message });
   }
 };
-
 
 module.exports = {
   getAll,

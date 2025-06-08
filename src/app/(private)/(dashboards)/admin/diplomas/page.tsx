@@ -57,10 +57,7 @@ const DiplomasPage = () => {
   // Paginación
   const rowsPerPage = 4;
   const totalPages = Math.ceil(users.length / rowsPerPage);
-  const paginatedData = users.slice(
-    currentPage * rowsPerPage,
-    (currentPage + 1) * rowsPerPage
-  );
+  const paginatedData = users.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
 
   // IDs visibles y estado de "todos seleccionados"
   const allIds = users.map((u) => `${u.id}-${u.role}`);
@@ -74,17 +71,17 @@ const DiplomasPage = () => {
         const userRole = localStorage.getItem('user_role') || '';
         const res = await fetch(`/api/diplomas/filtros?user_id=${userId}&user_role=${userRole}`);
         const data = await res.json();
-      setOpcionesSede([
-        { label: 'Todas las SEDES', value: 'all' },
-        ...data.sedes.map((s: string) => ({ label: s, value: s })),
-      ]);
-      setOpcionesRol([
-        { label: 'Todos los roles', value: 'all' },
-        ...data.roles.map((r: string) => ({
-          label: r.charAt(0).toUpperCase() + r.slice(1),
-          value: r,
-        })),
-      ]);
+        setOpcionesSede([
+          { label: 'Todas las SEDES', value: 'all' },
+          ...data.sedes.map((s: string) => ({ label: s, value: s })),
+        ]);
+        setOpcionesRol([
+          { label: 'Todos los roles', value: 'all' },
+          ...data.roles.map((r: string) => ({
+            label: r.charAt(0).toUpperCase() + r.slice(1),
+            value: r,
+          })),
+        ]);
       } catch {
         toast.error('Error cargando filtros');
       }
@@ -92,33 +89,33 @@ const DiplomasPage = () => {
     fetchFiltros();
   }, []);
 
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem('api_token'); // o donde lo guardes
-      if (!token) {
-        throw new Error('No hay token de autenticación');
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('api_token'); // o donde lo guardes
+        if (!token) {
+          throw new Error('No hay token de autenticación');
+        }
+
+        const res = await axios.get('/api/data/getprofile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const { name, paternal_name, maternal_name } = res.data;
+        setSenderName(`${name} ${paternal_name} ${maternal_name}`);
+        setEmailSubject('¡Felicidades por tu logro!');
+      } catch (error: any) {
+        console.error('🚨 fetchProfile error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+        });
+        toast.error('No se pudo cargar tu perfil');
       }
+    };
 
-      const res = await axios.get('/api/data/getprofile', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const { name, paternal_name, maternal_name } = res.data;
-      setSenderName(`${name} ${paternal_name} ${maternal_name}`);
-      setEmailSubject('¡Felicidades por tu logro!');
-    } catch (error: any) {
-      console.error('🚨 fetchProfile error:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-      });
-      toast.error('No se pudo cargar tu perfil');
-    }
-  };
-
-  fetchProfile();
-}, []);
+    fetchProfile();
+  }, []);
 
   // Cargar usuarios
   useEffect(() => {
@@ -130,10 +127,10 @@ useEffect(() => {
         const userRole = localStorage.getItem('user_role') || '';
         const res = await fetch(
           `/api/diplomas/users?search=${encodeURIComponent(
-            search
+            search,
           )}&sede=${encodeURIComponent(sedeParam)}&role=${encodeURIComponent(
-            rolParam
-          )}&user_id=${userId}&user_role=${userRole}`
+            rolParam,
+          )}&user_id=${userId}&user_role=${userRole}`,
         );
         if (!res.ok) {
           const text = await res.text();
@@ -179,7 +176,7 @@ useEffect(() => {
       const res = await axios.post(
         '/api/diplomas/generate',
         { users: [user] },
-        { responseType: 'blob' }
+        { responseType: 'blob' },
       );
       const blob = new Blob([res.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
@@ -220,7 +217,7 @@ useEffect(() => {
       const res = await axios.post(
         '/api/diplomas/generate',
         { users: usersSelected },
-        { responseType: 'blob' }
+        { responseType: 'blob' },
       );
       const blob = new Blob([res.data], { type: 'application/zip' });
       const url = window.URL.createObjectURL(blob);
@@ -263,40 +260,40 @@ useEffect(() => {
     setCustomMessage('');
     setIncludeCopy(false);
   };
-const sendByEmail = async () => {
-  cancelEmailForm();
-  notify({
-        color: 'purple',
-        title: 'Envió de Correos Pendiente',
-        message: `Se ha iniciado la solicitud de envío de correos. Revisa tus notificaciones para saber el estado de envío.`,
-        iconName: 'Warning',
-        variant: 'two',
-        duration: 5000,
-      });
-  try {
-    const usersSelected = users
-      .filter((u) => selected.includes(`${u.id}-${u.role}`))
-      .filter((u) => u.email);
-    if (!usersSelected.length) {
-      toast.error('No hay correos válidos entre los seleccionados');
-      return;
-    }
-    const token = localStorage.getItem('api_token');
-    await axios.post(
-      '/api/diplomas/email',
-      {
-        users: usersSelected,
-        senderName,
-        subject: emailSubject,
-        message: customMessage,
-        includeCopy,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    toast.success('Diplomas enviados por correo correctamente');
+  const sendByEmail = async () => {
+    cancelEmailForm();
     notify({
+      color: 'purple',
+      title: 'Envió de Correos Pendiente',
+      message: `Se ha iniciado la solicitud de envío de correos. Revisa tus notificaciones para saber el estado de envío.`,
+      iconName: 'Warning',
+      variant: 'two',
+      duration: 5000,
+    });
+    try {
+      const usersSelected = users
+        .filter((u) => selected.includes(`${u.id}-${u.role}`))
+        .filter((u) => u.email);
+      if (!usersSelected.length) {
+        toast.error('No hay correos válidos entre los seleccionados');
+        return;
+      }
+      const token = localStorage.getItem('api_token');
+      await axios.post(
+        '/api/diplomas/email',
+        {
+          users: usersSelected,
+          senderName,
+          subject: emailSubject,
+          message: customMessage,
+          includeCopy,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      toast.success('Diplomas enviados por correo correctamente');
+      notify({
         color: 'green',
         title: 'Envío Exitoso',
         message: `Los diplomas han sido enviados a ${usersSelected.length} destinatarios.`,
@@ -304,9 +301,9 @@ const sendByEmail = async () => {
         variant: 'two',
         duration: 5000,
       });
-  } catch {
-    toast.error('Error al enviar diplomas por correo');
-    notify({
+    } catch {
+      toast.error('Error al enviar diplomas por correo');
+      notify({
         color: 'red',
         title: 'Error en Envío',
         message: `Los diplomas no se han enviado debido a un error del sistema. Intenta nuevamente más tarde.`,
@@ -314,32 +311,32 @@ const sendByEmail = async () => {
         variant: 'two',
         duration: 5000,
       });
-  }
-};
+    }
+  };
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Generar Diplomas</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4">
+      <div className='fondo-sedes flex flex-col p-6 gap-4'>
         {/* FILTROS Y BÚSQUEDA */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
-                placeholder="Buscar por nombre"
+                label=''
+                placeholder='Buscar por nombre'
                 value={search}
                 onChangeText={setSearch}
-                icon="MagnifyingGlass"
+                icon='MagnifyingGlass'
               />
             </div>
-            <div className="basis-1/3">
+            <div className='basis-1/3'>
               <FiltroEvento
                 disableCheckboxes
-                label="Filtros"
+                label='Filtros'
                 showSecciones
-                labelSecciones="SEDE"
+                labelSecciones='SEDE'
                 secciones={opcionesSede}
                 seccionActiva={filterSede}
                 onChangeSeccion={setFilterSede}
@@ -358,46 +355,42 @@ const sendByEmail = async () => {
         </div>
 
         {/* TABLA */}
-        <div className="overflow-auto custom-scrollbar-tabla">
-          <table className="min-w-full text-left text-sm table-fixed max-w-full ">
-            <thead className="text-[var(--secondaryColor)] font-bold">
+        <div className='overflow-auto custom-scrollbar-tabla'>
+          <table className='min-w-full text-left text-sm table-fixed max-w-full '>
+            <thead className='text-[var(--secondaryColor)] font-bold'>
               <tr>
-                <th className="p-2 text-center justify-center items-center w-[10%]">
+                <th className='p-2 text-center justify-center items-center w-[10%]'>
                   <div className='flex flex-center w-full justify-center'>
-                  <Checkbox
-                    checked={allSelected}
-                    onChange={toggleSelectAll}
-                    variant={'accent'}
-                  />
+                    <Checkbox checked={allSelected} onChange={toggleSelectAll} variant={'accent'} />
                   </div>
                 </th>
-                <th className="p-2 text-center w-[18%]">Nombre</th>
-                <th className="p-2 text-center w-[20%]">Rol</th>
-                <th className="p-2 text-center w-[21%]">Sede</th>
-                <th className="p-2 text-center w-[11%]">Acción</th>
+                <th className='p-2 text-center w-[18%]'>Nombre</th>
+                <th className='p-2 text-center w-[20%]'>Rol</th>
+                <th className='p-2 text-center w-[21%]'>Sede</th>
+                <th className='p-2 text-center w-[11%]'>Acción</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {paginatedData.map((user, index) => {
                 const uid = `${user.id}-${user.role}`;
                 return (
-                  <tr key={uid} className="border-t border-gray-300">
-                    <td className="p-2 text-center justify-center flex flex-center">
+                  <tr key={uid} className='border-t border-gray-300'>
+                    <td className='p-2 text-center justify-center flex flex-center'>
                       <Checkbox
                         checked={selected.includes(uid)}
                         onChange={() => toggleSelect(uid)}
-                        variant = {index % 2 === 0 ? 'primary' : 'secondary'}
+                        variant={index % 2 === 0 ? 'primary' : 'secondary'}
                       />
                     </td>
-                    <td className="p-2 text-center">
+                    <td className='p-2 text-center'>
                       {user.name} {user.paternal_name}
                     </td>
-                    <td className="p-2 text-center capitalize">{user.role}</td>
-                    <td className="p-2 text-center">{user.campus}</td>
-                    <td className="p-2 flex gap-2 justify-center">
+                    <td className='p-2 text-center capitalize'>{user.role}</td>
+                    <td className='p-2 text-center'>{user.campus}</td>
+                    <td className='p-2 flex gap-2 justify-center'>
                       <Button
-                        label=""
-                        variant="primary"
+                        label=''
+                        variant='primary'
                         round
                         showLeftIcon
                         IconLeft={Download}
@@ -412,10 +405,10 @@ const sendByEmail = async () => {
         </div>
 
         {/* BOTONES DE ACCIÓN */}
-        <div className="flex gap-4 justify-start mt-4">
+        <div className='flex gap-4 justify-start mt-4'>
           <Button
-            label="Descargar Seleccionados"
-            variant="primary"
+            label='Descargar Seleccionados'
+            variant='primary'
             showLeftIcon
             IconLeft={Download}
             onClick={
@@ -429,8 +422,8 @@ const sendByEmail = async () => {
             disabled={selected.length === 0}
           />
           <Button
-            label="Enviar por Correo"
-            variant="secondary"
+            label='Enviar por Correo'
+            variant='secondary'
             showLeftIcon
             IconLeft={EnvelopeOpen}
             onClick={openEmailForm}
@@ -438,87 +431,91 @@ const sendByEmail = async () => {
           />
         </div>
 
-                {/* OVERLAY + FORMULARIO + MENÚ DE DESTINATARIOS */}
-      {showEmailForm && (
-        <>
-          {/* Overlay que cubre todo */}
-          <div className="fixed inset-0 bg-black/50 z-40" />
+        {/* OVERLAY + FORMULARIO + MENÚ DE DESTINATARIOS */}
+        {showEmailForm && (
+          <>
+            {/* Overlay que cubre todo */}
+            <div className='fixed inset-0 bg-black/50 z-40' />
 
-          {/* Contenedor centrado */}
-<div className="fixed inset-0 flex items-center justify-center z-50">
-  <div className="relative inline-flex">
-    {/* PANEL DETRÁS DEL CARD */}
-    <div
-      className={`
+            {/* Contenedor centrado */}
+            <div className='fixed inset-0 flex items-center justify-center z-50'>
+              <div className='relative inline-flex'>
+                {/* PANEL DETRÁS DEL CARD */}
+                <div
+                  className={`
         absolute top-0 left-7 bottom-0 w-[20vw] border-r bg-[var(--background)] pt-6 px-2
         rounded-l-3xl
         transition-transform duration-300 ease-in-out
         ${showRecipients ? '-translate-x-full' : 'translate-x-0'}
       `}
-      style={{ zIndex: 10 }}
-    >
-      <div className="overflow-auto">
-      <h3 className="text-2xl font-semibold mb-2 text-center pr-2 text-[var(--text-color)]">Destinatarios</h3>
-      </div>
-      <div className="p-4 h-[31vh] overflow-auto bg-white rounded-3xl">
-        <ul className="space-y-4">
-          {recipientsInfo.length > 0 ? (
-            recipientsInfo.map((r) => (
-              <li key={r.email}>
-                <div className="font-medium text-gray-800">{r.name}</div>
-                <div className="text-sm text-gray-500">{r.email}</div>
-              </li>
-            ))
-          ) : (
-            <li className="text-gray-500">Ningún destinatario</li>
-          )}
-        </ul>
-      </div>
-    </div>
+                  style={{ zIndex: 10 }}
+                >
+                  <div className='overflow-auto'>
+                    <h3 className='text-2xl font-semibold mb-2 text-center pr-2 text-[var(--text-color)]'>
+                      Destinatarios
+                    </h3>
+                  </div>
+                  <div className='p-4 h-[31vh] overflow-auto bg-white rounded-3xl'>
+                    <ul className='space-y-4'>
+                      {recipientsInfo.length > 0 ? (
+                        recipientsInfo.map((r) => (
+                          <li key={r.email}>
+                            <div className='font-medium text-gray-800'>{r.name}</div>
+                            <div className='text-sm text-gray-500'>{r.email}</div>
+                          </li>
+                        ))
+                      ) : (
+                        <li className='text-gray-500'>Ningún destinatario</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
 
-    {/* CARD PRINCIPAL ENCIMA */}
+                {/* CARD PRINCIPAL ENCIMA */}
 
-        {/* CARD PRINCIPAL: encima del panel (z-20) */}
-        <div className="relative z-20 shadow-custom-dark rounded-3xl justify-center">
-              <MessageCard
-                color="purple"
-                icon={'EnvelopeOpen'}
-                title='Envío de Diplomas'
-                description={
-                    <textarea
-                      className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                      placeholder="Escribe un mensaje opcional para incluir en el correo..."
-                      rows={4}
-                      value={customMessage}
-                      onChange={(e) => setCustomMessage(e.target.value)}
-                    />
-                  }
-                checkboxLabel="Enviar copia a mi correo"
-                checkboxChecked={includeCopy}
-                onCheckboxChange={setIncludeCopy}
-                showToggle
-                toggleLabel="Destinatarios"
-                onToggle={() => setShowRecipients((v) => !v)}
-                showAccept
-                acceptLabel="Enviar"
-                onAccept={() => { sendByEmail(); }}
-                showDecline
-                declineLabel="Cancelar"
-                onDecline={cancelEmailForm}
-      />
-    </div>
-  </div>
-</div>
-  </>
-)}
+                {/* CARD PRINCIPAL: encima del panel (z-20) */}
+                <div className='relative z-20 shadow-custom-dark rounded-3xl justify-center'>
+                  <MessageCard
+                    color='purple'
+                    icon={'EnvelopeOpen'}
+                    title='Envío de Diplomas'
+                    description={
+                      <textarea
+                        className='w-full border border-gray-300 rounded-md p-2 text-sm'
+                        placeholder='Escribe un mensaje opcional para incluir en el correo...'
+                        rows={4}
+                        value={customMessage}
+                        onChange={(e) => setCustomMessage(e.target.value)}
+                      />
+                    }
+                    checkboxLabel='Enviar copia a mi correo'
+                    checkboxChecked={includeCopy}
+                    onCheckboxChange={setIncludeCopy}
+                    showToggle
+                    toggleLabel='Destinatarios'
+                    onToggle={() => setShowRecipients((v) => !v)}
+                    showAccept
+                    acceptLabel='Enviar'
+                    onAccept={() => {
+                      sendByEmail();
+                    }}
+                    showDecline
+                    declineLabel='Cancelar'
+                    onDecline={cancelEmailForm}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* PAGINACIÓN */}
-        <div className="mt-4 flex justify-center">
+        <div className='mt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            variant="secondary-shade"
+            variant='secondary-shade'
             pageLinks={Array(totalPages).fill('#')}
           />
         </div>

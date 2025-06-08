@@ -47,10 +47,10 @@ const authMiddleware = async (req, res, next) => {
 
     // Inyectar datos mínimos en req.user
     req.user = {
-      id:       userId,
-      email:    decoded.email,
+      id: userId,
+      email: decoded.email,
       username: decoded.username,
-      role:     role,
+      role: role,
     };
 
     return next();
@@ -60,10 +60,8 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-
 const roleMiddleware = (allowedRoles = []) => {
   return (req, res, next) => {
-
     if (!req.user || !req.user.role) {
       return res.status(401).json({ message: 'No autenticado' });
     }

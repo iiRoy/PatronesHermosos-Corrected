@@ -9,11 +9,7 @@ interface TableToggleProps {
 const TableToggle: React.FC<TableToggleProps> = ({ includeTable, setIncludeTable }) => {
   return (
     <div className='mb-4 flex items-center gap-2'>
-      <Switch
-        checked={includeTable}
-        onCheckedChange={setIncludeTable}
-        id='switch-table-summary'
-      />
+      <Switch checked={includeTable} onCheckedChange={setIncludeTable} id='switch-table-summary' />
       <label htmlFor='switch-table-summary' className='text-sm cursor-pointer select-none'>
         Incluir tabla resumen de datos
       </label>

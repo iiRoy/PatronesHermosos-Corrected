@@ -69,11 +69,14 @@ const RegistrationTable = ({ section }: RegistrationTableProps) => {
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Error accepting registration');
-        const fetchResponse = await fetch(`http://localhost:3001/api/registrations?section=${section}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        const fetchResponse = await fetch(
+          `http://localhost:3001/api/registrations?section=${section}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           },
-        });
+        );
         const newData = await fetchResponse.json();
         setData(newData);
         closePopup();
@@ -96,11 +99,14 @@ const RegistrationTable = ({ section }: RegistrationTableProps) => {
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Error rejecting registration');
-        const fetchResponse = await fetch(`http://localhost:3001/api/registrations?section=${section}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        const fetchResponse = await fetch(
+          `http://localhost:3001/api/registrations?section=${section}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           },
-        });
+        );
         const newData = await fetchResponse.json();
         setData(newData);
         closePopup();
@@ -118,20 +124,20 @@ const RegistrationTable = ({ section }: RegistrationTableProps) => {
   };
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade">
-      <h1 className="text-4xl font-bold">Solicitudes de Registro</h1>
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade'>
+      <h1 className='text-4xl font-bold'>Solicitudes de Registro</h1>
       <DataTable
         data={data}
         columns={columns}
         onSearch={() => {}}
-        role="admin"
+        role='admin'
         renderCell={(item: TableData, columnKey: string) => {
           if (columnKey === 'actions') {
             return (
-              <div className="flex gap-2 justify-center">
+              <div className='flex gap-2 justify-center'>
                 <Button
-                  label=""
-                  variant="primary"
+                  label=''
+                  variant='primary'
                   round
                   showLeftIcon
                   IconLeft={Eye}
@@ -144,20 +150,21 @@ const RegistrationTable = ({ section }: RegistrationTableProps) => {
         }}
       />
       {isPopupOpen && selectedItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative text-black">
-            <h2 className="text-3xl font-bold mb-4 text-center">Solicitud de Registro</h2>
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative text-black'>
+            <h2 className='text-3xl font-bold mb-4 text-center'>Solicitud de Registro</h2>
             {columns
               .filter((col) => col.key !== 'actions')
               .map((col) => (
                 <p key={col.key}>
-                  <strong>{col.label}:</strong> {formatValue(selectedItem[col.key as keyof TableData])}
+                  <strong>{col.label}:</strong>{' '}
+                  {formatValue(selectedItem[col.key as keyof TableData])}
                 </p>
               ))}
-            <div className="mt-4 flex justify-center gap-4">
-              <Button label="Aceptar" variant="success" onClick={handleAccept} />
-              <Button label="Rechazar" variant="error" onClick={handleReject} />
-              <Button label="Cerrar" variant="primary" onClick={closePopup} />
+            <div className='mt-4 flex justify-center gap-4'>
+              <Button label='Aceptar' variant='success' onClick={handleAccept} />
+              <Button label='Rechazar' variant='error' onClick={handleReject} />
+              <Button label='Cerrar' variant='primary' onClick={closePopup} />
             </div>
           </div>
         </div>

@@ -26,9 +26,7 @@ const validateCollaborator = [
   body('preferred_role')
     .isIn(['Instructora', 'Facilitadora', 'Staff'])
     .withMessage('Rol preferido no válido'),
-  body('preferred_language')
-    .isIn(['Español', 'Inglés'])
-    .withMessage('Idioma preferido no válido'),
+  body('preferred_language').isIn(['Español', 'Inglés']).withMessage('Idioma preferido no válido'),
   body('preferred_level')
     .isIn(['Básico', 'Intermedio', 'Avanzado'])
     .withMessage('Dificultad preferida no válida'),

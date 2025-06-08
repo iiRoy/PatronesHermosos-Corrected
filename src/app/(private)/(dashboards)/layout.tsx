@@ -70,9 +70,10 @@ export default function DashboardLayout({
           <div
             className={`
               transition-opacity overflow-x-visible
-              ${showNotifications
-                ? 'duration-300 opacity-0 pointer-events-none'
-                : 'duration-1000 opacity-100 pointer-events-auto'
+              ${
+                showNotifications
+                  ? 'duration-300 opacity-0 pointer-events-none'
+                  : 'duration-1000 opacity-100 pointer-events-auto'
               }
             `}
           >
@@ -83,9 +84,10 @@ export default function DashboardLayout({
           <div
             className={`
               absolute w-[111%] pl-2 right-[0.5%] h-full transition-opacity overflow-hidden
-              ${showNotifications
-                ? 'duration-1000 opacity-100 pointer-events-auto'
-                : 'duration-300 opacity-0 pointer-events-none'
+              ${
+                showNotifications
+                  ? 'duration-1000 opacity-100 pointer-events-auto'
+                  : 'duration-300 opacity-0 pointer-events-none'
               }
             `}
           >

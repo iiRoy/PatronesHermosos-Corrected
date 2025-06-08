@@ -30,8 +30,8 @@ const ChartWrapper = ({
     direction === 'column' && isMinimized
       ? 'max-h-[100px] min-h-[100px] h-[100px]'
       : direction === 'column' && isResizing
-      ? 'max-h-full min-h-full h-full'
-      : 'flex flex-grow md:min-h-[380px] lg:min-h-[430px] md:max-h-[380px] lg:max-h-[430px] md:w-[100px]';
+        ? 'max-h-full min-h-full h-full'
+        : 'flex flex-grow md:min-h-[380px] lg:min-h-[430px] md:max-h-[380px] lg:max-h-[430px] md:w-[100px]';
 
   const transitionClasses = 'transition-[max-width,max-height,flex-grow] duration-500 ease-in-out';
 
