@@ -26,21 +26,37 @@ export default function PatronesHermosos() {
           <div className="absolute top-[12%] left-[2%] w-[275px] h-[275px] bg-[#C57FAB] z-20 rounded-full hidden lg:block"></div>
           <div className="absolute top-[14%] left-[4%] w-[250px] h-[250px] z-30 hidden lg:block">
             <Image
+<<<<<<< HEAD
               src="/images/top-image.png"
               alt="Top Circular Image"
               width={300}
               height={300}
               className="rounded-full border-4 border-white shadow-custom-dark"
+=======
+              src="/assets/imagen-inicio1.png"
+              alt="Top Circular Image"
+              width={300}
+              height={300}
+              className="rounded-full  shadow-custom-dark"
+>>>>>>> diego_correciones
             />
           </div>
           <div className="absolute top-[45%] left-[10%] w-[220px] h-[220px] bg-[#97639C] z-20 rounded-full hidden lg:block"></div>
           <div className="absolute top-[50%] left-[12%] w-[200px] h-[200px] z-30 hidden lg:block">
             <Image
+<<<<<<< HEAD
               src="/images/bottom-image.png"
               alt="Bottom Circular Image"
               width={200}
               height={200}
               className="rounded-full border-4 border-white shadow-custom-dark"
+=======
+              src="/assets/imagen-inicio2.png"
+              alt="Bottom Circular Image"
+              width={200}
+              height={200}
+              className="rounded-full  shadow-custom-dark"
+>>>>>>> diego_correciones
             />
           </div>
 
@@ -73,12 +89,20 @@ export default function PatronesHermosos() {
                       variant="primary"
                       showLeftIcon
                       IconLeft={BookBookmark}
+<<<<<<< HEAD
                       href="/admin/gestion-usuarios/participantes"
+=======
+                      href="/formulario/participante"
+>>>>>>> diego_correciones
                       className="mb-4"
                     />
                   </span>
                   <div
+<<<<<<< HEAD
                     className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:${hoveredButton === 'participante' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+=======
+                    className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:opacity-0 ${hoveredButton === 'participante' ? 'md:opacity-100' : ''}`}
+>>>>>>> diego_correciones
                   >
                     <div className='flex justify-center items-center m-4'>
                       <MedalMilitary width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeColor='currentColor' />
@@ -101,12 +125,20 @@ export default function PatronesHermosos() {
                       variant="secondary"
                       showLeftIcon
                       IconLeft={Medal}
+<<<<<<< HEAD
                       href="/admin/gestion-usuarios/colaboradoras"
+=======
+                      href="/formulario/colaborador"
+>>>>>>> diego_correciones
                       className="mb-4"
                     />
                   </span>
                   <div
+<<<<<<< HEAD
                     className={`description-box-secondary bg-[#683756] transition-opacity duration-300 opacity-100 md:${hoveredButton === 'colaborador' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+=======
+                    className={`description-box-secondary bg-[#683756] transition-opacity duration-300 opacity-100 md:opacity-0 ${hoveredButton === 'colaborador' ? 'md:opacity-100' : ''}`}
+>>>>>>> diego_correciones
                   >
                     <div className='flex justify-center items-center m-4'>
                       <LightbulbFilament width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeColor='currentColor' />
@@ -129,12 +161,20 @@ export default function PatronesHermosos() {
                       variant="primary"
                       showLeftIcon
                       IconLeft={Student}
+<<<<<<< HEAD
                       href="formulario/sede"
+=======
+                      href="/formulario/sede"
+>>>>>>> diego_correciones
                       className="mb-4"
                     />
                   </span>
                   <div
+<<<<<<< HEAD
                     className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:${hoveredButton === 'sede' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+=======
+                    className={`description-box bg-[#97639c] transition-opacity duration-300 opacity-100 md:opacity-0 ${hoveredButton === 'sede' ? 'md:opacity-100' : ''}`}
+>>>>>>> diego_correciones
                   >
                     <div className='flex justify-center items-center m-4'>
                       <Certificate width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeColor='currentColor' />

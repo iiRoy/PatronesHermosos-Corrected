@@ -22,6 +22,7 @@ interface DropdownProps {
   variant?:
   | 'accent'
   | 'primary'
+  | 'secondary'
   | 'secondary-shade'
   | 'text-color'
   | 'warning'

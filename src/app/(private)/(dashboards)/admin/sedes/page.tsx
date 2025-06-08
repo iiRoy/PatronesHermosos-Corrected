@@ -5,7 +5,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
-import { MagnifyingGlass, Trash, Highlighter, X } from '@/components/icons';
+import { MagnifyingGlass, Trash, Highlighter, X, Eye } from '@/components/icons';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/buttons_inputs/Notification';
@@ -13,6 +13,8 @@ import { useNotification } from '@/components/buttons_inputs/Notification';
 interface Sede {
     id_venue: number;
     name: string;
+    estado: string;
+    pais: string;
     location: string;
     address: string;
     status: string;
@@ -133,7 +135,7 @@ const SedesAdmin = () => {
         setCurrentPage(0);
     };
 
-    const handleRowClick = (sede: Sede) => {
+    const handleDetailsClick = (sede: Sede) => {
         setSelectedSede(sede);
         setIsPopupOpen(true);
     };
@@ -186,7 +188,6 @@ const SedesAdmin = () => {
                 throw new Error(errorData.message || 'Error al cancelar la sede');
             }
 
-            // Remover la sede de la lista (ya que cambia a Cancelada y no cumple el filtro)
             setSedesData(prev => prev.filter(v => v.id_venue !== selectedSede.id_venue));
 
             notify({
@@ -223,7 +224,7 @@ const SedesAdmin = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar sede"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -237,7 +238,7 @@ const SedesAdmin = () => {
                                 disableCheckboxes
                                 label="Filtros"
                                 showSecciones
-                                labelSecciones="Status"
+                                labelSecciones="Estado"
                                 secciones={statusOptions}
                                 seccionActiva={section}
                                 onChangeSeccion={sectionFilterChange}
@@ -252,10 +253,11 @@ const SedesAdmin = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className='texto-primary-shade'>
+                                <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Ubicación</th>
                                 <th className="p-2 text-center">Dirección</th>
-                                <th className="p-2 text-center">Status</th>
+                                <th className="p-2 text-center">Estado</th>
                                 <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
@@ -264,15 +266,28 @@ const SedesAdmin = () => {
                                 <tr
                                     key={index}
                                     className="border-t border-gray-300 hover:bg-gray-300 cursor-pointer"
-                                    onClick={() => handleRowClick(sede)}
+                                    onClick={() => handleDetailsClick(sede)}
                                 >
+                                    <td className="p-2 text-center">
+                                        <Button
+                                            label=""
+                                            variant="primary"
+                                            round
+                                            showLeftIcon
+                                            IconLeft={Eye}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDetailsClick(sede);
+                                            }}
+                                        />
+                                    </td>
                                     <td className="p-2 text-center">{sede.name}</td>
                                     <td className="p-2 text-center">{sede.location}</td>
                                     <td className="p-2 text-center">{sede.address}</td>
                                     <td className="p-2 text-center">{sede.status}</td>
                                     <td className="p-2 flex gap-2 justify-center">
                                         <Button
-                                            label=''
+                                            label=""
                                             variant="error"
                                             round
                                             showLeftIcon
@@ -280,7 +295,7 @@ const SedesAdmin = () => {
                                             onClick={(e) => handleOpenCancelPopup(sede, e)}
                                         />
                                         <Button
-                                            label=''
+                                            label=""
                                             variant="warning"
                                             round
                                             showLeftIcon
@@ -313,7 +328,7 @@ const SedesAdmin = () => {
                                 <p><strong>Nombre:</strong> {selectedSede.name}</p>
                                 <p><strong>Ubicación:</strong> {selectedSede.location}</p>
                                 <p><strong>Dirección:</strong> {selectedSede.address}</p>
-                                <p><strong>Status:</strong> {selectedSede.status}</p>
+                                <p><strong>Estado:</strong> {selectedSede.status}</p>
                             </div>
                             <div className="mt-6 flex justify-center">
                                 <Button

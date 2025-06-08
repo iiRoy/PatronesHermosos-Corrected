@@ -88,7 +88,7 @@ const create = async (req, res) => {
     country,
     state,
     address,
-    generalCoordinator,
+    venueCoordinator,
     associatedCoordinator,
     staffCoordinator,
     participantsCoordinator,
@@ -114,10 +114,10 @@ const create = async (req, res) => {
     logo = await fs.readFile(filePath);
     logo_path = files['logo'][0].filename;
   }
-  if (files['generalCoordinator.profileImage']) {
-    const filePath = files['generalCoordinator.profileImage'][0].path;
+  if (files['venueCoordinator.profileImage']) {
+    const filePath = files['venueCoordinator.profileImage'][0].path;
     profileImage = await fs.readFile(filePath);
-    profile_image_path = files['generalCoordinator.profileImage'][0].filename;
+    profile_image_path = files['venueCoordinator.profileImage'][0].filename;
   }
 
   // Validate required file
@@ -137,14 +137,14 @@ const create = async (req, res) => {
         ${participation_file},
         ${logo_path},
         ${participation_file_path},
-        ${generalCoordinator.name},
-        ${generalCoordinator.lastNameP},
-        ${generalCoordinator.lastNameM || null},
-        ${generalCoordinator.email},
-        ${generalCoordinator.phone},
-        ${generalCoordinator.gender},
-        ${generalCoordinator.username},
-        ${generalCoordinator.password},
+        ${venueCoordinator.name},
+        ${venueCoordinator.lastNameP},
+        ${venueCoordinator.lastNameM || null},
+        ${venueCoordinator.email},
+        ${venueCoordinator.phone},
+        ${venueCoordinator.gender},
+        ${venueCoordinator.username},
+        ${venueCoordinator.password},
         ${profileImage},
         ${profile_image_path},
         ${associatedCoordinator?.name || null},
@@ -167,19 +167,19 @@ const create = async (req, res) => {
 
       try {
         await sendEmail({
-          to: generalCoordinator.email,
+          to: venueCoordinator.email,
           subject: '¡Gracias por tu postulación como Sede!',
           template: 'templates/sede/solicitud',
           data: {
-            representativeName: generalCoordinator.name,
+            representativeName: venueCoordinator.name,
             venueName: name,
-            email: generalCoordinator.email,
+            email: venueCoordinator.email,
             location: `${country || ''}, ${state || ''}, ${address || ''}`.trim(),
           },
         });
-        console.log(`Solicitud email sent to ${generalCoordinator.email}`);
+        console.log(`Solicitud email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending solicitud email to ${generalCoordinator.email}:`, emailError.message);
+        console.error(`Error sending solicitud email to ${venueCoordinator.email}:`, emailError.message);
       }
 
     res.status(201).json({
@@ -365,34 +365,34 @@ const approveVenue = async (req, res) => {
     });
 
     // Enviar correo al coordinador general (non-critical)
-    const generalCoordinator = venue.venue_coordinators[0]; // Asumir que hay un solo coordinador general
-    if (generalCoordinator) {
+    const venueCoordinator = venue.venue_coordinators[0]; // Asumir que hay un solo coordinador general
+    if (venueCoordinator) {
       try {
         // Construct full name
       const coordinatorFullName = [
-        generalCoordinator.name,
-        generalCoordinator.paternal_name,
-        generalCoordinator.maternal_name
+        venueCoordinator.name,
+        venueCoordinator.paternal_name,
+        venueCoordinator.maternal_name
       ]
         .filter(Boolean)
         .join(' ');
 
         await sendEmail({
-          to: generalCoordinator.email,
+          to: venueCoordinator.email,
           subject: '¡Tu solicitud de sede ha sido aprobada!',
           template: 'templates/sede/aceptado',
           data: {
             name: coordinatorFullName,
             role: 'Coordinador de Sede',
             venue: venue.name,
-            username: generalCoordinator.username,
-            email: generalCoordinator.email,
-            password: generalCoordinator.password, // Considerar seguridad
+            username: venueCoordinator.username,
+            email: venueCoordinator.email,
+            password: venueCoordinator.password, // Considerar seguridad
           },
         });
-        console.log(`Approval email sent to ${generalCoordinator.email}`);
+        console.log(`Approval email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending approval email to ${generalCoordinator.email}:`, emailError.message);
+        console.error(`Error sending approval email to ${venueCoordinator.email}:`, emailError.message);
       }
     }
 
@@ -416,7 +416,7 @@ const approveVenue = async (req, res) => {
             venue: venue.name,
             role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
             address: venue.address || 'No especificada',
-            cEmail: generalCoordinator?.email || 'contacto@patroneshermosos.org',
+            cEmail: venueCoordinator?.email || 'contacto@patroneshermosos.org',
           },
         });
         console.log(`Assistant approval email sent to ${assistant.email}`);
@@ -460,19 +460,19 @@ const cancelarVenue = async (req, res) => {
     `;
 
     // Enviar correo al coordinador general (non-critical)
-    const generalCoordinator = venue.venue_coordinators[0];
-    if (generalCoordinator) {
+    const venueCoordinator = venue.venue_coordinators[0];
+    if (venueCoordinator) {
       try {
         // Construct full name
       const coordinatorFullName = [
-        generalCoordinator.name,
-        generalCoordinator.paternal_name,
-        generalCoordinator.maternal_name
+        venueCoordinator.name,
+        venueCoordinator.paternal_name,
+        venueCoordinator.maternal_name
       ]
         .filter(Boolean)
         .join(' ');
         await sendEmail({
-          to: generalCoordinator.email,
+          to: venueCoordinator.email,
           subject: 'Actualización sobre tu solicitud de sede',
           template: 'templates/sede/rechazado',
           data: {
@@ -482,9 +482,9 @@ const cancelarVenue = async (req, res) => {
             code: `REG-${id}-${new Date().getFullYear()}`,
           },
         });
-        console.log(`Cancellation email sent to ${generalCoordinator.email}`);
+        console.log(`Cancellation email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending cancellation email to ${generalCoordinator.email}:`, emailError.message);
+        console.error(`Error sending cancellation email to ${venueCoordinator.email}:`, emailError.message);
       }
     }
 
@@ -507,7 +507,7 @@ const cancelarVenue = async (req, res) => {
             pName: assistantFullName,
             venue: venue.name,
             role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
-            iEmail: generalCoordinator?.email || 'contacto@patroneshermosos.org',
+            iEmail: venueCoordinator?.email || 'contacto@patroneshermosos.org',
           },
         });
         console.log(`Assistant cancellation email sent to ${assistant.email}`);
@@ -576,19 +576,19 @@ const rejectVenue = async (req, res) => {
     });
 
     // Enviar correo al coordinador general (non-critical)
-    const generalCoordinator = venue.venue_coordinators[0];
-    if (generalCoordinator) {
+    const venueCoordinator = venue.venue_coordinators[0];
+    if (venueCoordinator) {
       try {
         // Construct full name
       const coordinatorFullName = [
-        generalCoordinator.name,
-        generalCoordinator.paternal_name,
-        generalCoordinator.maternal_name
+        venueCoordinator.name,
+        venueCoordinator.paternal_name,
+        venueCoordinator.maternal_name
       ]
         .filter(Boolean)
         .join(' ');
         await sendEmail({
-          to: generalCoordinator.email,
+          to: venueCoordinator.email,
           subject: 'Actualización sobre tu solicitud de sede',
           template: 'templates/sede/rechazado',
           data: {
@@ -598,9 +598,9 @@ const rejectVenue = async (req, res) => {
             code: `REG-${id}-${new Date().getFullYear()}`,
           },
         });
-        console.log(`Cancellation email sent to ${generalCoordinator.email}`);
+        console.log(`Cancellation email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending cancellation email to ${generalCoordinator.email}:`, emailError.message);
+        console.error(`Error sending cancellation email to ${venueCoordinator.email}:`, emailError.message);
       }
     }
 
@@ -623,7 +623,7 @@ const rejectVenue = async (req, res) => {
             pName: assistantFullName,
             venue: venue.name,
             role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
-            iEmail: generalCoordinator?.email || 'contacto@patroneshermosos.org',
+            iEmail: venueCoordinator?.email || 'contacto@patroneshermosos.org',
           },
         });
         console.log(`Assistant cancellation email sent to ${assistant.email}`);

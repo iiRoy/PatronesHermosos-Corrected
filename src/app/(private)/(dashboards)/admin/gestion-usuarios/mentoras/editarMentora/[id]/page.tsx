@@ -6,7 +6,7 @@ import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
-import { MapPin } from '@/components/icons'; // Ícono para la sede (similar a MapPin en EditarParticipante)
+import { MapPin } from '@/components/icons';
 import withIconDecorator from '@/components/decorators/IconDecorator';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 
@@ -29,7 +29,7 @@ interface Venue {
 const EditarMentora = () => {
   const router = useRouter();
   const params = useParams();
-  const { id } = params; // Obtener el id_mentor de la URL
+  const { id } = params;
   const { notify } = useNotification();
 
   const [mentora, setMentora] = useState<Mentora | null>(null);
@@ -41,6 +41,7 @@ const EditarMentora = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedVenue, setSelectedVenue] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +52,6 @@ const EditarMentora = () => {
           return;
         }
 
-        // Obtener datos de la mentora
         const mentorResponse = await fetch(`/api/mentors/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +73,6 @@ const EditarMentora = () => {
         setEmail(mentor.email || '');
         setPhoneNumber(mentor.phone_number || '');
 
-        // Obtener sedes
         const venuesResponse = await fetch('/api/venues', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -86,7 +85,6 @@ const EditarMentora = () => {
         const venuesData = await venuesResponse.json();
         setVenues(venuesData);
 
-        // Establecer la sede inicial
         const venue = venuesData.find((v: Venue) => v.id_venue === mentor.id_venue);
         setSelectedVenue(venue ? venue.name : '');
       } catch (error: any) {
@@ -109,7 +107,30 @@ const EditarMentora = () => {
     setSelectedVenue(value);
   };
 
+  const validateForm = () => {
+    const errors: string[] = [];
+
+    if (!email.trim()) {
+      errors.push('El correo es obligatorio');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('El correo no tiene un formato válido');
+    }
+
+    if (phoneNumber && !/^\+?\d{10,15}$/.test(phoneNumber)) {
+      errors.push('El número de teléfono debe contener entre 10 y 15 dígitos');
+    }
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
   const handleSubmit = async () => {
+    setValidationErrors([]);
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
       if (!token) {
@@ -124,10 +145,10 @@ const EditarMentora = () => {
 
       const updatedMentora = {
         name,
-        paternal_name: paternalName,
-        maternal_name: maternalName,
+        paternal_name: paternalName || null,
+        maternal_name: maternalName || null,
         email,
-        phone_number: phoneNumber,
+        phone_number: phoneNumber || null,
         id_venue: selectedVenueData.id_venue,
       };
 
@@ -176,29 +197,39 @@ const EditarMentora = () => {
     <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
       <PageTitle>Editar Mentora</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+      {validationErrors.length > 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <strong className="font-bold">Errores de validación:</strong>
+          <ul className="list-disc list-inside">
+            {validationErrors.map((err, index) => (
+              <li key={index}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
           <div className="basis-1/3">
             <InputField
               label="Nombre"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={mentora.name}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={name}
               onChangeText={(val) => setName(val)}
             />
           </div>
-
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={mentora.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
@@ -206,24 +237,22 @@ const EditarMentora = () => {
           <div className="basis-1/3">
             <InputField
               label="Apellido Materno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={mentora.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
           </div>
-
         </div>
 
         <div className="flex gap-4 justify-between mb-4">
-
           <div className="basis-1/2">
             <InputField
               label="Correo"
-              darkText={true}
+              icon='At'
               showDescription={false}
               placeholder={mentora.email}
               showError={false}
@@ -235,7 +264,7 @@ const EditarMentora = () => {
           <div className="basis-1/2">
             <InputField
               label="Teléfono"
-              darkText={true}
+              icon='Phone'
               showDescription={false}
               placeholder={mentora.phone_number}
               showError={false}
@@ -253,18 +282,16 @@ const EditarMentora = () => {
               options={venueOptions}
               value={selectedVenue}
               onChange={handleVenueChange}
-              variant="accent"
-              darkText
-              Icon={withIconDecorator(MapPin)} // Ícono decorativo similar a EditarParticipante
+              variant="secondary"
+              Icon={withIconDecorator(MapPin)}
             />
           </div>
         </div>
 
-        {/* Botón Listo */}
         <div className="flex gap-4 justify-between mt-auto">
           <div className="flex gap-4">
-            <Button label="Confirmar" variant="primary" onClick={handleSubmit} />
-            <Button label="Cancelar" variant="secondary" href="/admin/gestion-usuarios/mentoras" />
+            <Button label="Confirmar" variant="success" onClick={handleSubmit} />
+            <Button label="Cancelar" variant="primary" href="/admin/gestion-usuarios/mentoras" />
           </div>
         </div>
       </div>

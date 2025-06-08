@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const venueController = require('../controllers/venue.controller');
 const { validateVenue } = require('../validators/venueValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
@@ -110,6 +112,37 @@ router.patch(
 );
 
 router.get('/:id/pdf', authMiddleware, venueController.getVenuePDF);
+
+router.get('/:id/groups', async (req, res) => {
+  try {
+    const id_venue = parseInt(req.params.id, 10);
+    if (isNaN(id_venue)) {
+      return res.status(400).json({ message: 'ID de sede inválido' });
+    }
+    const groups = await prisma.groups.findMany({
+      where: { id_venue },
+      select: {
+        id_group: true,
+        name: true,
+        location: true,
+        language: true,
+        level: true,
+        mode: true,
+        start_date: true,
+        end_date: true,
+        start_hour: true,
+        end_hour: true,
+        max_places: true,
+        occupied_places: true,
+        status: true,
+      },
+    });
+    res.json(groups);
+  } catch (error) {
+    console.error('Error fetching groups by venue:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
 
 router.patch('/:id/approve', authMiddleware, venueController.approveVenue);
 router.patch('/:id/reject', authMiddleware, roleMiddleware(['superuser', 'venue_coordinator']), venueController.rejectVenue);

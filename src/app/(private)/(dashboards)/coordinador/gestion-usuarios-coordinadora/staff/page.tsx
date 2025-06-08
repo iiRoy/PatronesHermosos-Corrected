@@ -251,7 +251,6 @@ const GestionApoyo = () => {
                 throw new Error(errorData.message || 'Error al cancelar la colaboradora');
             }
 
-            // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
             setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
 
             notify({
@@ -263,7 +262,7 @@ const GestionApoyo = () => {
 
             handleCloseDeletePopup();
         } catch (error: any) {
-            console.error('Error al cancelar la mentora:', error);
+            console.error('Error al cancelar la colaboradora:', error);
             notify({
                 color: 'red',
                 title: 'Error',
@@ -287,7 +286,7 @@ const GestionApoyo = () => {
                             <InputField
                                 label=""
                                 showDescription={false}
-                                placeholder="Search"
+                                placeholder="Buscar colaboradora"
                                 showError={false}
                                 variant="primary"
                                 icon="MagnifyingGlass"
@@ -309,13 +308,13 @@ const GestionApoyo = () => {
                 </div>
                 <div className="overflow-x-auto custom-scrollbar-tabla">
                     <table className="min-w-full text-left text-sm">
-                        <thead className="text-purple-800 font-bold">
+                        <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
                             <tr className="texto-primary-shade">
+                                <th className="p-2 text-center"></th>
                                 <th className="p-2 text-center">Nombre</th>
                                 <th className="p-2 text-center">Correo</th>
+                                <th className="p-2 text-center">Sede</th>
                                 <th className="p-2 text-center">Rol</th>
-                                <th className="p-2 text-center">Nivel</th>
-                                <th className="p-2 text-center">Idioma</th>
                                 <th className="p-2 text-center"></th>
                             </tr>
                         </thead>
@@ -328,11 +327,23 @@ const GestionApoyo = () => {
                                         className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
                                         onClick={() => handleInfoClick(apoyo)}
                                     >
+                                        <td className="p-2 text-center">
+                                            <Button
+                                                label=""
+                                                variant="primary"
+                                                round
+                                                showLeftIcon
+                                                IconLeft={Eye}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleInfoClick(apoyo);
+                                                }}
+                                            />
+                                        </td>
                                         <td className="p-2 text-center">{fullName}</td>
                                         <td className="p-2 text-center">{apoyo.email}</td>
+                                        <td className="p-2 text-center">{apoyo.venue || 'Sin asignado'}</td>
                                         <td className="p-2 text-center">{apoyo.role}</td>
-                                        <td className="p-2 text-center">{apoyo.level}</td>
-                                        <td className="p-2 text-center">{apoyo.language}</td>
                                         <td className="p-2 flex gap-2 justify-center">
                                             <Button
                                                 label=""
@@ -383,7 +394,7 @@ const GestionApoyo = () => {
                 )}
                 {isInfoPopupOpen && selectedApoyo && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
                             <h2 className="text-3xl font-bold mb-4 text-center">Información del Colaborador</h2>
                             <div className="space-y-2">
                                 <p><strong>Nombre:</strong> {selectedApoyo.name}</p>

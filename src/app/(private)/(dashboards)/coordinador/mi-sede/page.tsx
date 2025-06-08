@@ -7,7 +7,7 @@ import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Button from '@/components/buttons_inputs/Button';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import { useNotification } from '@/components/buttons_inputs/Notification'; // Importar useNotification
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 interface Participant {
     id: number;
@@ -39,18 +39,17 @@ interface Group {
 
 const verSede = () => {
     const [inputValue, setInputValue] = useState('');
-    const [section, setSection] = useState('__All__');
-    const [participants, setParticipants] = useState<Participant[]>([]);
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
     const [venueName, setVenueName] = useState('Cargando...');
     const [venueId, setVenueId] = useState<number | null>(null);
-    const [groupOptions, setGroupOptions] = useState([{ label: 'Todos', value: '__All__' }]);
     const [groupsData, setGroupsData] = useState<Group[]>([]);
+    const [participants, setParticipants] = useState<Participant[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [userInfo, setUserInfo] = useState<{ email: string; username: string } | null>(null);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const router = useRouter();
-    const { notify } = useNotification(); // Usar el hook de notificaciones
+    const { notify } = useNotification();
 
     useEffect(() => {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
@@ -59,6 +58,7 @@ const verSede = () => {
                 const decoded: DecodedToken = jwtDecode(token);
                 if (decoded.role === 'venue_coordinator') {
                     setUserInfo({ email: decoded.email, username: decoded.username });
+                    setVenueId(decoded.userId);
                     fetchVenueData(decoded.userId);
                     fetchGroups(decoded.userId);
                     fetchParticipants(decoded.userId);
@@ -75,7 +75,7 @@ const verSede = () => {
             setError('No se encontró el token, por favor inicia sesión');
             router.push('/login');
         }
-    }, [router, notify]); // Añadir notify a las dependencias
+    }, [router, notify]);
 
     const fetchVenueData = async (venueId: number) => {
         try {
@@ -86,16 +86,13 @@ const verSede = () => {
             console.log('Venue data:', data);
             if (response.ok) {
                 setVenueName(data.name || 'Sede no encontrada');
-                setVenueId(data.id_venue || null);
             } else {
                 setVenueName('Sede no encontrada');
-                setVenueId(null);
                 setError(`Error al cargar datos de la sede: ${data.message}`);
             }
         } catch (error) {
             console.error('Error fetching venue:', error);
             setVenueName('Sede no encontrada');
-            setVenueId(null);
             setError('Error al cargar datos de la sede');
         }
     };
@@ -113,10 +110,6 @@ const verSede = () => {
                 );
                 console.log('Filtered groups (by venue and status):', filteredGroups);
                 setGroupsData(filteredGroups);
-                setGroupOptions([
-                    { label: 'Todos', value: '__All__' },
-                    ...filteredGroups.map((group: Group) => ({ label: group.name, value: group.name })),
-                ]);
             } else {
                 setError(`Error al cargar grupos: ${data.message || 'Datos no disponibles'}`);
             }
@@ -149,28 +142,30 @@ const verSede = () => {
         }
     };
 
-    const filteredParticipants = participants.filter((p) => {
-        const matchesSearch = p.nombre.toLowerCase().includes(inputValue.toLowerCase()) || p.correo.toLowerCase().includes(inputValue.toLowerCase());
-        const matchesGroup = section === '__All__' ? true : p.grupo === section;
-        return matchesSearch && matchesGroup;
+    const filteredGroups = groupsData.filter((g) => {
+        const matchesSearch = g.name.toLowerCase().includes(inputValue.toLowerCase());
+        return matchesSearch;
     });
 
-    const sectionFilterChange = (value: string) => {
-        setSection(value);
-        setInputValue('');
+    const getParticipantCount = (groupName: string) => {
+        return participants.filter((p) => p.grupo === groupName).length;
     };
 
-    const isButtonsDisabled = section === '__All__';
+    const isButtonsDisabled = selectedGroupId === null;
 
     const getGroupId = () => {
-        if (section === '__All__') return null;
-        const selectedGroup = groupsData.find((group) => group.name === section);
-        return selectedGroup ? selectedGroup.id_group : null;
+        return selectedGroupId;
+    };
+
+    const handleRowClick = (groupId: number) => {
+        setSelectedGroupId(groupId);
+        const group = groupsData.find((g) => g.id_group === groupId);
+        setSelectedGroup(group || null);
     };
 
     const openDeletePopup = () => {
         if (isButtonsDisabled) return;
-        const group = groupsData.find((g) => g.name === section);
+        const group = groupsData.find((g) => g.id_group === selectedGroupId);
         if (group) {
             setSelectedGroup(group);
             setShowDeletePopup(true);
@@ -178,7 +173,7 @@ const verSede = () => {
     };
 
     const handleDeleteConfirm = async () => {
-        if (!selectedGroup) return;
+        if (!selectedGroup || !venueId) return;
 
         try {
             const token = localStorage.getItem('api_token');
@@ -203,11 +198,9 @@ const verSede = () => {
             if (response.ok) {
                 setShowDeletePopup(false);
                 setSelectedGroup(null);
-                if (venueId) {
-                    fetchGroups(venueId);
-                    fetchParticipants(venueId);
-                }
-                // Mostrar notificación de éxito
+                setSelectedGroupId(null);
+                fetchGroups(venueId);
+                fetchParticipants(venueId);
                 notify({
                     color: 'green',
                     title: 'Grupo Eliminado',
@@ -216,7 +209,6 @@ const verSede = () => {
                 });
             } else {
                 setError(data.message || 'Error al eliminar el grupo');
-                // Mostrar notificación de error
                 notify({
                     color: 'red',
                     title: 'Error',
@@ -227,7 +219,6 @@ const verSede = () => {
         } catch (error) {
             console.error('Error deleting group:', error);
             setError('Error al eliminar el grupo');
-            // Mostrar notificación de error
             notify({
                 color: 'red',
                 title: 'Error',
@@ -264,7 +255,7 @@ const verSede = () => {
                         <InputField
                             label=''
                             showDescription={false}
-                            placeholder='Buscar participante'
+                            placeholder='Buscar grupo'
                             showError={false}
                             variant='primary'
                             icon='MagnifyingGlass'
@@ -272,20 +263,8 @@ const verSede = () => {
                             onChangeText={(val) => setInputValue(val)}
                         />
                     </div>
-
-                    <div className='basis-1/3'>
-                        <FiltroEvento
-                            disableCheckboxes
-                            label='Filtrar por grupo'
-                            showSecciones
-                            labelSecciones='Seleccionar Grupo'
-                            secciones={groupOptions}
-                            seccionActiva={section}
-                            onChangeSeccion={sectionFilterChange}
-                        />
-                    </div>
                     <div>
-                        <Button label='Crear Grupo' variant='warning' href='/coordinador/mi-sede/crear-grupo' />
+                        <Button label='Crear Grupo' variant='secondary' href='/coordinador/mi-sede/crear-grupo' />
                     </div>
                 </div>
 
@@ -293,40 +272,50 @@ const verSede = () => {
                     <table className='w-full text-left'>
                         <thead className='text-gray-400 text-sm border-b'>
                             <tr>
+                                <th className='pb-2 text-center'>Seleccionar</th>
                                 <th className='pb-2 text-center'>Nombre</th>
                                 <th className='pb-2 text-center'>Sede</th>
-                                <th className='pb-2 text-center'>Grupo</th>
-                                <th className='pb-2 text-center'>Correo</th>
-                                <th className='pb-2 text-center'>Status</th>
+                                <th className='pb-2 text-center'>Estado</th>
+                                <th className='pb-2 text-center'>Participantes</th>
                             </tr>
                         </thead>
                         <tbody className='text-gray-800'>
-                            {filteredParticipants.map((p) => (
-                                <tr key={p.id} className='border-b last:border-none'>
-                                    <td className='py-2 text-center'>{p.nombre}</td>
-                                    <td className='py-2 text-center'>{p.sede}</td>
-                                    <td className='py-2 text-center'>{p.grupo}</td>
-                                    <td className='py-2 text-center'>{p.correo}</td>
-                                    <td className='py-2 text-center'>{p.status}</td>
+                            {filteredGroups.map((g) => (
+                                <tr
+                                    key={g.id_group}
+                                    className={`border-t cursor-pointer hover:bg-gray-300 ${selectedGroupId === g.id_group ? 'bg-gray-200' : ''}`}
+                                    onClick={() => handleRowClick(g.id_group)}
+                                >
+                                    <td className='py-2 text-center'>
+                                        <input
+                                            type='radio'
+                                            name='selected_group'
+                                            checked={selectedGroupId === g.id_group}
+                                            onChange={() => handleRowClick(g.id_group)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </td>
+                                    <td className='py-2 text-center'>{g.name}</td>
+                                    <td className='py-2 text-center'>{g.venues.name}</td>
+                                    <td className='py-2 text-center'>{g.status}</td>
+                                    <td className='py-2 text-center'>{getParticipantCount(g.name)}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
 
-                <div className='flex justify-between mt-6'>
-                    <div>
-                        <Button label='Volver' variant='primary' href='../' />
-                    </div>
+                <div className='flex justify-between mt-4'>
+                    <div></div>
                     <div className='flex gap-4'>
                         <Button
                             label='Editar Grupo'
-                            variant='secondary'
+                            variant='warning'
                             href={getGroupId() ? `/coordinador/mi-sede/editar-grupo/${getGroupId()}` : '#'}
                             disabled={isButtonsDisabled}
                         />
                         <Button
-                            label='Eliminar Grupo'
+                            label='Confirmar Eliminar'
                             variant='error'
                             onClick={openDeletePopup}
                             disabled={isButtonsDisabled}
@@ -336,11 +325,11 @@ const verSede = () => {
 
                 {showDeletePopup && selectedGroup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 text-gray-800">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 text-gray-600">
                             <h2 className="text-lg font-semibold mb-12">Confirmar Eliminación</h2>
-                            <p className="mb-12">¿Segura que quieres eliminar {selectedGroup.name}?</p>
+                            <p className="mb-12">¿Seguro que quieres eliminar {selectedGroup.name}?</p>
                             <div className="flex justify-center gap-4">
-                                <Button label="Eliminar Grupo" variant="error" onClick={handleDeleteConfirm} />
+                                <Button label="Confirmar Eliminar" variant="error" onClick={handleDeleteConfirm} />
                                 <Button label="Cancelar" variant="secondary" onClick={closeDeletePopup} />
                             </div>
                         </div>
