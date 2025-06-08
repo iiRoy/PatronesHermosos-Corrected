@@ -1,3 +1,27 @@
+## 1.17.0 (2025-06-08)
+
+* chore: manual conflict resolution after merge ([8de5f2f](https://github.com/iiRoy/Patrones-Hermosos/commit/8de5f2f))
+* Correcciones de diseño formularios ([e4dceab](https://github.com/iiRoy/Patrones-Hermosos/commit/e4dceab))
+* Correcciones de diseño formularios ([e506f23](https://github.com/iiRoy/Patrones-Hermosos/commit/e506f23))
+* feat(colaboradoras) editar colaboradoras, se puede cambiar el grupo y rol asignado ([a325376](https://github.com/iiRoy/Patrones-Hermosos/commit/a325376))
+* feat(mi-sede) se cambio la pagina de mi-sede, por sugerencia de rosa ([f55355b](https://github.com/iiRoy/Patrones-Hermosos/commit/f55355b))
+* feat(pdf) visualización de pdf en gestionParticipante de coordinadora y de superuser ([354d076](https://github.com/iiRoy/Patrones-Hermosos/commit/354d076))
+* feat(visualización) visualización en todas las tablas ([23f57a8](https://github.com/iiRoy/Patrones-Hermosos/commit/23f57a8))
+* fix(sugerencia) Se agrego la columna SEDE a la tabla de staff ([e837fa8](https://github.com/iiRoy/Patrones-Hermosos/commit/e837fa8))
+* fix(sugerencia) validaciones para todos los editar ([232b7cb](https://github.com/iiRoy/Patrones-Hermosos/commit/232b7cb))
+* Merge branch 'maggi_correciones' of https://github.com/iiRoy/Patrones-Hermosos into maggi_correcione ([1984659](https://github.com/iiRoy/Patrones-Hermosos/commit/1984659))
+* Merge remote-tracking branch 'origin/maggi_correciones' into diego_correciones ([01b5877](https://github.com/iiRoy/Patrones-Hermosos/commit/01b5877))
+* merge(merge) merge con la rama de maggi ([da0bdf8](https://github.com/iiRoy/Patrones-Hermosos/commit/da0bdf8))
+* improve(pages): correcciones y mejoras de diseño en páginas de coordinadora y superusuario ([fb02dc3](https://github.com/iiRoy/Patrones-Hermosos/commit/fb02dc3))
+* improve(pages): imagenes agregadas a página de inicio y correcciones de diseño en páginas y componen ([ee3faec](https://github.com/iiRoy/Patrones-Hermosos/commit/ee3faec))
+* improve(pages): página de editar sede con diseño corregido superuser ([83127b5](https://github.com/iiRoy/Patrones-Hermosos/commit/83127b5))
+* improve(pages): páginas de editar usuarios en coordinadora con diseño mejorado ([8fcefe5](https://github.com/iiRoy/Patrones-Hermosos/commit/8fcefe5))
+* improve(pages): páginas de editar usuarios en superuser con diseño mejorado ([e93fc05](https://github.com/iiRoy/Patrones-Hermosos/commit/e93fc05))
+* feat(countries): Lib for country select ([61b7517](https://github.com/iiRoy/Patrones-Hermosos/commit/61b7517))
+* feat(cypress): Tests for forms created and updated ([0a90025](https://github.com/iiRoy/Patrones-Hermosos/commit/0a90025))
+* feat(email): Email for change request done for coordinator ([a4f36eb](https://github.com/iiRoy/Patrones-Hermosos/commit/a4f36eb))
+* fix(misc): Button for forms, email for venue, migration in UTF-8 ([f1a9188](https://github.com/iiRoy/Patrones-Hermosos/commit/f1a9188))
+
 ## <small>1.16.1 (2025-06-08)</small>
 
 * fix(diplomas): Sección de diplomas para coordinadoras ([3a379b6](https://github.com/iiRoy/Patrones-Hermosos/commit/3a379b6))
