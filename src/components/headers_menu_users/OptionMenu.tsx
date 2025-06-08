@@ -93,7 +93,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   // Estados globales del menú
   const fallbackFilters = useMemo(
     () => props.selectedFilters ?? { sede: '__all__' },
-    [props.selectedFilters]
+    [props.selectedFilters],
   );
   const [format, setFormat] = useState<'png' | 'jpg' | 'pdf'>('png');
   const [includeTable, setIncludeTable] = useState(true);
@@ -108,15 +108,17 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   const [sedes, setSedes] = useState<{ label: string; value: string }[]>([]);
   const [roles, setRoles] = useState<{ label: string; value: string }[]>([]);
   const [userRole, setUserRole] = useState<string>('');
-    useEffect(() => {
-      setUserRole(
-        typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : ''
-      );
-    }, []);
-  
-    const shouldShowSedeFilter = userRole === 'superuser';
+  useEffect(() => {
+    setUserRole(typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : '');
+  }, []);
 
-  const fetchDashboardData = async (filters: { page: string; sede?: string; colab?: string }): Promise<any> => {
+  const shouldShowSedeFilter = userRole === 'superuser';
+
+  const fetchDashboardData = async (filters: {
+    page: string;
+    sede?: string;
+    colab?: string;
+  }): Promise<any> => {
     const { page, sede, colab } = filters;
     const params = new URLSearchParams();
     if (sede) params.append('id', sede);
@@ -138,11 +140,10 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     try {
       const res = await fetchDashboardData({ page: 'venues' });
       if (res?.venues && Array.isArray(res.venues)) {
-        const opciones = res.venues
-          .map((sede: any) => ({
-            value: sede.id.toString(),
-            label: sede.name,
-          }));
+        const opciones = res.venues.map((sede: any) => ({
+          value: sede.id.toString(),
+          label: sede.name,
+        }));
         setSedes([{ value: '__all__', label: 'Todas las sedes' }, ...opciones]);
       } else {
         console.warn('No se encontraron sedes o el formato de respuesta es incorrecto:', res);
@@ -266,11 +267,11 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
   const getExactRolesInCollision = (
     row: Record<string, any>,
     selectedRolesArr: string[],
-    roleActual: string
+    roleActual: string,
   ): string[] => {
     const valorActual = Number(row[roleActual] ?? 0);
     return selectedRolesArr.filter(
-      (rol) => rol !== roleActual && Number(row[rol] ?? 0) === valorActual
+      (rol) => rol !== roleActual && Number(row[rol] ?? 0) === valorActual,
     );
   };
 
@@ -290,7 +291,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
           cy={cy}
           r={r}
           fill={roleColors[solo] || '#CCCCCC'}
-          stroke="#fff"
+          stroke='#fff'
           strokeWidth={1.5}
         />
       );
@@ -316,9 +317,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             Z
           `}
           fill={roleColors[roles[i]] || '#CCCCCC'}
-          stroke="#fff"
+          stroke='#fff'
           strokeWidth={0.5}
-        />
+        />,
       );
     }
     return <g>{paths}</g>;
@@ -355,8 +356,8 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             y2={yEnd}
             stroke={color}
             strokeWidth={2.5}
-            strokeLinecap="round"
-          />
+            strokeLinecap='round'
+          />,
         );
       }
     }
@@ -368,8 +369,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     const WIDTH = 1200;
     const HEIGHT_BASE = 800;
     const ROW_HEIGHT = 50;
-    const TABLE_EXTRA = includeTable && !isLineChart ? (filteredData.length + 1) * ROW_HEIGHT + 10 : 0;
-    const HEIGHT = HEIGHT_BASE + TABLE_EXTRA
+    const TABLE_EXTRA =
+      includeTable && !isLineChart ? (filteredData.length + 1) * ROW_HEIGHT + 10 : 0;
+    const HEIGHT = HEIGHT_BASE + TABLE_EXTRA;
 
     // 1) Crear el “sandbox” oculto
     const sandbox = document.createElement('div');
@@ -523,16 +525,14 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             ${xKey.charAt(0).toUpperCase() + xKey.slice(1)}
           </th>
           ${seriesKeys
-            .map(
-              (key, i) => {
-                const color = colors[i % colors.length] || defaultColors[i];
-                return `
+            .map((key, i) => {
+              const color = colors[i % colors.length] || defaultColors[i];
+              return `
                 <th style="border-bottom:2px solid #ddd; padding: 0 60px 16px 16px; text-align:center; font-size:17px; color:${color}; background:#f5f0f7;">
                   ${key.charAt(0).toUpperCase() + key.slice(1)}
                 </th>
               `;
-              }
-            )
+            })
             .join('')}
         </tr>
       `;
@@ -682,10 +682,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
 
     // 5) Renderizar con React el gráfico según chartType
     if (isPieChart) {
-      const outerColorMap = outerLabels.reduce((acc, label, i) => {
-        acc[label] = outerColors[i];
-        return acc;
-      }, {} as Record<string, string>);
+      const outerColorMap = outerLabels.reduce(
+        (acc, label, i) => {
+          acc[label] = outerColors[i];
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
       root.render(
         <div style={{ position: 'relative', width: '900px', height: '600px' }}>
@@ -693,13 +696,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             {/* Círculo interno: roles */}
             <Pie
               data={filteredData}
-              dataKey="total"
-              nameKey="name"
+              dataKey='total'
+              nameKey='name'
               paddingAngle={1}
-              cx="50%"
-              cy="50%"
-              innerRadius="23%"
-              outerRadius="50%"
+              cx='50%'
+              cy='50%'
+              innerRadius='23%'
+              outerRadius='50%'
               isAnimationActive={false}
             >
               {filteredData.map((entry, index) => (
@@ -710,20 +713,20 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             {/* Círculo externo: estados */}
             <Pie
               data={outerData}
-              dataKey="total"
-              nameKey="name"
+              dataKey='total'
+              nameKey='name'
               paddingAngle={1}
-              cx="50%"
-              cy="50%"
-              innerRadius="55%"
-              outerRadius="75%"
+              cx='50%'
+              cy='50%'
+              innerRadius='55%'
+              outerRadius='75%'
               isAnimationActive={false}
             >
               {(outerData ?? []).map((entry, index) => (
                 <Cell key={`outer-${index}`} fill={outerColorMap[entry.name] ?? '#ccc'} />
               ))}
               <LabelList
-                dataKey="total"
+                dataKey='total'
                 content={(props: any) => {
                   const RADIAN = Math.PI / 180;
                   const midAngle = (props.viewBox.startAngle + props.viewBox.endAngle) / 2;
@@ -733,17 +736,17 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                   const x = props.viewBox.cx + radius * Math.cos(-midAngle * RADIAN);
                   const y = props.viewBox.cy + radius * Math.sin(-midAngle * RADIAN);
                   const entry = outerData?.[props.index];
-                  const baseColor = entry ? outerColorMap[entry.name] ?? '#999' : '#999';
+                  const baseColor = entry ? (outerColorMap[entry.name] ?? '#999') : '#999';
                   const textColor = adjustTextColor(baseColor);
                   return (
                     <text
                       x={x}
                       y={y}
-                      textAnchor="middle"
-                      dominantBaseline="central"
+                      textAnchor='middle'
+                      dominantBaseline='central'
                       fill={textColor}
                       fontSize={16}
-                      fontWeight="bold"
+                      fontWeight='bold'
                     >
                       {props.value}
                     </text>
@@ -752,12 +755,12 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
               />
             </Pie>
           </RePieChart>
-        </div>
+        </div>,
       );
     } else if (isBarChart) {
       root.render(
         <BarChart width={1000} height={600} data={filteredData} barSize={24}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
+          <CartesianGrid strokeDasharray='3 3' vertical={false} stroke='#ccc' />
           <XAxis dataKey={xKey} axisLine={false} tickLine={false} height={60} />
           <YAxis axisLine={false} tickLine={false} />
           <Tooltip />
@@ -771,7 +774,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
               activeBar={<Rectangle />}
             />
           ))}
-        </BarChart>
+        </BarChart>,
       );
     } else if (isLineChart) {
       // 5.a) Extraer las primeras N filas para descarga
@@ -779,7 +782,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
       // 5.b) Calcular maxY para ese subconjunto
       const maxYForDownload = Math.max(
         0,
-        ...downloadData.flatMap((entry) => seriesKeys.map((key) => Number(entry[key] || 0)))
+        ...downloadData.flatMap((entry) => seriesKeys.map((key) => Number(entry[key] || 0))),
       );
 
       // Función para formatear ticks del eje X
@@ -791,21 +794,20 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
           <g transform={`translate(${x},${y + 10})`}>
             {isMonthly ? (
               <>
-                <text textAnchor="middle" fill="#333" fontWeight="bold" fontSize={12}>
+                <text textAnchor='middle' fill='#333' fontWeight='bold' fontSize={12}>
                   {formatDate(fecha, 'MMMM', { locale: es }).charAt(0).toUpperCase() +
                     formatDate(fecha, 'MMMM', { locale: es }).slice(1)}
                 </text>
-                <text y={14} textAnchor="middle" fill="#777" fontSize={10}>
+                <text y={14} textAnchor='middle' fill='#777' fontSize={10}>
                   {formatDate(fecha, 'yyyy', { locale: es })}
                 </text>
               </>
             ) : (
               <>
-                <text textAnchor="middle" fill="#333" fontWeight="bold" fontSize={12}>
-                  Semana{' '}
-                  {filteredData.findIndex((d) => d[xKey] === payload.value) + 1}
+                <text textAnchor='middle' fill='#333' fontWeight='bold' fontSize={12}>
+                  Semana {filteredData.findIndex((d) => d[xKey] === payload.value) + 1}
                 </text>
-                <text y={14} textAnchor="middle" fill="#777" fontSize={10}>
+                <text y={14} textAnchor='middle' fill='#777' fontSize={10}>
                   ({formatDate(fecha, 'dd-MM-yyyy')})
                 </text>
               </>
@@ -822,7 +824,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             data={downloadData}
             margin={{ top: 20, right: 30, bottom: 0, left: 0 }}
           >
-            <CartesianGrid strokeDasharray="5 5" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray='5 5' stroke='#e2e8f0' />
 
             <XAxisLine
               dataKey={xKey}
@@ -857,13 +859,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             {seriesKeys.map((role, idx) => (
               <Line
                 key={role}
-                type="monotone"
+                type='monotone'
                 dataKey={role}
                 stroke={colors[idx % colors.length] || defaultColors[idx] || '#CCCCCC'}
                 strokeWidth={2}
                 dot={false}
                 isAnimationActive={false}
-                legendType="line"
+                legendType='line'
                 opacity={0}
               />
             ))}
@@ -889,15 +891,15 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                     const rolesPrevExact = getExactRolesInCollision(
                       prevPt.payload,
                       seriesKeys,
-                      role
+                      role,
                     );
                     const rolesCurrExact = getExactRolesInCollision(
                       currPt.payload,
                       seriesKeys,
-                      role
+                      role,
                     );
                     const intersectionExact = rolesPrevExact.filter((r) =>
-                      rolesCurrExact.includes(r)
+                      rolesCurrExact.includes(r),
                     );
                     if (intersectionExact.length > 0) {
                       content.push(
@@ -906,7 +908,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                           points={[prevPt, currPt]}
                           roles={[role, ...intersectionExact]}
                           roleColors={props.colorsMap || {}}
-                        />
+                        />,
                       );
                     } else {
                       const subGen = d3LineShape<{ x: number; y: number }>()
@@ -921,10 +923,10 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                         <path
                           key={`solid-${role}-${i}`}
                           d={subPath || ''}
-                          fill="none"
+                          fill='none'
                           stroke={props.colorsMap?.[role] || '#CCCCCC'}
                           strokeWidth={2}
-                        />
+                        />,
                       );
                     }
                   }
@@ -965,20 +967,23 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                         r={6}
                         roles={cluster}
                         roleColors={props.colorsMap || {}}
-                      />
+                      />,
                     );
                   });
                 });
 
                 return <g>{content}</g>;
               }}
-              colorsMap={seriesKeys.reduce((acc, role, idx) => {
-                acc[role] = colors[idx % colors.length] || defaultColors[idx] || '#CCCCCC';
-                return acc;
-              }, {} as Record<string, string>)}
+              colorsMap={seriesKeys.reduce(
+                (acc, role, idx) => {
+                  acc[role] = colors[idx % colors.length] || defaultColors[idx] || '#CCCCCC';
+                  return acc;
+                },
+                {} as Record<string, string>,
+              )}
             />
           </LineChart>
-        </div>
+        </div>,
       );
     }
 
@@ -1004,16 +1009,16 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
           isLineChart
             ? 'grafica_lineal.pdf'
             : isPieChart
-            ? 'grafica_pie.pdf'
-            : 'grafica_barras.pdf'
+              ? 'grafica_pie.pdf'
+              : 'grafica_barras.pdf',
         );
       } else {
         const link = document.createElement('a');
         link.download = isLineChart
           ? `grafica_lineal.${format}`
           : isPieChart
-          ? `grafica_pie.${format}`
-          : `grafica_barras.${format}`;
+            ? `grafica_pie.${format}`
+            : `grafica_barras.${format}`;
         link.href = dataURL;
         link.click();
       }
@@ -1037,9 +1042,9 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
         ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
       `}
     >
-      <h3 className="font-bold text-lg mb-4 text-[var(--secondary-shade)]">Menú de opciones</h3>
+      <h3 className='font-bold text-lg mb-4 text-[var(--secondary-shade)]'>Menú de opciones</h3>
 
-      <div className="flex justify-between mb-4">
+      <div className='flex justify-between mb-4'>
         <button
           className={`flex-1 py-1 rounded-l ${
             currentView === 'customization'
@@ -1069,8 +1074,8 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             transitionPhase === 'fadeOut'
               ? 'opacity-0 -translate-x-3 pointer-events-none'
               : transitionPhase === 'fadeIn'
-              ? 'opacity-0 translate-x-3'
-              : 'opacity-100 translate-x-0'
+                ? 'opacity-0 translate-x-3'
+                : 'opacity-100 translate-x-0'
           }
         `}
       >
@@ -1085,10 +1090,10 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             )}
 
             {isPieChart && !isCustomizingColors && shouldShowSedeFilter && (
-              <div className="mb-2">
+              <div className='mb-2'>
                 <FiltroEvento
                   disableCheckboxes
-                  label="Filtros"
+                  label='Filtros'
                   extraFilters={[{ label: 'SEDE', key: 'sede', options: sedes }]}
                   filterActiva={fallbackFilters}
                   onExtraFilterChange={(key, value) =>
@@ -1100,11 +1105,11 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             )}
 
             {isLineChart && !isCustomizingColors && (
-              <div className="mb-2">
+              <div className='mb-2'>
                 <FiltroEvento
                   disableCheckboxes
-                  label="Personalización"
-                  iconName="Star"
+                  label='Personalización'
+                  iconName='Star'
                   extraFilters={[
                     ...(shouldShowSedeFilter
                       ? [
@@ -1147,13 +1152,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
                     props.setSelectedFilters?.((prev) => ({ ...prev, [key]: value }))
                   }
                 />
-                <div className="mt-2">
+                <div className='mt-2'>
                   <FiltroEvento
                     options={roles}
                     selected={selection}
                     onChange={selectionChange}
-                    label="Filtros"
-                    labelOptions="Roles"
+                    label='Filtros'
+                    labelOptions='Roles'
                     selectAll={true}
                     deselectAll={true}
                   />
@@ -1164,7 +1169,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             {isPieChart && (
               <div>
                 {isCustomizingColors && (
-                  <div className="flex gap-2 mb-2">
+                  <div className='flex gap-2 mb-2'>
                     <button
                       onClick={() => {
                         setCustomizingOuter(false);
@@ -1195,7 +1200,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             <ColorPickerSection
               colors={customizingOuter ? outerColors : colors}
               setColors={customizingOuter ? setOuterColors : setColors}
-              defaultColors={customizingOuter ? defaultOuterColors ?? outerColors : defaultColors}
+              defaultColors={customizingOuter ? (defaultOuterColors ?? outerColors) : defaultColors}
               notify={notify}
               elementLabels={customizingOuter ? outerLabels : elementLabels}
               onIsCustomizingChange={setIsCustomizingColors}
@@ -1220,13 +1225,13 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
             )}
 
             {isLineChart && (
-              <div className="mb-2">
+              <div className='mb-2'>
                 <MaxItemsInput
                   value={downloadDateCount}
                   totalItems={Math.min(10, filteredData.length)}
                   onChange={(val) => setDownloadDateCount(val ?? 2)}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className='text-xs text-gray-500 mt-1'>
                   (Mínimo 2, máximo {Math.min(10, filteredData.length)})
                 </p>
               </div>

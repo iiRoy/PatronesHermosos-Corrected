@@ -103,9 +103,10 @@ const Button: React.FC<ButtonProps> = ({
           />
         </div>
       )}
-      {!round && label && ( // Only render label if provided
-        <span className='option-label text-[var(--text-color)]'>{label}</span>
-      )}
+      {!round &&
+        label && ( // Only render label if provided
+          <span className='option-label text-[var(--text-color)]'>{label}</span>
+        )}
       {showRightIcon && DecoratedIconR && (
         <div className='ease-in-out duration-300 transition-colors'>
           <DecoratedIconR

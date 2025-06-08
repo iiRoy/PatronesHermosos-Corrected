@@ -57,12 +57,14 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
           venue_name: group.venues?.name || 'N/A',
           language: group.language || 'N/A',
           level: group.level || 'N/A',
-          available_places: group.max_places !== undefined && group.occupied_places !== undefined
-            ? group.max_places - group.occupied_places
-            : undefined,
-          schedule: group.start_hour && group.end_hour
-            ? `${group.start_hour} - ${group.end_hour}`
-            : undefined,
+          available_places:
+            group.max_places !== undefined && group.occupied_places !== undefined
+              ? group.max_places - group.occupied_places
+              : undefined,
+          schedule:
+            group.start_hour && group.end_hour
+              ? `${group.start_hour} - ${group.end_hour}`
+              : undefined,
           // For compatibility with the rest of the code
           sede: group.venues?.name || 'N/A',
           cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
@@ -76,25 +78,27 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
     fetchGroups();
   }, []);
 
-  const uniqueModes = Array.from(new Set(groups.map(group => group.mode))).sort();
+  const uniqueModes = Array.from(new Set(groups.map((group) => group.mode))).sort();
   const modeOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueModes.map(mode => ({ label: mode, value: mode })),
+    ...uniqueModes.map((mode) => ({ label: mode, value: mode })),
   ];
 
-  const uniqueVenues = Array.from(new Set(groups.map(group => group.venue_name))).sort();
+  const uniqueVenues = Array.from(new Set(groups.map((group) => group.venue_name))).sort();
   const venueOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueVenues.map(sede => ({ label: sede, value: sede })),
+    ...uniqueVenues.map((sede) => ({ label: sede, value: sede })),
   ];
 
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
-    return groups.filter(group => {
-      const matchesSearch = !searchTerm ||
+    return groups.filter((group) => {
+      const matchesSearch =
+        !searchTerm ||
         group.name.toLowerCase().includes(searchTerm) ||
         group.venue_name.toLowerCase().includes(searchTerm);
-      const matchesSede = filterActiva.sede === '__All__' ? true : group.venue_name === filterActiva.sede;
+      const matchesSede =
+        filterActiva.sede === '__All__' ? true : group.venue_name === filterActiva.sede;
       const matchesMode = filterActiva.mode === '__All__' ? true : group.mode === filterActiva.mode;
       return matchesSearch && matchesSede && matchesMode;
     });
@@ -103,7 +107,7 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(
     currentPage * rowsPerPage,
-    (currentPage + 1) * rowsPerPage
+    (currentPage + 1) * rowsPerPage,
   );
 
   useEffect(() => {
@@ -112,7 +116,7 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   }, [filteredData.length, currentPage, totalPages]);
 
   const handleExtraFilterChange = (key: string, value: string) => {
-    setFilterActiva(prev => ({
+    setFilterActiva((prev) => ({
       ...prev,
       [key]: value,
     }));
@@ -138,7 +142,6 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
     setCurrentPage(0);
   };
 
-
   // Reset currentPage when filteredData changes
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
@@ -161,24 +164,24 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
   };
 
   return (
-    <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh] items-center justify-between">
-      <div className="flex flex-wrap justify-between gap-4 w-full">
-        <div className="flex flex-1 gap-4  items-center w-full">
+    <div className='fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh] items-center justify-between'>
+      <div className='flex flex-wrap justify-between gap-4 w-full'>
+        <div className='flex flex-1 gap-4  items-center w-full'>
           <div className='basis-2/3'>
             <InputField
-              label=""
+              label=''
               showDescription={false}
-              placeholder="Search"
-              variant="secondary-shade"
-              icon="MagnifyingGlass"
+              placeholder='Search'
+              variant='secondary-shade'
+              icon='MagnifyingGlass'
               value={inputValue}
               onChangeText={setInputValue}
             />
           </div>
           <div className='basis-1/3'>
             <FiltroEvento
-              label="Filtros"
-              labelOptions="Opciones"
+              label='Filtros'
+              labelOptions='Opciones'
               extraFilters={extraFilters}
               filterActiva={filterActiva}
               onExtraFilterChange={handleExtraFilterChange}
@@ -186,44 +189,44 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
           </div>
         </div>
       </div>
-      <table className="min-w-full text-left text-sm">
-        <thead className="text-[#6E2D75] text-md">
+      <table className='min-w-full text-left text-sm'>
+        <thead className='text-[#6E2D75] text-md'>
           <tr>
-            <th className="p-2 text-center">Grupo</th>
-            <th className="p-2 text-center">Modalidad</th>
-            <th className="p-2 text-center">Sede</th>
-            <th className="p-2 text-center">Cupo</th>
-            <th className="p-2 text-center">Horarios</th>
-            <th className="p-2 text-center">Acciones</th>
+            <th className='p-2 text-center'>Grupo</th>
+            <th className='p-2 text-center'>Modalidad</th>
+            <th className='p-2 text-center'>Sede</th>
+            <th className='p-2 text-center'>Cupo</th>
+            <th className='p-2 text-center'>Horarios</th>
+            <th className='p-2 text-center'>Acciones</th>
           </tr>
         </thead>
-        <tbody className="text-gray-700">
+        <tbody className='text-gray-700'>
           {paginatedData.map((group) => (
             <tr
               key={group.id_group}
               className={`border-t border-gray-300 ${group.id_group === selectedGroupId ? 'bg-purple-100' : ''}`}
             >
-              <td className="p-2 text-center">{group.name}</td>
-              <td className="p-2 text-center">{group.mode}</td>
-              <td className="p-2 text-center">{group.venue_name}</td>
-              <td className="p-2 text-center">{group.available_places}</td>
-              <td className="p-2 text-center">{group.schedule}</td>
-              <td className="p-2 flex gap-2 justify-center">
+              <td className='p-2 text-center'>{group.name}</td>
+              <td className='p-2 text-center'>{group.mode}</td>
+              <td className='p-2 text-center'>{group.venue_name}</td>
+              <td className='p-2 text-center'>{group.available_places}</td>
+              <td className='p-2 text-center'>{group.schedule}</td>
+              <td className='p-2 flex gap-2 justify-center'>
                 <Button
-                  label=""
-                  variant="success"
+                  label=''
+                  variant='success'
                   round
                   showLeftIcon
                   IconLeft={Check}
                   onClick={() => onSelect(group.id_group)}
                 />
                 <Button
-                  variant="primary"
-                  label=""
+                  variant='primary'
+                  label=''
                   round
                   showLeftIcon={true}
                   IconLeft={Eye}
-                  type="button"
+                  type='button'
                   onClick={() => openGroupPopup(group)}
                 />
               </td>
@@ -235,34 +238,43 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        variant="secondary-shade"
+        variant='secondary-shade'
         pageLinks={Array(totalPages).fill('#')}
       />
       {/* Group Details Popup */}
       {isGroupPopupOpen && selectedGroup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] max-h-full overflow-y-auto text-gray-800 custom-scrollbar-tabla">
-            <h2 className="text-3xl text-center">Detalles del Grupo</h2>
-            <div className="pt-6 pb-6">
-              <p><strong>Nombre:</strong> {selectedGroup.name}</p>
-              <p><strong>Modalidad:</strong> {selectedGroup.mode}</p>
-              <p><strong>Sede:</strong> {selectedGroup.venue_name}</p>
-              <p><strong>Idioma:</strong> {selectedGroup.language}</p>
-              <p><strong>Nivel:</strong> {selectedGroup.level}</p>
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] max-h-full overflow-y-auto text-gray-800 custom-scrollbar-tabla'>
+            <h2 className='text-3xl text-center'>Detalles del Grupo</h2>
+            <div className='pt-6 pb-6'>
+              <p>
+                <strong>Nombre:</strong> {selectedGroup.name}
+              </p>
+              <p>
+                <strong>Modalidad:</strong> {selectedGroup.mode}
+              </p>
+              <p>
+                <strong>Sede:</strong> {selectedGroup.venue_name}
+              </p>
+              <p>
+                <strong>Idioma:</strong> {selectedGroup.language}
+              </p>
+              <p>
+                <strong>Nivel:</strong> {selectedGroup.level}
+              </p>
               {selectedGroup.available_places !== undefined && (
-                <p><strong>Cupo Disponible:</strong> {selectedGroup.available_places}</p>
+                <p>
+                  <strong>Cupo Disponible:</strong> {selectedGroup.available_places}
+                </p>
               )}
               {selectedGroup.schedule && (
-                <p><strong>Horario:</strong> {selectedGroup.schedule}</p>
+                <p>
+                  <strong>Horario:</strong> {selectedGroup.schedule}
+                </p>
               )}
             </div>
-            <div className="mt-4 flex justify-center">
-              <Button
-                label="Cerrar"
-                variant="primary"
-                type="button"
-                onClick={closeGroupPopup}
-              />
+            <div className='mt-4 flex justify-center'>
+              <Button label='Cerrar' variant='primary' type='button' onClick={closeGroupPopup} />
             </div>
           </div>
         </div>

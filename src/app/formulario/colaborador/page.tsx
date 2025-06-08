@@ -7,7 +7,16 @@ import Button from '@components/buttons_inputs/Button';
 import Checkbox from '@components/buttons_inputs/Checkbox';
 import { Modal, Toast } from '@/components/buttons_inputs/FormNotification';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { FlowerLotus, AddressBook, X, UserSound, ChatTeardropText, Grains, Student, Megaphone } from '@/components/icons';
+import {
+  FlowerLotus,
+  AddressBook,
+  X,
+  UserSound,
+  ChatTeardropText,
+  Grains,
+  Student,
+  Megaphone,
+} from '@/components/icons';
 import Send from '@components/icons/ArrowFatRight';
 import Navbar from '@/components/headers_menu_users/navbar';
 import GroupSelectionTable from '@/components/tables/GroupSelectionTable';
@@ -63,7 +72,6 @@ const CollaboratorRegistrationForm: React.FC = () => {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
 
-
   // Fetch groups from API
   useEffect(() => {
     const fetchGroups = async () => {
@@ -88,7 +96,9 @@ const CollaboratorRegistrationForm: React.FC = () => {
         setGroups(transformedGroups);
       } catch (err) {
         console.error('Error fetching groups:', err);
-        setErrors(['Error al cargar los grupos: ' + (err instanceof Error ? err.message : 'Unknown error')]);
+        setErrors([
+          'Error al cargar los grupos: ' + (err instanceof Error ? err.message : 'Unknown error'),
+        ]);
         setIsErrorModalOpen(true);
       }
     };
@@ -97,7 +107,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
 
   // Handle input changes
   const handleInputChange = (field: keyof Collaborator, value: string | number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -105,7 +115,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
 
   // Handle group selection
   const handleGroupSelect = (id_group: number) => {
-    setFormData(prev => ({ ...prev, preferred_group: id_group }));
+    setFormData((prev) => ({ ...prev, preferred_group: id_group }));
   };
 
   // Client-side validation
@@ -196,193 +206,201 @@ const CollaboratorRegistrationForm: React.FC = () => {
   };
 
   return (
-    <div className="pagina-formulario flex flex-col min-h-screen text-white">
-      <form className="info-formulario" onSubmit={handleSubmit}>
-        <div className="min-h-screen text-white p-4 md:p-8 flex flex-col justify-center items-center">
-          <div className="info-formulario w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
+    <div className='pagina-formulario flex flex-col min-h-screen text-white'>
+      <form className='info-formulario' onSubmit={handleSubmit}>
+        <div className='min-h-screen text-white p-4 md:p-8 flex flex-col justify-center items-center'>
+          <div className='info-formulario w-full max-w-6xl bg-gray-800 rounded-lg shadow-lg p-6 md:p-8'>
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center">
-                <div className="w-2 rounded-full h-16 mr-4 bg-[#683756]"></div>
-                <h1 className="text-2xl">
-                  <span className="italic">Formulario de Registro</span><br />
-                  <span className="font-bold text-3xl">Colaborador</span>
+            <div className='flex justify-between items-center mb-6'>
+              <div className='flex items-center'>
+                <div className='w-2 rounded-full h-16 mr-4 bg-[#683756]'></div>
+                <h1 className='text-2xl'>
+                  <span className='italic'>Formulario de Registro</span>
+                  <br />
+                  <span className='font-bold text-3xl'>Colaborador</span>
                 </h1>
               </div>
               <Button
-                label="Regresar"
-                variant="error"
+                label='Regresar'
+                variant='error'
                 showLeftIcon
-                type="button"
+                type='button'
                 IconLeft={X}
                 href='/'
-                className="px-4 py-2 rounded-full flex items-center"
+                className='px-4 py-2 rounded-full flex items-center'
               />
             </div>
 
             {/* Section: Datos Personales */}
-            <div className="mb-6">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><FlowerLotus
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Datos Personales
+            <div className='mb-6'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <FlowerLotus width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Datos Personales
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
-                Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de tus datos personales y de
+                contacto.
+                <br />
+                Las secciones que contengan un asterisco (*) deberán responderse de manera
+                obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
-                Es importante resaltar que solamente personas estudiando una carrera universitaria podrán participar en el equipo de apoyo & staff. Mujeres estudiando una carrera universitaria en relación al área de STEAM podrán aplicar para el rol de instructoras o facilitadoras.
+              <p className='text-gray-400 text-sm italic'>
+                Es importante resaltar que solamente personas estudiando una carrera universitaria
+                podrán participar en el equipo de apoyo & staff. Mujeres estudiando una carrera
+                universitaria en relación al área de STEAM podrán aplicar para el rol de
+                instructoras o facilitadoras.
               </p>
             </div>
 
             {/* Form Fields: Datos Personales */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <InputField
-                label="Nombre(s)*"
-                placeholder="Nombre(s)"
-                variant="primary"
-                icon="Fingerprint"
+                label='Nombre(s)*'
+                placeholder='Nombre(s)'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.name}
                 onChangeText={(value: string) => handleInputChange('name', value)}
               />
               <InputField
-                label="Apellido Paterno*"
-                placeholder="Apellido Paterno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Paterno*'
+                placeholder='Apellido Paterno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.paternal_name}
                 onChangeText={(value: string) => handleInputChange('paternal_name', value)}
               />
               <InputField
-                label="Apellido Materno"
-                placeholder="Apellido Materno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Materno'
+                placeholder='Apellido Materno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.maternal_name}
                 onChangeText={(value: string) => handleInputChange('maternal_name', value)}
               />
               <InputField
-                label="Correo Electrónico*"
-                placeholder="correo1@ejemplo.com"
-                variant="accent"
-                icon="At"
+                label='Correo Electrónico*'
+                placeholder='correo1@ejemplo.com'
+                variant='accent'
+                icon='At'
                 value={formData.email}
                 onChangeText={(value: string) => handleInputChange('email', value)}
               />
               <InputField
-                label="Celular*"
-                placeholder="+522221234567"
-                variant="accent"
-                icon="Phone"
+                label='Celular*'
+                placeholder='+522221234567'
+                variant='accent'
+                icon='Phone'
                 value={formData.phone_number}
                 onChangeText={(value: string) => handleInputChange('phone_number', value)}
               />
               <Dropdown
-                label="Sexo*"
+                label='Sexo*'
                 options={['Femenino', 'Masculino', 'No binario', 'Prefiero no decir', 'Otro']}
                 value={formData.gender}
                 onChange={(value: string) => handleInputChange('gender', value)}
-                variant="accent"
+                variant='accent'
                 Icon={withIconDecorator(Grains)}
               />
               <InputField
-                label="Institución Académica*"
-                description="Escribe el nombre completo de la institución académica a la cual actualmente estás asistiendo."
-                placeholder="Tec de Monterrey"
-                variant="secondary"
-                icon="Student"
+                label='Institución Académica*'
+                description='Escribe el nombre completo de la institución académica a la cual actualmente estás asistiendo.'
+                placeholder='Tec de Monterrey'
+                variant='secondary'
+                icon='Student'
                 value={formData.college}
                 onChangeText={(value: string) => handleInputChange('college', value)}
               />
               <InputField
-                label="Carrera*"
-                description="Escribe el nombre completo de la carrera la cual estás estudiando actualmente."
-                placeholder="Ingeniería en Mecatrónica"
-                variant="secondary"
-                icon="Books"
+                label='Carrera*'
+                description='Escribe el nombre completo de la carrera la cual estás estudiando actualmente.'
+                placeholder='Ingeniería en Mecatrónica'
+                variant='secondary'
+                icon='Books'
                 value={formData.degree}
                 onChangeText={(value: string) => handleInputChange('degree', value)}
               />
               <InputField
-                label="Semestre Cursando*"
-                placeholder="6º Semestre"
-                variant="secondary"
-                icon="Medal"
+                label='Semestre Cursando*'
+                placeholder='6º Semestre'
+                variant='secondary'
+                icon='Medal'
                 value={formData.semester}
                 onChangeText={(value: string) => handleInputChange('semester', value)}
               />
             </div>
 
             {/* Section: Preferencias */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Student
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Preferencias
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Student width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Preferencias
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con sinceridad sobre tus preferencias durante la participación del taller.<br />
-                Las secciones que contienen un asterisco (*) deben de responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con sinceridad sobre tus preferencias durante la participación del taller.
+                <br />
+                Las secciones que contienen un asterisco (*) deben de responderse de manera
+                obligatoria.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <Dropdown
-                label="Rol Preferido*"
+                label='Rol Preferido*'
                 options={['Instructora', 'Facilitadora', 'Staff']}
                 value={formData.preferred_role}
                 onChange={(value: string) => handleInputChange('preferred_role', value)}
-                variant="primary"
+                variant='primary'
                 Icon={withIconDecorator(UserSound)}
               />
               <Dropdown
-                label="Idioma Preferido*"
+                label='Idioma Preferido*'
                 options={['Español', 'Inglés']}
                 value={formData.preferred_language}
                 onChange={(value: string) => handleInputChange('preferred_language', value)}
-                variant="primary"
+                variant='primary'
                 Icon={withIconDecorator(ChatTeardropText)}
               />
               <Dropdown
-                label="Dificultad preferida*"
+                label='Dificultad preferida*'
                 options={['Básico', 'Avanzado']}
                 value={formData.preferred_level}
                 onChange={(value: string) => handleInputChange('preferred_level', value)}
-                variant="primary"
+                variant='primary'
                 Icon={withIconDecorator(ChatTeardropText)}
               />
             </div>
 
             {/* Section: Selección de Grupo */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><AddressBook
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Selección de Sede
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <AddressBook width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Selección de Sede
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Selecciona el grupo que prefieres para apoyar.<br />
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Selecciona el grupo que prefieres para apoyar.
+                <br />
                 Puedes ver los detalles del grupo usando los botones del lado derecho.
               </p>
             </div>
-            <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 text-xs sm:text-base md:text-lg lg:text-xl bg-[#683756] gap-12">
+            <div className='flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 text-xs sm:text-base md:text-lg lg:text-xl bg-[#683756] gap-12'>
               <div className='flex'>
-                <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
-                <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
+                <h2 className='mx-4 font-semibold'>Grupo Elegido: </h2>
+                <p>
+                  {groups.find((g) => g.id_group === formData.preferred_group)?.name || 'Ninguno'}
+                </p>
               </div>
               <div className='flex'>
-                <h2 className="mx-4 font-semibold">Sede: </h2>
-                <p>{groups.find(g => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}</p>
+                <h2 className='mx-4 font-semibold'>Sede: </h2>
+                <p>
+                  {groups.find((g) => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}
+                </p>
               </div>
             </div>
             <GroupSelectionTable
@@ -392,27 +410,26 @@ const CollaboratorRegistrationForm: React.FC = () => {
             />
 
             {/* Aviso de Privacidad */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Megaphone
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Aviso de Privacidad
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Megaphone width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Aviso de Privacidad
               </h2>
-              <p className="text-gray-400 text-sm">
-                Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
+              <p className='text-gray-400 text-sm'>
+                Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:
+                <br />
                 <a
-                  href="https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores"
-                  className="text-purple-400 hover:underline"
+                  href='https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores'
+                  className='text-purple-400 hover:underline'
                 >
                   https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
                 </a>
               </p>
-              <div className="mt-2">
+              <div className='mt-2'>
                 <Checkbox
-                  label=""
+                  label=''
                   variant='primary'
                   checked={privacyAccepted}
                   onChange={setPrivacyAccepted}
@@ -421,14 +438,14 @@ const CollaboratorRegistrationForm: React.FC = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="mt-6 flex justify-end">
+            <div className='mt-6 flex justify-end'>
               <Button
-                label="Enviar Registro"
-                variant="success"
+                label='Enviar Registro'
+                variant='success'
                 showRightIcon
-                type="submit"
+                type='submit'
                 IconRight={withIconDecorator(Send)}
-                className="px-6 py-2 rounded-full flex items-center"
+                className='px-6 py-2 rounded-full flex items-center'
               />
             </div>
           </div>
@@ -438,7 +455,7 @@ const CollaboratorRegistrationForm: React.FC = () => {
       <Modal
         isOpen={isErrorModalOpen}
         onClose={() => setIsErrorModalOpen(false)}
-        title="Errores en el formulario"
+        title='Errores en el formulario'
         messages={errors}
       />
 

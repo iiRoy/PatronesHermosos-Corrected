@@ -21,7 +21,7 @@ const createCollaborator = async (req, res) => {
   } = req.body;
 
   try {
-  await prisma.$queryRaw`
+    await prisma.$queryRaw`
       CALL registrar_colab(
         ${name}, 
         ${paternal_name}, 
@@ -100,15 +100,19 @@ const createCollaborator = async (req, res) => {
     });
   } catch (error) {
     if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
-      return res.status(422).json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
-    if (error instanceof Prisma.PrismaClientValidationError) {
-      return res.status(422).json({ success: false, message: 'Datos inválidos', errorData: error.message });
+      return res
+        .status(422)
+        .json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        return res
+          .status(422)
+          .json({ success: false, message: 'Datos inválidos', errorData: error.message });
+      }
+      console.error('Error al crear colaborador:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
-    console.error('Error al crear colaborador:', error);
-    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
-}
 
 const getAllCollaborators = async (req, res) => {
   try {
@@ -141,7 +145,7 @@ const getAllCollaborators = async (req, res) => {
       },
     });
 
-    const formattedCollaborators = collaborators.map(collab => ({
+    const formattedCollaborators = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name || 'Sin nombre',
       paternal_name: collab.paternal_name || 'Sin apellido',
@@ -165,7 +169,7 @@ const getAllCollaborators = async (req, res) => {
       preferred_group: collab.preferred_group || null,
     }));
 
-    const formattedCollaboratorsForRequest = collaborators.map(collab => ({
+    const formattedCollaboratorsForRequest = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name || 'Sin nombre',
       paternal_name: collab.paternal_name || 'Sin apellido',
@@ -192,7 +196,7 @@ const getAllCollaborators = async (req, res) => {
         : null,
     }));
 
-    const formattedCollaboratorsGroups = collaborators.map(collab => ({
+    const formattedCollaboratorsGroups = collaborators.map((collab) => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name || 'Sin nombre',
       paternal_name: collab.paternal_name || 'Sin apellido',
@@ -227,7 +231,9 @@ const getAllCollaborators = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al obtener colaboradores:', error);
-    res.status(500).json({ success: false, message: `Error interno del servidor: ${error.message}` });
+    res
+      .status(500)
+      .json({ success: false, message: `Error interno del servidor: ${error.message}` });
   }
 };
 
@@ -266,7 +272,9 @@ const getCollaboratorById = async (req, res) => {
     });
 
     if (!collaborator) {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
+      return res
+        .status(404)
+        .json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
 
     const formattedCollaborator = {
@@ -335,7 +343,9 @@ const updateCollaborator = async (req, res) => {
     res.json({ success: true, message: 'Colaborador actualizado', data: updatedCollaborator });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
+      return res
+        .status(404)
+        .json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
     console.error('Error al actualizar colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
@@ -353,7 +363,9 @@ const deleteCollaborator = async (req, res) => {
     res.json({ success: true, message: 'Colaborador eliminado correctamente' });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      return res.status(404).json({ success: false, message: `El colaborador con ID ${id} no existe` });
+      return res
+        .status(404)
+        .json({ success: false, message: `El colaborador con ID ${id} no existe` });
     }
     console.error('Error al eliminar colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
@@ -389,7 +401,8 @@ const updateCollaboratorBasicInfo = async (req, res) => {
     if (semester !== undefined) updateData.semester = semester?.trim() || null;
     if (gender !== undefined) updateData.gender = gender?.trim() || null;
     if (preferred_role !== undefined) updateData.preferred_role = preferred_role?.trim() || null;
-    if (preferred_language !== undefined) updateData.preferred_language = preferred_language?.trim() || null;
+    if (preferred_language !== undefined)
+      updateData.preferred_language = preferred_language?.trim() || null;
     if (preferred_level !== undefined) updateData.preferred_level = preferred_level?.trim() || null;
 
     console.log('Datos enviados al controlador:', updateData);
@@ -534,7 +547,10 @@ const getAvailableGroups = async (req, res) => {
         Staff: maxCapacities.Staff - roleCountMap.Staff,
       };
 
-      const availablePlaces = Object.values(roleAvailability).reduce((sum, count) => sum + Math.max(0, count), 0);
+      const availablePlaces = Object.values(roleAvailability).reduce(
+        (sum, count) => sum + Math.max(0, count),
+        0,
+      );
 
       if (availablePlaces > 0) {
         availableGroups.push({
@@ -614,7 +630,8 @@ const approveCollaborator = async (req, res) => {
       return res.status(400).json({ message: 'El grupo no está activo' });
     }
 
-    const collaboratorVenueId = collaborator.preferredGroup?.id_venue || collaborator.groups?.id_venue;
+    const collaboratorVenueId =
+      collaborator.preferredGroup?.id_venue || collaborator.groups?.id_venue;
     if (group.id_venue !== collaboratorVenueId) {
       return res.status(400).json({ message: 'El grupo no pertenece a la sede del colaborador' });
     }
@@ -639,24 +656,39 @@ const approveCollaborator = async (req, res) => {
       },
     });
 
-    console.log(`Collaborators in group ${groupId} with role ${role} and status Aprobada:`, JSON.stringify(collaboratorsInGroup, null, 2));
+    console.log(
+      `Collaborators in group ${groupId} with role ${role} and status Aprobada:`,
+      JSON.stringify(collaboratorsInGroup, null, 2),
+    );
 
     const approvedCount = collaboratorsInGroup.length;
 
-    console.log(`Role ${role} count for group ${groupId}: ${approvedCount} (max: ${maxCapacities[role]})`);
+    console.log(
+      `Role ${role} count for group ${groupId}: ${approvedCount} (max: ${maxCapacities[role]})`,
+    );
 
     if (approvedCount >= maxCapacities[role]) {
-      return res.status(400).json({ message: `El rol ${role} en el grupo seleccionado está lleno` });
+      return res
+        .status(400)
+        .json({ message: `El rol ${role} en el grupo seleccionado está lleno` });
     }
 
     const validLevels = ['Básico', 'Avanzado'];
     const validLanguages = ['Inglés', 'Español'];
-    const selectedLevel = collaborator.preferred_level !== 'Pendiente' && validLevels.includes(collaborator.preferred_level)
-      ? collaborator.preferred_level
-      : (group.level && validLevels.includes(group.level) ? group.level : 'Básico');
-    const selectedLanguage = collaborator.preferred_language !== 'Pendiente' && validLanguages.includes(collaborator.preferred_language)
-      ? collaborator.preferred_language
-      : (group.language && validLanguages.includes(group.language) ? group.language : 'Español');
+    const selectedLevel =
+      collaborator.preferred_level !== 'Pendiente' &&
+      validLevels.includes(collaborator.preferred_level)
+        ? collaborator.preferred_level
+        : group.level && validLevels.includes(group.level)
+          ? group.level
+          : 'Básico';
+    const selectedLanguage =
+      collaborator.preferred_language !== 'Pendiente' &&
+      validLanguages.includes(collaborator.preferred_language)
+        ? collaborator.preferred_language
+        : group.language && validLanguages.includes(group.language)
+          ? group.language
+          : 'Español';
 
     console.log(`Setting level: ${selectedLevel}, language: ${selectedLanguage}`);
 
@@ -674,7 +706,8 @@ const approveCollaborator = async (req, res) => {
     });
 
     try {
-      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+      const fullName =
+        `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
       await sendEmail({
         to: collaborator.email,
         subject: 'Resultados de la postulación - Patrones Hermosos',
@@ -747,10 +780,10 @@ const cancelCollaborator = async (req, res) => {
             id_venue: true,
             name: true,
             venues: {
-              select: { name: true }
-            }
-          }
-        }
+              select: { name: true },
+            },
+          },
+        },
       },
     });
 
@@ -759,12 +792,14 @@ const cancelCollaborator = async (req, res) => {
     }
 
     if (collaborator.status !== 'Aprobada') {
-      return res.status(400).json({ message: 'Solo se pueden cancelar colaboradoras con status Aprobada.' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden cancelar colaboradoras con status Aprobada.' });
     }
 
     await prisma.collaborators.update({
       where: { id_collaborator: Number(id) },
-      data: { status: 'Cancelada' }
+      data: { status: 'Cancelada' },
     });
 
     await prisma.audit_log.create({
@@ -773,8 +808,8 @@ const cancelCollaborator = async (req, res) => {
         table_name: 'collaborators',
         message: `Se canceló la colaboradora con ID ${id} (${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''})`,
         username,
-        id_venue: collaborator.groups?.id_venue || null
-      }
+        id_venue: collaborator.groups?.id_venue || null,
+      },
     });
 
     try {
@@ -789,7 +824,7 @@ const cancelCollaborator = async (req, res) => {
         role: collaborator.role || 'No especificado',
         reason: 'Cancelación solicitada por el usuario o administrador.',
         code: `COL-${id}-${new Date().getFullYear()}`,
-        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org'
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
       };
 
       if (collaborator.email && collaborator.email.trim()) {
@@ -797,22 +832,27 @@ const cancelCollaborator = async (req, res) => {
           to: collaborator.email,
           subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
           template: 'templates/colaboradores/rechazado',
-          data: emailData
+          data: emailData,
         });
         console.log(`Cancellation email sent to ${collaborator.email}`);
       } else {
         console.log(`No email sent for collaborator ${id}: No valid email address`);
       }
     } catch (emailError) {
-      console.error(`Error sending cancellation email to ${collaborator.email || 'unknown'}:`, emailError.message);
+      console.error(
+        `Error sending cancellation email to ${collaborator.email || 'unknown'}:`,
+        emailError.message,
+      );
     }
 
     res.status(200).json({
-      message: `Colaboradora con ID ${id} cancelada exitosamente`
+      message: `Colaboradora con ID ${id} cancelada exitosamente`,
     });
   } catch (error) {
     console.error('Error al cancelar la colaboradora:', error);
-    res.status(500).json({ message: 'Error interno al cancelar la colaboradora', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al cancelar la colaboradora', error: error.message });
   }
 };
 
@@ -844,7 +884,9 @@ const rejectCollaborator = async (req, res) => {
     }
 
     if (collaborator.status !== 'Pendiente') {
-      return res.status(400).json({ message: 'Solo se pueden rechazar colaboradores con estatus Pendiente' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden rechazar colaboradores con estatus Pendiente' });
     }
 
     await prisma.collaborators.update({
@@ -863,7 +905,8 @@ const rejectCollaborator = async (req, res) => {
     });
 
     try {
-      const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+      const fullName =
+        `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
       await sendEmail({
         to: collaborator.email,
         subject: 'Actualización sobre tu solicitud - Patrones Hermosos',
@@ -879,7 +922,10 @@ const rejectCollaborator = async (req, res) => {
       });
       console.log(`Cancellation email sent to ${collaborator.email}`);
     } catch (emailError) {
-      console.error(`Error sending cancellation email to ${collaborator.email}:`, emailError.message);
+      console.error(
+        `Error sending cancellation email to ${collaborator.email}:`,
+        emailError.message,
+      );
     }
 
     res.status(200).json({
@@ -887,7 +933,9 @@ const rejectCollaborator = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al rechazar colaborador:', error);
-    res.status(500).json({ message: 'Error interno al rechazar colaborador', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al rechazar colaborador', error: error.message });
   }
 };
 
@@ -914,7 +962,9 @@ const updateCollaboratorAssignment = async (req, res) => {
     }
 
     if (collaborator.status !== 'Aprobada') {
-      return res.status(400).json({ message: 'El colaborador debe estar en estado Aprobada para actualizar la asignación' });
+      return res.status(400).json({
+        message: 'El colaborador debe estar en estado Aprobada para actualizar la asignación',
+      });
     }
 
     const validRoles = ['Instructora', 'Facilitadora', 'Staff'];
@@ -944,7 +994,8 @@ const updateCollaboratorAssignment = async (req, res) => {
       return res.status(400).json({ message: 'El grupo no está activo' });
     }
 
-    const collaboratorVenueId = collaborator.preferredGroup?.id_venue || collaborator.groups?.id_venue;
+    const collaboratorVenueId =
+      collaborator.preferredGroup?.id_venue || collaborator.groups?.id_venue;
     if (group.id_venue !== collaboratorVenueId) {
       return res.status(400).json({ message: 'El grupo no pertenece a la sede del colaborador' });
     }
@@ -968,14 +1019,17 @@ const updateCollaboratorAssignment = async (req, res) => {
       const approvedCount = collaboratorsInGroup.length;
 
       if (approvedCount >= maxCapacities[role]) {
-        return res.status(400).json({ message: `El rol ${role} en el grupo seleccionado está lleno` });
+        return res
+          .status(400)
+          .json({ message: `El rol ${role} en el grupo seleccionado está lleno` });
       }
     }
 
     const validLevels = ['Básico', 'Avanzado'];
     const validLanguages = ['Inglés', 'Español'];
     const selectedLevel = group.level && validLevels.includes(group.level) ? group.level : 'Básico';
-    const selectedLanguage = group.language && validLanguages.includes(group.language) ? group.language : 'Español';
+    const selectedLanguage =
+      group.language && validLanguages.includes(group.language) ? group.language : 'Español';
 
     const updatedCollaborator = await prisma.collaborators.update({
       where: { id_collaborator: parseInt(collaboratorId) },
@@ -999,7 +1053,8 @@ const updateCollaboratorAssignment = async (req, res) => {
       },
     });
 
-    const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+    const fullName =
+      `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
     return res.status(200).json({
       success: true,
       message: 'Asignación de colaborador actualizada exitosamente',
@@ -1015,7 +1070,9 @@ const updateCollaboratorAssignment = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating collaborator assignment:', JSON.stringify(error, null, 2));
-    return res.status(500).json({ message: 'Error al actualizar asignación de colaborador', error: error.message });
+    return res
+      .status(500)
+      .json({ message: 'Error al actualizar asignación de colaborador', error: error.message });
   }
 };
 
@@ -1051,7 +1108,8 @@ const sendCustomEmailToCollaborator = async (req, res) => {
       subject,
       template: emailTemplate,
       data: {
-        cName: `${collaborator.name} ${collaborator.paternal_name} ${collaborator.maternal_name}`.trim(),
+        cName:
+          `${collaborator.name} ${collaborator.paternal_name} ${collaborator.maternal_name}`.trim(),
         iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
         ...data, // extra data from frontend (dates, links, etc.)
       },

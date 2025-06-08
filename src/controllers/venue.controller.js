@@ -4,7 +4,6 @@ const fs = require('fs').promises;
 const path = require('path');
 const { sendEmail } = require('../lib/emails/emailSender');
 
-
 // Utility function to transform flat keys into nested objects
 const parseNestedBody = (body) => {
   const result = {};
@@ -165,22 +164,25 @@ const create = async (req, res) => {
       )
     `;
 
-      try {
-        await sendEmail({
-          to: venueCoordinator.email,
-          subject: '¡Gracias por tu postulación como Sede!',
-          template: 'templates/sede/solicitud',
-          data: {
-            representativeName: venueCoordinator.name,
-            venueName: name,
-            email: venueCoordinator.email,
-            location: `${country || ''}, ${state || ''}, ${address || ''}`.trim(),
-          },
-        });
-        console.log(`Solicitud email sent to ${venueCoordinator.email}`);
-      } catch (emailError) {
-        console.error(`Error sending solicitud email to ${venueCoordinator.email}:`, emailError.message);
-      }
+    try {
+      await sendEmail({
+        to: venueCoordinator.email,
+        subject: '¡Gracias por tu postulación como Sede!',
+        template: 'templates/sede/solicitud',
+        data: {
+          representativeName: venueCoordinator.name,
+          venueName: name,
+          email: venueCoordinator.email,
+          location: `${country || ''}, ${state || ''}, ${address || ''}`.trim(),
+        },
+      });
+      console.log(`Solicitud email sent to ${venueCoordinator.email}`);
+    } catch (emailError) {
+      console.error(
+        `Error sending solicitud email to ${venueCoordinator.email}:`,
+        emailError.message,
+      );
+    }
 
     res.status(201).json({
       message: 'Venue creado exitosamente',
@@ -341,7 +343,9 @@ const approveVenue = async (req, res) => {
 
     // Validar que el estado actual sea Pendiente
     if (venue.status !== 'Pendiente') {
-      return res.status(400).json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden aprobar sedes con estado Pendiente.' });
     }
 
     // Actualizar el estado a Registrada sin participantes
@@ -369,13 +373,13 @@ const approveVenue = async (req, res) => {
     if (venueCoordinator) {
       try {
         // Construct full name
-      const coordinatorFullName = [
-        venueCoordinator.name,
-        venueCoordinator.paternal_name,
-        venueCoordinator.maternal_name
-      ]
-        .filter(Boolean)
-        .join(' ');
+        const coordinatorFullName = [
+          venueCoordinator.name,
+          venueCoordinator.paternal_name,
+          venueCoordinator.maternal_name,
+        ]
+          .filter(Boolean)
+          .join(' ');
 
         await sendEmail({
           to: venueCoordinator.email,
@@ -392,7 +396,10 @@ const approveVenue = async (req, res) => {
         });
         console.log(`Approval email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending approval email to ${venueCoordinator.email}:`, emailError.message);
+        console.error(
+          `Error sending approval email to ${venueCoordinator.email}:`,
+          emailError.message,
+        );
       }
     }
 
@@ -400,11 +407,7 @@ const approveVenue = async (req, res) => {
     for (const assistant of venue.assistant_coordinators) {
       try {
         // Construct full name
-        const assistantFullName = [
-          assistant.name,
-          assistant.paternal_name,
-          assistant.maternal_name
-        ]
+        const assistantFullName = [assistant.name, assistant.paternal_name, assistant.maternal_name]
           .filter(Boolean)
           .join(' ');
         await sendEmail({
@@ -414,14 +417,20 @@ const approveVenue = async (req, res) => {
           data: {
             pName: assistantFullName,
             venue: venue.name,
-            role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
+            role:
+              assistant.role === 'Coordinadora_de_informes'
+                ? 'Coordinadora de Informes'
+                : 'Coordinadora Asociada',
             address: venue.address || 'No especificada',
             cEmail: venueCoordinator?.email || 'contacto@patroneshermosos.org',
           },
         });
         console.log(`Assistant approval email sent to ${assistant.email}`);
       } catch (emailError) {
-        console.error(`Error sending assistant approval email to ${assistant.email}:`, emailError.message);
+        console.error(
+          `Error sending assistant approval email to ${assistant.email}:`,
+          emailError.message,
+        );
       }
     }
 
@@ -464,13 +473,13 @@ const cancelarVenue = async (req, res) => {
     if (venueCoordinator) {
       try {
         // Construct full name
-      const coordinatorFullName = [
-        venueCoordinator.name,
-        venueCoordinator.paternal_name,
-        venueCoordinator.maternal_name
-      ]
-        .filter(Boolean)
-        .join(' ');
+        const coordinatorFullName = [
+          venueCoordinator.name,
+          venueCoordinator.paternal_name,
+          venueCoordinator.maternal_name,
+        ]
+          .filter(Boolean)
+          .join(' ');
         await sendEmail({
           to: venueCoordinator.email,
           subject: 'Actualización sobre tu solicitud de sede',
@@ -484,7 +493,10 @@ const cancelarVenue = async (req, res) => {
         });
         console.log(`Cancellation email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending cancellation email to ${venueCoordinator.email}:`, emailError.message);
+        console.error(
+          `Error sending cancellation email to ${venueCoordinator.email}:`,
+          emailError.message,
+        );
       }
     }
 
@@ -492,11 +504,7 @@ const cancelarVenue = async (req, res) => {
     for (const assistant of venue.assistant_coordinators) {
       try {
         // Construct full name
-        const assistantFullName = [
-          assistant.name,
-          assistant.paternal_name,
-          assistant.maternal_name
-        ]
+        const assistantFullName = [assistant.name, assistant.paternal_name, assistant.maternal_name]
           .filter(Boolean)
           .join(' ');
         await sendEmail({
@@ -506,13 +514,19 @@ const cancelarVenue = async (req, res) => {
           data: {
             pName: assistantFullName,
             venue: venue.name,
-            role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
+            role:
+              assistant.role === 'Coordinadora_de_informes'
+                ? 'Coordinadora de Informes'
+                : 'Coordinadora Asociada',
             iEmail: venueCoordinator?.email || 'contacto@patroneshermosos.org',
           },
         });
         console.log(`Assistant cancellation email sent to ${assistant.email}`);
       } catch (emailError) {
-        console.error(`Error sending assistant cancellation email to ${assistant.email}:`, emailError.message);
+        console.error(
+          `Error sending assistant cancellation email to ${assistant.email}:`,
+          emailError.message,
+        );
       }
     }
 
@@ -555,7 +569,9 @@ const rejectVenue = async (req, res) => {
 
     // Verificar estado Pendiente
     if (venue.status !== 'Pendiente') {
-      return res.status(400).json({ message: 'Solo se pueden rechazar sedes con estatus Pendiente' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden rechazar sedes con estatus Pendiente' });
     }
 
     // Actualizar estado a Rechazada
@@ -580,13 +596,13 @@ const rejectVenue = async (req, res) => {
     if (venueCoordinator) {
       try {
         // Construct full name
-      const coordinatorFullName = [
-        venueCoordinator.name,
-        venueCoordinator.paternal_name,
-        venueCoordinator.maternal_name
-      ]
-        .filter(Boolean)
-        .join(' ');
+        const coordinatorFullName = [
+          venueCoordinator.name,
+          venueCoordinator.paternal_name,
+          venueCoordinator.maternal_name,
+        ]
+          .filter(Boolean)
+          .join(' ');
         await sendEmail({
           to: venueCoordinator.email,
           subject: 'Actualización sobre tu solicitud de sede',
@@ -600,7 +616,10 @@ const rejectVenue = async (req, res) => {
         });
         console.log(`Cancellation email sent to ${venueCoordinator.email}`);
       } catch (emailError) {
-        console.error(`Error sending cancellation email to ${venueCoordinator.email}:`, emailError.message);
+        console.error(
+          `Error sending cancellation email to ${venueCoordinator.email}:`,
+          emailError.message,
+        );
       }
     }
 
@@ -608,11 +627,7 @@ const rejectVenue = async (req, res) => {
     for (const assistant of venue.assistant_coordinators) {
       try {
         // Construct full name
-        const assistantFullName = [
-          assistant.name,
-          assistant.paternal_name,
-          assistant.maternal_name
-        ]
+        const assistantFullName = [assistant.name, assistant.paternal_name, assistant.maternal_name]
           .filter(Boolean)
           .join(' ');
         await sendEmail({
@@ -622,13 +637,19 @@ const rejectVenue = async (req, res) => {
           data: {
             pName: assistantFullName,
             venue: venue.name,
-            role: assistant.role === 'Coordinadora_de_informes' ? 'Coordinadora de Informes' : 'Coordinadora Asociada',
+            role:
+              assistant.role === 'Coordinadora_de_informes'
+                ? 'Coordinadora de Informes'
+                : 'Coordinadora Asociada',
             iEmail: venueCoordinator?.email || 'contacto@patroneshermosos.org',
           },
         });
         console.log(`Assistant cancellation email sent to ${assistant.email}`);
       } catch (emailError) {
-        console.error(`Error sending assistant cancellation email to ${assistant.email}:`, emailError.message);
+        console.error(
+          `Error sending assistant cancellation email to ${assistant.email}:`,
+          emailError.message,
+        );
       }
     }
 
@@ -663,7 +684,9 @@ const getVenuePDF = async (req, res) => {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
-      download === 'true' ? `attachment; filename=venue_${id}_participation.pdf` : `inline; filename=venue_${id}_participation.pdf`
+      download === 'true'
+        ? `attachment; filename=venue_${id}_participation.pdf`
+        : `inline; filename=venue_${id}_participation.pdf`,
     );
     res.send(venue.participation_file);
   } catch (error) {

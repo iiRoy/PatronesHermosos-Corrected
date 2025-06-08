@@ -55,7 +55,7 @@ const VenueSelectionTable: React.FC<VenueSelectionTableProps> = ({
   // Filter venues
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
-    return venues.filter(venue => {
+    return venues.filter((venue) => {
       return (
         !searchTerm ||
         venue.name.toLowerCase().includes(searchTerm) ||
@@ -68,7 +68,7 @@ const VenueSelectionTable: React.FC<VenueSelectionTableProps> = ({
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(
     currentPage * rowsPerPage,
-    (currentPage + 1) * rowsPerPage
+    (currentPage + 1) * rowsPerPage,
   );
 
   // Reset currentPage when filteredData changes
@@ -81,49 +81,49 @@ const VenueSelectionTable: React.FC<VenueSelectionTableProps> = ({
   }, [filteredData.length, currentPage, totalPages]);
 
   return (
-    <div className="fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh]">
-      <div className="flex flex-wrap justify-between gap-4">
-        <div className="flex flex-1 gap-4 top-0">
+    <div className='fondo-tabla-forms flex flex-col p-6 gap-4 overflow-auto h-[50vh] sm:h-[75vh]'>
+      <div className='flex flex-wrap justify-between gap-4'>
+        <div className='flex flex-1 gap-4 top-0'>
           <InputField
-            label=""
+            label=''
             showDescription={false}
-            placeholder="Buscar sede, ciudad o dirección"
-            variant="primary"
-            icon="MagnifyingGlass"
+            placeholder='Buscar sede, ciudad o dirección'
+            variant='primary'
+            icon='MagnifyingGlass'
             value={inputValue}
             onChangeText={setInputValue}
           />
         </div>
       </div>
-      <div className="overflow-auto">
-        <table className="min-w-full text-left text-sm">
-          <thead className="sticky top-0 fondo-titulos-tabla text-purple-800 font-bold">
-            <tr className="texto-primary-shade">
-              <th className="p-2 text-center">Sede</th>
-              <th className="p-2 text-center">Ciudad</th>
-              <th className="p-2 text-center">Dirección</th>
-              <th className="p-2 text-center">Acciones</th>
+      <div className='overflow-auto'>
+        <table className='min-w-full text-left text-sm'>
+          <thead className='sticky top-0 fondo-titulos-tabla text-purple-800 font-bold'>
+            <tr className='texto-primary-shade'>
+              <th className='p-2 text-center'>Sede</th>
+              <th className='p-2 text-center'>Ciudad</th>
+              <th className='p-2 text-center'>Dirección</th>
+              <th className='p-2 text-center'>Acciones</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700">
+          <tbody className='text-gray-700'>
             {paginatedData.map((venue) => (
               <tr
                 key={venue.id_venue}
                 className={`border-t border-gray-300 ${venue.id_venue === selectedVenueId ? 'bg-purple-100' : ''}`}
               >
-                <td className="p-2 text-center">{venue.name}</td>
-                <td className="p-2 text-center">{venue.state}</td>
-                <td className="p-2 text-center">{venue.address}</td>
-                <td className="p-2 flex gap-2 justify-center">
+                <td className='p-2 text-center'>{venue.name}</td>
+                <td className='p-2 text-center'>{venue.state}</td>
+                <td className='p-2 text-center'>{venue.address}</td>
+                <td className='p-2 flex gap-2 justify-center'>
                   <Button
-                    label=""
-                    variant="success"
+                    label=''
+                    variant='success'
                     round
                     showLeftIcon
                     IconLeft={Check}
                     onClick={() => onSelect(venue.id_venue)}
                   />
-                  <Button label="" variant="primary" round showLeftIcon IconLeft={Eye} />
+                  <Button label='' variant='primary' round showLeftIcon IconLeft={Eye} />
                 </td>
               </tr>
             ))}
@@ -134,7 +134,7 @@ const VenueSelectionTable: React.FC<VenueSelectionTableProps> = ({
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        variant="secondary-shade"
+        variant='secondary-shade'
         pageLinks={Array(totalPages).fill('#')}
       />
     </div>

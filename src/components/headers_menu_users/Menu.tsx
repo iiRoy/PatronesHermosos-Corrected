@@ -18,9 +18,21 @@ const submenuLinks = [
 ];
 
 const submenuLinksCoordinadora = [
-  { label: 'Mentoras', icon: 'GraduationCap', href: '/coordinador/gestion-usuarios-coordinadora/mentoras' },
-  { label: 'Apoyo y Staff', icon: 'Users', href: '/coordinador/gestion-usuarios-coordinadora/staff' },
-  { label: 'Participantes', icon: 'User', href: '/coordinador/gestion-usuarios-coordinadora/participantes' },
+  {
+    label: 'Mentoras',
+    icon: 'GraduationCap',
+    href: '/coordinador/gestion-usuarios-coordinadora/mentoras',
+  },
+  {
+    label: 'Apoyo y Staff',
+    icon: 'Users',
+    href: '/coordinador/gestion-usuarios-coordinadora/staff',
+  },
+  {
+    label: 'Participantes',
+    icon: 'User',
+    href: '/coordinador/gestion-usuarios-coordinadora/participantes',
+  },
 ];
 
 const Menu: React.FC = () => {
@@ -127,7 +139,12 @@ const Menu: React.FC = () => {
             href: '/diplomas',
             visible: ['superuser', 'venue_coordinator'],
           },
-          { icon: 'ArrowSquareIn', label: 'Logs', href: '/gestion-audit-log', visible: ['superuser', 'venue_coordinator'] },
+          {
+            icon: 'ArrowSquareIn',
+            label: 'Logs',
+            href: '/gestion-audit-log',
+            visible: ['superuser', 'venue_coordinator'],
+          },
         ]
           .filter((item) => item.visible.includes(role))
           .map((item) => {
@@ -164,14 +181,17 @@ const Menu: React.FC = () => {
                       >
                         {/* submenú real */}
                         <div
-                          className={`absolute left-[200px] ${submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
-                            } transition-opacity duration-200 ${fadeSubmenu ? 'opacity-100' : 'opacity-0'
-                            }`}
+                          className={`absolute left-[200px] ${
+                            submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
+                          } transition-opacity duration-200 ${
+                            fadeSubmenu ? 'opacity-100' : 'opacity-0'
+                          }`}
                         >
                           {/* flechita */}
                           <div
-                            className={`absolute -left-3 ${submenuDirection === 'down' ? 'top-4' : 'top-20'
-                              } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
+                            className={`absolute -left-3 ${
+                              submenuDirection === 'down' ? 'top-4' : 'top-20'
+                            } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
                           />
                           <div
                             className='bg-[var(--primaryColor)] rounded-lg shadow-custom-dark w-60 p-2 flex flex-col border border-transparent overflow-y-auto scrollbar-hide'
@@ -224,14 +244,17 @@ const Menu: React.FC = () => {
                       >
                         {/* submenú real */}
                         <div
-                          className={`absolute left-[200px] ${submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
-                            } transition-opacity duration-200 ${fadeSubmenu ? 'opacity-100' : 'opacity-0'
-                            }`}
+                          className={`absolute left-[200px] ${
+                            submenuDirection === 'down' ? 'top-[12px]' : 'top-[-64px]'
+                          } transition-opacity duration-200 ${
+                            fadeSubmenu ? 'opacity-100' : 'opacity-0'
+                          }`}
                         >
                           {/* flechita */}
                           <div
-                            className={`absolute -left-3 ${submenuDirection === 'down' ? 'top-4' : 'top-20'
-                              } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
+                            className={`absolute -left-3 ${
+                              submenuDirection === 'down' ? 'top-4' : 'top-20'
+                            } w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-[var(--primaryColor)]`}
                           />
                           <div
                             className='bg-[var(--primaryColor)] rounded-lg shadow-custom-dark w-60 p-2 flex flex-col border border-transparent overflow-y-auto scrollbar-hide'

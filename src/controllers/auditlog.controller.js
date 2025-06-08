@@ -7,10 +7,7 @@ const getAll = async (req, res) => {
     // Configurar filtro condicional basado en el rol
     const where = {};
     if (req.user.role === 'venue_coordinator') {
-      where['OR'] = [
-        { id_venue: req.user.id_venue },
-        { username: req.user.username },
-      ];
+      where['OR'] = [{ id_venue: req.user.id_venue }, { username: req.user.username }];
     }
 
     const auditLogs = await prisma.audit_log.findMany({
@@ -39,7 +36,9 @@ const getAll = async (req, res) => {
     res.json({ success: true, data: formattedLogs });
   } catch (error) {
     console.error('Error fetching audit logs:', error);
-    res.status(404).json({ success: false, message: 'Error al obtener los registros de auditoría' });
+    res
+      .status(404)
+      .json({ success: false, message: 'Error al obtener los registros de auditoría' });
   }
 };
 

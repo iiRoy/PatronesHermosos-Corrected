@@ -1,11 +1,5 @@
 'use client';
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
   LineChart,
   CartesianGrid,
@@ -43,12 +37,10 @@ interface ChartDataItem {
 const getExactRolesInCollision = (
   row: Record<string, any>,
   selectedRoles: string[],
-  roleActual: string
+  roleActual: string,
 ): string[] => {
   const valorActual = Number(row[roleActual] ?? 0);
-  return selectedRoles.filter(
-    (rol) => rol !== roleActual && Number(row[rol] ?? 0) === valorActual
-  );
+  return selectedRoles.filter((rol) => rol !== roleActual && Number(row[rol] ?? 0) === valorActual);
 };
 
 const CollisionPieDot: React.FC<{
@@ -66,7 +58,7 @@ const CollisionPieDot: React.FC<{
         cy={cy}
         r={r}
         fill={roleColors[solo] || '#CCCCCC'}
-        stroke="#fff"
+        stroke='#fff'
         strokeWidth={1.5}
       />
     );
@@ -95,9 +87,9 @@ const CollisionPieDot: React.FC<{
           Z
         `}
         fill={roleColors[roles[i]] || '#CCCCCC'}
-        stroke="#fff"
+        stroke='#fff'
         strokeWidth={0.5}
-      />
+      />,
     );
   }
 
@@ -140,8 +132,8 @@ const MultiColorDashLine: React.FC<{
           y2={String(yEnd)}
           stroke={color}
           strokeWidth={2.5}
-          strokeLinecap="round"
-        />
+          strokeLinecap='round'
+        />,
       );
     }
   }
@@ -238,17 +230,11 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
     if (selectedFilters.sede && selectedFilters.sede !== '__all__')
       params.append('id', selectedFilters.sede);
     if (selectedFilters.sede === '__all__') selectedFilters.sede = '';
-    if (
-      selectedFilters.frecuencia &&
-      selectedFilters.frecuencia !== '__default__'
-    ) {
+    if (selectedFilters.frecuencia && selectedFilters.frecuencia !== '__default__') {
       params.append('frec', selectedFilters.frecuencia);
     }
     if (selectedFilters.detalle) params.append('lev', selectedFilters.detalle);
-    if (
-      selectedFilters.estado &&
-      selectedFilters.estado !== '__all__'
-    ) {
+    if (selectedFilters.estado && selectedFilters.estado !== '__all__') {
       params.append('state', selectedFilters.estado);
     }
     return `${apiEndpoint}&${params.toString()}`;
@@ -262,9 +248,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
         const res = await fetch(apiURL, {
           headers: {
             Authorization: `Bearer ${
-              typeof window !== 'undefined'
-                ? localStorage.getItem('api_token')
-                : ''
+              typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
             }`,
           },
         });
@@ -297,25 +281,15 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
         // 5.3. Reorganizar rawData por fecha → { Fecha: string, rol1: total, rol2: total, ... }
         const rawByDate = new Map<string, Record<string, any>>();
         rawData.forEach(
-          ({
-            fecha,
-            tipo,
-            total,
-          }: {
-            fecha: string;
-            tipo: string;
-            total: number;
-          }) => {
+          ({ fecha, tipo, total }: { fecha: string; tipo: string; total: number }) => {
             if (!rawByDate.has(fecha)) {
               rawByDate.set(fecha, { [xKey]: fecha });
             }
             rawByDate.get(fecha)![tipo] = total;
-          }
+          },
         );
 
-        const allDatesRaw = Array.from(rawByDate.keys()).map((d) =>
-          parseISO(d)
-        );
+        const allDatesRaw = Array.from(rawByDate.keys()).map((d) => parseISO(d));
         if (allDatesRaw.length === 0) return;
 
         // 5.4. Calcular “maxDate” y “minDate” según frecuencia semanal o mensual
@@ -324,17 +298,13 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
         const maxDate = isMonthly
           ? new Date(today.getFullYear(), today.getMonth(), 1)
           : startOfWeek(today, { weekStartsOn: 1 });
-        const minDate = new Date(
-          Math.min(...allDatesRaw.map((d) => d.getTime()))
-        );
+        const minDate = new Date(Math.min(...allDatesRaw.map((d) => d.getTime())));
 
         // 5.5. Generar lista de fechas (strings) suficientes para itemsPerPage
         const dateList: string[] = [];
         let current = new Date(maxDate);
         const formatter = (date: Date) =>
-          isMonthly
-            ? format(date, 'yyyy-MM-01')
-            : format(date, 'yyyy-MM-dd');
+          isMonthly ? format(date, 'yyyy-MM-01') : format(date, 'yyyy-MM-dd');
 
         if (isMonthly) {
           current.setDate(1);
@@ -366,9 +336,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
         // 5.7. Calcular máximo global en Y para fijar dominio de Y
         const maxTotal = Math.max(
           0,
-          ...filled.flatMap((entry) =>
-            allRoles.map((role) => Number(entry[role] || 0))
-          )
+          ...filled.flatMap((entry) => allRoles.map((role) => Number(entry[role] || 0))),
         );
 
         // 5.8. Guardar en estado
@@ -390,9 +358,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
 
         setMaxYValue(maxTotal);
         setCurrentIndex(0);
-        setSelectedSedeName(
-          sedes.find((s) => s.value === selectedFilters.sede)?.label ?? ''
-        );
+        setSelectedSedeName(sedes.find((s) => s.value === selectedFilters.sede)?.label ?? '');
       } catch (err) {
         console.error('Error cargando datos:', err);
       }
@@ -407,9 +373,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
       const res = await fetch('/api/data?page=venues', {
         headers: {
           Authorization: `Bearer ${
-            typeof window !== 'undefined'
-              ? localStorage.getItem('api_token')
-              : ''
+            typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
           }`,
         },
       });
@@ -425,7 +389,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
       } else {
         console.warn(
           'No se encontraron sedes o el formato de respuesta es incorrecto:',
-          venuesData
+          venuesData,
         );
       }
     } catch (error) {
@@ -453,12 +417,12 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl w-full h-full p-4 flex flex-col">
+    <div className='bg-white rounded-xl w-full h-full p-4 flex flex-col'>
       {/* --- Título y menú de opciones --- */}
-      <div className="relative flex justify-between items-center mb-2">
-        <div className="flex flex-col">
-          <h1 className="font-bold text-2xl">{title}</h1>
-          <div className="text-[var(--secondaryColor)] text-xs transition-opacity duration-300">
+      <div className='relative flex justify-between items-center mb-2'>
+        <div className='flex flex-col'>
+          <h1 className='font-bold text-2xl'>{title}</h1>
+          <div className='text-[var(--secondaryColor)] text-xs transition-opacity duration-300'>
             <span>{selectedSedeName}</span>
           </div>
         </div>
@@ -467,20 +431,20 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
             if (!showMenu) setShowMenu(true);
           }}
           disabled={showMenu}
-          id="options-button"
+          id='options-button'
           className={`cursor-pointer transition-opacity ${
             showMenu ? 'opacity-50 pointer-events-none' : 'opacity-100'
           }`}
         >
           <Options
-            fillColor="var(--secondaryColor)"
-            strokeColor="var(--secondaryColor)"
+            fillColor='var(--secondaryColor)'
+            strokeColor='var(--secondaryColor)'
             strokeWidth={2.5}
             width={'3vmax'}
             height={'3vmax'}
           />
         </button>
-        <div className="absolute top-full right-0 z-50">
+        <div className='absolute top-full right-0 z-50'>
           <OptionsMenu
             onMinimize={onMinimize}
             onToggleVisibility={() => setIsVisible(false)}
@@ -502,9 +466,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
             xKey={xKey}
             seriesKeys={selectedRoles}
             title={title}
-            colors={selectedRoles.map(
-              (r) => roleColorMap[r] || '#CCCCCC'
-            )}
+            colors={selectedRoles.map((r) => roleColorMap[r] || '#CCCCCC')}
             elementLabels={selectedRoles}
             restoreDefaultColors={() => {
               setRoleColorMap((prev) => {
@@ -519,20 +481,15 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
             maxItemsSelected={selectedRoles.length}
             selectedFilters={selectedFilters}
             setSelectedFilters={setSelectedFilters}
-            chartType="line"
+            chartType='line'
             selection={selectedRoles}
-            selectionChange={(updated: string[]) =>
-              setSelectedRoles(updated)
-            }
+            selectionChange={(updated: string[]) => setSelectedRoles(updated)}
           />
         </div>
       </div>
 
       {/* --- Área del gráfico con debounce de resize y fade --- */}
-      <div
-        className="mt-2 w-full h-[39vh] overflow-hidden rounded-md"
-        ref={chartWrapperRef}
-      >
+      <div className='mt-2 w-full h-[39vh] overflow-hidden rounded-md' ref={chartWrapperRef}>
         <div
           className={`w-full h-full transition-opacity duration-500 ${
             isVisible ? 'opacity-100' : 'opacity-0'
@@ -543,17 +500,14 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
             En cuanto termine el resize (isResizing === false) y no esté “frozen”,
             desplegamos el LineChart con “currentWindow” como data.
           */}
-          {!isFrozen &&
-          !isResizing &&
-          debouncedSize.width > 0 &&
-          debouncedSize.height > 0 ? (
+          {!isFrozen && !isResizing && debouncedSize.width > 0 && debouncedSize.height > 0 ? (
             <LineChart
               width={debouncedSize.width}
               height={debouncedSize.height}
               data={currentWindow}
             >
               {/* Grid (no se mueve) */}
-              <CartesianGrid strokeDasharray="5 5" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray='5 5' stroke='#e2e8f0' />
 
               {/* Eje X */}
               <XAxis
@@ -566,44 +520,21 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
                     <g transform={`translate(${x},${y + 10})`}>
                       {isMonthly ? (
                         <>
-                          <text
-                            textAnchor="middle"
-                            fill="#333"
-                            fontWeight="bold"
-                            fontSize={12}
-                          >
+                          <text textAnchor='middle' fill='#333' fontWeight='bold' fontSize={12}>
                             {format(fecha, 'MMMM', { locale: es }).charAt(0).toUpperCase()}
                             {format(fecha, 'MMMM', { locale: es }).slice(1)}
                           </text>
-                          <text
-                            y={14}
-                            textAnchor="middle"
-                            fill="#777"
-                            fontSize={10}
-                          >
+                          <text y={14} textAnchor='middle' fill='#777' fontSize={10}>
                             {format(fecha, 'yyyy', { locale: es })}
                           </text>
                         </>
                       ) : (
                         <>
-                          <text
-                            textAnchor="middle"
-                            fill="#333"
-                            fontWeight="bold"
-                            fontSize={12}
-                          >
-                            Semana{' '}
-                            {/* Calculamos la posición relativa dentro del filteredData */}
-                            {filteredData.findIndex(
-                              (d) => d[xKey] === payload.value
-                            ) + 1}
+                          <text textAnchor='middle' fill='#333' fontWeight='bold' fontSize={12}>
+                            Semana {/* Calculamos la posición relativa dentro del filteredData */}
+                            {filteredData.findIndex((d) => d[xKey] === payload.value) + 1}
                           </text>
-                          <text
-                            y={14}
-                            textAnchor="middle"
-                            fill="#777"
-                            fontSize={10}
-                          >
+                          <text y={14} textAnchor='middle' fill='#777' fontSize={10}>
                             ({format(fecha, 'dd-MM-yyyy')})
                           </text>
                         </>
@@ -623,7 +554,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
 
               {/* Tooltip (se mantiene estático en el mismo lugar) */}
               <Tooltip
-                wrapperClassName="bg-white border border-gray-200 rounded-md shadow-md text-sm"
+                wrapperClassName='bg-white border border-gray-200 rounded-md shadow-md text-sm'
                 contentStyle={{
                   backgroundColor: '#fff',
                   borderRadius: '5px',
@@ -634,23 +565,23 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
               {selectedRoles.map((role) => (
                 <Line
                   key={`legend-${role}`}
-                  type="monotone"
+                  type='monotone'
                   dataKey={role}
                   stroke={roleColorMap[role] || '#CCCCCC'}
                   strokeWidth={2}
                   dot={false}
                   isAnimationActive={true}
                   animationDuration={500}
-                  legendType="line"
+                  legendType='line'
                   opacity={0}
                 />
               ))}
 
               {/* Leyenda (estática) */}
               <Legend
-                layout="horizontal"
-                verticalAlign="bottom"
-                align="center"
+                layout='horizontal'
+                verticalAlign='bottom'
+                align='center'
                 wrapperStyle={{
                   fontSize: '0.75rem',
                   marginTop: 8,
@@ -681,15 +612,15 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
                       const rolesPrevExact = getExactRolesInCollision(
                         prevPt.payload,
                         selectedRoles,
-                        role
+                        role,
                       );
                       const rolesCurrExact = getExactRolesInCollision(
                         currPt.payload,
                         selectedRoles,
-                        role
+                        role,
                       );
                       const intersectionExact = rolesPrevExact.filter((r) =>
-                        rolesCurrExact.includes(r)
+                        rolesCurrExact.includes(r),
                       );
 
                       if (intersectionExact.length > 0) {
@@ -699,7 +630,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
                             points={[prevPt, currPt]}
                             roles={[role, ...intersectionExact]}
                             roleColors={roleColorMap}
-                          />
+                          />,
                         );
                       } else {
                         const subGen = d3Line<{
@@ -718,12 +649,10 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
                           <path
                             key={`solid-${role}-${i}`}
                             d={subPath ?? ''}
-                            fill="none"
-                            stroke={
-                              roleColorMap[role] || '#CCCCCC'
-                            }
+                            fill='none'
+                            stroke={roleColorMap[role] || '#CCCCCC'}
                             strokeWidth={2}
-                          />
+                          />,
                         );
                       }
                     }
@@ -760,10 +689,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
                     });
 
                     clusters.forEach((cluster) => {
-                      const sum = cluster.reduce(
-                        (acc, r) => acc + Number(entry[r] ?? 0),
-                        0
-                      );
+                      const sum = cluster.reduce((acc, r) => acc + Number(entry[r] ?? 0), 0);
                       const avgValue = sum / cluster.length;
 
                       const xCoord = chartProps.xAxisMap[0].scale(fecha);
@@ -777,7 +703,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
                           r={6}
                           roles={cluster}
                           roleColors={roleColorMap}
-                        />
+                        />,
                       );
                     });
                   });
@@ -788,13 +714,13 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
             </LineChart>
           ) : (
             // Mientras está redimensionando o “frozen”, dejamos un contenedor vacío
-            <div className="w-full h-full" />
+            <div className='w-full h-full' />
           )}
         </div>
       </div>
 
       {/* --- Controles de navegación: Prev / Next --- */}
-      <div className="flex justify-center gap-3 mt-2">
+      <div className='flex justify-center gap-3 mt-2'>
         <button
           onClick={handlePrev}
           disabled={currentIndex === 0}

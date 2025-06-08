@@ -50,8 +50,8 @@ const login = async (req, res) => {
       process.env.JWT_SECRET || 'mi_clave_secreta',
       { expiresIn: '1d' }, // corto y seguro
     );
-    
-/*
+
+    /*
     await sendEmail({
       to: user.email,
       subject: 'Nuevo inicio de sesión detectado',
@@ -70,7 +70,7 @@ const login = async (req, res) => {
       user: {
         name: user.name,
         paternal_name: user.paternal_name,
-        maternal_name: user.maternal_name, 
+        maternal_name: user.maternal_name,
         id: user.id,
         email: user.email,
         username: user.username,

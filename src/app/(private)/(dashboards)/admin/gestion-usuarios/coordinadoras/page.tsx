@@ -88,7 +88,9 @@ const GestionCoordinadoras = () => {
             router.push('/login');
             return;
           }
-          throw new Error(`Error fetching coordinators: ${coordResponse.status} - ${coordData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching coordinators: ${coordResponse.status} - ${coordData.message || 'Unknown error'}`,
+          );
         }
 
         const venuesResponse = await fetch('/api/venues', {
@@ -111,18 +113,21 @@ const GestionCoordinadoras = () => {
             router.push('/login');
             return;
           }
-          throw new Error(`Error fetching venues: ${venuesResponse.status} - ${venuesDataResponse.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching venues: ${venuesResponse.status} - ${venuesDataResponse.message || 'Unknown error'}`,
+          );
         }
 
         const venuesData = venuesDataResponse as Venue[];
         const venuesMapData = new Map<number, string>(
-          venuesData.map((venue: Venue) => [venue.id_venue, venue.name || 'Sin nombre'] as const)
+          venuesData.map((venue: Venue) => [venue.id_venue, venue.name || 'Sin nombre'] as const),
         );
         setVenuesMap(venuesMapData);
 
         const formattedData = coordData.data.map((coordinator: any) => ({
           id_venue_coord: coordinator.id_venue_coord,
-          nombre: `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
+          nombre:
+            `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
           email: coordinator.email || 'Sin correo',
           phone_number: coordinator.phone_number || 'Sin teléfono',
           venue: venuesMapData.get(coordinator.id_venue) || 'Sede desconocida',
@@ -146,15 +151,17 @@ const GestionCoordinadoras = () => {
     fetchCoordinadoras();
   }, [router, notify]);
 
-  const uniqueVenues = Array.from(new Set(coordinadorasData.map(coordinadora => coordinadora.venue))).sort();
+  const uniqueVenues = Array.from(
+    new Set(coordinadorasData.map((coordinadora) => coordinadora.venue)),
+  ).sort();
   const venueOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueVenues.map(venue => ({ label: venue, value: venue })),
+    ...uniqueVenues.map((venue) => ({ label: venue, value: venue })),
   ];
 
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
-    return coordinadorasData.filter(coordinadora => {
+    return coordinadorasData.filter((coordinadora) => {
       const matchesSearch =
         !searchTerm ||
         coordinadora.nombre.toLowerCase().includes(searchTerm) ||
@@ -168,7 +175,10 @@ const GestionCoordinadoras = () => {
   }, [inputValue, section, coordinadorasData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+  const paginatedData = filteredData.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage,
+  );
 
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
@@ -206,7 +216,9 @@ const GestionCoordinadoras = () => {
   };
 
   const handleEditClick = (coordinadora: Coordinadora) => {
-    router.push(`/admin/gestion-usuarios/coordinadoras/editarCoordinadora/${coordinadora.id_venue_coord}`);
+    router.push(
+      `/admin/gestion-usuarios/coordinadoras/editarCoordinadora/${coordinadora.id_venue_coord}`,
+    );
   };
 
   const handleCloseDeletePopup = () => {
@@ -224,12 +236,13 @@ const GestionCoordinadoras = () => {
     const errors: Record<string, string> = {};
     if (!newCoordinatorData.name) errors.name = 'El nombre es obligatorio';
     if (!newCoordinatorData.email) errors.email = 'El correo es obligatorio';
-    else if (!/\S+@\S+\.\S+/.test(newCoordinatorData.email)) errors.email = 'El correo no es válido';
-    
+    else if (!/\S+@\S+\.\S+/.test(newCoordinatorData.email))
+      errors.email = 'El correo no es válido';
+
     if (!newCoordinatorData.phone_number) {
-     errors.phone_number = 'El teléfono es obligatorio';
-     } else if (!/^\+?[1-9]\d{1,14}$/.test(newCoordinatorData.phone_number)) {
-     errors.phone_number = 'El teléfono no es válido';
+      errors.phone_number = 'El teléfono es obligatorio';
+    } else if (!/^\+?[1-9]\d{1,14}$/.test(newCoordinatorData.phone_number)) {
+      errors.phone_number = 'El teléfono no es válido';
     }
 
     if (!newCoordinatorData.username) errors.username = 'El nombre de usuario es obligatorio';
@@ -268,14 +281,17 @@ const GestionCoordinadoras = () => {
         return;
       }
 
-      const response = await fetch(`/api/venue-coordinators/${selectedCoordinadora.id_venue_coord}/replace`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `/api/venue-coordinators/${selectedCoordinadora.id_venue_coord}/replace`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(newCoordinatorData),
         },
-        body: JSON.stringify(newCoordinatorData),
-      });
+      );
 
       const result = await response.json();
 
@@ -283,11 +299,12 @@ const GestionCoordinadoras = () => {
         throw new Error(result.message || 'Error al reemplazar la coordinadora');
       }
 
-      setCoordinadorasData(prev => {
+      setCoordinadorasData((prev) => {
         const newCoordinator = result.data;
         const formattedNewCoordinator: Coordinadora = {
           id_venue_coord: newCoordinator.id_venue_coord,
-          nombre: `${newCoordinator.name || ''} ${newCoordinator.paternal_name || ''} ${newCoordinator.maternal_name || ''}`.trim(),
+          nombre:
+            `${newCoordinator.name || ''} ${newCoordinator.paternal_name || ''} ${newCoordinator.maternal_name || ''}`.trim(),
           email: newCoordinatorData.email,
           phone_number: newCoordinatorData.phone_number,
           venue: selectedCoordinadora.venue,
@@ -297,7 +314,7 @@ const GestionCoordinadoras = () => {
           status: 'Aprobada',
         };
         return [
-          ...prev.filter(c => c.id_venue_coord !== selectedCoordinadora.id_venue_coord),
+          ...prev.filter((c) => c.id_venue_coord !== selectedCoordinadora.id_venue_coord),
           formattedNewCoordinator,
         ];
       });
@@ -322,42 +339,42 @@ const GestionCoordinadoras = () => {
   };
 
   const handleInputChange = (field: keyof typeof newCoordinatorData, value: string) => {
-    setNewCoordinatorData(prev => ({ ...prev, [field]: value }));
+    setNewCoordinatorData((prev) => ({ ...prev, [field]: value }));
     if (formErrors[field]) {
-      setFormErrors(prev => ({ ...prev, [field]: '' }));
+      setFormErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
   if (error) {
-    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
   }
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Coordinadoras de Sede</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
+                label=''
                 showDescription={false}
-                placeholder="Buscar coordinadora"
+                placeholder='Buscar coordinadora'
                 showError={false}
-                variant="primary"
-                icon="MagnifyingGlass"
+                variant='primary'
+                icon='MagnifyingGlass'
                 value={inputValue}
                 onChangeText={(val) => setInputValue(val)}
               />
             </div>
 
-            <div className="basis-1/3">
+            <div className='basis-1/3'>
               <FiltroEvento
                 disableCheckboxes
-                label="Filtros"
+                label='Filtros'
                 showSecciones
-                labelSecciones="Sedes"
+                labelSecciones='Sedes'
                 secciones={venueOptions}
                 seccionActiva={section}
                 onChangeSeccion={sectionFilterChange}
@@ -366,23 +383,23 @@ const GestionCoordinadoras = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto custom-scrollbar-tabla">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
-              <tr className="texto-primary-shade">
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center">Nombre</th>
-                <th className="p-2 text-center">Correo</th>
-                <th className="p-2 text-center">Teléfono</th>
-                <th className="p-2 text-center">Sede</th>
-                <th className="p-2 text-center">Acciones</th>
+        <div className='overflow-x-auto custom-scrollbar-tabla'>
+          <table className='min-w-full text-left text-sm'>
+            <thead className='text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]'>
+              <tr className='texto-primary-shade'>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'>Nombre</th>
+                <th className='p-2 text-center'>Correo</th>
+                <th className='p-2 text-center'>Teléfono</th>
+                <th className='p-2 text-center'>Sede</th>
+                <th className='p-2 text-center'>Acciones</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {paginatedData.map((coordinadora, index) => (
                 <tr
                   key={index}
-                  className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
+                  className='border-t border-gray-300 cursor-pointer hover:bg-gray-300'
                   onClick={(e) => {
                     const isButtonClick = (e.target as HTMLElement).closest('button');
                     if (!isButtonClick) {
@@ -390,10 +407,10 @@ const GestionCoordinadoras = () => {
                     }
                   }}
                 >
-                  <td className="p-2 text-center">
+                  <td className='p-2 text-center'>
                     <Button
-                      label=""
-                      variant="primary"
+                      label=''
+                      variant='primary'
                       round
                       showLeftIcon
                       IconLeft={Eye}
@@ -403,22 +420,22 @@ const GestionCoordinadoras = () => {
                       }}
                     />
                   </td>
-                  <td className="p-2 text-center">{coordinadora.nombre}</td>
-                  <td className="p-2 text-center">{coordinadora.email}</td>
-                  <td className="p-2 text-center">{coordinadora.phone_number}</td>
-                  <td className="p-2 text-center">{coordinadora.venue}</td>
-                  <td className="p-2 flex gap-2 items-center justify-center">
+                  <td className='p-2 text-center'>{coordinadora.nombre}</td>
+                  <td className='p-2 text-center'>{coordinadora.email}</td>
+                  <td className='p-2 text-center'>{coordinadora.phone_number}</td>
+                  <td className='p-2 text-center'>{coordinadora.venue}</td>
+                  <td className='p-2 flex gap-2 items-center justify-center'>
                     <Button
-                      label=""
-                      variant="error"
+                      label=''
+                      variant='error'
                       round
                       showLeftIcon
                       IconLeft={Trash}
                       onClick={() => handleDeleteClick(coordinadora)}
                     />
                     <Button
-                      label=""
-                      variant="warning"
+                      label=''
+                      variant='warning'
                       round
                       showLeftIcon
                       IconLeft={Highlighter}
@@ -431,124 +448,143 @@ const GestionCoordinadoras = () => {
           </table>
         </div>
 
-        <div className="mt-auto pt-4 flex justify-center">
+        <div className='mt-auto pt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            variant="primary"
+            variant='primary'
             pageLinks={Array(totalPages).fill('#')}
           />
         </div>
 
         {isDeletePopupOpen && selectedCoordinadora && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-gray-800 max-h-[80vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-6 text-center">Reemplazar Coordinadora</h2>
-              <p className="mb-4 text-center">
-                Para eliminar a <strong>{selectedCoordinadora.nombre}</strong>, crea una nueva coordinadora para la sede <strong>{selectedCoordinadora.venue}</strong>.
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-gray-800 max-h-[80vh] overflow-y-auto'>
+              <h2 className='text-2xl font-bold mb-6 text-center'>Reemplazar Coordinadora</h2>
+              <p className='mb-4 text-center'>
+                Para eliminar a <strong>{selectedCoordinadora.nombre}</strong>, crea una nueva
+                coordinadora para la sede <strong>{selectedCoordinadora.venue}</strong>.
               </p>
 
-              <div className="space-y-4">
+              <div className='space-y-4'>
                 <InputField
-                  label="Nombre"
-                  placeholder="Nombre"
+                  label='Nombre'
+                  placeholder='Nombre'
                   value={newCoordinatorData.name}
                   onChangeText={(text) => handleInputChange('name', text)}
                   showDescription={!!formErrors.name}
                   description={formErrors.name}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Apellido Paterno"
-                  placeholder="Apellido Paterno"
+                  label='Apellido Paterno'
+                  placeholder='Apellido Paterno'
                   value={newCoordinatorData.paternal_name}
                   onChangeText={(text) => handleInputChange('paternal_name', text)}
                   showDescription={!!formErrors.paternal_name}
                   description={formErrors.paternal_name}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Apellido Materno"
-                  placeholder="Apellido Materno"
+                  label='Apellido Materno'
+                  placeholder='Apellido Materno'
                   value={newCoordinatorData.maternal_name}
                   onChangeText={(text) => handleInputChange('maternal_name', text)}
                   showDescription={!!formErrors.maternal_name}
                   description={formErrors.maternal_name}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Correo Electrónico"
-                  placeholder="Correo electrónico"
-                  type="email"
+                  label='Correo Electrónico'
+                  placeholder='Correo electrónico'
+                  type='email'
                   value={newCoordinatorData.email}
                   onChangeText={(text) => handleInputChange('email', text)}
                   showDescription={!!formErrors.email}
                   description={formErrors.email}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Teléfono"
-                  placeholder="Número de teléfono"
+                  label='Teléfono'
+                  placeholder='Número de teléfono'
                   value={newCoordinatorData.phone_number}
                   onChangeText={(text) => handleInputChange('phone_number', text)}
                   showDescription={!!formErrors.phone_number}
                   description={formErrors.phone_number}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Género"
-                  placeholder="Género (Femenino/Masculino)"
+                  label='Género'
+                  placeholder='Género (Femenino/Masculino)'
                   value={newCoordinatorData.gender}
                   onChangeText={(text) => handleInputChange('gender', text)}
                   showDescription={!!formErrors.gender}
                   description={formErrors.gender}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Nombre de usuario"
-                  placeholder="Usuario"
+                  label='Nombre de usuario'
+                  placeholder='Usuario'
                   value={newCoordinatorData.username}
                   onChangeText={(text) => handleInputChange('username', text)}
                   showDescription={!!formErrors.username}
                   description={formErrors.username}
-                  variant="accent"
+                  variant='accent'
                 />
                 <InputField
-                  label="Contraseña"
-                  placeholder="Contraseña"
-                  type="password"
+                  label='Contraseña'
+                  placeholder='Contraseña'
+                  type='password'
                   value={newCoordinatorData.password}
                   onChangeText={(text) => handleInputChange('password', text)}
                   showDescription={!!formErrors.password}
                   description={formErrors.password}
-                  variant="accent"
+                  variant='accent'
                 />
               </div>
 
-              <div className="flex justify-between mt-6">
-                <Button label="Confirmar Reemplazo" variant="primary" onClick={handleConfirmReplace} />
-                <Button label="Cancelar" variant="secondary" onClick={handleCloseDeletePopup} />
+              <div className='flex justify-between mt-6'>
+                <Button
+                  label='Confirmar Reemplazo'
+                  variant='primary'
+                  onClick={handleConfirmReplace}
+                />
+                <Button label='Cancelar' variant='secondary' onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
         )}
 
         {isDetailsPopupOpen && selectedCoordinadora && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Coordinadora</h2>
-              <div className="pt-6 pb-6">
-                <p><strong>Nombre:</strong> {selectedCoordinadora.name}</p>
-                <p><strong>Apellido Paterno:</strong> {selectedCoordinadora.paternal_name}</p>
-                <p><strong>Apellido Materno:</strong> {selectedCoordinadora.maternal_name}</p>
-                <p><strong>Correo:</strong> {selectedCoordinadora.email}</p>
-                <p><strong>Teléfono:</strong> {selectedCoordinadora.phone_number}</p>
-                <p><strong>Sede:</strong> {selectedCoordinadora.venue}</p>
-                <p><strong>Estado:</strong> {selectedCoordinadora.status}</p>
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Detalles de la Coordinadora</h2>
+              <div className='pt-6 pb-6'>
+                <p>
+                  <strong>Nombre:</strong> {selectedCoordinadora.name}
+                </p>
+                <p>
+                  <strong>Apellido Paterno:</strong> {selectedCoordinadora.paternal_name}
+                </p>
+                <p>
+                  <strong>Apellido Materno:</strong> {selectedCoordinadora.maternal_name}
+                </p>
+                <p>
+                  <strong>Correo:</strong> {selectedCoordinadora.email}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {selectedCoordinadora.phone_number}
+                </p>
+                <p>
+                  <strong>Sede:</strong> {selectedCoordinadora.venue}
+                </p>
+                <p>
+                  <strong>Estado:</strong> {selectedCoordinadora.status}
+                </p>
               </div>
-              <div className="mt-4 flex justify-center">
-                <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
+              <div className='mt-4 flex justify-center'>
+                <Button label='Cerrar' variant='primary' onClick={handleCloseDetailsPopup} />
               </div>
             </div>
           </div>

@@ -81,11 +81,15 @@ const EditarApoyo = () => {
           },
         });
         if (!collaboratorResponse.ok) {
-          const errorData = await collaboratorResponse.json().catch(() => ({ message: 'Respuesta no válida del servidor' }));
+          const errorData = await collaboratorResponse
+            .json()
+            .catch(() => ({ message: 'Respuesta no válida del servidor' }));
           if (collaboratorResponse.status === 404) {
             throw new Error('Colaborador no encontrado');
           }
-          throw new Error(`Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`,
+          );
         }
         const collaboratorData = await collaboratorResponse.json();
         const collab = collaboratorData.data;
@@ -236,7 +240,9 @@ const EditarApoyo = () => {
 
       if (!personalInfoResponse.ok) {
         const errorData = await personalInfoResponse.json();
-        throw new Error(`Error al actualizar información personal: ${errorData.message || 'Error desconocido'}`);
+        throw new Error(
+          `Error al actualizar información personal: ${errorData.message || 'Error desconocido'}`,
+        );
       }
 
       // Update role and group assignment
@@ -255,7 +261,9 @@ const EditarApoyo = () => {
 
         if (!assignmentResponse.ok) {
           const errorData = await assignmentResponse.json();
-          throw new Error(`Error al actualizar asignación: ${errorData.message || 'Error desconocido'}`);
+          throw new Error(
+            `Error al actualizar asignación: ${errorData.message || 'Error desconocido'}`,
+          );
         }
       }
 
@@ -279,21 +287,21 @@ const EditarApoyo = () => {
   };
 
   if (error) {
-    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
   }
 
   if (!collaborator) {
-    return <div className="p-6 pl-14">Cargando...</div>;
+    return <div className='p-6 pl-14'>Cargando...</div>;
   }
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Editar Colaborador</PageTitle>
 
       {validationErrors.length > 0 && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold">Errores de validación:</strong>
-          <ul className="list-disc list-inside">
+        <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4'>
+          <strong className='font-bold'>Errores de validación:</strong>
+          <ul className='list-disc list-inside'>
             {validationErrors.map((err, index) => (
               <li key={index}>{err}</li>
             ))}
@@ -301,41 +309,41 @@ const EditarApoyo = () => {
         </div>
       )}
 
-      <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
+      <div className='fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto'>
         {/* Primera fila: Nombre, Apellidos */}
-        <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-          <div className="basis-1/3">
+        <div className='flex justify-between gap-4 items-center pb-2 mb-4'>
+          <div className='basis-1/3'>
             <InputField
-              label="Nombre"
+              label='Nombre'
               showDescription={false}
               placeholder={collaborator.name}
               showError={false}
-              variant="primary"
+              variant='primary'
               value={name}
               icon='Fingerprint'
               onChangeText={(val) => setName(val)}
             />
           </div>
-          <div className="basis-1/3">
+          <div className='basis-1/3'>
             <InputField
-              label="Apellido Paterno"
+              label='Apellido Paterno'
               icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant="primary"
+              variant='primary'
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
           </div>
-          <div className="basis-1/3">
+          <div className='basis-1/3'>
             <InputField
-              label="Apellido Materno"
+              label='Apellido Materno'
               icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant="primary"
+              variant='primary'
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
@@ -343,78 +351,77 @@ const EditarApoyo = () => {
         </div>
 
         {/* Segunda fila: Correo, Teléfono, Género */}
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="basis-1/3">
+        <div className='flex gap-4 justify-between mb-4'>
+          <div className='basis-1/3'>
             <InputField
-              label="Correo"
+              label='Correo'
               icon='At'
               showDescription={false}
               placeholder={collaborator.email}
               showError={false}
-              variant="accent"
+              variant='accent'
               value={email}
               onChangeText={(val) => setEmail(val)}
             />
           </div>
-          <div className="basis-1/3">
+          <div className='basis-1/3'>
             <InputField
-              label="Teléfono"
+              label='Teléfono'
               icon='Phone'
               showDescription={false}
               placeholder={collaborator.phone_number || 'Sin teléfono'}
               showError={false}
-              variant="accent"
+              variant='accent'
               value={phoneNumber}
               onChangeText={(val) => setPhoneNumber(val)}
             />
           </div>
-          <div className="basis-1/3">
+          <div className='basis-1/3'>
             <Dropdown
-              label="Género"
+              label='Género'
               options={genderOptions.map((option) => ({ label: option, value: option }))}
               value={gender}
               onChange={setGender}
-              variant="accent"
+              variant='accent'
               Icon={withIconDecorator(Grains)}
-
             />
           </div>
         </div>
 
         {/* Tercera fila: Universidad, Carrera, Semestre */}
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="basis-1/3">
+        <div className='flex gap-4 justify-between mb-4'>
+          <div className='basis-1/3'>
             <InputField
-              label="Universidad"
+              label='Universidad'
               icon='Student'
               showDescription={false}
               placeholder={collaborator.college || 'Sin universidad'}
               showError={false}
-              variant="secondary-shade"
+              variant='secondary-shade'
               value={college}
               onChangeText={(val) => setCollege(val)}
             />
           </div>
-          <div className="basis-1/3">
+          <div className='basis-1/3'>
             <InputField
-              label="Carrera"
+              label='Carrera'
               icon='Books'
               showDescription={false}
               placeholder={collaborator.degree || 'Sin carrera'}
               showError={false}
-              variant="secondary-shade"
+              variant='secondary-shade'
               value={degree}
               onChangeText={(val) => setDegree(val)}
             />
           </div>
-          <div className="basis-1/3">
+          <div className='basis-1/3'>
             <InputField
-              label="Semestre"
+              label='Semestre'
               icon='Medal'
               showDescription={false}
               placeholder={collaborator.semester || 'Sin semestre'}
               showError={false}
-              variant="secondary-shade"
+              variant='secondary-shade'
               value={semester}
               onChangeText={(val) => setSemester(val)}
             />
@@ -422,52 +429,54 @@ const EditarApoyo = () => {
         </div>
 
         {/* Cuarta fila: Rol, Grupo */}
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="basis-1/3">
+        <div className='flex gap-4 justify-between mb-4'>
+          <div className='basis-1/3'>
             <Dropdown
-              label="Rol"
+              label='Rol'
               options={roleOptions.map((option) => ({ label: option, value: option }))}
               value={selectedRole}
               onChange={setSelectedRole}
-              variant="secondary"
+              variant='secondary'
               Icon={withIconDecorator(User)}
             />
           </div>
-          <div className="basis-2/3">
-            <div className="flex flex-col gap-2">
+          <div className='basis-2/3'>
+            <div className='flex flex-col gap-2'>
               {availableGroups.length === 0 ? (
-                <div className="mt-1 block w-full border rounded-md p-2 bg-gray-100 text-gray-500 cursor-not-allowed">
+                <div className='mt-1 block w-full border rounded-md p-2 bg-gray-100 text-gray-500 cursor-not-allowed'>
                   No hay grupos disponibles
                 </div>
               ) : (
                 <Dropdown
-                  label="Grupo"
+                  label='Grupo'
                   options={availableGroups.map((group) => ({
                     label: group.name,
                     value: group.id_group.toString(),
                   }))}
                   value={selectedGroupId?.toString() || ''}
                   onChange={(val) => setSelectedGroupId(val ? parseInt(val) : null)}
-                  variant="secondary"
+                  variant='secondary'
                   Icon={withIconDecorator(Books)}
                 />
               )}
               {selectedGroupId && availableGroups.length > 0 && (
-                <div className="mt-2 text-sm text-gray-200">
+                <div className='mt-2 text-sm text-gray-200'>
                   <p>
                     <strong>Sede:</strong> {venueName}
                   </p>
                   <p>
                     <strong>Cupo disponible:</strong>{' '}
-                    {availableGroups.find((g) => g.id_group === selectedGroupId)?.available_places || 0}
+                    {availableGroups.find((g) => g.id_group === selectedGroupId)
+                      ?.available_places || 0}
                   </p>
-                  <p className="mt-1">
+                  <p className='mt-1'>
                     <strong>Disponibilidad por rol:</strong>
                   </p>
                   {Object.entries(
-                    availableGroups.find((g) => g.id_group === selectedGroupId)?.role_availability || {}
+                    availableGroups.find((g) => g.id_group === selectedGroupId)
+                      ?.role_availability || {},
                   ).map(([role, count]) => (
-                    <p key={role} className="ml-4">
+                    <p key={role} className='ml-4'>
                       {role}: {count}
                     </p>
                   ))}
@@ -478,10 +487,14 @@ const EditarApoyo = () => {
         </div>
 
         {/* Botones */}
-        <div className="flex gap-4 justify-between mt-auto">
-          <div className="flex gap-4">
-            <Button label="Confirmar" variant="success" onClick={handleSubmit} />
-            <Button label="Cancelar" variant="primary" href="/coordinador/gestion-usuarios-coordinadora/staff" />
+        <div className='flex gap-4 justify-between mt-auto'>
+          <div className='flex gap-4'>
+            <Button label='Confirmar' variant='success' onClick={handleSubmit} />
+            <Button
+              label='Cancelar'
+              variant='primary'
+              href='/coordinador/gestion-usuarios-coordinadora/staff'
+            />
           </div>
         </div>
       </div>

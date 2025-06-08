@@ -10,7 +10,34 @@ import Location from '@components/icons/Gps';
 import Send from '@components/icons/ArrowFatRight';
 import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
 import Navbar from '@/components/headers_menu_users/navbar';
-import { FlowerLotus, User, AddressBook, SketchLogo, Check, Eye, Star, Megaphone, X, UserSound, ChatTeardropText, Grains, Student, GraduationCap, BookOpenText, SealWarning, Heart, FilePdf, FileJpg, BookmarksSimple, Sparkle, UsersFour, Bank, Files, MapPin, Download } from '@/components/icons';
+import {
+  FlowerLotus,
+  User,
+  AddressBook,
+  SketchLogo,
+  Check,
+  Eye,
+  Star,
+  Megaphone,
+  X,
+  UserSound,
+  ChatTeardropText,
+  Grains,
+  Student,
+  GraduationCap,
+  BookOpenText,
+  SealWarning,
+  Heart,
+  FilePdf,
+  FileJpg,
+  BookmarksSimple,
+  Sparkle,
+  UsersFour,
+  Bank,
+  Files,
+  MapPin,
+  Download,
+} from '@/components/icons';
 
 interface Coordinator {
   name: string;
@@ -143,12 +170,11 @@ const VenueRegistrationForm: React.FC = () => {
     venue: VenueKeys;
   };
 
-
   const handleInputChange = <S extends Section>(
     section: S,
     field: string,
     value: string,
-    subSection?: SubSectionMap[S]
+    subSection?: SubSectionMap[S],
   ) => {
     setFormData((prev: FormData) => {
       if (subSection) {
@@ -157,7 +183,7 @@ const VenueRegistrationForm: React.FC = () => {
           [section]: {
             ...prev[section],
             [subSection]: {
-              ...prev[section][subSection as keyof typeof prev[S]],
+              ...prev[section][subSection as keyof (typeof prev)[S]],
               [field]: value,
             },
           },
@@ -175,7 +201,7 @@ const VenueRegistrationForm: React.FC = () => {
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFile: React.Dispatch<React.SetStateAction<File | null>>
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -232,18 +258,26 @@ const VenueRegistrationForm: React.FC = () => {
 
     if (formData.staffCoordinator.name) {
       if (!formData.staffCoordinator.email)
-        newErrors.push('El correo electrónico de la coordinadora de informes (staff) es obligatorio');
+        newErrors.push(
+          'El correo electrónico de la coordinadora de informes (staff) es obligatorio',
+        );
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.staffCoordinator.email))
-        newErrors.push('El correo electrónico de la coordinadora de informes (staff) debe ser válido');
+        newErrors.push(
+          'El correo electrónico de la coordinadora de informes (staff) debe ser válido',
+        );
       if (!formData.staffCoordinator.phone)
         newErrors.push('El celular de la coordinadora de informes (staff) es obligatorio');
     }
 
     if (formData.participantsCoordinator.name) {
       if (!formData.participantsCoordinator.email)
-        newErrors.push('El correo electrónico de la coordinadora de informes (participantes) es obligatorio');
+        newErrors.push(
+          'El correo electrónico de la coordinadora de informes (participantes) es obligatorio',
+        );
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.participantsCoordinator.email))
-        newErrors.push('El correo electrónico de la coordinadora de informes (participantes) debe ser válido');
+        newErrors.push(
+          'El correo electrónico de la coordinadora de informes (participantes) debe ser válido',
+        );
       if (!formData.participantsCoordinator.phone)
         newErrors.push('El celular de la coordinadora de informes (participantes) es obligatorio');
     }
@@ -282,8 +316,14 @@ const VenueRegistrationForm: React.FC = () => {
 
       if (formData.associatedCoordinator.name) {
         formDataToSend.append('associatedCoordinator[name]', formData.associatedCoordinator.name);
-        formDataToSend.append('associatedCoordinator[lastNameP]', formData.associatedCoordinator.lastNameP);
-        formDataToSend.append('associatedCoordinator[lastNameM]', formData.associatedCoordinator.lastNameM);
+        formDataToSend.append(
+          'associatedCoordinator[lastNameP]',
+          formData.associatedCoordinator.lastNameP,
+        );
+        formDataToSend.append(
+          'associatedCoordinator[lastNameM]',
+          formData.associatedCoordinator.lastNameM,
+        );
         formDataToSend.append('associatedCoordinator[email]', formData.associatedCoordinator.email);
         formDataToSend.append('associatedCoordinator[phone]', formData.associatedCoordinator.phone);
       }
@@ -297,11 +337,26 @@ const VenueRegistrationForm: React.FC = () => {
       }
 
       if (formData.participantsCoordinator.name) {
-        formDataToSend.append('participantsCoordinator[name]', formData.participantsCoordinator.name);
-        formDataToSend.append('participantsCoordinator[lastNameP]', formData.participantsCoordinator.lastNameP);
-        formDataToSend.append('participantsCoordinator[lastNameM]', formData.participantsCoordinator.lastNameM);
-        formDataToSend.append('participantsCoordinator[email]', formData.participantsCoordinator.email);
-        formDataToSend.append('participantsCoordinator[phone]', formData.participantsCoordinator.phone);
+        formDataToSend.append(
+          'participantsCoordinator[name]',
+          formData.participantsCoordinator.name,
+        );
+        formDataToSend.append(
+          'participantsCoordinator[lastNameP]',
+          formData.participantsCoordinator.lastNameP,
+        );
+        formDataToSend.append(
+          'participantsCoordinator[lastNameM]',
+          formData.participantsCoordinator.lastNameM,
+        );
+        formDataToSend.append(
+          'participantsCoordinator[email]',
+          formData.participantsCoordinator.email,
+        );
+        formDataToSend.append(
+          'participantsCoordinator[phone]',
+          formData.participantsCoordinator.phone,
+        );
       }
 
       if (profileImage) {
@@ -404,115 +459,116 @@ const VenueRegistrationForm: React.FC = () => {
   };
 
   return (
-    <div className="pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white">
-
+    <div className='pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white'>
       <form onSubmit={handleSubmit}>
-        <div className="info-formulario min-h-screen text-white p-4 md:p-8 flex justify-center items-center">
-          <div className="w-full max-w-6xl  rounded-lg shadow-lg p-6 md:p-8">
+        <div className='info-formulario min-h-screen text-white p-4 md:p-8 flex justify-center items-center'>
+          <div className='w-full max-w-6xl  rounded-lg shadow-lg p-6 md:p-8'>
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center">
-                <div className="w-2 rounded-full h-16 mr-4 notification-icon-purple"></div>
-                <h1 className="text-2xl">
-                  <span className="italic">Formulario de Registro</span><br />
-                  <span className="font-bold text-3xl">Sede</span>
+            <div className='flex justify-between items-center mb-6'>
+              <div className='flex items-center'>
+                <div className='w-2 rounded-full h-16 mr-4 notification-icon-purple'></div>
+                <h1 className='text-2xl'>
+                  <span className='italic'>Formulario de Registro</span>
+                  <br />
+                  <span className='font-bold text-3xl'>Sede</span>
                 </h1>
               </div>
               <Button
-                label=""
-                variant="error"
+                label=''
+                variant='error'
                 showLeftIcon
                 round
-                type="button"
+                type='button'
                 IconLeft={X}
                 href='/inicio'
-                className="px-4 py-2 rounded-full flex items-center"
+                className='px-4 py-2 rounded-full flex items-center'
               />
             </div>
             {/* Section: Datos Coordinadora de Sede */}
-            <div className="mb-6">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><FlowerLotus
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Datos Coordinadora de Sede
+            <div className='mb-6'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <FlowerLotus width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Datos Coordinadora de Sede
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.<br />
-                Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de tus datos personales y de
+                contacto.
+                <br />
+                Las secciones que contengan un asterisco (*) deberán responderse de manera
+                obligatoria.
               </p>
             </div>
 
             {/* Form Fields: Datos Coordinadora de Sede */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <InputField
-                label="Nombre(s)*"
-                placeholder="Nombre(s)"
-                variant="primary"
-                icon="Fingerprint"
+                label='Nombre(s)*'
+                placeholder='Nombre(s)'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.generalCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'name', value)
                 }
               />
               <InputField
-                label="Apellido Paterno*"
-                placeholder="Apellido Paterno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Paterno*'
+                placeholder='Apellido Paterno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.generalCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'lastNameP', value)
                 }
               />
               <InputField
-                label="Apellido Materno"
-                placeholder="Apellido Materno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Materno'
+                placeholder='Apellido Materno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.generalCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'lastNameM', value)
                 }
               />
               <InputField
-                label="Correo Electrónico*"
-                placeholder="correo1@ejemplo.com"
-                variant="accent"
-                icon="At"
+                label='Correo Electrónico*'
+                placeholder='correo1@ejemplo.com'
+                variant='accent'
+                icon='At'
                 value={formData.generalCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'email', value)
                 }
               />
               <InputField
-                label="Celular*"
-                placeholder="+522221234567"
-                variant="accent"
-                icon="Phone"
+                label='Celular*'
+                placeholder='+522221234567'
+                variant='accent'
+                icon='Phone'
                 value={formData.generalCoordinator.phone}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'phone', value)
                 }
               />
               <Dropdown
-                label="Sexo*"
+                label='Sexo*'
                 options={['Femenino', 'Masculino', 'No binario', 'Prefiero no decir']}
                 value={formData.generalCoordinator.gender}
                 onChange={(value: string) =>
                   handleInputChange('generalCoordinator', 'gender', value)
                 }
-                variant="accent"
+                variant='accent'
                 Icon={withIconDecorator(Grains)}
               />
               <InputField
-                label="Nombre de Usuario*"
-                description="El nombre de usuario solo puede contener letras, números y guiones bajos."
-                placeholder="Us3r_n4me"
-                variant="secondary"
-                icon="UserPlus"
+                label='Nombre de Usuario*'
+                description='El nombre de usuario solo puede contener letras, números y guiones bajos.'
+                placeholder='Us3r_n4me'
+                variant='secondary'
+                icon='UserPlus'
                 value={formData.generalCoordinator.username}
                 onChangeText={(value: string) =>
                   handleInputChange('generalCoordinator', 'username', value)
@@ -520,21 +576,21 @@ const VenueRegistrationForm: React.FC = () => {
               />
               <div>
                 <InputField
-                  label="Contraseña*"
-                  description="Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial."
-                  placeholder="********"
-                  variant="secondary"
-                  icon="Lock"
+                  label='Contraseña*'
+                  description='Tu contraseña deberá de ser un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial.'
+                  placeholder='********'
+                  variant='secondary'
+                  icon='Lock'
                   value={formData.generalCoordinator.password}
                   type={showPassword ? 'text' : 'password'}
                   onChangeText={(value: string) =>
                     handleInputChange('generalCoordinator', 'password', value)
                   }
                 />
-                <div className="flex items-center mt-2">
+                <div className='flex items-center mt-2'>
                   <Checkbox
-                    label="Mostrar Contraseña"
-                    color="purple"
+                    label='Mostrar Contraseña'
+                    color='purple'
                     checked={showPassword}
                     onChange={setShowPassword}
                   />
@@ -542,21 +598,21 @@ const VenueRegistrationForm: React.FC = () => {
               </div>
               <div>
                 <InputField
-                  label="Confirmar Contraseña*"
-                  description="Confirma de manera correcta e identica la contraseña previamente registrada."
-                  placeholder="********"
-                  variant="secondary"
-                  icon="Lock"
+                  label='Confirmar Contraseña*'
+                  description='Confirma de manera correcta e identica la contraseña previamente registrada.'
+                  placeholder='********'
+                  variant='secondary'
+                  icon='Lock'
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={formData.generalCoordinator.confirmPassword}
                   onChangeText={(value: string) =>
                     handleInputChange('generalCoordinator', 'confirmPassword', value)
                   }
                 />
-                <div className="flex items-center mt-2">
+                <div className='flex items-center mt-2'>
                   <Checkbox
-                    label="Mostrar Contraseña"
-                    color="purple"
+                    label='Mostrar Contraseña'
+                    color='purple'
                     checked={showConfirmPassword}
                     onChange={setShowConfirmPassword}
                   />
@@ -565,99 +621,99 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             {/* Sube tu foto de perfil */}
-            <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo-amarilla">
-              <div className="flex items-center titulo-tarjeta-archivo-amarilla">
-                <span className="text-purple-600 text-2xl mr-2 icono-tarjeta-archivo-amarilla"><FileJpg
-                  width='2rem'
-                  height='2rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span>
-                <h3 className="text-lg font-semibold">Sube tu foto de perfil</h3>
+            <div className='mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo-amarilla'>
+              <div className='flex items-center titulo-tarjeta-archivo-amarilla'>
+                <span className='text-purple-600 text-2xl mr-2 icono-tarjeta-archivo-amarilla'>
+                  <FileJpg width='2rem' height='2rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>
+                <h3 className='text-lg font-semibold'>Sube tu foto de perfil</h3>
               </div>
-              <p className="text-sm my-6">
-                Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte dentro del sistema. No es obligatorio subir una imagen, sin embargo lo recomendamos.
+              <p className='text-sm my-6'>
+                Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte
+                dentro del sistema. No es obligatorio subir una imagen, sin embargo lo recomendamos.
               </p>
               <input
-                type="file"
-                accept="image/*"
+                type='file'
+                accept='image/*'
                 onChange={(e) => handleFileChange(e, setProfileImage)}
-                className="mt-4"
+                className='mt-4'
               />
               {profileImage && (
-                <p className="mt-2 text-xs text-gray-600">
+                <p className='mt-2 text-xs text-gray-600'>
                   Archivo seleccionado: {profileImage.name}
                 </p>
               )}
             </div>
 
             {/* Section: Datos Coordinadora Asociada */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Sparkle
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Datos Coordinadora Asociada
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Sparkle width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Datos Coordinadora Asociada
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con veracidad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
-                Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de los datos de contacto de
+                tu equipo de trabajo.
+                <br />
+                Las secciones que contengan un asterisco (*) deberán responderse de manera
+                obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
-                Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los roles faltantes automáticamente.
+              <p className='text-gray-400 text-sm italic'>
+                Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los
+                roles faltantes automáticamente.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
               <InputField
-                label="Nombre(s)*"
-                placeholder="Nombre(s)"
-                variant="primary"
-                icon="Fingerprint"
+                label='Nombre(s)*'
+                placeholder='Nombre(s)'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.associatedCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'name', value)
                 }
               />
               <InputField
-                label="Apellido Paterno*"
-                placeholder="Apellido Paterno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Paterno*'
+                placeholder='Apellido Paterno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.associatedCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'lastNameP', value)
                 }
               />
               <InputField
-                label="Apellido Materno"
-                placeholder="Apellido Materno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Materno'
+                placeholder='Apellido Materno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.associatedCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'lastNameM', value)
                 }
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-                label="Correo Electrónico*"
-                placeholder="correo1@ejemplo.com"
-                variant="accent"
-                icon="At"
+                label='Correo Electrónico*'
+                placeholder='correo1@ejemplo.com'
+                variant='accent'
+                icon='At'
                 value={formData.associatedCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'email', value)
                 }
               />
               <InputField
-                label="Celular*"
-                placeholder="+522221234567"
-                variant="accent"
-                icon="Phone"
+                label='Celular*'
+                placeholder='+522221234567'
+                variant='accent'
+                icon='Phone'
                 value={formData.associatedCoordinator.phone}
                 onChangeText={(value: string) =>
                   handleInputChange('associatedCoordinator', 'phone', value)
@@ -666,72 +722,74 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             {/* Section: Datos Coordinadora de Informes (Staff) */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Student
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Datos Coordinadora de Informes (Staff)
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Student width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Datos Coordinadora de Informes (Staff)
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
-                Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de
+                tu equipo de trabajo.
+                <br />
+                Las secciones que contengan un asterisco (*) deberán responderse de manera
+                obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
-                Si no se registra una coordinadora de informes, la coordinadora de sede asumirá los roles faltantes automáticamente.
+              <p className='text-gray-400 text-sm italic'>
+                Si no se registra una coordinadora de informes, la coordinadora de sede asumirá los
+                roles faltantes automáticamente.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <InputField
-                label="Nombre(s)*"
-                placeholder="Nombre(s)"
-                variant="primary"
-                icon="Fingerprint"
+                label='Nombre(s)*'
+                placeholder='Nombre(s)'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.staffCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'name', value)
                 }
               />
               <InputField
-                label="Apellido Paterno*"
-                placeholder="Apellido  Paterno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Paterno*'
+                placeholder='Apellido  Paterno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.staffCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'lastNameP', value)
                 }
               />
               <InputField
-                label="Apellido Materno"
-                placeholder="Apellido Materno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Materno'
+                placeholder='Apellido Materno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.staffCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'lastNameM', value)
                 }
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-                label="Correo Electrónico*"
-                placeholder="correo1@ejemplo.com"
-                variant="accent"
-                icon="At"
+                label='Correo Electrónico*'
+                placeholder='correo1@ejemplo.com'
+                variant='accent'
+                icon='At'
                 value={formData.staffCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'email', value)
                 }
               />
               <InputField
-                label="Celular*"
-                placeholder="+522221234567"
-                variant="accent"
-                icon="Phone"
+                label='Celular*'
+                placeholder='+522221234567'
+                variant='accent'
+                icon='Phone'
                 value={formData.staffCoordinator.phone}
                 onChangeText={(value: string) =>
                   handleInputChange('staffCoordinator', 'phone', value)
@@ -740,72 +798,74 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             {/* Section: Datos Coordinadora de Informes (Participantes) */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><UsersFour
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Datos Coordinadora de Informes (Participantes)
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <UsersFour width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Datos Coordinadora de Informes (Participantes)
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de tu equipo de trabajo.<br />
-                Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con sinceridad las siguientes preguntas acerca de los datos de contacto de
+                tu equipo de trabajo.
+                <br />
+                Las secciones que contengan un asterisco (*) deberán responderse de manera
+                obligatoria.
               </p>
-              <p className="text-gray-400 text-sm italic">
-                Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
+              <p className='text-gray-400 text-sm italic'>
+                Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los
+                roles faltantes automáticamente.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <InputField
-                label="Nombre(s)*"
-                placeholder="Nombre(s)"
-                variant="primary"
-                icon="Fingerprint"
+                label='Nombre(s)*'
+                placeholder='Nombre(s)'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.participantsCoordinator.name}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'name', value)
                 }
               />
               <InputField
-                label="Apellido Paterno*"
-                placeholder="Apellido Paterno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Paterno*'
+                placeholder='Apellido Paterno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.participantsCoordinator.lastNameP}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'lastNameP', value)
                 }
               />
               <InputField
-                label="Apellido Materno"
-                placeholder="Apellido Materno"
-                variant="primary"
-                icon="Fingerprint"
+                label='Apellido Materno'
+                placeholder='Apellido Materno'
+                variant='primary'
+                icon='Fingerprint'
                 value={formData.participantsCoordinator.lastNameM}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'lastNameM', value)
                 }
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-                label="Correo Electrónico*"
-                placeholder="correo1@ejemplo.com"
-                variant="accent"
-                icon="At"
+                label='Correo Electrónico*'
+                placeholder='correo1@ejemplo.com'
+                variant='accent'
+                icon='At'
                 value={formData.participantsCoordinator.email}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'email', value)
                 }
               />
               <InputField
-                label="Celular*"
-                placeholder="+522221234567"
-                variant="accent"
-                icon="Phone"
+                label='Celular*'
+                placeholder='+522221234567'
+                variant='accent'
+                icon='Phone'
                 value={formData.participantsCoordinator.phone}
                 onChangeText={(value: string) =>
                   handleInputChange('participantsCoordinator', 'phone', value)
@@ -814,185 +874,170 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             {/* Section: Datos SEDE */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Bank
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Datos SEDE
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Bank width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Datos SEDE
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Responde con sinceridad las siguientes preguntas acerca de los datos de tu SEDE.<br />
-                Las secciones que contengan un asterisco (*) deberán responderse de manera obligatoria.
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Responde con sinceridad las siguientes preguntas acerca de los datos de tu SEDE.
+                <br />
+                Las secciones que contengan un asterisco (*) deberán responderse de manera
+                obligatoria.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-                label="Nombre de la SEDE*"
-                placeholder="ITESM Puebla"
-                variant="primary"
-                icon="GraduationCap"
+                label='Nombre de la SEDE*'
+                placeholder='ITESM Puebla'
+                variant='primary'
+                icon='GraduationCap'
                 value={formData.venue.name}
-                onChangeText={(value: string) =>
-                  handleInputChange('venue', 'name', value)
-                }
+                onChangeText={(value: string) => handleInputChange('venue', 'name', value)}
               />
               <Dropdown
-                label="País*"
+                label='País*'
                 options={['Mexico', 'Costa Rica', 'Ecuador']}
                 value={formData.venue.country}
                 onChange={(value: string) => {
                   handleInputChange('venue', 'country', value);
                   handleInputChange('venue', 'state', '');
                 }}
-                variant="accent"
+                variant='accent'
                 Icon={withIconDecorator(MapPin)}
               />
               {formData.venue.country === 'Mexico' ? (
                 <Dropdown
-                  label="Estado*"
+                  label='Estado*'
                   options={mexicanStates}
                   value={formData.venue.state}
-                  onChange={(value: string) =>
-                    handleInputChange('venue', 'state', value)
-                  }
-                  variant="primary"
+                  onChange={(value: string) => handleInputChange('venue', 'state', value)}
+                  variant='primary'
                   Icon={withIconDecorator(MapPin)}
                 />
               ) : (
                 <InputField
-                  label="Provincia/Región*"
-                  placeholder="Región"
-                  variant="accent"
-                  icon="MapPin"
+                  label='Provincia/Región*'
+                  placeholder='Región'
+                  variant='accent'
+                  icon='MapPin'
                   value={formData.venue.state}
-                  onChangeText={(value: string) =>
-                    handleInputChange('venue', 'state', value)
-                  }
+                  onChangeText={(value: string) => handleInputChange('venue', 'state', value)}
                 />
               )}
-              <div className="md:col-span-2">
+              <div className='md:col-span-2'>
                 <InputField
-                  label="Dirección*"
-                  placeholder="Dirección 123"
-                  variant="accent"
-                  icon="Flag"
+                  label='Dirección*'
+                  placeholder='Dirección 123'
+                  variant='accent'
+                  icon='Flag'
                   value={formData.venue.address}
-                  onChangeText={(value: string) =>
-                    handleInputChange('venue', 'address', value)
-                  }
+                  onChangeText={(value: string) => handleInputChange('venue', 'address', value)}
                 />
               </div>
             </div>
 
             {/* Sube tu logo */}
-            <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
-              <div className="flex items-center titulo-tarjeta-archivo">
-                <span className="text-2xl mr-2 icono-tarjeta-archivo"><FileJpg
-                  width='2rem'
-                  height='2rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span>
-                <h3 className="text-lg font-semibold">Sube tu logo</h3>
+            <div className='mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo'>
+              <div className='flex items-center titulo-tarjeta-archivo'>
+                <span className='text-2xl mr-2 icono-tarjeta-archivo'>
+                  <FileJpg width='2rem' height='2rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>
+                <h3 className='text-lg font-semibold'>Sube tu logo</h3>
               </div>
-              <p className="text-sm my-6">
-                Selecciona una imagen que represente a tu SEDE, la cual se presentará a los usuarios para su fácil reconocimiento. No es obligatorio subir una imagen, sin embargo lo recomendamos.
+              <p className='text-sm my-6'>
+                Selecciona una imagen que represente a tu SEDE, la cual se presentará a los usuarios
+                para su fácil reconocimiento. No es obligatorio subir una imagen, sin embargo lo
+                recomendamos.
               </p>
               <input
-                type="file"
-                accept="image/*"
+                type='file'
+                accept='image/*'
                 onChange={(e) => handleFileChange(e, setLogo)}
-                className="mt-4"
+                className='mt-4'
               />
               {logo && (
-                <p className="mt-2 text-xs text-gray-600">
-                  Archivo seleccionado: {logo.name}
-                </p>
+                <p className='mt-2 text-xs text-gray-600'>Archivo seleccionado: {logo.name}</p>
               )}
             </div>
 
             {/* Convocatoria SEDE */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Files
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Convocatoria SEDE
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Files width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Convocatoria SEDE
               </h2>
-              <p className="text-gray-400 text-sm md:text-base mb-4">
-                Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá de estar firmado por un representante legal de la institución participante.<br />
+              <p className='text-gray-400 text-sm md:text-base mb-4'>
+                Dentro de esta sección tendrás que subir tu permiso de participación, la cual deberá
+                de estar firmado por un representante legal de la institución participante.
+                <br />
                 Esta sección es obligatoria.
               </p>
             </div>
 
             {/* Download Section */}
-        <div className="mb-6 flex items-center gap-4">
-          <p className="text-lg text-gray-400">
-            Descarga la convocatoria para sedes:
-          </p>
-          <a
-            href="/ConvocatoriaSEDES-PH2025.pdf"
-            download="ConvocatoriaSEDES-PH2025.pdf"
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            role="button"
-            aria-label="Descargar Convocatoria"
-          >
-            Descargar Convocatoria
-          </a>
-        </div>
+            <div className='mb-6 flex items-center gap-4'>
+              <p className='text-lg text-gray-400'>Descarga la convocatoria para sedes:</p>
+              <a
+                href='/ConvocatoriaSEDES-PH2025.pdf'
+                download='ConvocatoriaSEDES-PH2025.pdf'
+                className='inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500'
+                role='button'
+                aria-label='Descargar Convocatoria'
+              >
+                Descargar Convocatoria
+              </a>
+            </div>
 
-            <div className="mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo">
-              <div className="flex items-center titulo-tarjeta-archivo">
-                <span className="text-2xl mr-2 icono-tarjeta-archivo"><FilePdf
-                  width='2rem'
-                  height='2rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span>
-                <h3 className="text-lg font-semibold">Sube tu convocatoria</h3>
+            <div className='mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo'>
+              <div className='flex items-center titulo-tarjeta-archivo'>
+                <span className='text-2xl mr-2 icono-tarjeta-archivo'>
+                  <FilePdf width='2rem' height='2rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>
+                <h3 className='text-lg font-semibold'>Sube tu convocatoria</h3>
               </div>
-              <p className="text-gray-600 text-sm my-6">
-                Selecciona un documento para subir. Ten cuidado al subir tus documentos y verifica dos veces que se suba correctamente.
+              <p className='text-gray-600 text-sm my-6'>
+                Selecciona un documento para subir. Ten cuidado al subir tus documentos y verifica
+                dos veces que se suba correctamente.
               </p>
               <input
-                type="file"
-                accept=".pdf"
+                type='file'
+                accept='.pdf'
                 onChange={(e) => handleFileChange(e, setParticipationFile)}
-                className="mt-4"
+                className='mt-4'
               />
               {participationFile && (
-                <p className="mt-2 text-xs">
-                  Archivo seleccionado: {participationFile.name}
-                </p>
+                <p className='mt-2 text-xs'>Archivo seleccionado: {participationFile.name}</p>
               )}
             </div>
 
             {/* Aviso de Privacidad */}
-            <div className="mt-8">
-              <h2 className="text-xl md:text-2xl font-semibold flex items-center mb-2">
-                <span className="mr-2"><Megaphone
-                  width='1.5rem'
-                  height='1.5rem'
-                  fillColor='#ebe6eb'
-                  strokeWidth={0}
-                /></span> Aviso de Privacidad
+            <div className='mt-8'>
+              <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
+                <span className='mr-2'>
+                  <Megaphone width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
+                </span>{' '}
+                Aviso de Privacidad
               </h2>
-              <p className="text-gray-400 text-sm">
-                Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:<br />
-                <a href="https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores" className="text-purple-400 hover:underline">
+              <p className='text-gray-400 text-sm'>
+                Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:
+                <br />
+                <a
+                  href='https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores'
+                  className='text-purple-400 hover:underline'
+                >
                   https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
                 </a>
               </p>
-              <div className="mt-2">
+              <div className='mt-2'>
                 <Checkbox
-                  label=""
-                  color="purple"
+                  label=''
+                  color='purple'
                   checked={privacyAccepted}
                   onChange={setPrivacyAccepted}
                 />
@@ -1000,14 +1045,14 @@ const VenueRegistrationForm: React.FC = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="mt-6 flex justify-end">
+            <div className='mt-6 flex justify-end'>
               <Button
-                label="Enviar Registro"
-                variant="success"
+                label='Enviar Registro'
+                variant='success'
                 showRightIcon
                 type='submit'
                 IconRight={withIconDecorator(Send)}
-                className="px-6 py-2 rounded-full flex items-center text-white"
+                className='px-6 py-2 rounded-full flex items-center text-white'
               />
             </div>
           </div>
@@ -1017,7 +1062,7 @@ const VenueRegistrationForm: React.FC = () => {
       <Modal
         isOpen={isErrorModalOpen}
         onClose={() => setIsErrorModalOpen(false)}
-        title="Errores en el formulario"
+        title='Errores en el formulario'
         messages={errors}
       />
 

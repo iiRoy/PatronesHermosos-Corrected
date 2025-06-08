@@ -188,8 +188,7 @@ const CardSection = () => {
               className={`md:ml-[4.4vw] flex items-center justify-center md:justify-start md:items-start text-[1.5vmax] text-text transition-opacity duration-300 ${
                 fadeSec ? 'opacity-0' : 'opacity-100'
               }`}
-            >
-            </div>
+            ></div>
           </div>
           <FiltroEvento
             disableCheckboxes

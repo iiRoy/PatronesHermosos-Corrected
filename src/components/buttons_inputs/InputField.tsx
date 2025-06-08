@@ -13,16 +13,16 @@ interface InputFieldProps {
   showError?: boolean;
   darkText?: boolean;
   variant?:
-  | 'accent'
-  | 'primary'
-  | 'secondary'
-  | 'secondary-shade'
-  | 'text-color'
-  | 'warning'
-  | 'accent-disabled'
-  | 'primary-disabled'
-  | 'secondary-shade-disabled'
-  | 'text-color-disabled';
+    | 'accent'
+    | 'primary'
+    | 'secondary'
+    | 'secondary-shade'
+    | 'text-color'
+    | 'warning'
+    | 'accent-disabled'
+    | 'primary-disabled'
+    | 'secondary-shade-disabled'
+    | 'text-color-disabled';
   disabled?: boolean;
   icon?: keyof typeof Icons;
   value?: string;

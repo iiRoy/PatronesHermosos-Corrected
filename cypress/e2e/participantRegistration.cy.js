@@ -87,9 +87,11 @@ describe('Participant Registration Form - E2E', () => {
     });
 
     // Selección de grupo (elige el primero de la tabla si existe)
-    cy.get('table tbody tr').first().within(() => {
-      cy.contains(/Seleccionar|Elegir|Select/i).click({ force: true });
-    });
+    cy.get('table tbody tr')
+      .first()
+      .within(() => {
+        cy.contains(/Seleccionar|Elegir|Select/i).click({ force: true });
+      });
 
     // Aviso de privacidad
     cy.get('input[type="checkbox"]').check({ force: true });

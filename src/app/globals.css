@@ -129,11 +129,9 @@
 /* Estilo para el contenedor de la descripción con fondo morado y flecha */
 
 .pagina-inicio {
-  background-color: #160D17;
+  background-color: #160d17;
   min-height: 90.8vh;
 }
-
-
 
 .contenido-inicio h1 {
   color: var(--text-color);
@@ -161,7 +159,7 @@
   transform: translateX(-50%);
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid #97639C;
+  border-bottom: 10px solid #97639c;
   /* Morado de la flecha */
 }
 
@@ -207,7 +205,9 @@
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
 }
 
 .custom-button:hover:not(:disabled),
@@ -239,7 +239,9 @@
   border-radius: 50%;
   padding: 0.5rem 1.5rem;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
 }
 
 .round-button:hover:not(:disabled),
@@ -1220,11 +1222,11 @@
 
 /* Formularios */
 .pagina-formulario {
-  background-color: #160D17;
+  background-color: #160d17;
 }
 
 .info-formulario {
-  background-color: #160D17;
+  background-color: #160d17;
 }
 
 .tarjeta-archivo {
@@ -1259,8 +1261,6 @@
   background-color: var(--warning);
   color: var(--text-color);
 }
-
-
 
 @layer base {
   :root {

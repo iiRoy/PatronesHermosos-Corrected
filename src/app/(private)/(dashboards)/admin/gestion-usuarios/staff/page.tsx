@@ -70,7 +70,9 @@ const GestionApoyo = () => {
             setError('No tienes permisos para acceder a los colaboradores');
             return;
           }
-          throw new Error(`Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`,
+          );
         }
 
         const formattedData = collaboratorsData.data.map((collab: any) => ({
@@ -106,20 +108,22 @@ const GestionApoyo = () => {
     fetchApoyo();
   }, [router]);
 
-  const uniqueRoles = Array.from(new Set(apoyoData.map(apoyo => apoyo.role)))
-    .filter(role => role !== 'Pendiente')
+  const uniqueRoles = Array.from(new Set(apoyoData.map((apoyo) => apoyo.role)))
+    .filter((role) => role !== 'Pendiente')
     .sort();
 
   const rolOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueRoles.map(rol => ({ label: rol, value: rol })),
+    ...uniqueRoles.map((rol) => ({ label: rol, value: rol })),
   ];
 
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
-    return apoyoData.filter(apoyo => {
+    return apoyoData.filter((apoyo) => {
       const matchesStatus = apoyo.status.toLowerCase() === 'aprobada';
-      const fullName = `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`.toLowerCase().trim();
+      const fullName = `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`
+        .toLowerCase()
+        .trim();
       const matchesSearch =
         !searchTerm ||
         fullName.includes(searchTerm) ||
@@ -132,7 +136,10 @@ const GestionApoyo = () => {
   }, [inputValue, filterActivaExtra, apoyoData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+  const paginatedData = filteredData.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage,
+  );
 
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
@@ -246,7 +253,9 @@ const GestionApoyo = () => {
         throw new Error(errorData.message || 'Error al cancelar la colaboradora');
       }
 
-      setApoyoData(prev => prev.filter(m => m.id_collaborator !== selectedApoyo.id_collaborator));
+      setApoyoData((prev) =>
+        prev.filter((m) => m.id_collaborator !== selectedApoyo.id_collaborator),
+      );
 
       notify({
         color: 'green',
@@ -268,33 +277,33 @@ const GestionApoyo = () => {
   };
 
   if (error) {
-    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
   }
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Gestión de Apoyo</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
+                label=''
                 showDescription={false}
-                placeholder="Buscar colaboradora"
+                placeholder='Buscar colaboradora'
                 showError={false}
-                variant="primary"
-                icon="MagnifyingGlass"
+                variant='primary'
+                icon='MagnifyingGlass'
                 value={inputValue}
                 onChangeText={(val) => setInputValue(val)}
               />
             </div>
 
-            <div className="basis-1/3">
+            <div className='basis-1/3'>
               <FiltroEvento
                 disableCheckboxes
-                label="Filtros"
+                label='Filtros'
                 showSecciones={false}
                 extraFilters={[
                   {
@@ -310,31 +319,32 @@ const GestionApoyo = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto custom-scrollbar-tabla">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
+        <div className='overflow-x-auto custom-scrollbar-tabla'>
+          <table className='min-w-full text-left text-sm'>
+            <thead className='text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]'>
               <tr className='texto-primary-shade'>
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center">Nombre</th>
-                <th className="p-2 text-center">Correo</th>
-                <th className="p-2 text-center">Sede</th>
-                <th className="p-2 text-center">Rol</th>
-                <th className="p-2 text-center">Acciones</th>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'>Nombre</th>
+                <th className='p-2 text-center'>Correo</th>
+                <th className='p-2 text-center'>Sede</th>
+                <th className='p-2 text-center'>Rol</th>
+                <th className='p-2 text-center'>Acciones</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {paginatedData.map((apoyo, index) => {
-                const fullName = `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`.trim();
+                const fullName =
+                  `${apoyo.name} ${apoyo.paternal_name} ${apoyo.maternal_name}`.trim();
                 return (
                   <tr
                     key={index}
-                    className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
+                    className='border-t border-gray-300 cursor-pointer hover:bg-gray-300'
                     onClick={() => handleInfoClick(apoyo)}
                   >
-                    <td className="p-2 text-center">
+                    <td className='p-2 text-center'>
                       <Button
-                        label=""
-                        variant="primary"
+                        label=''
+                        variant='primary'
                         round
                         showLeftIcon
                         IconLeft={Eye}
@@ -344,22 +354,22 @@ const GestionApoyo = () => {
                         }}
                       />
                     </td>
-                    <td className="p-2 text-center">{fullName}</td>
-                    <td className="p-2 text-center">{apoyo.email}</td>
-                    <td className="p-2 text-center">{apoyo.venue || 'Sin asignado'}</td>
-                    <td className="p-2 text-center">{apoyo.role}</td>
-                    <td className="p-2 flex gap-2 justify-center">
+                    <td className='p-2 text-center'>{fullName}</td>
+                    <td className='p-2 text-center'>{apoyo.email}</td>
+                    <td className='p-2 text-center'>{apoyo.venue || 'Sin asignado'}</td>
+                    <td className='p-2 text-center'>{apoyo.role}</td>
+                    <td className='p-2 flex gap-2 justify-center'>
                       <Button
-                        label=""
-                        variant="error"
+                        label=''
+                        variant='error'
                         round
                         showLeftIcon
                         IconLeft={Trash}
                         onClick={(event: React.MouseEvent) => handleDeleteClick(apoyo, event)}
                       />
                       <Button
-                        label=""
-                        variant="warning"
+                        label=''
+                        variant='warning'
                         round
                         showLeftIcon
                         IconLeft={Highlighter}
@@ -373,53 +383,84 @@ const GestionApoyo = () => {
           </table>
         </div>
 
-        <div className="mt-auto pt-4 flex justify-center">
+        <div className='mt-auto pt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            variant="primary"
+            variant='primary'
             pageLinks={Array(totalPages).fill('#')}
           />
         </div>
 
         {isDeletePopupOpen && selectedApoyo && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
-              <p className="my-12">
-                ¿Estás segura de que quieres eliminar a la colaboradora {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}?
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Confirmar Eliminación</h2>
+              <p className='my-12'>
+                ¿Estás segura de que quieres eliminar a la colaboradora{' '}
+                {`${selectedApoyo.name} ${selectedApoyo.paternal_name} ${selectedApoyo.maternal_name}`.trim()}
+                ?
               </p>
-              <div className="flex justify-center gap-4 ml-8 mr-8">
-                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
+              <div className='flex justify-center gap-4 ml-8 mr-8'>
+                <Button label='Eliminar' variant='error' onClick={handleConfirmDelete} />
+                <Button label='Cerrar' variant='secondary' onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
         )}
 
         {isInfoPopupOpen && selectedApoyo && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla">
-              <h2 className="text-3xl font-bold mb-4 text-center">Información del Colaborador</h2>
-              <div className="space-y-2">
-                <p><strong>Nombre:</strong> {selectedApoyo.name}</p>
-                <p><strong>Apellido Paterno:</strong> {selectedApoyo.paternal_name}</p>
-                <p><strong>Apellido Materno:</strong> {selectedApoyo.maternal_name}</p>
-                <p><strong>Correo:</strong> {selectedApoyo.email}</p>
-                <p><strong>Teléfono:</strong> {selectedApoyo.phone_number}</p>
-                <p><strong>Universidad:</strong> {selectedApoyo.college}</p>
-                <p><strong>Carrera:</strong> {selectedApoyo.degree}</p>
-                <p><strong>Semestre:</strong> {selectedApoyo.semester}</p>
-                <p><strong>Género:</strong> {selectedApoyo.gender}</p>
-                <p><strong>Rol:</strong> {selectedApoyo.role}</p>
-                <p><strong>Estado:</strong> {selectedApoyo.status}</p>
-                <p><strong>Nivel:</strong> {selectedApoyo.level}</p>
-                <p><strong>Idioma:</strong> {selectedApoyo.language}</p>
-                <p><strong>Grupo asignado:</strong> {selectedApoyo.groupName || selectedApoyo.preferred_group || 'Sin grupo asignado'}</p>
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto text-gray-800 custom-scrollbar-tabla'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Información del Colaborador</h2>
+              <div className='space-y-2'>
+                <p>
+                  <strong>Nombre:</strong> {selectedApoyo.name}
+                </p>
+                <p>
+                  <strong>Apellido Paterno:</strong> {selectedApoyo.paternal_name}
+                </p>
+                <p>
+                  <strong>Apellido Materno:</strong> {selectedApoyo.maternal_name}
+                </p>
+                <p>
+                  <strong>Correo:</strong> {selectedApoyo.email}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {selectedApoyo.phone_number}
+                </p>
+                <p>
+                  <strong>Universidad:</strong> {selectedApoyo.college}
+                </p>
+                <p>
+                  <strong>Carrera:</strong> {selectedApoyo.degree}
+                </p>
+                <p>
+                  <strong>Semestre:</strong> {selectedApoyo.semester}
+                </p>
+                <p>
+                  <strong>Género:</strong> {selectedApoyo.gender}
+                </p>
+                <p>
+                  <strong>Rol:</strong> {selectedApoyo.role}
+                </p>
+                <p>
+                  <strong>Estado:</strong> {selectedApoyo.status}
+                </p>
+                <p>
+                  <strong>Nivel:</strong> {selectedApoyo.level}
+                </p>
+                <p>
+                  <strong>Idioma:</strong> {selectedApoyo.language}
+                </p>
+                <p>
+                  <strong>Grupo asignado:</strong>{' '}
+                  {selectedApoyo.groupName || selectedApoyo.preferred_group || 'Sin grupo asignado'}
+                </p>
               </div>
-              <div className="flex justify-center mt-6">
-                <Button label="Cerrar" variant="secondary" onClick={handleCloseInfoPopup} />
+              <div className='flex justify-center mt-6'>
+                <Button label='Cerrar' variant='secondary' onClick={handleCloseInfoPopup} />
               </div>
             </div>
           </div>

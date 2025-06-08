@@ -18,7 +18,6 @@ export default function LoginForm() {
   const router = useRouter();
   const { notify } = useNotification();
 
-
   useEffect(() => {
     const lockoutTime = parseInt(localStorage.getItem('lockoutTime') || '');
     const readableTime = new Date(lockoutTime).toLocaleTimeString('es-MX', {
@@ -35,10 +34,12 @@ export default function LoginForm() {
         variant: 'two',
         duration: 5000,
       });
-      setError('Has superado el número máximo de intentos. Vuelve a ingresar dentro de 10 minutos.');
+      setError(
+        'Has superado el número máximo de intentos. Vuelve a ingresar dentro de 10 minutos.',
+      );
     } else {
       localStorage.removeItem('lockoutTime');
-      if (Number(localStorage.getItem('loginAttempts')) >= 5){
+      if (Number(localStorage.getItem('loginAttempts')) >= 5) {
         localStorage.removeItem('loginAttempts');
       }
     }
@@ -82,20 +83,28 @@ export default function LoginForm() {
             minute: '2-digit',
           });
           setIsLocked(true);
-          setTimeout(() => notify({
-          color: 'red',
-          title: 'Demasiados intentos',
-          message: `Has superado el número de intentos permitidos. Intenta nuevamente a las ${readableTime}`,
-          iconName: 'SealWarning',
-          variant: 'two',
-          duration: 5000,
-        }), 100)
-        setError('Has superado el número máximo de intentos. Vuelve a ingresar dentro de 10 minutos.');
-        setLoading(false);
-        return;
+          setTimeout(
+            () =>
+              notify({
+                color: 'red',
+                title: 'Demasiados intentos',
+                message: `Has superado el número de intentos permitidos. Intenta nuevamente a las ${readableTime}`,
+                iconName: 'SealWarning',
+                variant: 'two',
+                duration: 5000,
+              }),
+            100,
+          );
+          setError(
+            'Has superado el número máximo de intentos. Vuelve a ingresar dentro de 10 minutos.',
+          );
+          setLoading(false);
+          return;
         }
 
-        setError(`${data.message} (Intentos restantes: ${5-Number(localStorage.getItem('loginAttempts'))}.)`);
+        setError(
+          `${data.message} (Intentos restantes: ${5 - Number(localStorage.getItem('loginAttempts'))}.)`,
+        );
         notify({
           color: 'red',
           title: 'Error en Inicio de Sesión',
@@ -149,7 +158,7 @@ export default function LoginForm() {
           alt='logo'
           width={120}
           height={120}
-          style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '3vw'  }}
+          style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '3vw' }}
         />
         <div>
           <h2 className='text-4xl font-bold text-center text-[#ede0e8]'>Iniciar Sesión</h2>
@@ -164,7 +173,7 @@ export default function LoginForm() {
           onChangeText={setEmailOrUsername}
           variant={isLocked ? 'accent-disabled' : error ? 'warning' : 'accent'}
           icon='Envelope'
-          disabled= {isLocked}
+          disabled={isLocked}
         />
         <div className='flex flex-col flex-nowrap mt-2'>
           <InputField
@@ -175,7 +184,7 @@ export default function LoginForm() {
             icon='Lock'
             type={showConfirmPassword ? 'text' : 'password'}
             variant={isLocked ? 'primary-disabled' : error ? 'warning' : 'primary'}
-            disabled= {isLocked}
+            disabled={isLocked}
           />
           {error && (
             <div className='text-[var(--error)] text-sm'>

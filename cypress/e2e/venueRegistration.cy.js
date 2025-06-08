@@ -37,11 +37,17 @@ describe('Venue Registration Form - E2E', () => {
     cy.contains('La dirección de la SEDE es obligatoria').should('be.visible');
     cy.contains('El archivo de participación es obligatorio').should('be.visible');
     cy.contains('El nombre de la Coordinadora de Sede es obligatorio').should('be.visible');
-    cy.contains('El apellido paterno de la Coordinadora de Sede es obligatorio').should('be.visible');
-    cy.contains('El correo electrónico de la Coordinadora de Sede es obligatorio').should('be.visible');
+    cy.contains('El apellido paterno de la Coordinadora de Sede es obligatorio').should(
+      'be.visible',
+    );
+    cy.contains('El correo electrónico de la Coordinadora de Sede es obligatorio').should(
+      'be.visible',
+    );
     cy.contains('El celular de la Coordinadora de Sede es obligatorio').should('be.visible');
     cy.contains('El sexo de la Coordinadora de Sede es obligatorio').should('be.visible');
-    cy.contains('El nombre de usuario de la Coordinadora de Sede es obligatorio').should('be.visible');
+    cy.contains('El nombre de usuario de la Coordinadora de Sede es obligatorio').should(
+      'be.visible',
+    );
     cy.contains('La contraseña de la Coordinadora de Sede es obligatorio').should('be.visible');
     cy.contains('Debes aceptar el aviso de privacidad').should('be.visible');
   });
@@ -73,11 +79,13 @@ describe('Venue Registration Form - E2E', () => {
     cy.get('input[placeholder="Dirección 123"]').type('123 Main St');
 
     // Participation file (convocatoria)
-    cy.get('input[type="file"]').eq(2).selectFile({
-      contents: Cypress.Buffer.from('dummy pdf'),
-      fileName: 'test.pdf',
-      mimeType: 'application/pdf',
-    });
+    cy.get('input[type="file"]')
+      .eq(2)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy pdf'),
+        fileName: 'test.pdf',
+        mimeType: 'application/pdf',
+      });
 
     // Privacy notice
     cy.get('input[type="checkbox"]').check();
@@ -120,16 +128,20 @@ describe('Venue Registration Form - E2E', () => {
     cy.get('input[placeholder="Dirección 123"]').type('123 Main St');
 
     // Participation file
-    cy.get('input[type="file"]').eq(2).selectFile({
-      contents: Cypress.Buffer.from('dummy pdf'),
-      fileName: 'test.pdf',
-      mimeType: 'application/pdf',
-    });
+    cy.get('input[type="file"]')
+      .eq(2)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy pdf'),
+        fileName: 'test.pdf',
+        mimeType: 'application/pdf',
+      });
 
     cy.get('input[type="checkbox"]').check();
     cy.contains('Enviar Registro').click();
 
-    cy.contains('El correo electrónico de la Coordinadora de Sede debe ser válido').should('be.visible');
+    cy.contains('El correo electrónico de la Coordinadora de Sede debe ser válido').should(
+      'be.visible',
+    );
     cy.wait('@createVenue');
   });
 
@@ -148,25 +160,31 @@ describe('Venue Registration Form - E2E', () => {
   });
 
   it('shows selected file names after upload', () => {
-    cy.get('input[type="file"]').eq(0).selectFile({
-      contents: Cypress.Buffer.from('dummy jpg'),
-      fileName: 'profile.jpg',
-      mimeType: 'image/jpeg',
-    });
+    cy.get('input[type="file"]')
+      .eq(0)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy jpg'),
+        fileName: 'profile.jpg',
+        mimeType: 'image/jpeg',
+      });
     cy.contains('Archivo seleccionado: profile.jpg').should('be.visible');
 
-    cy.get('input[type="file"]').eq(1).selectFile({
-      contents: Cypress.Buffer.from('dummy jpg'),
-      fileName: 'logo.jpg',
-      mimeType: 'image/jpeg',
-    });
+    cy.get('input[type="file"]')
+      .eq(1)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy jpg'),
+        fileName: 'logo.jpg',
+        mimeType: 'image/jpeg',
+      });
     cy.contains('Archivo seleccionado: logo.jpg').should('be.visible');
 
-    cy.get('input[type="file"]').eq(2).selectFile({
-      contents: Cypress.Buffer.from('dummy pdf'),
-      fileName: 'convocatoria.pdf',
-      mimeType: 'application/pdf',
-    });
+    cy.get('input[type="file"]')
+      .eq(2)
+      .selectFile({
+        contents: Cypress.Buffer.from('dummy pdf'),
+        fileName: 'convocatoria.pdf',
+        mimeType: 'application/pdf',
+      });
     cy.contains('Archivo seleccionado: convocatoria.pdf').should('be.visible');
   });
 });

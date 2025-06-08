@@ -73,7 +73,9 @@ const GestionMentoras = () => {
             router.push('/login');
             return;
           }
-          throw new Error(`Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`);
+          throw new Error(
+            `Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`,
+          );
         }
 
         // Formatear los datos para incluir los campos separados
@@ -104,15 +106,15 @@ const GestionMentoras = () => {
     fetchMentoras();
   }, [router, notify]);
 
-  const uniqueVenues = Array.from(new Set(mentorasData.map(mentora => mentora.venue))).sort();
+  const uniqueVenues = Array.from(new Set(mentorasData.map((mentora) => mentora.venue))).sort();
   const venueOptions = [
     { label: 'Todas', value: '__All__' },
-    ...uniqueVenues.map(venue => ({ label: venue, value: venue })),
+    ...uniqueVenues.map((venue) => ({ label: venue, value: venue })),
   ];
 
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
-    return mentorasData.filter(mentora => {
+    return mentorasData.filter((mentora) => {
       const matchesSearch =
         !searchTerm ||
         mentora.name.toLowerCase().includes(searchTerm) ||
@@ -127,7 +129,10 @@ const GestionMentoras = () => {
   }, [inputValue, section, mentorasData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = filteredData.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage);
+  const paginatedData = filteredData.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage,
+  );
 
   useEffect(() => {
     if (currentPage >= totalPages && totalPages > 0) {
@@ -200,7 +205,7 @@ const GestionMentoras = () => {
       }
 
       // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
-      setMentorasData(prev => prev.filter(m => m.id_mentor !== selectedMentora.id_mentor));
+      setMentorasData((prev) => prev.filter((m) => m.id_mentor !== selectedMentora.id_mentor));
 
       notify({
         color: 'green',
@@ -222,35 +227,35 @@ const GestionMentoras = () => {
   };
 
   if (error) {
-    return <div className="p-6 pl-14 text-red-500">Error: {error}</div>;
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
   }
 
   return (
-    <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
+    <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
       <PageTitle>Gestión de Mentoras</PageTitle>
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 gap-4">
-            <div className="basis-2/3">
+      <div className='fondo-sedes flex flex-col p-6 gap-4 overflow-auto'>
+        <div className='flex flex-wrap items-center justify-between gap-4'>
+          <div className='flex flex-1 gap-4'>
+            <div className='basis-2/3'>
               <InputField
-                label=""
+                label=''
                 showDescription={false}
-                placeholder="Buscar mentora"
+                placeholder='Buscar mentora'
                 showError={false}
-                variant="primary"
-                icon="MagnifyingGlass"
+                variant='primary'
+                icon='MagnifyingGlass'
                 value={inputValue}
                 onChangeText={(val) => setInputValue(val)}
               />
             </div>
 
-            <div className="basis-1/3">
+            <div className='basis-1/3'>
               <FiltroEvento
                 disableCheckboxes
-                label="Filtrar por sede"
+                label='Filtrar por sede'
                 showSecciones
-                labelSecciones="Sedes"
+                labelSecciones='Sedes'
                 secciones={venueOptions}
                 seccionActiva={section}
                 onChangeSeccion={sectionFilterChange}
@@ -259,29 +264,29 @@ const GestionMentoras = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto custom-scrollbar-tabla">
-          <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
+        <div className='overflow-x-auto custom-scrollbar-tabla'>
+          <table className='min-w-full text-left text-sm'>
+            <thead className='text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]'>
               <tr className='texto-primary-shade'>
-                <th className="p-2 text-center"></th>
-                <th className="p-2 text-center">Nombre</th>
-                <th className="p-2 text-center">Correo</th>
-                <th className="p-2 text-center">Teléfono</th>
-                <th className="p-2 text-center">Sede</th>
-                <th className="p-2 text-center">Acciones</th>
+                <th className='p-2 text-center'></th>
+                <th className='p-2 text-center'>Nombre</th>
+                <th className='p-2 text-center'>Correo</th>
+                <th className='p-2 text-center'>Teléfono</th>
+                <th className='p-2 text-center'>Sede</th>
+                <th className='p-2 text-center'>Acciones</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className='text-gray-700'>
               {paginatedData.map((mentora, index) => (
                 <tr
                   key={index}
-                  className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
+                  className='border-t border-gray-300 cursor-pointer hover:bg-gray-300'
                   onClick={() => handleDetailsClick(mentora)}
                 >
-                  <td className="p-2 text-center">
+                  <td className='p-2 text-center'>
                     <Button
-                      label=""
-                      variant="primary"
+                      label=''
+                      variant='primary'
                       round
                       showLeftIcon
                       IconLeft={Eye}
@@ -291,14 +296,14 @@ const GestionMentoras = () => {
                       }}
                     />
                   </td>
-                  <td className="p-2 text-center">{mentora.name}</td>
-                  <td className="p-2 text-center">{mentora.email}</td>
-                  <td className="p-2 text-center">{mentora.phone_number}</td>
-                  <td className="p-2 text-center">{mentora.venue}</td>
-                  <td className="p-2 flex gap-2 justify-center">
+                  <td className='p-2 text-center'>{mentora.name}</td>
+                  <td className='p-2 text-center'>{mentora.email}</td>
+                  <td className='p-2 text-center'>{mentora.phone_number}</td>
+                  <td className='p-2 text-center'>{mentora.venue}</td>
+                  <td className='p-2 flex gap-2 justify-center'>
                     <Button
-                      label=""
-                      variant="error"
+                      label=''
+                      variant='error'
                       round
                       showLeftIcon
                       IconLeft={Trash}
@@ -308,8 +313,8 @@ const GestionMentoras = () => {
                       }}
                     />
                     <Button
-                      label=""
-                      variant="warning"
+                      label=''
+                      variant='warning'
                       round
                       showLeftIcon
                       IconLeft={Highlighter}
@@ -325,25 +330,27 @@ const GestionMentoras = () => {
           </table>
         </div>
 
-        <div className="mt-auto pt-4 flex justify-center">
+        <div className='mt-auto pt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            variant="primary"
+            variant='primary'
             pageLinks={Array(totalPages).fill('#')}
           />
         </div>
 
         {/* Popup de eliminación */}
         {isDeletePopupOpen && selectedMentora && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">Confirmar Eliminación</h2>
-              <p className="my-12">¿Estás segura de que quieres eliminar a la mentora {selectedMentora.name}?</p>
-              <div className="flex justify-center gap-4">
-                <Button label="Eliminar" variant="error" onClick={handleConfirmDelete} />
-                <Button label="Cerrar" variant="secondary" onClick={handleCloseDeletePopup} />
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 text-gray-800'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Confirmar Eliminación</h2>
+              <p className='my-12'>
+                ¿Estás segura de que quieres eliminar a la mentora {selectedMentora.name}?
+              </p>
+              <div className='flex justify-center gap-4'>
+                <Button label='Eliminar' variant='error' onClick={handleConfirmDelete} />
+                <Button label='Cerrar' variant='secondary' onClick={handleCloseDeletePopup} />
               </div>
             </div>
           </div>
@@ -351,21 +358,37 @@ const GestionMentoras = () => {
 
         {/* Popup de detalles */}
         {isDetailsPopupOpen && selectedMentora && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800">
-              <h2 className="text-3xl font-bold mb-4 text-center">Detalles de la Mentora</h2>
-              <div className="pt-6 pb-6">
-                <p><strong>Nombre:</strong> {selectedMentora.name_only}</p>
-                <p><strong>Apellido Paterno:</strong> {selectedMentora.paternal_name}</p>
-                <p><strong>Apellido Materno:</strong> {selectedMentora.maternal_name}</p>
-                <p><strong>Correo:</strong> {selectedMentora.email}</p>
-                <p><strong>Teléfono:</strong> {selectedMentora.phone_number}</p>
-                <p><strong>Sede:</strong> {selectedMentora.venue}</p>
-                <p><strong>Estado:</strong> {selectedMentora.status}</p>
-                <p><strong>Número de Grupos:</strong> {selectedMentora.number_of_groups}</p>
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] overflow-y-auto text-gray-800'>
+              <h2 className='text-3xl font-bold mb-4 text-center'>Detalles de la Mentora</h2>
+              <div className='pt-6 pb-6'>
+                <p>
+                  <strong>Nombre:</strong> {selectedMentora.name_only}
+                </p>
+                <p>
+                  <strong>Apellido Paterno:</strong> {selectedMentora.paternal_name}
+                </p>
+                <p>
+                  <strong>Apellido Materno:</strong> {selectedMentora.maternal_name}
+                </p>
+                <p>
+                  <strong>Correo:</strong> {selectedMentora.email}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {selectedMentora.phone_number}
+                </p>
+                <p>
+                  <strong>Sede:</strong> {selectedMentora.venue}
+                </p>
+                <p>
+                  <strong>Estado:</strong> {selectedMentora.status}
+                </p>
+                <p>
+                  <strong>Número de Grupos:</strong> {selectedMentora.number_of_groups}
+                </p>
               </div>
-              <div className="mt-4 flex justify-center">
-                <Button label="Cerrar" variant="primary" onClick={handleCloseDetailsPopup} />
+              <div className='mt-4 flex justify-center'>
+                <Button label='Cerrar' variant='primary' onClick={handleCloseDetailsPopup} />
               </div>
             </div>
           </div>

@@ -100,7 +100,9 @@ const createParticipant = async (req, res) => {
       data: {
         pName: `${name} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
         pEmail: email,
-        tName: tutor.name ? `${tutor.name} ${tutor.paternal_name || ''} ${tutor.maternal_name || ''}`.trim() : 'No asignado',
+        tName: tutor.name
+          ? `${tutor.name} ${tutor.paternal_name || ''} ${tutor.maternal_name || ''}`.trim()
+          : 'No asignado',
         tEmail: tutor.email || 'No asignado',
         tPhone: tutor.phone_number || 'No asignado',
         venue: venueName,
@@ -126,7 +128,8 @@ const getAllParticipants = async (req, res) => {
   try {
     const participants = await prisma.participants.findMany({
       include: {
-        groups: { // Grupo asignado (basado en id_group)
+        groups: {
+          // Grupo asignado (basado en id_group)
           select: {
             id_group: true,
             name: true,
@@ -138,7 +141,8 @@ const getAllParticipants = async (req, res) => {
             },
           },
         },
-        preferredGroup: { // Grupo preferido (basado en preferred_group)
+        preferredGroup: {
+          // Grupo preferido (basado en preferred_group)
           select: {
             id_group: true,
             name: true,
@@ -159,9 +163,10 @@ const getAllParticipants = async (req, res) => {
     });
 
     // Formateo para el frontend (compatible con la interfaz Participant)
-    const formattedParticipants = participants.map(participant => ({
+    const formattedParticipants = participants.map((participant) => ({
       id: participant.id_participant,
-      nombre: `${participant.name || ''} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
+      nombre:
+        `${participant.name || ''} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
       sede: participant.groups?.venues?.name || 'No asignado',
       id_venue: participant.groups?.id_venue || null,
       grupo: participant.groups?.name || 'No asignado',
@@ -170,13 +175,13 @@ const getAllParticipants = async (req, res) => {
     }));
 
     // Formateo para Solicitudes (usando grupo preferido, basado en preferred_group)
-    const formattedParticipantsForRequests = participants.map(participant => ({
+    const formattedParticipantsForRequests = participants.map((participant) => ({
       ...participant,
       groups: participant.preferredGroup
         ? {
-          name: participant.preferredGroup.name || 'No asignado',
-          venues: participant.preferredGroup.venues || { name: 'No asignado' },
-        }
+            name: participant.preferredGroup.name || 'No asignado',
+            venues: participant.preferredGroup.venues || { name: 'No asignado' },
+          }
         : null,
     }));
 
@@ -224,9 +229,9 @@ const getParticipantById = async (req, res) => {
       ...participant,
       groups: participant.preferredGroup
         ? {
-          name: participant.preferredGroup.name || 'No asignado',
-          venues: participant.preferredGroup.venues || { name: 'No asignado' },
-        }
+            name: participant.preferredGroup.name || 'No asignado',
+            venues: participant.preferredGroup.venues || { name: 'No asignado' },
+          }
         : null,
     };
 
@@ -302,17 +307,24 @@ const updateParticipant = async (req, res) => {
           subject: 'Solicitud de Cambio de Grupo - Patrones Hermosos',
           template: 'participantes/sol_cambio',
           data: {
-            pname: `${updatedParticipant.name} ${updatedParticipant.paternal_name || ''} ${updatedParticipant.maternal_name || ''}`.trim(),
+            pname:
+              `${updatedParticipant.name} ${updatedParticipant.paternal_name || ''} ${updatedParticipant.maternal_name || ''}`.trim(),
             venue: newGroup.venues?.name || 'No asignado',
             group: newGroup.name || 'No asignado',
             location: newGroup.venues?.address || 'No asignado',
             language: newGroup.language || 'No especificado',
             level: newGroup.level || 'No especificado',
             mode: newGroup.mode || 'No especificado',
-            sDate: newGroup.start_date ? newGroup.start_date.toLocaleDateString() : 'No especificado',
+            sDate: newGroup.start_date
+              ? newGroup.start_date.toLocaleDateString()
+              : 'No especificado',
             eDate: newGroup.end_date ? newGroup.end_date.toLocaleDateString() : 'No especificado',
-            sHour: newGroup.start_hour ? newGroup.start_hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No especificado',
-            eHour: newGroup.end_hour ? newGroup.end_hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No especificado',
+            sHour: newGroup.start_hour
+              ? newGroup.start_hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : 'No especificado',
+            eHour: newGroup.end_hour
+              ? newGroup.end_hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : 'No especificado',
             lDate: deadlineDate.toLocaleDateString(),
             platformLink: `https://patroneshermosos.org/confirmar-participacion/${updatedParticipant.id_participant}/${uuidv4().slice(0, 8)}`,
             iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
@@ -455,11 +467,7 @@ const changeParticipantStatus = async (req, res) => {
     if (action === 'desactivar') {
       try {
         // Construct full name
-        const fullName = [
-          participant.name,
-          participant.paternal_name,
-          participant.maternal_name
-        ]
+        const fullName = [participant.name, participant.paternal_name, participant.maternal_name]
           .filter(Boolean)
           .join(' ');
 
@@ -469,7 +477,7 @@ const changeParticipantStatus = async (req, res) => {
           reason: 'No se cumplieron los criterios de selección',
           code: 'REJ123', // Static code
           iName: 'Soporte Patrones Hermosos',
-          iEmail: 'soporte@patroneshermosos.org'
+          iEmail: 'soporte@patroneshermosos.org',
         };
 
         // Validate email before sending
@@ -478,7 +486,7 @@ const changeParticipantStatus = async (req, res) => {
             to: participant.email,
             subject: 'Resultados de la postulación - Patrones Hermosos',
             template: 'templates/participantes/rechazado',
-            data: emailData
+            data: emailData,
           });
           console.log(`Rejection email sent to ${participant.email}`);
         } else {
@@ -499,7 +507,9 @@ const changeParticipantStatus = async (req, res) => {
       return res.status(400).json({ message: error.meta.message });
     }
     console.error('Full error details:', JSON.stringify(error, null, 2));
-    res.status(500).json({ message: 'Error interno al cambiar estado del participante', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al cambiar estado del participante', error: error.message });
   }
 };
 
@@ -694,7 +704,7 @@ const approveParticipant = async (req, res) => {
       const fullName = [
         updatedParticipant.name,
         updatedParticipant.paternal_name,
-        updatedParticipant.maternal_name
+        updatedParticipant.maternal_name,
       ]
         .filter(Boolean)
         .join(' ');
@@ -708,7 +718,7 @@ const approveParticipant = async (req, res) => {
         mName: groupDetails?.mentors?.name || 'No asignada',
         mEmail: groupDetails?.mentors?.email || 'no-reply@patroneshermosos.org',
         iName: 'Soporte Patrones Hermosos',
-        iEmail: 'soporte@patroneshermosos.org'
+        iEmail: 'soporte@patroneshermosos.org',
       };
 
       // Send email
@@ -716,7 +726,7 @@ const approveParticipant = async (req, res) => {
         to: updatedParticipant.email,
         subject: 'Resultados de la postulación - Patrones Hermosos',
         template: 'templates/participantes/aceptado',
-        data: emailData
+        data: emailData,
       });
 
       console.log(`Approval email sent to ${updatedParticipant.email}`);
@@ -760,7 +770,9 @@ const rejectParticipant = async (req, res) => {
 
     // Validar estado actual
     if (participant.status !== 'Aprobada') {
-      return res.status(400).json({ message: 'Solo se pueden rechazar participantes con estado Aprobada' });
+      return res
+        .status(400)
+        .json({ message: 'Solo se pueden rechazar participantes con estado Aprobada' });
     }
 
     // Actualizar estado a Cancelada
@@ -783,11 +795,7 @@ const rejectParticipant = async (req, res) => {
     // Send rejection email (non-critical)
     try {
       // Construct full name
-      const fullName = [
-        participant.name,
-        participant.paternal_name,
-        participant.maternal_name
-      ]
+      const fullName = [participant.name, participant.paternal_name, participant.maternal_name]
         .filter(Boolean)
         .join(' ');
 
@@ -797,7 +805,7 @@ const rejectParticipant = async (req, res) => {
         reason: 'No se cumplieron los criterios de selección',
         code: 'REJ123', // Static code
         iName: 'Soporte Patrones Hermosos',
-        iEmail: 'soporte@patroneshermosos.org'
+        iEmail: 'soporte@patroneshermosos.org',
       };
 
       // Validate email before sending
@@ -806,7 +814,7 @@ const rejectParticipant = async (req, res) => {
           to: participant.email,
           subject: 'Resultados de la postulación - Patrones Hermosos',
           template: 'templates/participantes/rechazado',
-          data: emailData
+          data: emailData,
         });
         console.log(`Rejection email sent to ${participant.email}`);
       } else {
@@ -822,7 +830,9 @@ const rejectParticipant = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al rechazar participante:', error);
-    res.status(500).json({ message: 'Error interno al rechazar participante', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error interno al rechazar participante', error: error.message });
   }
 };
 
@@ -849,7 +859,7 @@ const getParticipantPDF = async (req, res) => {
       'Content-Disposition',
       download === 'true'
         ? `attachment; filename=participant_${id}_participation.pdf`
-        : `inline; filename=participant_${id}_participation.pdf`
+        : `inline; filename=participant_${id}_participation.pdf`,
     );
     res.send(participant.participation_file);
   } catch (error) {
@@ -875,7 +885,8 @@ const sendCustomEmailToParticipant = async (req, res) => {
       subject: 'Solicitud de Cambio de Grupo - Patrones Hermosos',
       template: 'templates/participantes/sol_cambio',
       data: {
-        pName: `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
+        pName:
+          `${participant.name} ${participant.paternal_name || ''} ${participant.maternal_name || ''}`.trim(),
         ...data, // Campos personalizados desde el frontend
         iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
       },

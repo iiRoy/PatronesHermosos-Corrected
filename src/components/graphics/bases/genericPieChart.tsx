@@ -222,7 +222,9 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
           setFadeSec(false);
           setInnerData(innerArray);
           setOuterData(outerArray);
-          setSelectedSedeName(sedeOptions.find((s) => s.value === selectedFilters.sede)?.label ?? '')
+          setSelectedSedeName(
+            sedeOptions.find((s) => s.value === selectedFilters.sede)?.label ?? '',
+          );
         }, 400);
         setTimeout(() => {
           isFirstRender.current = false;
@@ -293,7 +295,12 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
         {/* Menú fuera del flujo flex, pero dentro de contenedor relative */}
         <div className='absolute top-full right-0 z-50'>
           <OptionsMenu
-            onMinimize={onMinimize ?? (() => {isFrozen=true})}
+            onMinimize={
+              onMinimize ??
+              (() => {
+                isFrozen = true;
+              })
+            }
             onToggleVisibility={() => {}}
             onMaxItemsChange={() => {}}
             maxItemsSelected={undefined}
@@ -349,74 +356,81 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       {/* Gráfico */}
       <div className='relative w-auto h-auto'>
         {!isFrozen ? (
-        innerData.length === 0 ? (
-          <div className='relative flex flex-col justify-between items-center h-auto'>
-            <p className='text-textDim text-lg text-center px-10 py-40 h-max'>No hay datos para mostrar</p>
-          </div>
-        ) : (
-          <div className='pointer-events-none relative w-full h-[30vh]'>
-            <ResponsiveContainer>
-              <PieChart>
-                {/* Círculo interno - áreas principales */}
-                <Pie
-                  data={innerData}
-                  dataKey='total'
-                  nameKey='name'
-                  cx='50%'
-                  cy='50%'
-                  innerRadius='43%'
-                  outerRadius='70%'
-                  isAnimationActive
-                >
-                  {innerData.map((entry, index) => (
-                    <Cell
-                      key={`inner-${index}`}
-                      stroke={'#fff'}
-                      strokeWidth={2}
-                      fill={
-                        isFirstRender.current ? entry.fill : animatedInnerFills[index] ?? entry.fill
-                      }
-                    />
-                  ))}
-                </Pie>
-
-                {/* Círculo externo - desglose alineado */}
-                <Pie
-                  data={outerData}
-                  dataKey='total'
-                  nameKey='name'
-                  cx='50%'
-                  cy='50%'
-                  innerRadius='72%'
-                  outerRadius='94%'
-                  isAnimationActive
-                >
-                  {outerData.map((entry, index) => (
-                    <Cell
-                      key={`outer-${index}`}
-                      stroke={'#fff'}
-                      strokeWidth={2}
-                      fill={
-                        isFirstRender.current ? entry.fill : animatedOuterFills[index] ?? entry.fill
-                      }
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-
-            {/* Imagen central */}
-            <div
-              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 transition-opacity duration-300 ${
-                fade && !isFirstRender.current ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
-              <Image src={imageSrc} alt='Logo centro' width={60} height={60} />
+          innerData.length === 0 ? (
+            <div className='relative flex flex-col justify-between items-center h-auto'>
+              <p className='text-textDim text-lg text-center px-10 py-40 h-max'>
+                No hay datos para mostrar
+              </p>
             </div>
-          </div>
-        )) : (
-  <div className="w-full h-full" />
-)}
+          ) : (
+            <div className='pointer-events-none relative w-full h-[30vh]'>
+              <ResponsiveContainer>
+                <PieChart>
+                  {/* Círculo interno - áreas principales */}
+                  <Pie
+                    data={innerData}
+                    dataKey='total'
+                    nameKey='name'
+                    cx='50%'
+                    cy='50%'
+                    innerRadius='43%'
+                    outerRadius='70%'
+                    isAnimationActive
+                  >
+                    {innerData.map((entry, index) => (
+                      <Cell
+                        key={`inner-${index}`}
+                        stroke={'#fff'}
+                        strokeWidth={2}
+                        fill={
+                          isFirstRender.current
+                            ? entry.fill
+                            : (animatedInnerFills[index] ?? entry.fill)
+                        }
+                      />
+                    ))}
+                  </Pie>
+
+                  {/* Círculo externo - desglose alineado */}
+                  <Pie
+                    data={outerData}
+                    dataKey='total'
+                    nameKey='name'
+                    cx='50%'
+                    cy='50%'
+                    innerRadius='72%'
+                    outerRadius='94%'
+                    isAnimationActive
+                  >
+                    {outerData.map((entry, index) => (
+                      <Cell
+                        key={`outer-${index}`}
+                        stroke={'#fff'}
+                        strokeWidth={2}
+                        fill={
+                          isFirstRender.current
+                            ? entry.fill
+                            : (animatedOuterFills[index] ?? entry.fill)
+                        }
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+
+              {/* Imagen central */}
+              <div
+                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 transition-opacity duration-300 ${
+                  fade && !isFirstRender.current ? 'opacity-0' : 'opacity-100'
+                }`}
+              >
+                <Image src={imageSrc} alt='Logo centro' width={60} height={60} />
+              </div>
+            </div>
+          )
+        ) : (
+          <div className='w-full h-full' />
+        )}
       </div>
 
       {/* Leyendas Interactivas */}

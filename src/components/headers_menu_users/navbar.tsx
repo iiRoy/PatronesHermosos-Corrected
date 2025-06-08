@@ -67,23 +67,34 @@ const Navbar = () => {
                     onMouseEnter={handlePostulateHover}
                     onMouseLeave={handlePostulateLeave}
                   >
-                    <OptionLink
-                      label={item.label}
-                      Icon={IconComponent}
-                      href={item.href}
-                    />
+                    <OptionLink label={item.label} Icon={IconComponent} href={item.href} />
                     {showPostulateMenu && (
                       <div className='absolute  left-1/2  mt-2 w-48 bg-white text-black rounded-lg shadow-lg p-2 z-10 dropdown-menu'>
                         <div className='triangle-up'></div>
                         <ul className='list-none p-0 m-0'>
                           <li>
-                            <Link href='/formulario/participante' className='block px-2 py-1 hover:bg-gray-200 rounded'>Participante</Link>
+                            <Link
+                              href='/formulario/participante'
+                              className='block px-2 py-1 hover:bg-gray-200 rounded'
+                            >
+                              Participante
+                            </Link>
                           </li>
                           <li>
-                            <Link href='/formulario/colaborador' className='block px-2 py-1 hover:bg-gray-200 rounded'>Colaborador</Link>
+                            <Link
+                              href='/formulario/colaborador'
+                              className='block px-2 py-1 hover:bg-gray-200 rounded'
+                            >
+                              Colaborador
+                            </Link>
                           </li>
                           <li>
-                            <Link href='/formulario/sede' className='block px-2 py-1 hover:bg-gray-200 rounded'>Sede</Link>
+                            <Link
+                              href='/formulario/sede'
+                              className='block px-2 py-1 hover:bg-gray-200 rounded'
+                            >
+                              Sede
+                            </Link>
                           </li>
                         </ul>
                       </div>

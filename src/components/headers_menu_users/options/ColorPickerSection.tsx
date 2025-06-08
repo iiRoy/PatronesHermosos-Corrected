@@ -46,16 +46,15 @@ const ColorPickerSection: React.FC<ColorPickerSectionProps> = ({
     measureHeight();
   }, [displayedMode, selectedIndex]);
 
-useEffect(() => {
-  if (mode === 'edit') {
-    setTransitioning(true);
-    enterMode('select');
-    onIsCustomizingChange(false);
-    setTransitioning(false);
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [resetModeSignal]);
-
+  useEffect(() => {
+    if (mode === 'edit') {
+      setTransitioning(true);
+      enterMode('select');
+      onIsCustomizingChange(false);
+      setTransitioning(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetModeSignal]);
 
   const enterMode = (next: typeof mode) => {
     if (next === mode) return;
@@ -115,7 +114,7 @@ useEffect(() => {
 
   return (
     <div
-      className="transition-all duration-300 overflow-clip"
+      className='transition-all duration-300 overflow-clip'
       style={{
         height,
         minHeight: 36, // 9 * 4
@@ -134,7 +133,7 @@ useEffect(() => {
         >
           <button
             onClick={() => enterMode('select')}
-            className="w-full bg-[var(--primaryColor)] hover:bg-[var(--primary-shade)] text-white text-sm py-1 rounded-md"
+            className='w-full bg-[var(--primaryColor)] hover:bg-[var(--primary-shade)] text-white text-sm py-1 rounded-md'
           >
             Editar colores
           </button>
@@ -149,25 +148,27 @@ useEffect(() => {
               : 'opacity-0 -translate-x-3 absolute pointer-events-none'
           }`}
         >
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm text-gray-700 font-medium">Selecciona un elemento:</span>
+          <div className='flex justify-between items-center mb-1'>
+            <span className='text-sm text-gray-700 font-medium'>Selecciona un elemento:</span>
             <button
               onClick={handleRestoreAll}
-              className="text-xs text-[var(--error)] underline hover:text-[var(--error-dark)]"
+              className='text-xs text-[var(--error)] underline hover:text-[var(--error-dark)]'
             >
               Restaurar todos
             </button>
           </div>
-          <ul className="flex flex-col gap-1 overflow-y-auto max-h-[100px] pr-1">
+          <ul className='flex flex-col gap-1 overflow-y-auto max-h-[100px] pr-1'>
             {elementLabels.map((label, i) => (
               <li
                 key={i}
-                className="flex justify-between items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                className='flex justify-between items-center px-2 py-1 rounded hover:bg-gray-100 cursor-pointer'
                 onClick={() => handleEditColor(i)}
               >
-                <span className="text-sm" style={{ color: colors[i] }}>{label}</span>
+                <span className='text-sm' style={{ color: colors[i] }}>
+                  {label}
+                </span>
                 <div
-                  className="w-5 h-5 rounded-full border shadow"
+                  className='w-5 h-5 rounded-full border shadow'
                   style={{ backgroundColor: colors[i] }}
                 />
               </li>
@@ -175,7 +176,7 @@ useEffect(() => {
           </ul>
           <button
             onClick={() => enterMode('main')}
-            className="text-xs text-[var(--primaryColor)] hover:text-[var(--primary-shade)] hover:underline mb-2 text-left"
+            className='text-xs text-[var(--primaryColor)] hover:text-[var(--primary-shade)] hover:underline mb-2 text-left'
           >
             ← Volver
           </button>
@@ -191,16 +192,16 @@ useEffect(() => {
                 : 'opacity-0 -translate-x-3 pointer-events-none'
             }`}
           >
-            <span className="text-sm text-gray-700 font-medium block mb-2">
+            <span className='text-sm text-gray-700 font-medium block mb-2'>
               Personalizando: <strong>{elementLabels[selectedIndex]}</strong>
             </span>
 
             <input
               ref={inputRef}
-              type="color"
+              type='color'
               value={tempColor}
               onChange={(e) => setTempColor(e.target.value)}
-              className="hidden"
+              className='hidden'
             />
 
             <button
@@ -210,22 +211,22 @@ useEffect(() => {
                 lastClickTimeRef.current = now;
                 inputRef.current?.click();
               }}
-              className="w-full h-12 border rounded cursor-pointer flex items-center justify-center mb-2"
+              className='w-full h-12 border rounded cursor-pointer flex items-center justify-center mb-2'
               style={{ backgroundColor: tempColor }}
             >
-              <span className="text-sm text-white drop-shadow-sm">Seleccionar color</span>
+              <span className='text-sm text-white drop-shadow-sm'>Seleccionar color</span>
             </button>
 
-            <div className="flex gap-2 mb-2">
+            <div className='flex gap-2 mb-2'>
               <button
                 onClick={handleAccept}
-                className="flex-1 bg-[var(--success)] text-white py-1 rounded hover:bg-[var(--success-dark)] text-sm"
+                className='flex-1 bg-[var(--success)] text-white py-1 rounded hover:bg-[var(--success-dark)] text-sm'
               >
                 Aceptar
               </button>
               <button
                 onClick={handleRestore}
-                className="flex-1 bg-[var(--error)] hover:bg-[var(--error-dark)] text-white py-1 rounded text-sm"
+                className='flex-1 bg-[var(--error)] hover:bg-[var(--error-dark)] text-white py-1 rounded text-sm'
               >
                 Restaurar
               </button>
@@ -233,7 +234,7 @@ useEffect(() => {
 
             <button
               onClick={() => enterMode('select')}
-              className="text-xs text-[var(--primaryColor)] hover:text-[var(--primary-shade)] hover:underline mb-2 text-left"
+              className='text-xs text-[var(--primaryColor)] hover:text-[var(--primary-shade)] hover:underline mb-2 text-left'
             >
               ← Volver
             </button>
