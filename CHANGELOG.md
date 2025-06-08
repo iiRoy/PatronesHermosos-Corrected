@@ -1,3 +1,7 @@
+## <small>1.16.1 (2025-06-08)</small>
+
+* fix(diplomas): Sección de diplomas para coordinadoras ([3a379b6](https://github.com/iiRoy/Patrones-Hermosos/commit/3a379b6))
+
 ## 1.16.0 (2025-06-07)
 
 * feat(diplomas): Sección de diplomas corregido ([71fa594](https://github.com/iiRoy/Patrones-Hermosos/commit/71fa594))
