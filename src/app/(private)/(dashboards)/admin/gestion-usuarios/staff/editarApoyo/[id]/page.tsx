@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
-import Dropdown from '@components/buttons_inputs/Dropdown';
+import Dropdown from '@/components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import { useNotification } from '@/components/buttons_inputs/Notification';
+import withIconDecorator from '@/components/decorators/IconDecorator';
+import { User, ChatTeardropText, Grains, Books } from '@/components/icons';
+
 
 interface Collaborator {
   id_collaborator: number;
@@ -18,18 +21,26 @@ interface Collaborator {
   college: string;
   degree: string;
   semester: string;
-  preferred_role: string;
-  preferred_language: string;
-  preferred_level: string;
   gender: string;
   role: string;
   status: string;
   level: string;
   language: string;
-  preferred_group: number | null;
+  id_group: number | null;
 }
 
-const EditarApoyo = () => {
+interface GroupOption {
+  id_group: number;
+  name: string;
+  available_places: number;
+  role_availability: {
+    Instructora: number;
+    Facilitadora: number;
+    Staff: number;
+  };
+}
+
+const EditarStaff = () => {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
@@ -44,17 +55,16 @@ const EditarApoyo = () => {
   const [college, setCollege] = useState('');
   const [degree, setDegree] = useState('');
   const [semester, setSemester] = useState('');
-  const [preferredRole, setPreferredRole] = useState('');
-  const [preferredLanguage, setPreferredLanguage] = useState('');
-  const [preferredLevel, setPreferredLevel] = useState('');
   const [gender, setGender] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
+  const [venueName, setVenueName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  // Opciones para los select de enums
-  const roleOptions = ['Staff', 'Instructora', 'Facilitadora', 'Pendiente'];
-  const languageOptions = ['Inglés', 'Español', 'Pendiente'];
-  const levelOptions = ['Básico', 'Avanzado', 'Pendiente'];
+  // Opciones para los select
+  const roleOptions = ['Instructora', 'Facilitadora', 'Staff'];
   const genderOptions = ['Masculino', 'Femenino', 'Otro'];
 
   useEffect(() => {
@@ -62,6 +72,12 @@ const EditarApoyo = () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
         if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Sesión no iniciada. Redirigiendo al login.',
+            duration: 5000,
+          });
           router.push('/login');
           return;
         }
@@ -76,11 +92,10 @@ const EditarApoyo = () => {
           if (collaboratorResponse.status === 404) {
             throw new Error('Colaborador no encontrado');
           }
-          throw new Error(`Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`);
+          throw new Error(`Error al obtener colaborador: ${errorData.message || 'Error desconocido'}`);
         }
         const collaboratorData = await collaboratorResponse.json();
         const collab = collaboratorData.data;
-        console.log('Datos recibidos del API:', collab); // Log para depurar
 
         setCollaborator(collab);
         setName(collab.name || '');
@@ -91,20 +106,74 @@ const EditarApoyo = () => {
         setCollege(collab.college || '');
         setDegree(collab.degree || '');
         setSemester(collab.semester || '');
-        setPreferredRole(collab.preferred_role || '');
-        setPreferredLanguage(collab.preferred_language || '');
-        setPreferredLevel(collab.preferred_level || '');
         setGender(collab.gender || '');
+        setSelectedRole(collab.role || 'Instructora');
+        setSelectedGroupId(collab.id_group || null);
       } catch (error: any) {
-        console.error('Error fetching data:', error);
+        console.error('Error al obtener datos:', error);
         setError(error.message);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: error.message,
+          duration: 5000,
+        });
       }
     };
 
     if (id) {
       fetchData();
     }
-  }, [id, router]);
+  }, [id, router, notify]);
+
+  // Fetch available groups
+  useEffect(() => {
+    const fetchAvailableGroups = async () => {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
+        if (!token) {
+          notify({
+            color: 'red',
+            title: 'Error',
+            message: 'Sesión no iniciada. Redirigiendo al login.',
+            duration: 5000,
+          });
+          router.push('/login');
+          return;
+        }
+
+        const response = await fetch(`/api/collaborators/${id}/available-groups`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al obtener grupos disponibles');
+        }
+
+        const data = await response.json();
+        setAvailableGroups(data.groups || []);
+        setVenueName(data.collaborator?.venue || 'No asignado');
+        // Set default group if current group is in available groups
+        const currentGroupId = collaborator?.id_group;
+        const defaultGroup = data.groups.find((g: GroupOption) => g.id_group === currentGroupId);
+        setSelectedGroupId(defaultGroup ? defaultGroup.id_group : data.groups[0]?.id_group || null);
+      } catch (error: any) {
+        console.error('Error al obtener grupos disponibles:', error);
+        setValidationErrors([`No se pudieron cargar los grupos disponibles: ${error.message}`]);
+        notify({
+          color: 'red',
+          title: 'Error',
+          message: `No se pudieron cargar los grupos disponibles: ${error.message}`,
+          duration: 5000,
+        });
+      }
+    };
+
+    if (collaborator) {
+      fetchAvailableGroups();
+    }
+  }, [collaborator, id, router, notify]);
 
   const validateForm = () => {
     const errors: string[] = [];
@@ -141,16 +210,12 @@ const EditarApoyo = () => {
       errors.push('El semestre debe ser un número entre 1 y 99');
     }
 
-    if (preferredRole && !roleOptions.includes(preferredRole)) {
-      errors.push('El rol preferido no es válido');
+    if (!selectedRole || !roleOptions.includes(selectedRole)) {
+      errors.push('Debe seleccionar un rol válido');
     }
 
-    if (preferredLanguage && !languageOptions.includes(preferredLanguage)) {
-      errors.push('El idioma preferido no es válido');
-    }
-
-    if (preferredLevel && !levelOptions.includes(preferredLevel)) {
-      errors.push('El nivel preferido no es válido');
+    if (!selectedGroupId && availableGroups.length > 0) {
+      errors.push('Debe seleccionar un grupo');
     }
 
     setValidationErrors(errors);
@@ -172,6 +237,7 @@ const EditarApoyo = () => {
         return;
       }
 
+      // Update personal information
       const updatedCollaborator = {
         name: name.trim() || null,
         paternal_name: paternalName.trim() || null,
@@ -182,14 +248,9 @@ const EditarApoyo = () => {
         degree: degree.trim() || null,
         semester: semester.trim() || null,
         gender: gender.trim() || null,
-        preferred_role: preferredRole.trim() || null,
-        preferred_language: preferredLanguage.trim() || null,
-        preferred_level: preferredLevel.trim() || null,
       };
 
-      console.log('Datos enviados al API:', updatedCollaborator); // Log para depurar
-
-      const response = await fetch(`/api/collaborators/basic/${id}`, {
+      const personalInfoResponse = await fetch(`/api/collaborators/basic/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -198,9 +259,29 @@ const EditarApoyo = () => {
         body: JSON.stringify(updatedCollaborator),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error al actualizar colaborador: ${errorData.message || 'Error desconocido'}`);
+      if (!personalInfoResponse.ok) {
+        const errorData = await personalInfoResponse.json();
+        throw new Error(`Error al actualizar información personal: ${errorData.message || 'Error desconocido'}`);
+      }
+
+      // Update role and group assignment
+      if (selectedRole && selectedGroupId) {
+        const assignmentResponse = await fetch(`/api/collaborators/${id}/update-assignment`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            role: selectedRole,
+            groupId: selectedGroupId,
+          }),
+        });
+
+        if (!assignmentResponse.ok) {
+          const errorData = await assignmentResponse.json();
+          throw new Error(`Error al actualizar asignación: ${errorData.message || 'Error desconocido'}`);
+        }
       }
 
       notify({
@@ -219,6 +300,7 @@ const EditarApoyo = () => {
         message: `No se pudo actualizar el colaborador: ${error.message}`,
         duration: 5000,
       });
+      setValidationErrors([error.message]);
     }
   };
 
@@ -245,18 +327,17 @@ const EditarApoyo = () => {
         </div>
       )}
 
-      <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
-        {/* Primera fila: ID, Nombre, Apellidos */}
+      <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
+        {/* Primera fila: Nombre, Apellidos */}
         <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-
           <div className="basis-1/3">
             <InputField
               label="Nombre"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.name}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={name}
               onChangeText={(val) => setName(val)}
             />
@@ -264,11 +345,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Apellido Paterno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.paternal_name || 'Sin apellido paterno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={paternalName}
               onChangeText={(val) => setPaternalName(val)}
             />
@@ -276,11 +357,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Apellido Materno"
-              darkText={true}
+              icon='Fingerprint'
               showDescription={false}
               placeholder={collaborator.maternal_name || 'Sin apellido materno'}
               showError={false}
-              variant="accent"
+              variant="primary"
               value={maternalName}
               onChangeText={(val) => setMaternalName(val)}
             />
@@ -292,7 +373,7 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Correo"
-              darkText={true}
+              icon='At'
               showDescription={false}
               placeholder={collaborator.email}
               showError={false}
@@ -304,7 +385,7 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Teléfono"
-              darkText={true}
+              icon='Phone'
               showDescription={false}
               placeholder={collaborator.phone_number || 'Sin teléfono'}
               showError={false}
@@ -320,7 +401,7 @@ const EditarApoyo = () => {
               value={gender}
               onChange={setGender}
               variant="accent"
-              darkText
+              Icon={withIconDecorator(Grains)}
             />
           </div>
         </div>
@@ -330,11 +411,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Universidad"
-              darkText={true}
+              icon='Student'
               showDescription={false}
               placeholder={collaborator.college || 'Sin universidad'}
               showError={false}
-              variant="accent"
+              variant="secondary-shade"
               value={college}
               onChangeText={(val) => setCollege(val)}
             />
@@ -342,11 +423,11 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Carrera"
-              darkText={true}
+              icon='Books'
               showDescription={false}
               placeholder={collaborator.degree || 'Sin carrera'}
               showError={false}
-              variant="accent"
+              variant="secondary-shade"
               value={degree}
               onChangeText={(val) => setDegree(val)}
             />
@@ -354,56 +435,78 @@ const EditarApoyo = () => {
           <div className="basis-1/3">
             <InputField
               label="Semestre"
-              darkText={true}
+              icon='Medal'
               showDescription={false}
               placeholder={collaborator.semester || 'Sin semestre'}
               showError={false}
-              variant="accent"
+              variant="secondary-shade"
               value={semester}
               onChangeText={(val) => setSemester(val)}
             />
           </div>
         </div>
 
-        {/* Cuarta fila: Rol Preferido, Idioma Preferido, Nivel Preferido */}
+        {/* Cuarta fila: Rol, Grupo */}
         <div className="flex gap-4 justify-between mb-4">
           <div className="basis-1/3">
             <Dropdown
-              label="Rol Preferido"
+              label="Rol"
               options={roleOptions.map((option) => ({ label: option, value: option }))}
-              value={preferredRole}
-              onChange={setPreferredRole}
-              variant="accent"
-              darkText
+              value={selectedRole}
+              onChange={setSelectedRole}
+              Icon={withIconDecorator(User)}
+              variant="secondary"
             />
           </div>
-          <div className="basis-1/3">
-            <Dropdown
-              label="Idioma Preferido"
-              options={languageOptions.map((option) => ({ label: option, value: option }))}
-              value={preferredLanguage}
-              onChange={setPreferredLanguage}
-              variant="accent"
-              darkText
-            />
-          </div>
-          <div className="basis-1/3">
-            <Dropdown
-              label="Nivel Preferido"
-              options={levelOptions.map((option) => ({ label: option, value: option }))}
-              value={preferredLevel}
-              onChange={setPreferredLevel}
-              variant="accent"
-              darkText
-            />
+          <div className="basis-2/3">
+            <div className="flex flex-col gap-2">
+              {availableGroups.length === 0 ? (
+                <div className="mt-1 block w-full border rounded-md p-2 bg-gray-100 text-gray-500 cursor-not-allowed">
+                  No hay grupos disponibles
+                </div>
+              ) : (
+                <Dropdown
+                  label="Grupo"
+                  options={availableGroups.map((group) => ({
+                    label: group.name,
+                    value: group.id_group.toString(),
+                  }))}
+                  value={selectedGroupId?.toString() || ''}
+                  onChange={(val) => setSelectedGroupId(val ? parseInt(val) : null)}
+                  Icon={withIconDecorator(Books)}
+                  variant="secondary"
+                />
+              )}
+              {selectedGroupId && availableGroups.length > 0 && (
+                <div className="mt-2 text-sm text-gray-200">
+                  <p>
+                    <strong>Sede:</strong> {venueName}
+                  </p>
+                  <p>
+                    <strong>Cupo disponible:</strong>{' '}
+                    {availableGroups.find((g) => g.id_group === selectedGroupId)?.available_places || 0}
+                  </p>
+                  <p className="mt-1">
+                    <strong>Disponibilidad por rol:</strong>
+                  </p>
+                  {Object.entries(
+                    availableGroups.find((g) => g.id_group === selectedGroupId)?.role_availability || {}
+                  ).map(([role, count]) => (
+                    <p key={role} className="ml-4">
+                      {role}: {count}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Botones */}
         <div className="flex gap-4 justify-between mt-auto">
           <div className="flex gap-4">
-            <Button label="Confirmar" variant="primary" onClick={handleSubmit} />
-            <Button label="Cancelar" variant="secondary" href="/admin/gestion-usuarios/staff" />
+            <Button label="Confirmar" variant="success" onClick={handleSubmit} />
+            <Button label="Cancelar" variant="primary" href="/admin/gestion-usuarios/staff" />
           </div>
         </div>
       </div>
@@ -411,4 +514,4 @@ const EditarApoyo = () => {
   );
 };
 
-export default EditarApoyo;
+export default EditarStaff;

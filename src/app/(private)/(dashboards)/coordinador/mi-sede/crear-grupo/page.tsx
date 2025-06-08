@@ -7,7 +7,7 @@ import InputField from '@/components/buttons_inputs/InputField';
 import Dropdown from '@components/buttons_inputs/Dropdown';
 import Button from '@/components/buttons_inputs/Button';
 import withIconDecorator from '@/components/decorators/IconDecorator';
-import { Users } from '@/components/icons';
+import { Armchair, Flag, SealWarning, Users, UserSound } from '@/components/icons';
 import { useNotification } from '@/components/buttons_inputs/Notification';
 import { jwtDecode } from 'jwt-decode';
 
@@ -233,16 +233,17 @@ const CrearGrupo = () => {
         <div className="p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes">
             <PageTitle>Crear Grupo</PageTitle>
 
-            <div className="fondo-sedes flex flex-col p-6 gap-4 overflow-auto">
+            <div className="fondo-editar-usuario flex flex-col p-6 gap-4 overflow-auto">
                 <div className="flex justify-between gap-4 items-center pb-2 mb-4">
-                    <div className="basis-1/3">
+                    <div className="basis-2/3">
                         <InputField
                             label="Nombre del Grupo"
-                            darkText={true}
+
                             showDescription={false}
                             placeholder="Ingresa el nombre"
                             showError={false}
-                            variant="accent"
+                            icon='UsersFour'
+                            variant="primary"
                             value={nameValue}
                             onChangeText={(val) => setNameValue(val)}
                         />
@@ -251,11 +252,11 @@ const CrearGrupo = () => {
                     <div className="basis-1/3">
                         <InputField
                             label="Lugares Máximos"
-                            darkText={true}
+                            icon='Numpad'
                             showDescription={false}
                             placeholder="Ingresa el número"
                             showError={false}
-                            variant="accent"
+                            variant="primary"
                             value={maxPlacesValue}
                             onChangeText={(val) => setMaxPlacesValue(val)}
                         />
@@ -266,7 +267,7 @@ const CrearGrupo = () => {
                     <div className="basis-1/3">
                         <InputField
                             label="Ubicación"
-                            darkText={true}
+                            icon='MapPin'
                             showDescription={false}
                             placeholder="Ingresa la ubicación"
                             showError={false}
@@ -279,7 +280,7 @@ const CrearGrupo = () => {
                     <div className="basis-1/3">
                         <InputField
                             label="Fecha de Inicio"
-                            darkText={true}
+                            icon='Calendar'
                             showDescription={false}
                             placeholder="AAAA-MM-DD"
                             showError={false}
@@ -292,7 +293,7 @@ const CrearGrupo = () => {
                     <div className="basis-1/3">
                         <InputField
                             label="Fecha de Fin"
-                            darkText={true}
+                            icon='Calendar'
                             showDescription={false}
                             placeholder="AAAA-MM-DD"
                             showError={false}
@@ -307,11 +308,11 @@ const CrearGrupo = () => {
                     <div className="basis-1/3">
                         <InputField
                             label="Hora de Inicio"
-                            darkText={true}
+                            icon='Clock'
                             showDescription={false}
                             placeholder="HH:MM"
                             showError={false}
-                            variant="accent"
+                            variant="secondary-shade"
                             value={startHourValue}
                             onChangeText={(val) => setStartHourValue(val)}
                         />
@@ -320,11 +321,11 @@ const CrearGrupo = () => {
                     <div className="basis-1/3">
                         <InputField
                             label="Hora de Fin"
-                            darkText={true}
+                            icon='Clock'
                             showDescription={false}
                             placeholder="HH:MM"
                             showError={false}
-                            variant="accent"
+                            variant="secondary-shade"
                             value={endHourValue}
                             onChangeText={(val) => setEndHourValue(val)}
                         />
@@ -336,7 +337,7 @@ const CrearGrupo = () => {
                             options={mentors}
                             value={mentorNameValue}
                             onChange={(val) => setMentorNameValue(val)}
-                            variant="accent"
+                            variant="secondary-shade"
                             Icon={withIconDecorator(Users)}
                         />
                     </div>
@@ -352,8 +353,8 @@ const CrearGrupo = () => {
                             ]}
                             value={languageValue}
                             onChange={(val) => setLanguageValue(val)}
-                            variant="accent"
-                            Icon={withIconDecorator(Users)}
+                            variant="secondary"
+                            Icon={withIconDecorator(UserSound)}
                         />
                     </div>
 
@@ -366,8 +367,8 @@ const CrearGrupo = () => {
                             ]}
                             value={levelValue}
                             onChange={(val) => setLevelValue(val)}
-                            variant="accent"
-                            Icon={withIconDecorator(Users)}
+                            variant="secondary"
+                            Icon={withIconDecorator(SealWarning)}
                         />
                     </div>
 
@@ -380,8 +381,8 @@ const CrearGrupo = () => {
                             ]}
                             value={modeValue}
                             onChange={(val) => setModeValue(val)}
-                            variant="accent"
-                            Icon={withIconDecorator(Users)}
+                            variant="secondary"
+                            Icon={withIconDecorator(Armchair)}
                         />
                     </div>
                 </div>
@@ -390,12 +391,12 @@ const CrearGrupo = () => {
                     <div className='flex gap-4'>
                         <Button
                             label="Confirmar"
-                            variant="primary"
+                            variant="success"
                             onClick={handleConfirm}
                         />
                         <Button
                             label="Cancelar"
-                            variant="secondary"
+                            variant="primary"
                             href='/coordinador/mi-sede'
                         />
                     </div>

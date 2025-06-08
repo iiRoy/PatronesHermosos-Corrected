@@ -5,6 +5,7 @@ const fs = require('fs').promises; // Add fs for file serving
 const participantsController = require('../controllers/participants.controller');
 const { validateParticipant } = require('../validators/participantsValidator');
 const { authMiddleware, roleMiddleware } = require('../middlewares/authMiddleware');
+const { sendCustomEmailToParticipant } = require('../controllers/participants.controller');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -95,6 +96,8 @@ router.get('/files/:filename', async (req, res) => {
 });
 
 router.get('/:id/pdf', authMiddleware, participantsController.getParticipantPDF);
+
+router.post('/:id/send-email',authMiddleware,roleMiddleware(['superuser', 'venue_coordinator']),sendCustomEmailToParticipant);
 
 router.patch(
   '/:id/reject',

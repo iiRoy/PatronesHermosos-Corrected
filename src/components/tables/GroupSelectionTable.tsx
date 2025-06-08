@@ -218,14 +218,14 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
                   onClick={() => onSelect(group.id_group)}
                 />
                 <Button
-                    variant="primary"
-                    label=""
-                    round
-                    showLeftIcon={true}
-                    IconLeft={Eye}
-                    type="button"
-                    onClick={() => openGroupPopup(group)}
-                  />
+                  variant="primary"
+                  label=""
+                  round
+                  showLeftIcon={true}
+                  IconLeft={Eye}
+                  type="button"
+                  onClick={() => openGroupPopup(group)}
+                />
               </td>
             </tr>
           ))}

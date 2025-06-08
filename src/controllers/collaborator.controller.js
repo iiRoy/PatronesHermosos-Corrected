@@ -3,7 +3,6 @@ const prisma = new PrismaClient();
 const fs = require('fs').promises;
 const { sendEmail } = require('../lib/emails/emailSender');
 
-// Crear una nueva colaboradora
 const createCollaborator = async (req, res) => {
   const {
     name,
@@ -40,7 +39,6 @@ const createCollaborator = async (req, res) => {
       );
     `;
 
-    // Send confirmation email (non-critical)
     try {
       let venueName = 'No asignada';
       let groupName = 'No asignado';
@@ -64,10 +62,12 @@ const createCollaborator = async (req, res) => {
           cName: `${name || ''} ${paternal_name || ''} ${maternal_name || ''}`.trim(),
           venueName: venueName,
           cEmail: email || 'No especificado',
+          cEmail: email,
           role: preferred_role || 'No especificado',
           language: preferred_language || 'No especificado',
           level: preferred_level || 'No especificado',
           mode: groupMode || 'No determinado', // Assuming mode is not provided in request
+          mode: 'No especificado',
           iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
         },
       });
@@ -76,6 +76,24 @@ const createCollaborator = async (req, res) => {
       console.error(`Error sending solicitud email to ${email}:`, emailError.message);
     }
 
+    await prisma.$queryRaw`
+      CALL registrar_colab(
+        ${name}, 
+        ${paternal_name}, 
+        ${maternal_name}, 
+        ${email}, 
+        ${phone_number},
+        ${college}, 
+        ${degree}, 
+        ${semester},
+        ${preferred_role}, 
+        ${preferred_language}, 
+        ${preferred_level},
+        ${preferred_group}, 
+        ${gender}
+      );
+    `;
+
     res.status(201).json({
       success: true,
       message: 'Colaborador creado',
@@ -83,13 +101,15 @@ const createCollaborator = async (req, res) => {
   } catch (error) {
     if (error.code === 'P0001' && error.message.includes('Ya existe un colaborador')) {
       return res.status(422).json({ success: false, message: 'Ya existe un colaborador registrado con estos datos.' });
+    if (error instanceof Prisma.PrismaClientValidationError) {
+      return res.status(422).json({ success: false, message: 'Datos inválidos', errorData: error.message });
     }
     console.error('Error al crear colaborador:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 };
+}
 
-// Obtener todos los colaboradores (incluye ambos formateos)
 const getAllCollaborators = async (req, res) => {
   try {
     const collaborators = await prisma.collaborators.findMany({
@@ -100,7 +120,7 @@ const getAllCollaborators = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true, // Cambiado de id a id_venue
+                id_venue: true,
                 name: true,
               },
             },
@@ -112,7 +132,7 @@ const getAllCollaborators = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true, // Cambiado de id a id_venue
+                id_venue: true,
                 name: true,
               },
             },
@@ -127,7 +147,7 @@ const getAllCollaborators = async (req, res) => {
       paternal_name: collab.paternal_name || 'Sin apellido',
       maternal_name: collab.maternal_name || 'Sin apellido',
       email: collab.email || 'Sin correo',
-      phone_number: collab.phone_number || 'Sin teléfono',
+      phone_number: collab.phone_number || '',
       role: collab.role || 'Sin rol',
       level: collab.level || 'Sin nivel',
       language: collab.language || 'Sin idioma',
@@ -145,13 +165,13 @@ const getAllCollaborators = async (req, res) => {
       preferred_group: collab.preferred_group || null,
     }));
 
-    const formattedCollaboratorsForRequests = collaborators.map(collab => ({
+    const formattedCollaboratorsForRequest = collaborators.map(collab => ({
       id_collaborator: collab.id_collaborator,
       name: collab.name || 'Sin nombre',
       paternal_name: collab.paternal_name || 'Sin apellido',
       maternal_name: collab.maternal_name || 'Sin apellido',
       email: collab.email || 'Sin correo',
-      phone_number: collab.phone_number || 'Sin teléfono',
+      phone_number: collab.phone_number || '',
       role: collab.role || 'Sin rol',
       level: collab.level || 'Sin nivel',
       language: collab.language || 'Sin idioma',
@@ -166,16 +186,44 @@ const getAllCollaborators = async (req, res) => {
       preferred_group: collab.preferred_group || null,
       groups: collab.preferredGroup
         ? {
-          name: collab.preferredGroup.name || 'No asignado',
-          venues: collab.preferredGroup.venues || { name: 'No asignado' },
-        }
+            name: collab.preferredGroup.name || 'No asignado',
+            venues: collab.preferredGroup.venues || { name: 'No asignado' },
+          }
+        : null,
+    }));
+
+    const formattedCollaboratorsGroups = collaborators.map(collab => ({
+      id_collaborator: collab.id_collaborator,
+      name: collab.name || 'Sin nombre',
+      paternal_name: collab.paternal_name || 'Sin apellido',
+      maternal_name: collab.maternal_name || 'Sin apellido',
+      email: collab.email || 'Sin correo',
+      phone_number: collab.phone_number || '',
+      role: collab.role || 'Sin rol',
+      level: collab.level || 'Sin nivel',
+      language: collab.language || 'Sin idioma',
+      college: collab.college || 'Sin universidad',
+      degree: collab.degree || 'Sin carrera',
+      semester: collab.semester || 'Sin semestre',
+      gender: collab.gender || 'Sin género',
+      status: collab.status || 'Sin estado',
+      preferred_role: collab.preferred_role || 'Sin rol preferido',
+      preferred_language: collab.preferred_language || 'Sin idioma preferido',
+      preferred_level: collab.preferred_level || 'Sin nivel preferido',
+      preferred_group: collab.preferred_group || null,
+      groups: collab.preferredGroup
+        ? {
+            name: collab.preferredGroup.name || 'No asignado',
+            venues: collab.preferredGroup.venues || { name: 'No asignado' },
+          }
         : null,
     }));
 
     res.json({
       success: true,
       data: formattedCollaborators,
-      dataForRequests: formattedCollaboratorsForRequests,
+      dataForRequests: formattedCollaboratorsForRequest,
+      dataGroups: formattedCollaboratorsGroups,
     });
   } catch (error) {
     console.error('Error al obtener colaboradores:', error);
@@ -183,7 +231,6 @@ const getAllCollaborators = async (req, res) => {
   }
 };
 
-// Obtener un colaborador por ID
 const getCollaboratorById = async (req, res) => {
   const { id } = req.params;
 
@@ -197,7 +244,7 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true, // Cambiado de id a id_venue
+                id_venue: true,
                 name: true,
               },
             },
@@ -209,7 +256,7 @@ const getCollaboratorById = async (req, res) => {
             name: true,
             venues: {
               select: {
-                id_venue: true, // Cambiado de id a id_venue
+                id_venue: true,
                 name: true,
               },
             },
@@ -226,9 +273,9 @@ const getCollaboratorById = async (req, res) => {
       ...collaborator,
       groups: collaborator.preferredGroup
         ? {
-          name: collaborator.preferredGroup.name || 'No asignado',
-          venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
-        }
+            name: collaborator.preferredGroup.name || 'No asignado',
+            venues: collaborator.preferredGroup.venues || { name: 'No asignado' },
+          }
         : null,
     };
 
@@ -239,7 +286,6 @@ const getCollaboratorById = async (req, res) => {
   }
 };
 
-// Actualizar un colaborador (versión completa)
 const updateCollaborator = async (req, res) => {
   const { id } = req.params;
   const {
@@ -296,7 +342,6 @@ const updateCollaborator = async (req, res) => {
   }
 };
 
-// Eliminar un colaborador
 const deleteCollaborator = async (req, res) => {
   const { id } = req.params;
 
@@ -315,65 +360,62 @@ const deleteCollaborator = async (req, res) => {
   }
 };
 
-// Actualizar información básica de un colaborador
-  const updateCollaboratorBasicInfo = async (req, res) => {
-    const { id } = req.params;
-    const {
-      name,
-      paternal_name,
-      maternal_name,
-      email,
-      phone_number,
-      college,
-      degree,
-      semester,
-      gender,
-      preferred_role,
-      preferred_language,
-      preferred_level,
-    } = req.body;
+const updateCollaboratorBasicInfo = async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    paternal_name,
+    maternal_name,
+    email,
+    phone_number,
+    college,
+    degree,
+    semester,
+    gender,
+    preferred_role,
+    preferred_language,
+    preferred_level,
+  } = req.body;
 
-    try {
-      // Crear objeto de datos dinámicamente, incluyendo solo campos proporcionados
-      const updateData = {};
-      if (name !== undefined) updateData.name = name?.trim() || null;
-      if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
-      if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
-      if (email !== undefined) updateData.email = email?.trim() || null;
-      if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
-      if (college !== undefined) updateData.college = college?.trim() || null;
-      if (degree !== undefined) updateData.degree = degree?.trim() || null;
-      if (semester !== undefined) updateData.semester = semester?.trim() || null;
-      if (gender !== undefined) updateData.gender = gender?.trim() || null;
-      if (preferred_role !== undefined) updateData.preferred_role = preferred_role?.trim() || null;
-      if (preferred_language !== undefined) updateData.preferred_language = preferred_language?.trim() || null;
-      if (preferred_level !== undefined) updateData.preferred_level = preferred_level?.trim() || null;
+  try {
+    const updateData = {};
+    if (name !== undefined) updateData.name = name?.trim() || null;
+    if (paternal_name !== undefined) updateData.paternal_name = paternal_name?.trim() || null;
+    if (maternal_name !== undefined) updateData.maternal_name = maternal_name?.trim() || null;
+    if (email !== undefined) updateData.email = email?.trim() || null;
+    if (phone_number !== undefined) updateData.phone_number = phone_number?.trim() || null;
+    if (college !== undefined) updateData.college = college?.trim() || null;
+    if (degree !== undefined) updateData.degree = degree?.trim() || null;
+    if (semester !== undefined) updateData.semester = semester?.trim() || null;
+    if (gender !== undefined) updateData.gender = gender?.trim() || null;
+    if (preferred_role !== undefined) updateData.preferred_role = preferred_role?.trim() || null;
+    if (preferred_language !== undefined) updateData.preferred_language = preferred_language?.trim() || null;
+    if (preferred_level !== undefined) updateData.preferred_level = preferred_level?.trim() || null;
 
-      console.log('Datos enviados al controlador:', updateData); // Log para depurar
+    console.log('Datos enviados al controlador:', updateData);
 
-      const updatedCollaborator = await prisma.collaborators.update({
-        where: { id_collaborator: parseInt(id) },
-        data: updateData,
+    const updatedCollaborator = await prisma.collaborators.update({
+      where: { id_collaborator: parseInt(id) },
+      data: updateData,
+    });
+
+    res.json({
+      success: true,
+      message: 'Información básica del colaborador actualizada',
+      data: updatedCollaborator,
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return res.status(404).json({
+        success: false,
+        message: `El colaborador con ID ${id} no existe`,
       });
-
-      res.json({
-        success: true,
-        message: 'Información básica del colaborador actualizada',
-        data: updatedCollaborator,
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return res.status(404).json({
-          success: false,
-          message: `El colaborador con ID ${id} no existe`,
-        });
-      }
-      console.error('Error al actualizar información básica del colaborador:', error);
-      res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
-  };
+    console.error('Error al actualizar información básica del colaborador:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
+  }
+};
 
-// Obtener datos específicos para tabla
 const getCollaboratorsTable = async (req, res) => {
   try {
     const collaborators = await prisma.collaborators.findMany({
@@ -402,7 +444,7 @@ const getCollaboratorsTable = async (req, res) => {
       venue: collab.groups?.venues?.name || 'Sin sede',
       group: collab.groups?.name || 'Sin grupo',
       email: collab.email || 'Sin correo',
-      phone_number: collab.phone_number || 'Sin teléfono',
+      phone_number: collab.phone_number || '',
     }));
 
     res.json({ success: true, data: formatted });
@@ -412,17 +454,14 @@ const getCollaboratorsTable = async (req, res) => {
   }
 };
 
-// Get available groups for a collaborator's venue
 const getAvailableGroups = async (req, res) => {
   try {
     const { collaboratorId } = req.params;
 
-    // Validate collaboratorId
     if (!collaboratorId || isNaN(parseInt(collaboratorId))) {
       return res.status(400).json({ message: 'ID de colaborador inválido' });
     }
 
-    // Get collaborator’s details, including venue via preferred_group
     const collaborator = await prisma.collaborators.findUnique({
       where: { id_collaborator: parseInt(collaboratorId) },
       include: {
@@ -444,7 +483,6 @@ const getAvailableGroups = async (req, res) => {
       return res.status(400).json({ message: 'El colaborador no tiene una sede asignada' });
     }
 
-    // Get all active groups in the venue
     const groups = await prisma.groups.findMany({
       where: {
         id_venue: venueId,
@@ -459,17 +497,14 @@ const getAvailableGroups = async (req, res) => {
       },
     });
 
-    // Define maximum capacities per role
     const maxCapacities = {
       Instructora: 1,
       Facilitadora: 2,
       Staff: 1,
     };
 
-    // Calculate role counts and format groups
     const availableGroups = [];
     for (const group of groups) {
-      // Count approved collaborators per role in the group
       const roleCounts = await prisma.collaborators.groupBy({
         by: ['role'],
         where: {
@@ -482,7 +517,6 @@ const getAvailableGroups = async (req, res) => {
         },
       });
 
-      // Convert to a map for easier lookup
       const roleCountMap = {
         Instructora: 0,
         Facilitadora: 0,
@@ -494,17 +528,14 @@ const getAvailableGroups = async (req, res) => {
         }
       });
 
-      // Calculate available slots per role
       const roleAvailability = {
         Instructora: maxCapacities.Instructora - roleCountMap.Instructora,
         Facilitadora: maxCapacities.Facilitadora - roleCountMap.Facilitadora,
         Staff: maxCapacities.Staff - roleCountMap.Staff,
       };
 
-      // Calculate total available places
       const availablePlaces = Object.values(roleAvailability).reduce((sum, count) => sum + Math.max(0, count), 0);
 
-      // Include group if it has capacity
       if (availablePlaces > 0) {
         availableGroups.push({
           id_group: group.id_group,
@@ -536,8 +567,6 @@ const getAvailableGroups = async (req, res) => {
   }
 };
 
-
-// Approve collaborator
 const approveCollaborator = async (req, res) => {
   const { collaboratorId } = req.params;
   const { role, groupId } = req.body;
@@ -545,7 +574,6 @@ const approveCollaborator = async (req, res) => {
   console.log(`Approving collaborator ${collaboratorId} with role ${role} for group ${groupId}`);
 
   try {
-    // Validate collaborator
     const collaborator = await prisma.collaborators.findUnique({
       where: { id_collaborator: parseInt(collaboratorId) },
       include: {
@@ -562,13 +590,11 @@ const approveCollaborator = async (req, res) => {
       return res.status(400).json({ message: 'El colaborador no está en estado Pendiente' });
     }
 
-    // Validate role
     const validRoles = ['Instructora', 'Facilitadora', 'Staff'];
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: 'Rol no válido' });
     }
 
-    // Validate group
     const group = await prisma.groups.findUnique({
       where: { id_group: parseInt(groupId) },
       select: {
@@ -588,13 +614,11 @@ const approveCollaborator = async (req, res) => {
       return res.status(400).json({ message: 'El grupo no está activo' });
     }
 
-    // Verify group is in the same venue
     const collaboratorVenueId = collaborator.preferredGroup?.id_venue || collaborator.groups?.id_venue;
     if (group.id_venue !== collaboratorVenueId) {
       return res.status(400).json({ message: 'El grupo no pertenece a la sede del colaborador' });
     }
 
-    // Check role capacity in the group
     const maxCapacities = {
       Instructora: 1,
       Facilitadora: 2,
@@ -625,7 +649,6 @@ const approveCollaborator = async (req, res) => {
       return res.status(400).json({ message: `El rol ${role} en el grupo seleccionado está lleno` });
     }
 
-    // Determine level and language
     const validLevels = ['Básico', 'Avanzado'];
     const validLanguages = ['Inglés', 'Español'];
     const selectedLevel = collaborator.preferred_level !== 'Pendiente' && validLevels.includes(collaborator.preferred_level)
@@ -637,7 +660,6 @@ const approveCollaborator = async (req, res) => {
 
     console.log(`Setting level: ${selectedLevel}, language: ${selectedLanguage}`);
 
-    // Approve collaborator
     const updatedCollaborator = await prisma.collaborators.update({
       where: { id_collaborator: parseInt(collaboratorId) },
       data: {
@@ -646,12 +668,11 @@ const approveCollaborator = async (req, res) => {
         level: selectedLevel,
         language: selectedLanguage,
         groups: {
-          connect: { id_group: group.id_group }, // Use relation to set group
+          connect: { id_group: group.id_group },
         },
       },
     });
 
-    // Send approval email (non-critical)
     try {
       const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
       await sendEmail({
@@ -675,7 +696,6 @@ const approveCollaborator = async (req, res) => {
       console.error(`Error sending approval email to ${collaborator.email}:`, emailError.message);
     }
 
-    // Create audit log
     await prisma.audit_log.create({
       data: {
         action: 'UPDATE',
@@ -705,16 +725,13 @@ const approveCollaborator = async (req, res) => {
   }
 };
 
-// Cancelar una colaboradora (cambiar status de Aprobada a Cancelada)
 const cancelCollaborator = async (req, res) => {
   const { id } = req.params;
-  const username = req.user.username; // Usar username del token JWT
+  const username = req.user.username;
 
   try {
-    // Log para depurar id
     console.log('ID recibido:', id, 'Parsed ID:', parseInt(id));
 
-    // Verificar si la colaboradora existe y está Aprobada
     const collaborator = await prisma.collaborators.findUnique({
       where: { id_collaborator: Number(id) },
       select: {
@@ -723,18 +740,18 @@ const cancelCollaborator = async (req, res) => {
         name: true,
         paternal_name: true,
         maternal_name: true,
-        email: true, // Añadido para el correo
-        role: true, // Añadido para el correo
+        email: true,
+        role: true,
         groups: {
           select: {
             id_venue: true,
             name: true,
-            venues: { // Correct relation
+            venues: {
               select: { name: true }
             }
           }
         }
-      }
+      },
     });
 
     if (!collaborator) {
@@ -745,13 +762,11 @@ const cancelCollaborator = async (req, res) => {
       return res.status(400).json({ message: 'Solo se pueden cancelar colaboradoras con status Aprobada.' });
     }
 
-    // Actualizar el status a Cancelada
     await prisma.collaborators.update({
       where: { id_collaborator: Number(id) },
       data: { status: 'Cancelada' }
     });
 
-    // Registrar en audit_log
     await prisma.audit_log.create({
       data: {
         action: 'UPDATE',
@@ -762,7 +777,6 @@ const cancelCollaborator = async (req, res) => {
       }
     });
 
-    // Send cancellation email (non-critical)
     try {
       const fullName = [collaborator.name, collaborator.paternal_name, collaborator.maternal_name]
         .filter(Boolean)
@@ -778,7 +792,6 @@ const cancelCollaborator = async (req, res) => {
         iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org'
       };
 
-      // Validate email before sending
       if (collaborator.email && collaborator.email.trim()) {
         await sendEmail({
           to: collaborator.email,
@@ -808,13 +821,11 @@ const rejectCollaborator = async (req, res) => {
   const { action } = req.body;
   const username = req.user?.username || 'unknown';
 
-  // Validar acción
   if (action !== 'desactivar') {
     return res.status(400).json({ message: 'La acción debe ser "desactivar"' });
   }
 
   try {
-    // Fetch collaborator data
     const collaborator = await prisma.collaborators.findUnique({
       where: { id_collaborator: parseInt(id) },
       include: {
@@ -832,18 +843,15 @@ const rejectCollaborator = async (req, res) => {
       return res.status(404).json({ message: 'Colaborador no encontrado' });
     }
 
-    // Verificar estado Pendiente
     if (collaborator.status !== 'Pendiente') {
       return res.status(400).json({ message: 'Solo se pueden rechazar colaboradores con estatus Pendiente' });
     }
 
-    // Actualizar estado a Rechazada
     await prisma.collaborators.update({
       where: { id_collaborator: parseInt(id) },
       data: { status: 'Rechazada' },
     });
 
-    // Crear registro en audit_log
     await prisma.audit_log.create({
       data: {
         action: 'UPDATE',
@@ -854,7 +862,6 @@ const rejectCollaborator = async (req, res) => {
       },
     });
 
-    // Send cancellation email (non-critical)
     try {
       const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
       await sendEmail({
@@ -884,6 +891,179 @@ const rejectCollaborator = async (req, res) => {
   }
 };
 
+const updateCollaboratorAssignment = async (req, res) => {
+  const { collaboratorId } = req.params;
+  const { role, groupId } = req.body;
+  const username = req.user?.username || 'unknown';
+
+  try {
+    if (!role || !groupId) {
+      return res.status(400).json({ message: 'El rol y el ID del grupo son obligatorios' });
+    }
+
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: parseInt(collaboratorId) },
+      include: {
+        preferredGroup: { select: { id_venue: true } },
+        groups: { select: { id_venue: true, name: true, venues: { select: { name: true } } } },
+      },
+    });
+
+    if (!collaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
+    if (collaborator.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'El colaborador debe estar en estado Aprobada para actualizar la asignación' });
+    }
+
+    const validRoles = ['Instructora', 'Facilitadora', 'Staff'];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ message: 'Rol no válido' });
+    }
+
+    const group = await prisma.groups.findUnique({
+      where: { id_group: parseInt(groupId) },
+      select: {
+        id_group: true,
+        id_venue: true,
+        status: true,
+        level: true,
+        language: true,
+        name: true,
+        venues: { select: { name: true, address: true } },
+        mentors: { select: { name: true, email: true } },
+      },
+    });
+
+    if (!group) {
+      return res.status(404).json({ message: 'Grupo no encontrado' });
+    }
+
+    if (group.status !== 'Aprobada') {
+      return res.status(400).json({ message: 'El grupo no está activo' });
+    }
+
+    const collaboratorVenueId = collaborator.preferredGroup?.id_venue || collaborator.groups?.id_venue;
+    if (group.id_venue !== collaboratorVenueId) {
+      return res.status(400).json({ message: 'El grupo no pertenece a la sede del colaborador' });
+    }
+
+    if (collaborator.id_group !== parseInt(groupId) || collaborator.role !== role) {
+      const maxCapacities = {
+        Instructora: 1,
+        Facilitadora: 2,
+        Staff: 1,
+      };
+
+      const collaboratorsInGroup = await prisma.collaborators.findMany({
+        where: {
+          id_group: group.id_group,
+          role: role,
+          status: 'Aprobada',
+          id_collaborator: { not: parseInt(collaboratorId) },
+        },
+      });
+
+      const approvedCount = collaboratorsInGroup.length;
+
+      if (approvedCount >= maxCapacities[role]) {
+        return res.status(400).json({ message: `El rol ${role} en el grupo seleccionado está lleno` });
+      }
+    }
+
+    const validLevels = ['Básico', 'Avanzado'];
+    const validLanguages = ['Inglés', 'Español'];
+    const selectedLevel = group.level && validLevels.includes(group.level) ? group.level : 'Básico';
+    const selectedLanguage = group.language && validLanguages.includes(group.language) ? group.language : 'Español';
+
+    const updatedCollaborator = await prisma.collaborators.update({
+      where: { id_collaborator: parseInt(collaboratorId) },
+      data: {
+        role,
+        level: selectedLevel,
+        language: selectedLanguage,
+        groups: {
+          connect: { id_group: group.id_group },
+        },
+      },
+    });
+
+    await prisma.audit_log.create({
+      data: {
+        action: 'UPDATE',
+        table_name: 'collaborators',
+        message: `Se actualizó la asignación de la colaboradora con ID ${collaboratorId} a rol ${role} en grupo ${groupId}`,
+        username,
+        id_venue: group.id_venue,
+      },
+    });
+
+    const fullName = `${collaborator.name || ''} ${collaborator.paternal_name || ''} ${collaborator.maternal_name || ''}`.trim();
+    return res.status(200).json({
+      success: true,
+      message: 'Asignación de colaborador actualizada exitosamente',
+      collaborator: {
+        id_collaborator: updatedCollaborator.id_collaborator,
+        name: fullName,
+        role: updatedCollaborator.role,
+        group_id: updatedCollaborator.id_group,
+        level: updatedCollaborator.level,
+        language: updatedCollaborator.language,
+        status: updatedCollaborator.status,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating collaborator assignment:', JSON.stringify(error, null, 2));
+    return res.status(500).json({ message: 'Error al actualizar asignación de colaborador', error: error.message });
+  }
+};
+
+const sendCustomEmailToCollaborator = async (req, res) => {
+  const { id } = req.params;
+  const { template, data } = req.body;
+
+  try {
+    const collaborator = await prisma.collaborators.findUnique({
+      where: { id_collaborator: parseInt(id) },
+    });
+    if (!collaborator) {
+      return res.status(404).json({ message: 'Colaborador no encontrado' });
+    }
+
+    let emailTemplate = '';
+    let subject = '';
+    switch (template) {
+      case 'sol_cambio':
+        emailTemplate = 'templates/colaboradores/sol_cambio';
+        subject = 'Solicitud de Cambio de Preferencias';
+        break;
+      case 'interview':
+        emailTemplate = 'templates/colaboradores/interview';
+        subject = '¡Agenda tu entrevista!';
+        break;
+      default:
+        return res.status(400).json({ message: 'Plantilla no válida' });
+    }
+
+    await sendEmail({
+      to: collaborator.email,
+      subject,
+      template: emailTemplate,
+      data: {
+        cName: `${collaborator.name} ${collaborator.paternal_name} ${collaborator.maternal_name}`.trim(),
+        iEmail: process.env.EMAIL_USER || 'contacto@patroneshermosos.org',
+        ...data, // extra data from frontend (dates, links, etc.)
+      },
+    });
+
+    res.json({ success: true, message: 'Correo enviado exitosamente' });
+  } catch (error) {
+    console.error('Error sending custom email:', error);
+    res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
+  }
+};
+
 module.exports = {
   createCollaborator,
   getAllCollaborators,
@@ -893,7 +1073,9 @@ module.exports = {
   getCollaboratorsTable,
   updateCollaboratorBasicInfo,
   getAvailableGroups,
+  sendCustomEmailToCollaborator,
   approveCollaborator,
   cancelCollaborator,
   rejectCollaborator,
+  updateCollaboratorAssignment,
 };

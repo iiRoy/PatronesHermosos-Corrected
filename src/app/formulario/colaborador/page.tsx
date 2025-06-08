@@ -203,20 +203,19 @@ const CollaboratorRegistrationForm: React.FC = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center">
-                <div className="w-2 rounded-full h-16 mr-4 notification-icon-purple"></div>
+                <div className="w-2 rounded-full h-16 mr-4 bg-[#683756]"></div>
                 <h1 className="text-2xl">
                   <span className="italic">Formulario de Registro</span><br />
                   <span className="font-bold text-3xl">Colaborador</span>
                 </h1>
               </div>
               <Button
-                label=""
+                label="Regresar"
                 variant="error"
                 showLeftIcon
-                round
                 type="button"
                 IconLeft={X}
-                href='/inicio'
+                href='/'
                 className="px-4 py-2 rounded-full flex items-center"
               />
             </div>
@@ -377,15 +376,15 @@ const CollaboratorRegistrationForm: React.FC = () => {
               </p>
             </div>
             <div className="flex justify-center items-center mx-auto w-[80%] h-[50px] rounded-t-[15px] mt-8 text-xs sm:text-base md:text-lg lg:text-xl bg-[#683756] gap-12">
-                      <div className='flex'>
-                        <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
-                        <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
-                      </div>
-                      <div className='flex'>
-                        <h2 className="mx-4 font-semibold">Sede: </h2>
-                        <p>{groups.find(g => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}</p>
-                      </div>
-                    </div>
+              <div className='flex'>
+                <h2 className="mx-4 font-semibold">Grupo Elegido: </h2>
+                <p>{groups.find(g => g.id_group === formData.preferred_group)?.name || 'Ninguno'}</p>
+              </div>
+              <div className='flex'>
+                <h2 className="mx-4 font-semibold">Sede: </h2>
+                <p>{groups.find(g => g.id_group === formData.preferred_group)?.sede || 'Ninguna'}</p>
+              </div>
+            </div>
             <GroupSelectionTable
               onSelect={handleGroupSelect}
               selectedGroupId={formData.preferred_group ?? undefined}

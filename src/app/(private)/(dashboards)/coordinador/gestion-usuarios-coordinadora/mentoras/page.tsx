@@ -45,7 +45,6 @@ const GestionMentoras = () => {
 
   const rowsPerPage = 5;
 
-  // Decodificar el token para obtener el userId, que corresponde al id_venue
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
     if (token) {
@@ -53,7 +52,7 @@ const GestionMentoras = () => {
         const decoded: DecodedToken = jwtDecode(token);
         console.log('Decoded token:', decoded);
         if (decoded.role === 'venue_coordinator') {
-          setCoordinatorVenueId(decoded.userId); // userId es id_venue_coord, que coincide con id_venue
+          setCoordinatorVenueId(decoded.userId);
         } else {
           setError('Este dashboard es solo para coordinadores de sede');
           router.push('/login');
@@ -69,7 +68,6 @@ const GestionMentoras = () => {
     }
   }, [router]);
 
-  // Obtener mentoras y filtrar por id_venue del coordinador
   useEffect(() => {
     const fetchMentoras = async () => {
       try {
@@ -207,7 +205,6 @@ const GestionMentoras = () => {
         throw new Error(errorData.message || 'Error al cancelar la mentora');
       }
 
-      // Remover la mentora de la lista (ya que cambia a Cancelada y no cumple el filtro)
       setMentorasData(prev => prev.filter(m => m.id_mentor !== selectedMentora.id_mentor));
 
       notify({
@@ -244,7 +241,7 @@ const GestionMentoras = () => {
               <InputField
                 label=""
                 showDescription={false}
-                placeholder="Search"
+                placeholder="Buscar mentora"
                 showError={false}
                 variant="primary"
                 icon="MagnifyingGlass"
@@ -257,8 +254,9 @@ const GestionMentoras = () => {
 
         <div className="overflow-x-auto custom-scrollbar-tabla">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-purple-800 font-bold">
+            <thead className="text-purple-800 font-bold sticky top-0 bg-[#ebe6eb]">
               <tr className="texto-primary-shade">
+                <th className="p-2 text-center"></th>
                 <th className="p-2 text-center">Nombre</th>
                 <th className="p-2 text-center">Correo</th>
                 <th className="p-2 text-center">Teléfono</th>
@@ -273,6 +271,19 @@ const GestionMentoras = () => {
                   className="border-t border-gray-300 cursor-pointer hover:bg-gray-300"
                   onClick={() => handleDetailsClick(mentora)}
                 >
+                  <td className="p-2 text-center">
+                    <Button
+                      label=""
+                      variant="primary"
+                      round
+                      showLeftIcon
+                      IconLeft={Eye}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDetailsClick(mentora);
+                      }}
+                    />
+                  </td>
                   <td className="p-2 text-center">{mentora.name}</td>
                   <td className="p-2 text-center">{mentora.email}</td>
                   <td className="p-2 text-center">{mentora.phone_number}</td>
