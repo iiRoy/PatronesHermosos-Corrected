@@ -84,7 +84,6 @@ const DataTable = <T extends TableData>({
       <div className='mt-auto pt-4 flex justify-center'>
         <Pagination
           currentPage={currentPage}
-          totalPages={totalPages}
           onPageChange={setCurrentPage}
           variant='secondary-shade'
           pageLinks={Array(totalPages).fill('#')}

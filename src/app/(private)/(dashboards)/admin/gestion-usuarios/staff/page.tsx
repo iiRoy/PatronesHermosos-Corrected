@@ -393,7 +393,6 @@ const GestionApoyo = () => {
         <div className='mt-auto pt-4 flex justify-center'>
           <Pagination
             currentPage={currentPage}
-            totalPages={totalPages}
             onPageChange={setCurrentPage}
             variant='primary'
             pageLinks={Array(totalPages).fill('#')}

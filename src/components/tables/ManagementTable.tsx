@@ -3,7 +3,8 @@ import InputField from '@components/buttons_inputs/InputField';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Pagination from '@/components/buttons_inputs/Pagination';
 import Button from '@components/buttons_inputs/Button';
-import { MagnifyingGlass, Check, Eye, Star, X } from '@phosphor-icons/react';
+import { MagnifyingGlass, Check, Eye, Star, X  } from '@/components/icons';
+import withIconDecorator from '../decorators/IconDecorator';
 
 interface Group {
   id_group: number;
@@ -201,7 +202,6 @@ const GroupSelectionTable: React.FC<GroupSelectionTableProps> = ({
       </div>
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
         onPageChange={setCurrentPage}
         variant='secondary-shade'
         pageLinks={Array(totalPages).fill('#')}
