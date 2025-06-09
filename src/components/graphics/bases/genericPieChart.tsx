@@ -256,6 +256,8 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
     statusColors,
     sedeOptions,
     selectedFilters.sede,
+    defaultRoleColors,
+    defaultStatusPalette,
   ]);
 
   useEffect(() => {

@@ -8,7 +8,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -28,6 +28,23 @@
     },
     "target": "es5"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+    "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/controllers/data.controller.js",
+    "src/controllers/groups.controller.js",
+    "src/controllers/mentor.controller.js",
+    "src/controllers/participants.controller.js",
+    "src/controllers/status.Controller.js",
+    "src/controllers/superuser.controller.js",
+    "src/controllers/venue.controller.js",
+    "src/controllers/venueCoordinator.controller.js",
+    "src/controllers/diploma.controller.js",
+    "src/controllers/auth.controller.js",
+    "src/controllers/collaborator.controller.js",
+    "src/controllers/auditlog.controller.js"
+  ],
   "exclude": ["node_modules"]
 }
