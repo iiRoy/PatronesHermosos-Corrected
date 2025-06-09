@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import DataTable from './DataTable';
 import Button from '@/components/buttons_inputs/Button';
-import { Eye } from '@phosphor-icons/react';
+import {Eye} from '@/components/icons';
 import { TableData } from '@/types/tableData';
 
 interface RegistrationTableProps {

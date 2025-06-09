@@ -132,7 +132,6 @@ const VenueSelectionTable: React.FC<VenueSelectionTableProps> = ({
       </div>
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
         onPageChange={setCurrentPage}
         variant='secondary-shade'
         pageLinks={Array(totalPages).fill('#')}
