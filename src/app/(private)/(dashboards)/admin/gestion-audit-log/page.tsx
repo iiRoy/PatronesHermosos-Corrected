@@ -37,46 +37,47 @@ const GestionAuditLogs = () => {
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [auditLogsData, setAuditLogsData] = useState<AuditLog[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 10;
 
+  // Cargar token SOLO en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   // Decodificar el token para verificar el rol
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        console.log('Decoded token:', decoded);
-        if (decoded.role !== 'superuser') {
-          setError('Este dashboard es solo para administradores');
-          router.push('/login');
-        }
-      } catch (err) {
-        console.error('Error al decodificar el token:', err);
-        setError('Token inválido');
+    if (!apiToken) return;
+    try {
+      const decoded: DecodedToken = jwtDecode(apiToken);
+      if (decoded.role !== 'superuser') {
+        setError('Este dashboard es solo para administradores');
         router.push('/login');
       }
-    } else {
-      setError('No se encontró el token, por favor inicia sesión');
+    } catch (err) {
+      console.error('Error al decodificar el token:', err);
+      setError('Token inválido');
       router.push('/login');
     }
-  }, [router]);
+  }, [router, apiToken]);
 
   // Obtener registros de audit_log
   useEffect(() => {
     const fetchAuditLogs = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const response = await fetch('/api/audit-logs', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -87,12 +88,13 @@ const GestionAuditLogs = () => {
             return;
           }
           throw new Error(
-            `Error fetching audit logs: ${response.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching audit logs: ${response.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
 
         const data = await response.json();
-        console.log('Audit logs data from API:', data);
         setAuditLogsData(data.data);
       } catch (error: any) {
         console.error('Error al obtener registros de auditoría:', error);
@@ -100,8 +102,8 @@ const GestionAuditLogs = () => {
       }
     };
 
-    fetchAuditLogs();
-  }, [router]);
+    if (apiToken) fetchAuditLogs();
+  }, [router, apiToken]);
 
   // Obtener sedes únicas para el filtro
   const uniqueVenues = Array.from(new Set(auditLogsData.map((log) => log.venue_name))).sort();

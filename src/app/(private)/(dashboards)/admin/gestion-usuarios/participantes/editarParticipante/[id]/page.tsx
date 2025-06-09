@@ -50,34 +50,43 @@ const EditarParticipante = () => {
   const [sedeValue, setSedeValue] = useState('');
   const [grupoValue, setGrupoValue] = useState<number | null>(null);
   const [availableGroups, setAvailableGroups] = useState<GroupOption[]>([]);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { id } = useParams();
   const { notify } = useNotification();
 
+  // Obtener token solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchParticipante = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const response = await fetch(`/api/participants/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
         if (!response.ok) {
           const errorData = await response.json();
           if (response.status === 403) {
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             router.push('/login');
             return;
           }
           throw new Error(
-            `Error fetching participant: ${response.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching participant: ${response.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -100,22 +109,23 @@ const EditarParticipante = () => {
 
     const fetchAvailableGroups = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const response = await fetch(`/api/participants/${id}/available-groups`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            `Error fetching available groups: ${response.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching available groups: ${response.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -140,10 +150,11 @@ const EditarParticipante = () => {
       }
     };
 
-    if (id) {
+    if (id && apiToken) {
       fetchParticipante().then(() => fetchAvailableGroups());
     }
-  }, [id, router, participante?.id_group]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, router, participante?.id_group, apiToken]);
 
   const validateForm = () => {
     const errors: string[] = [];
@@ -170,8 +181,7 @@ const EditarParticipante = () => {
     }
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-      if (!token) {
+      if (!apiToken) {
         router.push('/login');
         return;
       }
@@ -189,7 +199,7 @@ const EditarParticipante = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(updatedParticipante),
       });
@@ -197,7 +207,7 @@ const EditarParticipante = () => {
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 403) {
-          localStorage.removeItem('api_token');
+          if (typeof window !== 'undefined') localStorage.removeItem('api_token');
           router.push('/login');
           return;
         }

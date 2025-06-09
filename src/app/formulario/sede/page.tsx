@@ -107,19 +107,25 @@ const VenueRegistrationForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
+  const [apiToken, setApiToken] = useState<string | null>(null);
+
+  // Opcional: obtener token para futuras mejoras
+  useMemo(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
 
   // Country and region options from country-state-city
-  const allowedCountries = ['Mexico', 'Ecuador', 'Costa Rica'];
-  const countryOptions = useMemo(
-    () =>
-      Country.getAllCountries()
-        .filter((country) => allowedCountries.includes(country.name))
-        .map((country) => ({
-          value: country.isoCode,
-          label: country.name,
-        })),
-    [],
-  );
+  const countryOptions = useMemo(() => {
+    const allowedCountries = ['Mexico', 'Ecuador', 'Costa Rica'];
+    return Country.getAllCountries()
+      .filter((country) => allowedCountries.includes(country.name))
+      .map((country) => ({
+        value: country.isoCode,
+        label: country.name,
+      }));
+  }, []);
   const [regionOptions, setRegionOptions] = useState<{ value: string; label: string }[]>([]);
 
   type GeneralCoordinatorKeys = keyof GeneralCoordinator;
@@ -264,7 +270,7 @@ const VenueRegistrationForm: React.FC = () => {
         newErrors.push(
           'El correo electrónico de la coordinadora de informes (participantes) debe ser válido',
         );
-      if (!formData.staffCoordinator.phone)
+      if (!formData.participantsCoordinator.phone)
         newErrors.push('El celular de la coordinadora de informes (participantes) es obligatorio');
     }
 
@@ -1101,11 +1107,7 @@ const VenueRegistrationForm: React.FC = () => {
                   </a>
                 </p>
                 <div className='mt-2'>
-                  <Checkbox
-                    label=''
-                    checked={privacyAccepted}
-                    onChange={setPrivacyAccepted}
-                  />
+                  <Checkbox label='' checked={privacyAccepted} onChange={setPrivacyAccepted} />
                 </div>
               </div>
 
@@ -1137,7 +1139,6 @@ const VenueRegistrationForm: React.FC = () => {
           message={success || ''}
         />
       </div>
-      );
     </div>
   );
 };

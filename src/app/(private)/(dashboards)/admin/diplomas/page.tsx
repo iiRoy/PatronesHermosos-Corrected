@@ -35,6 +35,11 @@ const DiplomasPage = () => {
   const [opcionesRol, setOpcionesRol] = useState<{ label: string; value: string }[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
 
+  // Estados para valores de localStorage
+  const [userId, setUserId] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const [apiToken, setApiToken] = useState<string | null>(null);
+
   // --- Nuevos estados para MessageCard ---
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [senderName, setSenderName] = useState('');
@@ -45,6 +50,15 @@ const DiplomasPage = () => {
   // -----------------------------------------
 
   const { notify } = useNotification();
+
+  // Cargar valores de localStorage SOLO en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUserId(localStorage.getItem('user_id') || '');
+      setUserRole(localStorage.getItem('user_role') || '');
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
 
   // Computar destinatarios con nombre + correo
   const recipientsInfo = users
@@ -67,8 +81,6 @@ const DiplomasPage = () => {
   useEffect(() => {
     async function fetchFiltros() {
       try {
-        const userId = localStorage.getItem('user_id') || '';
-        const userRole = localStorage.getItem('user_role') || '';
         const res = await fetch(`/api/diplomas/filtros?user_id=${userId}&user_role=${userRole}`);
         const data = await res.json();
         setOpcionesSede([
@@ -86,19 +98,18 @@ const DiplomasPage = () => {
         toast.error('Error cargando filtros');
       }
     }
-    fetchFiltros();
-  }, []);
+    if (userId && userRole) fetchFiltros();
+  }, [userId, userRole]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('api_token'); // o donde lo guardes
-        if (!token) {
+        if (!apiToken) {
           throw new Error('No hay token de autenticación');
         }
 
         const res = await axios.get('/api/data/getprofile', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
 
         const { name, paternal_name, maternal_name } = res.data;
@@ -114,8 +125,8 @@ const DiplomasPage = () => {
       }
     };
 
-    fetchProfile();
-  }, []);
+    if (apiToken) fetchProfile();
+  }, [apiToken]);
 
   // Cargar usuarios
   useEffect(() => {
@@ -123,14 +134,10 @@ const DiplomasPage = () => {
       try {
         const sedeParam = filterSede === 'all' ? '' : filterSede;
         const rolParam = filterRol === 'all' ? '' : filterRol;
-        const userId = localStorage.getItem('user_id') || '';
-        const userRole = localStorage.getItem('user_role') || '';
         const res = await fetch(
-          `/api/diplomas/users?search=${encodeURIComponent(
-            search,
-          )}&sede=${encodeURIComponent(sedeParam)}&role=${encodeURIComponent(
-            rolParam,
-          )}&user_id=${userId}&user_role=${userRole}`,
+          `/api/diplomas/users?search=${encodeURIComponent(search)}&sede=${encodeURIComponent(
+            sedeParam,
+          )}&role=${encodeURIComponent(rolParam)}&user_id=${userId}&user_role=${userRole}`,
         );
         if (!res.ok) {
           const text = await res.text();
@@ -145,8 +152,8 @@ const DiplomasPage = () => {
         setUsers([]);
       }
     }
-    fetchUsers();
-  }, [search, filterSede, filterRol]);
+    if (userId && userRole) fetchUsers();
+  }, [search, filterSede, filterRol, userId, userRole]);
 
   // Seleccionar/deseleccionar visibles
   const toggleSelectAll = () => {
@@ -172,6 +179,7 @@ const DiplomasPage = () => {
 
   // Descarga individual
   const downloadIndividual = async (user: UsuarioDiploma) => {
+    if (typeof window === 'undefined') return;
     try {
       const res = await axios.post(
         '/api/diplomas/generate',
@@ -208,6 +216,7 @@ const DiplomasPage = () => {
 
   // Descarga ZIP
   const downloadZIP = async () => {
+    if (typeof window === 'undefined') return;
     try {
       const usersSelected = users.filter((u) => selected.includes(`${u.id}-${u.role}`));
       if (usersSelected.length === 0) {
@@ -278,7 +287,10 @@ const DiplomasPage = () => {
         toast.error('No hay correos válidos entre los seleccionados');
         return;
       }
-      const token = localStorage.getItem('api_token');
+      if (!apiToken) {
+        toast.error('No hay token de autenticación');
+        return;
+      }
       await axios.post(
         '/api/diplomas/email',
         {
@@ -289,7 +301,7 @@ const DiplomasPage = () => {
           includeCopy,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         },
       );
       toast.success('Diplomas enviados por correo correctamente');

@@ -40,23 +40,30 @@ const GestionApoyo = () => {
   const [selectedApoyo, setSelectedApoyo] = useState<Apoyo | null>(null);
   const [apoyoData, setApoyoData] = useState<Apoyo[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 10;
 
+  // Obtener token solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchApoyo = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const collaboratorsResponse = await fetch('/api/collaborators', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -68,7 +75,9 @@ const GestionApoyo = () => {
             return;
           }
           throw new Error(
-            `Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`,
+            `Error fetching collaborators: ${collaboratorsResponse.status} - ${
+              collaboratorsData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -99,8 +108,8 @@ const GestionApoyo = () => {
         setError(error.message);
       }
     };
-    fetchApoyo();
-  }, [router]);
+    if (apiToken) fetchApoyo();
+  }, [router, apiToken]);
 
   const uniqueRoles = Array.from(new Set(apoyoData.map((apoyo) => apoyo.role))).sort();
 
@@ -178,8 +187,7 @@ const GestionApoyo = () => {
   const handleConfirmDelete = async () => {
     if (selectedApoyo) {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           setError('No token found, redirecting to login');
           router.push('/login');
           return;
@@ -189,7 +197,7 @@ const GestionApoyo = () => {
           `/api/collaborators/${selectedApoyo.id_collaborator}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${apiToken}`,
             },
           },
         );
@@ -197,7 +205,9 @@ const GestionApoyo = () => {
         if (!collaboratorResponse.ok) {
           const errorData = await collaboratorResponse.json();
           throw new Error(
-            `Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching collaborator: ${collaboratorResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -230,7 +240,7 @@ const GestionApoyo = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
           body: JSON.stringify(updateData),
         });
@@ -239,7 +249,9 @@ const GestionApoyo = () => {
 
         if (!response.ok) {
           throw new Error(
-            `Error updating collaborator: ${response.status} - ${responseData.message || 'Unknown error'}`,
+            `Error updating collaborator: ${response.status} - ${
+              responseData.message || 'Unknown error'
+            }`,
           );
         }
 

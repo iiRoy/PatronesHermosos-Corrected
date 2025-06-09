@@ -1,90 +1,98 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import InputField from '@/components/buttons_inputs/InputField';
 import FiltroEvento from '@/components/headers_menu_users/FiltroEvento';
 import Button from '@/components/buttons_inputs/Button';
 
-const mockStudents = [
-  {
-    id: '034',
-    nombre: 'Andrea Sánchez',
-    usuario: 'Andy01',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2223456433',
-    grupo: 'Grupo 1',
-  },
-  {
-    id: '141',
-    nombre: 'Sofía Ramírez',
-    usuario: 'SofiaRmz',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2226788933',
-    grupo: 'Grupo 2',
-  },
-  {
-    id: '012',
-    nombre: 'Isabel Medina',
-    usuario: 'Isa2005',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2224558766',
-    grupo: 'Grupo 2',
-  },
-  {
-    id: '098',
-    nombre: 'Valeria Torres',
-    usuario: 'Vale123',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2223415078',
-    grupo: 'Grupo 2',
-  },
-  {
-    id: '188',
-    nombre: 'Camila Herrera',
-    usuario: 'CamiHS',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2229389544',
-    grupo: 'Grupo 1',
-  },
-  {
-    id: '042',
-    nombre: 'Natalia Vázquez',
-    usuario: 'Nati44',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2221107408',
-    grupo: 'Grupo 1',
-  },
-  {
-    id: '110',
-    nombre: 'Gabriela Ruiz',
-    usuario: 'GabyRZ',
-    correo: 'ejemplo@gmail.com',
-    telefono: '2224405576',
-    grupo: 'Grupo 1',
-  },
-];
+interface Participante {
+  id: string | number;
+  nombre: string;
+  usuario: string;
+  correo: string;
+  telefono: string;
+  grupo: string;
+}
 
 const VerSede = () => {
   const [inputValue, setInputValue] = useState('');
-  const [section, setSection] = useState('__All__'); // Inicializar con "Todos"
+  const [section, setSection] = useState('__All__');
+  const [students, setStudents] = useState<Participante[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredStudents = mockStudents.filter((s) => {
-    // Filtro por nombre
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
+        if (!token) {
+          router.push('/login');
+          return;
+        }
+        // Cambia la URL si tu endpoint es diferente
+        const res = await fetch(`/api/venues/${id}/participants`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error('No se pudieron cargar los participantes');
+        }
+        const data = await res.json();
+        // Ajusta el mapeo según la estructura real de tu API
+        const participantes = (data.data || data).map((p: any) => ({
+          id: p.id_participant || p.id || '',
+          nombre: `${p.name} ${p.paternal_name || ''} ${p.maternal_name || ''}`.trim(),
+          usuario: p.username || p.usuario || '',
+          correo: p.email || '',
+          telefono: p.tutors?.phone_number || p.telefono || '',
+          grupo: p.groups?.name || p.grupo || 'Sin grupo',
+        }));
+        setStudents(participantes);
+      } catch (err: any) {
+        setError(err.message || 'Error al cargar los datos');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchData();
+  }, [id, router]);
+
+  // Obtener grupos únicos para el filtro
+  const grupos = Array.from(new Set(students.map((s) => s.grupo))).filter(Boolean);
+  const secciones = [
+    { label: 'Todos', value: '__All__' },
+    ...grupos.map((g) => ({ label: g, value: g })),
+  ];
+
+  const filteredStudents = students.filter((s) => {
     const matchesSearch =
       s.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
       s.usuario.toLowerCase().includes(inputValue.toLowerCase());
-
-    // Filtro por grupo seleccionado
     const matchesGroup = section === '__All__' ? true : s.grupo === section;
-
     return matchesSearch && matchesGroup;
   });
 
   const sectionFilterChange = (value: string) => {
     setSection(value);
-    setInputValue(''); // Resetear búsqueda al cambiar de sección
+    setInputValue('');
   };
+
+  if (loading) {
+    return <div className='p-6 pl-14'>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
+  }
 
   return (
     <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
@@ -121,11 +129,7 @@ const VerSede = () => {
               label='Filtrar por grupo'
               showSecciones
               labelSecciones='Seleccionar Grupo'
-              secciones={[
-                { label: 'Todos', value: '__All__' },
-                { label: 'Grupo 1', value: 'Grupo 1' },
-                { label: 'Grupo 2', value: 'Grupo 2' },
-              ]}
+              secciones={secciones}
               seccionActiva={section}
               onChangeSeccion={sectionFilterChange}
             />

@@ -4,7 +4,7 @@ import Pagination from '@/components/buttons_inputs/Pagination';
 import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
-import { MagnifyingGlass, Eye, Check, X } from '@/components/icons';
+import { Eye, Check, X } from '@/components/icons';
 import { useState, useMemo } from 'react';
 
 // Interfaces para los datos de cada sección
@@ -50,7 +50,7 @@ const SolicitudesRegistroAdmin = () => {
 
   const rowsPerPage = 4;
 
-  const participantesData: Participante[] = [
+  const participantesData: Participante[] = useMemo(() => [
     {
       id: '01',
       nombre: 'Sara Beltrán',
@@ -114,9 +114,9 @@ const SolicitudesRegistroAdmin = () => {
       telefono: '2225743455',
       grupo_preferido: 'Sol',
     },
-  ];
+  ], []);
 
-  const apoyoStaffData: ApoyoStaff[] = [
+  const apoyoStaffData: ApoyoStaff[] = useMemo(() => [
     {
       id: '01',
       nombre: 'Sofia Ruiz',
@@ -157,13 +157,13 @@ const SolicitudesRegistroAdmin = () => {
       area: 'Staff',
       grupo_preferido: 'Sol',
     },
-  ];
+  ], []);
 
-  const sedesData: Sede[] = [
+  const sedesData: Sede[] = useMemo(() => [
     { id: '01', institucion: 'UMAD', lugar: 'Puebla', fecha: '15/03/2025' },
     { id: '02', institucion: 'UNAM', lugar: 'Ciudad de México', fecha: '15/03/2025' },
     { id: '03', institucion: 'ITESM Toluca', lugar: 'Hidalgo', fecha: '16/03/2025' },
-  ];
+  ], []);
 
   // Filtrar los datos según el valor de búsqueda y la sección activa
   const filteredData = useMemo(() => {
@@ -198,7 +198,7 @@ const SolicitudesRegistroAdmin = () => {
           item.fecha.toLowerCase().includes(searchTerm),
       );
     }
-  }, [inputValue, section]);
+  }, [inputValue, section, participantesData, apoyoStaffData, sedesData]);
 
   const sectionFilterChange = (newSection: 'PARTICIPANTES' | 'APOYO & STAFF' | 'SEDES') => {
     setSection(newSection);

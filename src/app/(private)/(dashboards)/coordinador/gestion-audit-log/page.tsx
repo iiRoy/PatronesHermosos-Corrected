@@ -45,32 +45,36 @@ const GestionAuditLogsCoordinadora = () => {
   const [error, setError] = useState<string | null>(null);
   const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
   const [coordinatorUsername, setCoordinatorUsername] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 10;
 
-  // Decodificar el token para verificar el rol y obtener id_venue, username
+  // Obtener token solo en cliente y decodificarlo
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        if (decoded.role !== 'venue_coordinator') {
-          setError('Este dashboard es solo para coordinadores de sede');
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      setApiToken(token);
+      if (token) {
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          if (decoded.role !== 'venue_coordinator') {
+            setError('Este dashboard es solo para coordinadores de sede');
+            router.push('/login');
+          } else {
+            setCoordinatorVenueId(decoded.id_venue);
+            setCoordinatorUsername(decoded.username);
+          }
+        } catch (err) {
+          console.error('Error al decodificar el token:', err);
+          setError('Token inválido');
           router.push('/login');
-        } else {
-          setCoordinatorVenueId(decoded.id_venue);
-          setCoordinatorUsername(decoded.username);
         }
-      } catch (err) {
-        console.error('Error al decodificar el token:', err);
-        setError('Token inválido');
+      } else {
+        setError('No se encontró el token, por favor inicia sesión');
         router.push('/login');
       }
-    } else {
-      setError('No se encontró el token, por favor inicia sesión');
-      router.push('/login');
     }
   }, [router]);
 
@@ -78,15 +82,14 @@ const GestionAuditLogsCoordinadora = () => {
   useEffect(() => {
     const fetchAuditLogs = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const response = await fetch('/api/audit-logs', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -94,12 +97,14 @@ const GestionAuditLogsCoordinadora = () => {
           const errorData = await response.json();
           if (response.status === 403) {
             setError('No tienes permisos para acceder a los registros de auditoría');
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             router.push('/login');
             return;
           }
           throw new Error(
-            `Error fetching audit logs: ${response.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching audit logs: ${response.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -111,10 +116,10 @@ const GestionAuditLogsCoordinadora = () => {
       }
     };
 
-    if (coordinatorVenueId !== null && coordinatorUsername !== null) {
+    if (coordinatorVenueId !== null && coordinatorUsername !== null && apiToken) {
       fetchAuditLogs();
     }
-  }, [router, coordinatorVenueId, coordinatorUsername]);
+  }, [router, coordinatorVenueId, coordinatorUsername, apiToken]);
 
   // Obtener opciones para filtros
   const uniqueActions = Array.from(new Set(auditLogsData.map((log) => log.action))).sort();

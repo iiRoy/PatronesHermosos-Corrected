@@ -61,23 +61,29 @@ const EditarApoyo = () => {
   const [venueName, setVenueName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [apiToken, setApiToken] = useState<string | null>(null);
 
   // Opciones para los select
   const roleOptions = ['Instructora', 'Facilitadora', 'Staff'];
   const genderOptions = ['Masculino', 'Femenino', 'Otro'];
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const collaboratorResponse = await fetch(`/api/collaborators/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
         if (!collaboratorResponse.ok) {
@@ -88,7 +94,9 @@ const EditarApoyo = () => {
             throw new Error('Colaborador no encontrado');
           }
           throw new Error(
-            `Error fetching collaborator: ${collaboratorResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching collaborator: ${collaboratorResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const collaboratorData = await collaboratorResponse.json();
@@ -112,23 +120,22 @@ const EditarApoyo = () => {
       }
     };
 
-    if (id) {
+    if (id && apiToken) {
       fetchData();
     }
-  }, [id, router]);
+  }, [id, router, apiToken]);
 
   // Fetch available groups
   useEffect(() => {
     const fetchAvailableGroups = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const response = await fetch(`/api/collaborators/${id}/available-groups`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
 
         if (!response.ok) {
@@ -149,10 +156,10 @@ const EditarApoyo = () => {
       }
     };
 
-    if (collaborator) {
+    if (collaborator && apiToken) {
       fetchAvailableGroups();
     }
-  }, [collaborator, id, router]);
+  }, [collaborator, id, router, apiToken]);
 
   const validateForm = () => {
     const errors: string[] = [];
@@ -209,8 +216,7 @@ const EditarApoyo = () => {
     }
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-      if (!token) {
+      if (!apiToken) {
         setValidationErrors(['No se encontró el token, redirigiendo al login']);
         router.push('/login');
         return;
@@ -233,7 +239,7 @@ const EditarApoyo = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(updatedCollaborator),
       });
@@ -251,7 +257,7 @@ const EditarApoyo = () => {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
           body: JSON.stringify({
             role: selectedRole,

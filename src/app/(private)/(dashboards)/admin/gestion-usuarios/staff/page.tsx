@@ -43,23 +43,30 @@ const GestionApoyo = () => {
   const [selectedApoyo, setSelectedApoyo] = useState<Apoyo | null>(null);
   const [apoyoData, setApoyoData] = useState<Apoyo[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 10;
 
+  // Obtener token solo en cliente y guardarlo en estado
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchApoyo = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const collaboratorsResponse = await fetch('/api/collaborators', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -71,7 +78,9 @@ const GestionApoyo = () => {
             return;
           }
           throw new Error(
-            `Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`,
+            `Error fetching collaborators: ${collaboratorsResponse.status} - ${
+              collaboratorsData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -105,8 +114,8 @@ const GestionApoyo = () => {
         setError(error.message);
       }
     };
-    fetchApoyo();
-  }, [router]);
+    if (apiToken) fetchApoyo();
+  }, [router, apiToken]);
 
   const uniqueRoles = Array.from(new Set(apoyoData.map((apoyo) => apoyo.role)))
     .filter((role) => role !== 'Pendiente')
@@ -165,8 +174,7 @@ const GestionApoyo = () => {
 
   const handleInfoClick = async (apoyo: Apoyo) => {
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -180,7 +188,7 @@ const GestionApoyo = () => {
       let groupName = apoyo.groupName;
       if (apoyo.preferred_group && !groupName) {
         const response = await fetch(`/api/collaborators/${apoyo.id_collaborator}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
 
         if (!response.ok) {
@@ -228,8 +236,7 @@ const GestionApoyo = () => {
     }
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -244,7 +251,7 @@ const GestionApoyo = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
       });
 

@@ -149,7 +149,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
       onChange(selected.slice(0, maxSelectableOptions));
     }
     setWasManuallyCleared(true);
-  }, [options, maxSelectableOptions, selected.length, wasManuallyCleared]);
+  }, [options, maxSelectableOptions, selected.length, wasManuallyCleared, onChange, selected]);
 
   const IconComponent = withIconDecorator(
     iconName && Icons[iconName] ? Icons[iconName] : Icons.CaretDoubleDown,
@@ -204,7 +204,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
               >
                 {secciones.map((sec, index) => (
                   <SelectItem
-                    key={sec.value}
+                    key={`seccion-${sec.value}`}
                     value={sec.value}
                     className={`font-medium ${
                       index % 2 === 0
@@ -246,7 +246,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
                 >
                   {filter.options.map((opt, index) => (
                     <SelectItem
-                      key={opt.value}
+                      key={`${filter.key}-${opt.value}`} // <-- clave única por filtro y valor
                       value={opt.value}
                       className={`font-medium ${
                         index % 2 === 0
@@ -270,7 +270,7 @@ const FiltroEvento: React.FC<FiltroEventoProps> = ({
             <div className='max-h-40 overflow-y-auto border border-gray-200 rounded-md p-2 my-2'>
               {options.map((option, index) => (
                 <label
-                  key={option.value}
+                  key={`option-${option.value}`}
                   className={`flex items-center px-2 py-1 hover:bg-purple-100 cursor-pointer rounded-md ${
                     index % 2 === 0 ? 'text-primaryShade' : 'text-secondaryShade'
                   }`}

@@ -24,7 +24,13 @@ const Checkbox: React.FC<CheckboxProps> = ({
         type='checkbox'
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className={`${variant === 'primary' ? 'checkbox-odd' : variant === 'secondary' ? 'checkbox-even' : 'checkbox-accent'} checkbox-circle mr-2`}
+        className={`${
+          variant === 'primary'
+            ? 'checkbox-odd'
+            : variant === 'secondary'
+            ? 'checkbox-even'
+            : 'checkbox-accent'
+        } checkbox-circle mr-2`}
       />
       {label && <span className='text-sm'>{label}</span>}
     </label>

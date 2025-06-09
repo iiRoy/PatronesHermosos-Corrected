@@ -9,9 +9,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('user_id');
-    if (storedUserId) {
-      setUserId(storedUserId);
+    if (typeof window !== 'undefined') {
+      const storedUserId = localStorage.getItem('user_id');
+      if (storedUserId) {
+        setUserId(storedUserId);
+      }
     }
 
     setIsLoading(false);

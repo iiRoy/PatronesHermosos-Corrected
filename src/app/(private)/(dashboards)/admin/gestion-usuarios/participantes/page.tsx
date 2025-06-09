@@ -42,35 +42,44 @@ const GestionParticipantes = () => {
   const [participantesData, setParticipantesData] = useState<Participante[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 10;
 
+  // Obtener token solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchParticipantes = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const response = await fetch('/api/participants', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
         if (!response.ok) {
           const errorData = await response.json();
           if (response.status === 403) {
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             router.push('/login');
             return;
           }
           throw new Error(
-            `Error fetching participants: ${response.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching participants: ${response.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -81,8 +90,8 @@ const GestionParticipantes = () => {
         setError(error.message);
       }
     };
-    fetchParticipantes();
-  }, [router]);
+    if (apiToken) fetchParticipantes();
+  }, [router, apiToken]);
 
   const extraHandleFilterChange = (key: string, value: string) => {
     setFilterActivaExtra((prev) => ({
@@ -170,8 +179,7 @@ const GestionParticipantes = () => {
 
     // Fetch PDF
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -183,7 +191,7 @@ const GestionParticipantes = () => {
       }
 
       const response = await fetch(`/api/participants/${participante.id}/pdf`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${apiToken}` },
       });
 
       if (!response.ok) {
@@ -230,8 +238,7 @@ const GestionParticipantes = () => {
   const handleConfirmDelete = async () => {
     if (selectedParticipante) {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
@@ -240,7 +247,7 @@ const GestionParticipantes = () => {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -424,7 +431,9 @@ const GestionParticipantes = () => {
               <div className='pt-6 pb-6'>
                 <p>
                   <strong>Nombre Completo:</strong>{' '}
-                  {`${selectedParticipante.name} ${selectedParticipante.paternal_name || ''} ${selectedParticipante.maternal_name || ''}`.trim()}
+                  {`${selectedParticipante.name} ${selectedParticipante.paternal_name || ''} ${
+                    selectedParticipante.maternal_name || ''
+                  }`.trim()}
                 </p>
                 <p>
                   <strong>Correo:</strong> {selectedParticipante.correo}

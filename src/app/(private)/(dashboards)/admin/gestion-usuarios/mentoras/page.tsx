@@ -32,16 +32,23 @@ const GestionMentoras = () => {
   const [selectedMentora, setSelectedMentora] = useState<Mentora | null>(null);
   const [mentorasData, setMentorasData] = useState<Mentora[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 5;
 
+  // Obtener token solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchMentoras = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           notify({
             color: 'red',
             title: 'Error',
@@ -55,7 +62,7 @@ const GestionMentoras = () => {
         // Obtener mentoras (con token)
         const mentorsResponse = await fetch('/api/mentors', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -63,7 +70,7 @@ const GestionMentoras = () => {
 
         if (!mentorsResponse.ok) {
           if (mentorsResponse.status === 403) {
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             notify({
               color: 'red',
               title: 'Error',
@@ -74,7 +81,9 @@ const GestionMentoras = () => {
             return;
           }
           throw new Error(
-            `Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`,
+            `Error fetching mentors: ${mentorsResponse.status} - ${
+              mentorsData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -103,8 +112,8 @@ const GestionMentoras = () => {
         });
       }
     };
-    fetchMentoras();
-  }, [router, notify]);
+    if (apiToken) fetchMentoras();
+  }, [router, notify, apiToken]);
 
   const uniqueVenues = Array.from(new Set(mentorasData.map((mentora) => mentora.venue))).sort();
   const venueOptions = [
@@ -179,8 +188,7 @@ const GestionMentoras = () => {
     }
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -195,7 +203,7 @@ const GestionMentoras = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
       });
 

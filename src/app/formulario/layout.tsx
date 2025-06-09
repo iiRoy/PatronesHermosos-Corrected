@@ -8,6 +8,14 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Si necesitas el token para futuras mejoras, usa este patrón:
+  // const [apiToken, setApiToken] = useState<string | null>(null);
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     setApiToken(localStorage.getItem('api_token'));
+  //   }
+  // }, []);
+
   return (
     <div className='min-h-screen flex flex-col text-text bg-back'>
       <Navbar />

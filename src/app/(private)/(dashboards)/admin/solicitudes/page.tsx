@@ -108,8 +108,7 @@ const SolicitudesRegistroAdmin = () => {
   // Fetch available groups for a participant
   const fetchAvailableGroups = async (participantId: number) => {
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -121,7 +120,7 @@ const SolicitudesRegistroAdmin = () => {
       }
 
       const response = await fetch(`/api/participants/${participantId}/available-groups`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${apiToken}` },
       });
 
       if (!response.ok) {
@@ -151,8 +150,7 @@ const SolicitudesRegistroAdmin = () => {
   // Fetch available groups for a collaborator
   const fetchAvailableGroupsForCollaborator = async (collaboratorId: number) => {
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -164,7 +162,7 @@ const SolicitudesRegistroAdmin = () => {
       }
 
       const response = await fetch(`/api/collaborators/${collaboratorId}/available-groups`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${apiToken}` },
       });
 
       if (!response.ok) {
@@ -216,12 +214,20 @@ const SolicitudesRegistroAdmin = () => {
     }
   };
 
+  const [apiToken, setApiToken] = useState<string | null>(null);
+
+  // Obtener token solo en cliente y guardarlo en estado
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   // Obtener datos de la base de datos
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           setError('No token found, redirecting to login');
           router.push('/login');
           return;
@@ -229,12 +235,14 @@ const SolicitudesRegistroAdmin = () => {
 
         // Obtener participantes
         const participantsResponse = await fetch('/api/participants', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
         if (!participantsResponse.ok) {
           const errorData = await participantsResponse.json();
           throw new Error(
-            `Error fetching participants: ${participantsResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching participants: ${participantsResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const participantsData = await participantsResponse.json();
@@ -245,12 +253,14 @@ const SolicitudesRegistroAdmin = () => {
 
         // Obtener colaboradores
         const collaboratorsResponse = await fetch('/api/collaborators', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
         if (!collaboratorsResponse.ok) {
           const errorData = await collaboratorsResponse.json();
           throw new Error(
-            `Error fetching collaborators: ${collaboratorsResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching collaborators: ${collaboratorsResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const collaboratorsData = await collaboratorsResponse.json();
@@ -261,12 +271,14 @@ const SolicitudesRegistroAdmin = () => {
 
         // Obtener sedes
         const venuesResponse = await fetch('/api/venues', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
         if (!venuesResponse.ok) {
           const errorData = await venuesResponse.json();
           throw new Error(
-            `Error fetching venues: ${venuesResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching venues: ${venuesResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const venuesData = await venuesResponse.json();
@@ -279,8 +291,8 @@ const SolicitudesRegistroAdmin = () => {
       }
     };
 
-    fetchData();
-  }, [router]);
+    if (apiToken) fetchData();
+  }, [router, apiToken]);
 
   // Filtrar los datos según el valor de búsqueda y la sección activa
   const filteredData = useMemo(() => {
@@ -289,8 +301,8 @@ const SolicitudesRegistroAdmin = () => {
       return section === 'PARTICIPANTES'
         ? participantesData
         : section === 'APOYO & STAFF'
-          ? apoyoStaffData
-          : sedesData;
+        ? apoyoStaffData
+        : sedesData;
     }
 
     if (section === 'PARTICIPANTES') {
@@ -591,8 +603,9 @@ const SolicitudesRegistroAdmin = () => {
           prev.filter((p) => p.id_participant !== (selectedItem as Participante).id_participant),
         );
 
-        const fullName =
-          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName = `${(selectedItem as Participante).name} ${
+          (selectedItem as Participante).paternal_name
+        } ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'green',
           title: 'Éxito',
@@ -603,8 +616,9 @@ const SolicitudesRegistroAdmin = () => {
         closeConfirmPopup();
       } catch (error: any) {
         console.error('Error approving participant:', error);
-        const fullName =
-          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName = `${(selectedItem as Participante).name} ${
+          (selectedItem as Participante).paternal_name
+        } ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'red',
           title: 'Error',
@@ -668,8 +682,9 @@ const SolicitudesRegistroAdmin = () => {
           prev.filter((c) => c.id_collaborator !== (selectedItem as ApoyoStaff).id_collaborator),
         );
 
-        const fullName =
-          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName = `${(selectedItem as ApoyoStaff).name} ${
+          (selectedItem as ApoyoStaff).paternal_name
+        } ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         const groupName =
           availableGroups.find((g) => g.id_group === selectedGroupId)?.name || 'Desconocido';
         notify({
@@ -682,8 +697,9 @@ const SolicitudesRegistroAdmin = () => {
         closeConfirmPopup();
       } catch (error: any) {
         console.error('Error approving collaborator:', error);
-        const fullName =
-          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName = `${(selectedItem as ApoyoStaff).name} ${
+          (selectedItem as ApoyoStaff).paternal_name
+        } ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         notify({
           color: 'red',
           title: 'Error',
@@ -783,8 +799,9 @@ const SolicitudesRegistroAdmin = () => {
           prev.filter((p) => p.id_participant !== (selectedItem as Participante).id_participant),
         );
 
-        const fullName =
-          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName = `${(selectedItem as Participante).name} ${
+          (selectedItem as Participante).paternal_name
+        } ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'green',
           title: 'Éxito',
@@ -795,8 +812,9 @@ const SolicitudesRegistroAdmin = () => {
         closeRejectPopup();
       } catch (error: any) {
         console.error('Error rejecting participant:', error);
-        const fullName =
-          `${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim();
+        const fullName = `${(selectedItem as Participante).name} ${
+          (selectedItem as Participante).paternal_name
+        } ${(selectedItem as Participante).maternal_name}`.trim();
         notify({
           color: 'red',
           title: 'Error',
@@ -843,8 +861,9 @@ const SolicitudesRegistroAdmin = () => {
           ),
         );
 
-        const fullName =
-          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName = `${(selectedItem as ApoyoStaff).name} ${
+          (selectedItem as ApoyoStaff).paternal_name
+        } ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         notify({
           color: 'green',
           title: 'Éxito',
@@ -855,8 +874,9 @@ const SolicitudesRegistroAdmin = () => {
         closeRejectPopup();
       } catch (error: any) {
         console.error('Error rejecting collaborator:', error);
-        const fullName =
-          `${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
+        const fullName = `${(selectedItem as ApoyoStaff).name} ${
+          (selectedItem as ApoyoStaff).paternal_name
+        } ${(selectedItem as ApoyoStaff).maternal_name}`.trim();
         let errorMessage = error.message;
 
         // Handle specific error
@@ -1042,19 +1062,25 @@ const SolicitudesRegistroAdmin = () => {
         {/* Section Headers */}
         <div className='flex justify-center gap-48 mt-2 pb-2'>
           <div
-            className={`cursor-pointer text-lg font-bold ${section === 'PARTICIPANTES' ? 'text-purple-800' : 'text-gray-500'}`}
+            className={`cursor-pointer text-lg font-bold ${
+              section === 'PARTICIPANTES' ? 'text-purple-800' : 'text-gray-500'
+            }`}
             onClick={() => sectionFilterChange('PARTICIPANTES')}
           >
             Participantes
           </div>
           <div
-            className={`cursor-pointer text-lg font-bold ${section === 'APOYO & STAFF' ? 'text-purple-800' : 'text-gray-500'}`}
+            className={`cursor-pointer text-lg font-bold ${
+              section === 'APOYO & STAFF' ? 'text-purple-800' : 'text-gray-500'
+            }`}
             onClick={() => sectionFilterChange('APOYO & STAFF')}
           >
             Apoyo & Staff
           </div>
           <div
-            className={`cursor-pointer text-lg font-bold ${section === 'SEDES' ? 'text-purple-800' : 'text-gray-500'}`}
+            className={`cursor-pointer text-lg font-bold ${
+              section === 'SEDES' ? 'text-purple-800' : 'text-gray-500'
+            }`}
             onClick={() => sectionFilterChange('SEDES')}
           >
             Sedes
@@ -1113,7 +1139,9 @@ const SolicitudesRegistroAdmin = () => {
                         />
                       </td>
                       <td className='p-2 text-center'>
-                        {`${(item as Participante).name} ${(item as Participante).paternal_name} ${(item as Participante).maternal_name}`.trim()}
+                        {`${(item as Participante).name} ${(item as Participante).paternal_name} ${
+                          (item as Participante).maternal_name
+                        }`.trim()}
                       </td>
                       <td className='p-2 text-center'>
                         {(item as Participante).groups?.name || 'No asignado'}
@@ -1165,7 +1193,9 @@ const SolicitudesRegistroAdmin = () => {
                         />
                       </td>
                       <td className='p-2 text-center'>
-                        {`${(item as ApoyoStaff).name} ${(item as ApoyoStaff).paternal_name} ${(item as ApoyoStaff).maternal_name}`.trim()}
+                        {`${(item as ApoyoStaff).name} ${(item as ApoyoStaff).paternal_name} ${
+                          (item as ApoyoStaff).maternal_name
+                        }`.trim()}
                       </td>
                       <td className='p-2 text-center'>{(item as ApoyoStaff).preferred_role}</td>
                       <td className='p-2 text-center'>{(item as ApoyoStaff).preferred_language}</td>
@@ -1270,7 +1300,9 @@ const SolicitudesRegistroAdmin = () => {
                 <div className='pt-6 pb-6'>
                   <p>
                     <strong>Nombre:</strong>{' '}
-                    {`${(selectedItem as Participante).name} ${(selectedItem as Participante).paternal_name} ${(selectedItem as Participante).maternal_name}`.trim()}
+                    {`${(selectedItem as Participante).name} ${
+                      (selectedItem as Participante).paternal_name
+                    } ${(selectedItem as Participante).maternal_name}`.trim()}
                   </p>
                   <p>
                     <strong>Correo:</strong> {(selectedItem as Participante).email}
@@ -1313,7 +1345,9 @@ const SolicitudesRegistroAdmin = () => {
                 <div className='pt-6 pb-6'>
                   <p>
                     <strong>Nombre:</strong>{' '}
-                    {`${(selectedItem as ApoyoStaff).name} ${(selectedItem as ApoyoStaff).paternal_name} ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}
+                    {`${(selectedItem as ApoyoStaff).name} ${
+                      (selectedItem as ApoyoStaff).paternal_name
+                    } ${(selectedItem as ApoyoStaff).maternal_name}`.trim()}
                   </p>
                   <p>
                     <strong>Correo:</strong> {(selectedItem as ApoyoStaff).email}
@@ -1415,7 +1449,9 @@ const SolicitudesRegistroAdmin = () => {
                 ¿Aceptar a{' '}
                 {section === 'SEDES'
                   ? (selectedItem as Sede).name
-                  : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}
+                  : `${(selectedItem as Participante | ApoyoStaff).name} ${
+                      (selectedItem as Participante | ApoyoStaff).paternal_name
+                    } ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}
                 ?
               </h2>
               <div className='pt-6 pb-6'>
@@ -1555,7 +1591,9 @@ const SolicitudesRegistroAdmin = () => {
                 ¿Seguro que quieres rechazar la solicitud de{' '}
                 {section === 'SEDES'
                   ? (selectedItem as Sede).name
-                  : `${(selectedItem as Participante | ApoyoStaff).name} ${(selectedItem as Participante | ApoyoStaff).paternal_name} ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}
+                  : `${(selectedItem as Participante | ApoyoStaff).name} ${
+                      (selectedItem as Participante | ApoyoStaff).paternal_name
+                    } ${(selectedItem as Participante | ApoyoStaff).maternal_name}`.trim()}
                 ?
               </h2>
               <div className='mt-4 flex justify-center gap-4'>
@@ -1572,14 +1610,18 @@ const SolicitudesRegistroAdmin = () => {
               {section === 'PARTICIPANTES' && selectedItem && (
                 <h2 className='text-2xl font-bold mb-4 text-center'>
                   Enviar correo de cambio de grupo a{' '}
-                  {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
+                  {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${
+                    (selectedItem as any).maternal_name
+                  }`.trim()}
                 </h2>
               )}
               {section === 'APOYO & STAFF' && selectedItem && (
                 <div className='mb-4'>
                   <h2 className='text-2xl font-bold mb-4 text-center'>
                     Enviar correo a{' '}
-                    {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${(selectedItem as any).maternal_name}`.trim()}
+                    {`${(selectedItem as any).name} ${(selectedItem as any).paternal_name} ${
+                      (selectedItem as any).maternal_name
+                    }`.trim()}
                   </h2>
                   <label className='block mb-2 font-semibold'>Plantilla:</label>
                   <select

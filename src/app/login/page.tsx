@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import InputField from '@/components/buttons_inputs/InputField'; // ajusta el path si es necesario
+import InputField from '@/components/buttons_inputs/InputField';
 import Button from '@/components/buttons_inputs/Button';
 import Checkbox from '@/components/buttons_inputs/Checkbox';
 import * as Icons from '@/components/icons';
@@ -18,12 +18,16 @@ export default function LoginForm() {
   const router = useRouter();
   const { notify } = useNotification();
 
+  // Controla el lockout y los intentos de login
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const lockoutTime = parseInt(localStorage.getItem('lockoutTime') || '');
-    const readableTime = new Date(lockoutTime).toLocaleTimeString('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const readableTime = lockoutTime
+      ? new Date(lockoutTime).toLocaleTimeString('es-MX', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '';
     if (lockoutTime && Date.now() < lockoutTime) {
       setIsLocked(true);
       notify({
@@ -43,7 +47,7 @@ export default function LoginForm() {
         localStorage.removeItem('loginAttempts');
       }
     }
-  }, []);
+  }, [notify]);
 
   // Función para elegir el dashboard según rol
   function getDashboardRouteByRole(role: string) {
@@ -71,39 +75,42 @@ export default function LoginForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        let attempts = parseInt(localStorage.getItem('loginAttempts') || '0') + 1;
-        localStorage.setItem('loginAttempts', attempts.toString());
+        if (typeof window !== 'undefined') {
+          let attempts = parseInt(localStorage.getItem('loginAttempts') || '0') + 1;
+          localStorage.setItem('loginAttempts', attempts.toString());
 
-        if (attempts >= 5) {
-          const oneHourLater = Date.now() + 60 * 10 * 1000;
-          localStorage.setItem('lockoutTime', oneHourLater.toString());
-          const lockoutTime = parseInt(localStorage.getItem('lockoutTime') || '');
-          const readableTime = new Date(lockoutTime).toLocaleTimeString('es-MX', {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-          setIsLocked(true);
-          setTimeout(
-            () =>
-              notify({
-                color: 'red',
-                title: 'Demasiados intentos',
-                message: `Has superado el número de intentos permitidos. Intenta nuevamente a las ${readableTime}`,
-                iconName: 'SealWarning',
-                variant: 'two',
-                duration: 5000,
-              }),
-            100,
-          );
-          setError(
-            'Has superado el número máximo de intentos. Vuelve a ingresar dentro de 10 minutos.',
-          );
-          setLoading(false);
-          return;
+          if (attempts >= 5) {
+            const lockoutUntil = Date.now() + 10 * 60 * 1000;
+            localStorage.setItem('lockoutTime', lockoutUntil.toString());
+            const readableTime = new Date(lockoutUntil).toLocaleTimeString('es-MX', {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+            setIsLocked(true);
+            setTimeout(
+              () =>
+                notify({
+                  color: 'red',
+                  title: 'Demasiados intentos',
+                  message: `Has superado el número de intentos permitidos. Intenta nuevamente a las ${readableTime}`,
+                  iconName: 'SealWarning',
+                  variant: 'two',
+                  duration: 5000,
+                }),
+              100,
+            );
+            setError(
+              'Has superado el número máximo de intentos. Vuelve a ingresar dentro de 10 minutos.',
+            );
+            setLoading(false);
+            return;
+          }
         }
 
         setError(
-          `${data.message} (Intentos restantes: ${5 - Number(localStorage.getItem('loginAttempts'))}.)`,
+          `${data.message} (Intentos restantes: ${
+            5 - Number(localStorage.getItem('loginAttempts'))
+          }.)`,
         );
         notify({
           color: 'red',
@@ -118,17 +125,17 @@ export default function LoginForm() {
       }
 
       // Guarda en localStorage los datos del usuario
-      localStorage.setItem('api_token', data.token);
-      localStorage.setItem('user_id', data.user.id);
-      localStorage.setItem('user_name', data.user.name);
-      localStorage.setItem('user_username', data.user.username);
-      localStorage.setItem('user_role', data.role);
-      localStorage.setItem('user_name', data.user.name);
-      localStorage.setItem('user_username', data.user.username);
-      localStorage.setItem('user_image', data.user.image);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('api_token', data.token);
+        localStorage.setItem('user_id', data.user.id);
+        localStorage.setItem('user_name', data.user.name);
+        localStorage.setItem('user_username', data.user.username);
+        localStorage.setItem('user_role', data.role);
+        localStorage.setItem('user_image', data.user.image);
 
-      localStorage.removeItem('lockoutTime');
-      localStorage.removeItem('loginAttempts');
+        localStorage.removeItem('lockoutTime');
+        localStorage.removeItem('loginAttempts');
+      }
 
       router.push(getDashboardRouteByRole(data.role));
     } catch (err) {

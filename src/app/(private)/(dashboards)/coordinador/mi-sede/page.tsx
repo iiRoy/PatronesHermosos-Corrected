@@ -37,7 +37,7 @@ interface Group {
   };
 }
 
-const verSede = () => {
+const VerSede = () => {
   const [inputValue, setInputValue] = useState('');
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [venueName, setVenueName] = useState('Cargando...');
@@ -48,99 +48,105 @@ const verSede = () => {
   const [userInfo, setUserInfo] = useState<{ email: string; username: string } | null>(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
+  // Obtener token y decodificarlo solo en cliente
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        if (decoded.role === 'venue_coordinator') {
-          setUserInfo({ email: decoded.email, username: decoded.username });
-          setVenueId(decoded.userId);
-          fetchVenueData(decoded.userId);
-          fetchGroups(decoded.userId);
-          fetchParticipants(decoded.userId);
-        } else {
-          setError('Este dashboard es solo para coordinadores de sede');
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      setApiToken(token);
+      if (token) {
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          if (decoded.role === 'venue_coordinator') {
+            setUserInfo({ email: decoded.email, username: decoded.username });
+            setVenueId(decoded.userId);
+          } else {
+            setError('Este dashboard es solo para coordinadores de sede');
+            router.push('/login');
+          }
+        } catch (err) {
+          console.error('Error al decodificar el token:', err);
+          setError('Token inválido');
           router.push('/login');
         }
-      } catch (err) {
-        console.error('Error al decodificar el token:', err);
-        setError('Token inválido');
+      } else {
+        setError('No se encontró el token, por favor inicia sesión');
         router.push('/login');
       }
-    } else {
-      setError('No se encontró el token, por favor inicia sesión');
-      router.push('/login');
     }
-  }, [router, notify]);
+  }, [router]);
 
-  const fetchVenueData = async (venueId: number) => {
-    try {
-      const response = await fetch(`/api/venues/${venueId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
-      });
-      const data = await response.json();
-      console.log('Venue data:', data);
-      if (response.ok) {
-        setVenueName(data.name || 'Sede no encontrada');
-      } else {
-        setVenueName('Sede no encontrada');
-        setError(`Error al cargar datos de la sede: ${data.message}`);
-      }
-    } catch (error) {
-      console.error('Error fetching venue:', error);
-      setVenueName('Sede no encontrada');
-      setError('Error al cargar datos de la sede');
-    }
-  };
-
-  const fetchGroups = async (venueId: number) => {
-    try {
-      const response = await fetch('/api/groups', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
-      });
-      const data = await response.json();
-      console.log('Groups data:', data);
-      if (response.ok && Array.isArray(data)) {
-        const filteredGroups = data.filter(
-          (group: Group) => group.id_venue === venueId && group.status === 'Aprobada',
-        );
-        console.log('Filtered groups (by venue and status):', filteredGroups);
-        setGroupsData(filteredGroups);
-      } else {
-        setError(`Error al cargar grupos: ${data.message || 'Datos no disponibles'}`);
-      }
-    } catch (error) {
-      console.error('Error fetching groups:', error);
-      setError('Error al cargar grupos');
-    }
-  };
-
-  const fetchParticipants = async (venueId: number) => {
-    try {
-      const response = await fetch('/api/participants', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
-      });
-      const data = await response.json();
-      console.log('Participants data:', data);
-      if (response.ok && data.data) {
-        const filteredParticipants = data.data.filter((p: Participant) => {
-          console.log(`Participant ${p.id}: id_venue=${p.id_venue}, venueId=${venueId}`);
-          return p.id_venue === venueId;
+  // Cargar datos de sede, grupos y participantes
+  useEffect(() => {
+    const fetchVenueData = async (venueId: number) => {
+      try {
+        if (!apiToken) return;
+        const response = await fetch(`/api/venues/${venueId}`, {
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
-        console.log('Filtered participants:', filteredParticipants);
-        setParticipants(filteredParticipants);
-      } else {
-        setError(`Error al cargar participantes: ${data.message || 'Datos no disponibles'}`);
+        const data = await response.json();
+        if (response.ok) {
+          setVenueName(data.name || 'Sede no encontrada');
+        } else {
+          setVenueName('Sede no encontrada');
+          setError(`Error al cargar datos de la sede: ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Error fetching venue:', error);
+        setVenueName('Sede no encontrada');
+        setError('Error al cargar datos de la sede');
       }
-    } catch (error) {
-      console.error('Error fetching participants:', error);
-      setError('Error al cargar participantes');
+    };
+
+    const fetchGroups = async (venueId: number) => {
+      try {
+        if (!apiToken) return;
+        const response = await fetch('/api/groups', {
+          headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        const data = await response.json();
+        if (response.ok && Array.isArray(data)) {
+          const filteredGroups = data.filter(
+            (group: Group) => group.id_venue === venueId && group.status === 'Aprobada',
+          );
+          setGroupsData(filteredGroups);
+        } else {
+          setError(`Error al cargar grupos: ${data.message || 'Datos no disponibles'}`);
+        }
+      } catch (error) {
+        console.error('Error fetching groups:', error);
+        setError('Error al cargar grupos');
+      }
+    };
+
+    const fetchParticipants = async (venueId: number) => {
+      try {
+        if (!apiToken) return;
+        const response = await fetch('/api/participants', {
+          headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        const data = await response.json();
+        if (response.ok && data.data) {
+          const filteredParticipants = data.data.filter((p: Participant) => p.id_venue === venueId);
+          setParticipants(filteredParticipants);
+        } else {
+          setError(`Error al cargar participantes: ${data.message || 'Datos no disponibles'}`);
+        }
+      } catch (error) {
+        console.error('Error fetching participants:', error);
+        setError('Error al cargar participantes');
+      }
+    };
+
+    if (venueId !== null && apiToken) {
+      fetchVenueData(venueId);
+      fetchGroups(venueId);
+      fetchParticipants(venueId);
     }
-  };
+  }, [venueId, apiToken]);
 
   const filteredGroups = groupsData.filter((g) => {
     const matchesSearch = g.name.toLowerCase().includes(inputValue.toLowerCase());
@@ -176,8 +182,7 @@ const verSede = () => {
     if (!selectedGroup || !venueId) return;
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         setError('No se encontró el token, por favor inicia sesión');
         router.push('/login');
         return;
@@ -187,20 +192,30 @@ const verSede = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify({ action: 'desactivar' }),
       });
 
       const data = await response.json();
-      console.log('Delete response:', data);
 
       if (response.ok) {
         setShowDeletePopup(false);
         setSelectedGroup(null);
         setSelectedGroupId(null);
-        fetchGroups(venueId);
-        fetchParticipants(venueId);
+        // Refrescar datos
+        // venueId no cambia, así que solo recargamos los datos
+        // (no hace falta pasar venueId como argumento)
+        // Los useEffect de arriba se encargarán de recargar
+        setTimeout(() => {
+          // Pequeño delay para evitar race condition visual
+          if (venueId) {
+            // Solo refrescar si sigue en la misma sede
+            // (por si el usuario navega rápido)
+            // eslint-disable-next-line
+            window.location.reload();
+          }
+        }, 500);
         notify({
           color: 'green',
           title: 'Grupo Eliminado',
@@ -289,7 +304,9 @@ const verSede = () => {
               {filteredGroups.map((g) => (
                 <tr
                   key={g.id_group}
-                  className={`border-t cursor-pointer hover:bg-gray-300 ${selectedGroupId === g.id_group ? 'bg-gray-200' : ''}`}
+                  className={`border-t cursor-pointer hover:bg-gray-300 ${
+                    selectedGroupId === g.id_group ? 'bg-gray-200' : ''
+                  }`}
                   onClick={() => handleRowClick(g.id_group)}
                 >
                   <td className='py-2 text-center'>
@@ -346,4 +363,4 @@ const verSede = () => {
   );
 };
 
-export default verSede;
+export default VerSede;

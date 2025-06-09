@@ -45,7 +45,9 @@ const CardSection = () => {
     try {
       const res = await fetch(`/api/data?page=${page}&${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''}`,
+          Authorization: `Bearer ${
+            typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
+          }`,
         },
       });
       return await res.json();
@@ -205,7 +207,9 @@ const CardSection = () => {
         <div className='flex flex-col md:flex-row items-center justify-center w-full relative gap-2 md:gap-9'>
           <div>
             <div
-              className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${fadeSec ? 'opacity-0' : 'opacity-100'}`}
+              className={`mb-[-6px] flex flex-row gap-3 items-center justify-between transition-opacity duration-300 ${
+                fadeSec ? 'opacity-0' : 'opacity-100'
+              }`}
             >
               <IconComponent
                 fillColor='var(--text-color)'

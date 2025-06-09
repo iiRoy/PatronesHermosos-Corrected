@@ -27,6 +27,7 @@ const navItems = [
 
 const Navbar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [showPostulateMenu, setShowPostulateMenu] = useState(false);
 
   const handlePostulateHover = () => {
@@ -116,7 +117,7 @@ const Navbar = () => {
               variant='secondary'
               showLeftIcon
               IconLeft={Icons.FingerprintSimple}
-              disabled={usePathname() == '/login'}
+              disabled={pathname == '/login'}
               onClick={() => router.push('/login')}
               activeTransition={true}
             />

@@ -71,6 +71,9 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
 
   const shouldShowSedeFilter = userRole === 'superuser';
 
+  // Extract filters and effectiveXKey to variables for useEffect dependencies
+  const filtersString = JSON.stringify(filters);
+
   useEffect(() => {
     if (isFirstRender.current) {
       setFade(true);
@@ -171,7 +174,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [apiEndpoint, dataPath, JSON.stringify(filters), maxItems, userRole]);
+  }, [apiEndpoint, dataPath, filtersString, maxItems, userRole, effectiveXKey, filters]);
 
   const handleFilterChange = (updated: string[]) => {
     setFade(true);
@@ -182,10 +185,17 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
     }, 250);
   };
 
-  const options = data.map((d) => ({
-    value: d[effectiveXKey] as string,
-    label: d[effectiveXKey] as string,
-  }));
+  const seen = new Set();
+  const options = data
+    .map((d) => ({
+      value: d[effectiveXKey] as string,
+      label: d[effectiveXKey] as string,
+    }))
+    .filter((option) => {
+      if (seen.has(option.value)) return false;
+      seen.add(option.value);
+      return true;
+    });
 
   const seriesKeys =
     data.length > 0

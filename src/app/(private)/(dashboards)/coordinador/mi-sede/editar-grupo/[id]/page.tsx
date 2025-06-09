@@ -11,7 +11,6 @@ import { Armchair, Flag, SealWarning, Users, UserSound } from '@/components/icon
 import { useNotification } from '@/components/buttons_inputs/Notification';
 import { jwtDecode } from 'jwt-decode';
 
-// Definir el tipo DropdownOption localmente
 interface DropdownOption {
   label: string;
   value: string;
@@ -68,14 +67,17 @@ const EditarGrupo = () => {
   const [idVenue, setIdVenue] = useState<number | null>(null);
   const [mentors, setMentors] = useState<DropdownOption[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
   const params = useParams();
   const groupId = params.id;
 
+  // Obtener token y decodificarlo solo en cliente
   useEffect(() => {
-    const fetchCoordinatorVenue = () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      setApiToken(token);
       if (token) {
         try {
           const decoded: DecodedToken = jwtDecode(token);
@@ -99,10 +101,13 @@ const EditarGrupo = () => {
         setError('No se encontró el token, por favor inicia sesión');
         router.push('/login');
       }
-    };
+    }
+  }, [router]);
 
+  // Cargar datos del grupo
+  useEffect(() => {
     const fetchGroupData = async () => {
-      if (!groupId || isNaN(parseInt(groupId as string))) {
+      if (!groupId || isNaN(parseInt(groupId as string)) || !apiToken) {
         setError('ID de grupo inválido');
         router.push('/coordinador/mi-sede');
         return;
@@ -110,10 +115,9 @@ const EditarGrupo = () => {
 
       try {
         const response = await fetch('/api/groups', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
         const data = await response.json();
-        console.log('Groups data:', data);
         if (response.ok && Array.isArray(data)) {
           const group = data.find((g: Group) => g.id_group === parseInt(groupId as string));
           if (group) {
@@ -132,18 +136,16 @@ const EditarGrupo = () => {
 
             if (group.id_mentor) {
               const mentorResponse = await fetch(`/api/mentors/${group.id_mentor}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
+                headers: { Authorization: `Bearer ${apiToken}` },
               });
               const mentorData = await mentorResponse.json();
-              console.log('Mentor data for group:', mentorData); // Depuración
               if (mentorResponse.ok && mentorData.success) {
                 setMentorNameValue(mentorData.data.name);
               } else {
-                console.log('Error or no mentor found:', mentorData.message);
-                setMentorNameValue('Mentor no encontrado'); // Establecer null si no se encuentra
+                setMentorNameValue('Mentor no encontrado');
               }
             } else {
-              setMentorNameValue('Sin mentor asignado'); // Sin mentor asignado
+              setMentorNameValue('Sin mentor asignado');
             }
           } else {
             setError('Grupo no encontrado');
@@ -158,14 +160,20 @@ const EditarGrupo = () => {
       }
     };
 
+    if (idVenue !== null && apiToken) {
+      fetchGroupData();
+    }
+  }, [router, groupId, idVenue, apiToken]);
+
+  // Cargar mentoras de la sede
+  useEffect(() => {
     const fetchMentors = async () => {
-      if (!idVenue) return;
+      if (!idVenue || !apiToken) return;
       try {
         const response = await fetch('/api/mentors', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
         const data = await response.json();
-        console.log('Mentors data:', data);
         if (data.success && Array.isArray(data.data)) {
           const filteredMentors = data.data.filter((m: Mentor) => m.id_venue === idVenue);
           const mentorMapTemp: { [key: string]: number } = {};
@@ -178,7 +186,6 @@ const EditarGrupo = () => {
           });
           setMentorMap(mentorMapTemp);
           setMentors(mentorOptions);
-          console.log('Mentor map:', mentorMapTemp); // Depuración
         } else {
           setError(`Error al cargar mentoras: ${data.message || 'Datos no disponibles'}`);
         }
@@ -188,17 +195,14 @@ const EditarGrupo = () => {
       }
     };
 
-    fetchCoordinatorVenue();
-    if (idVenue !== null) {
-      fetchGroupData();
+    if (idVenue !== null && apiToken) {
       fetchMentors();
     }
-  }, [router, notify, groupId, idVenue]);
+  }, [idVenue, apiToken]);
 
   const handleConfirm = async () => {
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         router.push('/login');
         return;
       }
@@ -243,7 +247,6 @@ const EditarGrupo = () => {
       if (mentorNameValue && !idMentor) {
         throw new Error('No se pudo mapear la mentora seleccionada a un ID válido');
       }
-      console.log('Selected mentor name:', mentorNameValue, 'Mapped ID:', idMentor); // Depuración
 
       const updatedGroup = {
         name: nameValue.trim(),
@@ -260,22 +263,20 @@ const EditarGrupo = () => {
         id_venue: idVenue,
       };
 
-      console.log('Datos enviados al servidor:', updatedGroup);
       const response = await fetch(`/api/groups/${groupId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(updatedGroup),
       });
 
       const responseData = await response.json();
-      console.log('Respuesta del servidor:', responseData);
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
-          localStorage.removeItem('api_token');
+          if (typeof window !== 'undefined') localStorage.removeItem('api_token');
           router.push('/login');
           return;
         }
