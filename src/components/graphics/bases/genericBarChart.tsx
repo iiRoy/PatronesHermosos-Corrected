@@ -276,8 +276,7 @@ const GenericBarChart: React.FC<GenericBarChartProps> = ({
                   iconName={undefined}
                   label='Filtros'
                   labelOptions={
-                    effectiveXKey.charAt(0).toUpperCase() +
-                    effectiveXKey.slice(1).replaceAll('_', ' ')
+                    effectiveXKey.toUpperCase()
                   }
                   selectAll={selectAll}
                   deselectAll={deselectAll}

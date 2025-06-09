@@ -1,26 +1,42 @@
 [
   {
-    "username": "barbararosario",
-    "name": "Barbara",
-    "paternal_name": "Rosario",
-    "maternal_name": "Barba",
-    "email": "hurtadolaura@tec.mx",
-    "password": ")iKe6nSfM@"
+    "username": "jmgonzale",
+    "email": "jmgonzale@tec.mx",
+    "password": "JU09$$Leju",
+    "name": "Juan Manuel",
+    "paternal_name": "González",
+    "maternal_name": "Calleros"
   },
   {
-    "username": "liraleonardo",
-    "name": "Leonardo",
-    "paternal_name": "Lira",
-    "maternal_name": "Cano",
-    "email": "iorellana@tec.mx",
-    "password": "HP7UMIrK@D"
+    "username": "aromerog",
+    "email": "aromerog@tec.mx",
+    "password": "AL04$$Egga",
+    "name": "Alba",
+    "paternal_name": "Romero",
+    "maternal_name": "García"
   },
   {
-    "username": "esperanza53",
-    "name": "Esperanza",
-    "paternal_name": "Gonzalez",
-    "maternal_name": "Lópéz",
-    "email": "gallardoguadalupe@tec.mx",
-    "password": "*_KFokliq3"
+    "username": "rgparedes",
+    "email": "rgparedes@tec.mx",
+    "password": "RO04$$Esju",
+    "name": "Rosa",
+    "paternal_name": "Paredes",
+    "maternal_name": "Juarez"
+  },
+  {
+    "username": "perez.claudia",
+    "email": "perez.claudia@tec.mx",
+    "password": "CL07$$Ezle",
+    "name": "Claudia",
+    "paternal_name": "Pérez",
+    "maternal_name": "Lezama"
+  },
+  {
+    "username": "rdglopz",
+    "email": "r.lopez.guerra@hotmail.com",
+    "password": "R0L0Gu$R0dr1g0",
+    "name": "Rodrigo",
+    "paternal_name": "López",
+    "maternal_name": "Guerra"
   }
 ]

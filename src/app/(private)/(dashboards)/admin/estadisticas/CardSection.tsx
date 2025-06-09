@@ -75,7 +75,7 @@ const CardSection = () => {
         label: sede.name,
       }));
 
-      setSedes([{ value: '__all__', label: 'Todas las sedes' }, ...opciones]);
+      setSedes([{ value: '__all__', label: 'Todas las SEDES' }, ...opciones]);
     }
   }, []);
 

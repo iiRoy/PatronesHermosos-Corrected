@@ -1,38 +1,43 @@
 [
   {
     "name": "ITESM Puebla",
-    "location": "Puebla, Puebla, México",
-    "address": "Diagonal Caraballo 020 558, Vieja Costa Rica, VER 63602-5429",
+    "country": "México",
+    "state": "Puebla",
+    "address": "Atlixcáyotl 5718, Reserva Territorial Atlixcáyotl, 72453 Heroica Puebla de Zaragoza, Pue.",
+    "location": "Heroica Puebla de Zaragoza, Puebla, México",
     "status": "Registrada con participantes"
   },
   {
     "name": "ITESM Guadalajara",
-    "location": "Guadalajara, Jalisco, México",
-    "address": "Circuito Francia 656 Interior 214, Nueva Zambia, SON 14414",
-    "status": "Registrada con participantes"
-  },
-  {
-    "name": "Universidad de los Ándes",
-    "location": "Bogotá, Colombia",
-    "address": "Diagonal Norte Montañez 741 256, San Indira los bajos, JAL 48878",
-    "status": "Registrada con participantes"
-  },
-  {
-    "name": "MIT",
-    "location": "Cambridge, Massachusetts, USA",
-    "address": "Eje vial Montenegro 686 Edif. 669 , Depto. 645, San Yuridia de la Montaña, MEX 27692-5021",
+    "country": "México",
+    "state": "Jalisco",
+    "address": "Av. Gral Ramón Corona No 2514, Colonia Nuevo México, 45201 Zapopan, Jal.",
+    "location": "Zapopan, Jalisco, México",
     "status": "Registrada con participantes"
   },
   {
     "name": "ITESM Querétaro",
-    "location": "Querétaro, Querétaro, México",
-    "address": "Andador Norte Botello 662 Edif. 650 , Depto. 556, Nueva Zimbabwe, COL 34828-2503",
+    "country": "México",
+    "state": "Querétaro",
+    "address": "Epigmenio González 500, Fracc. San Pablo, 76130 Santiago de Querétaro, Qro.",
+    "location": "Santiago de Querétaro, Querétaro, México",
     "status": "Registrada con participantes"
   },
   {
-    "name": "Universidad La Salle",
-    "location": "Ciudad de México, México",
-    "address": "Boulevard de Jesús 043 Interior 970, San Esther los altos, SIN 74076",
-    "status": "Pendiente"
+    "name": "Pontificia Universidad Católica de Chile",
+    "country": "Chile",
+    "state": "Santiago",
+    "address": "Marcoleta 367, 8320165 Santiago, Región Metropolitana, Chile.",
+    "location": "Santiago, Región Metropolitana, Chile",
+    "status": "Registrada con participantes"
+  },
+  {
+    "name": "MIT",
+    "country": "Estados Unidos",
+    "state": "Massachusetts",
+    "address": "77 Massachusetts Ave, Cambridge, MA 02139, Estados Unidos",
+    "location": "Cambridge, Massachusetts, Estados Unidos",
+    "status": "Registrada con participantes"
   }
 ]
+
