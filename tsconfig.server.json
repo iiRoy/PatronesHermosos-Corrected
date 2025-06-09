@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "commonjs",
+    "target": "es2020",
+    "noEmit": false,
+    "allowJs": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/server.ts",
+    "src/routes/**/*.ts",
+    "src/middlewares/**/*.ts",
+    "src/controllers/**/*.ts",
+    "src/validators/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.ts"
+  ]
+}
