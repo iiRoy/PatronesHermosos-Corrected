@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.2...v2.1.0) (2025-06-09)
+
+
+### Features
+
+* **backend:** Unificar el stack de servidor en TypeScript ([cbdc971](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/cbdc971f3bc9a01d081f78610205a72ed0aa4773))
+
 ## [2.0.2](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.1...v2.0.2) (2025-06-09)
 
 
