@@ -135,12 +135,12 @@ const CollaboratorRegistrationForm: React.FC = () => {
       newErrors.push('El correo electrónico debe ser válido');
     if (!formData.phone_number) newErrors.push('El celular es obligatorio');
     if (!formData.gender) newErrors.push('El sexo es obligatorio');
-    if (!formData.college) newErrors.push('La institución académica es obligatorio');
-    if (!formData.degree) newErrors.push('La carrera es obligatorio');
+    if (!formData.college) newErrors.push('La institución académica es obligatoria');
+    if (!formData.degree) newErrors.push('La carrera es obligatoria');
     if (!formData.semester) newErrors.push('El semestre es obligatorio');
     if (!formData.preferred_role) newErrors.push('El rol preferido es obligatorio');
     if (!formData.preferred_language) newErrors.push('El idioma preferido es obligatorio');
-    if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatorio');
+    if (!formData.preferred_level) newErrors.push('La dificultad preferida es obligatoria');
     if (!formData.preferred_group) newErrors.push('El grupo preferido es obligatorio');
     if (!privacyAccepted) newErrors.push('Debes aceptar el aviso de privacidad');
 

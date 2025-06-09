@@ -30,7 +30,7 @@ const upload = multer({
       return cb(new Error('El archivo de participación debe ser un PDF'));
     }
     if (
-      (file.fieldname === 'logo' || file.fieldname === 'generalCoordinator.profileImage') &&
+      (file.fieldname === 'logo' || file.fieldname === 'venueCoordinator.profileImage') &&
       !file.mimetype.startsWith('image/')
     ) {
       return cb(new Error('Los archivos de logo y foto de perfil deben ser imágenes'));
@@ -54,7 +54,7 @@ router.post(
   upload.fields([
     { name: 'participation_file', maxCount: 1 },
     { name: 'logo', maxCount: 1 },
-    { name: 'generalCoordinator.profileImage', maxCount: 1 },
+    { name: 'venueCoordinator.profileImage', maxCount: 1 },
   ]),
   validateVenue,
   venueController.create,

@@ -6,6 +6,8 @@ import Pagination from '@components/buttons_inputs/Pagination';
 import Button from '@components/buttons_inputs/Button';
 import { MagnifyingGlass, Check, Eye, Star } from '@components/icons';
 
+
+
 interface Group {
   id_group: number;
   name: string;
@@ -39,6 +41,30 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
     mode: '__All__',
   });
 
+  const formatDate = (dateStr?: string) => {
+  if (!dateStr) return 'N/A';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('es-MX', {
+    weekday: 'short',   // ej. 'lun.'
+    day: '2-digit',     // ej. '09'
+    month: 'short',     // ej. 'jun.'
+    year: 'numeric',    // ej. '2025'
+  });
+};
+
+const formatTime = (timeStr?: string) => {
+  if (!timeStr) return 'N/A';
+  // Extraemos HH:mm de "HH:mm" o "HH:mm:ss"
+  const match = /^(\d{1,2}):(\d{2})/.exec(timeStr);
+  if (!match) return 'N/A';
+  let [, hh, mm] = match;
+  // Aseguramos dos dígitos
+  hh = hh.padStart(2, '0');
+  return `${hh}:${mm}`;
+};
+
+
+
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -62,13 +88,13 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
               ? group.max_places - group.occupied_places
               : undefined,
           schedule:
-            group.start_hour && group.end_hour
-              ? `${group.start_hour} - ${group.end_hour}`
-              : undefined,
+    group.start_date && group.end_date && group.start_hour && group.end_hour
+      ? `${formatDate(group.start_date)} – ${formatDate(group.end_date)}`
+      : undefined,
           // For compatibility with the rest of the code
           sede: group.venues?.name || 'N/A',
           cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
-          horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
+          horarios: `${formatDate(group.start_date)|| 'N/A'} – ${formatDate(group.end_date)|| 'N/A'} || 'N/A'}`,
         }));
         setGroups(transformedGroups);
       } catch (err) {
@@ -236,7 +262,6 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
       </table>
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
         onPageChange={setCurrentPage}
         variant='secondary-shade'
         pageLinks={Array(totalPages).fill('#')}

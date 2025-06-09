@@ -36,27 +36,27 @@ const validateVenue = [
   body('address').notEmpty().withMessage('La dirección de la sede es obligatoria'),
 
   // General Coordinator fields
-  body('generalCoordinator[name]')
+  body('venueCoordinator[name]')
     .notEmpty()
     .withMessage('El nombre de la coordinadora general es obligatorio'),
-  body('generalCoordinator[lastNameP]')
+  body('venueCoordinator[lastNameP]')
     .notEmpty()
     .withMessage('El apellido paterno de la coordinadora general es obligatorio'),
-  body('generalCoordinator[email]')
+  body('venueCoordinator[email]')
     .notEmpty()
     .withMessage('El correo electrónico de la coordinadora general es obligatorio')
     .isEmail()
     .withMessage('El correo electrónico de la coordinadora general debe ser válido'),
-  body('generalCoordinator[phone]')
+  body('venueCoordinator[phone]')
     .notEmpty()
     .withMessage('El celular de la coordinadora general es obligatorio'),
-  body('generalCoordinator[gender]')
+  body('venueCoordinator[gender]')
     .notEmpty()
     .withMessage('El sexo de la coordinadora general es obligatorio'),
-  body('generalCoordinator[username]')
+  body('venueCoordinator[username]')
     .notEmpty()
     .withMessage('El nombre de usuario de la coordinadora general es obligatorio'),
-  body('generalCoordinator[password]')
+  body('venueCoordinator[password]')
     .notEmpty()
     .withMessage('La contraseña de la coordinadora general es obligatoria')
     .isLength({ min: 8 })

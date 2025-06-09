@@ -1,26 +1,103 @@
 'use client';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/headers_menu_users/navbar';
 
-import React, { useState, useEffect } from 'react';
-
-export default function DashboardLayout({
+export default function LoginLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+  const [role, setRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [apiToken, setApiToken] = useState<string | null>(null);
+
+  const handleResize = () => {
+    // Tailwind breakpoint `md` = 768px, `lg` = 1024px
+    const width = window.innerWidth;
+    if (width >= 768) {
+      setIsVisible(true); // md o más
+    } else {
+      setIsVisible(false); // menor que md
+    }
+  };
+
+  useEffect(() => {
+    handleResize(); // Verifica al montar el componente
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      const storedRole = localStorage.getItem('user_role');
+      setApiToken(token);
+      setRole(storedRole);
+
+      if (token && storedRole) {
+        if (storedRole === 'superuser') {
+          router.push('/admin/estadisticas');
+        } else if (storedRole === 'venue_coordinator') {
+          router.push('/coordinador/estadisticas');
+        }
+      } else {
+        setRole(null);
+        setLoading(false);
+      }
+    }
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className='h-screen w-screen flex items-center justify-center bg-[#160D17]'>
+        {/* Loader visual */}
+        <div className='text-white text-lg animate-pulse'>Cargando...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className='h-screen flex text-text bg-back'>
-      {/* RIGHT: Main content */}
-      <div className='w-[100%] relative min-h-screen overflow-x-hidden overflow-y-hidden custom-scrollbar'>
-        {/* Círculos decorativos inferior derecha */}
-        <div className='absolute z-20 bottom-0 right-0'>
-          <div className='absolute bottom-0 right-[6vw] w-[8vw] h-[8vw] bg-[#C57FAB] rounded-full transform -mb-16 translate-x-1/4 shadow-custom-dark'></div>
-          <div className='absolute bottom-0 right-[-1vw] w-[10vw] h-[10vw] bg-[#97639C] rounded-full transform translate-x-1/4 -translate-y-1/2  shadow-custom-dark'></div>
-          <div className='absolute bottom-0 right-[1vw] w-[9vw] h-[9vw] bg-[#2E1C31] rounded-full transform translate-x-1/2 -translate-y-10px shadow-custom-dark -mb-8'></div>
-          <div className='absolute bottom-[2vw] right-[7vw] w-[4vw] h-[4vw] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
-          <div className='absolute bottom-[8vw] right-[6vw] w-[2.5vw] h-[2.5vw] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
-        </div>
-        {/* Contenido principal */}
-        <div className='relative overflow-x-hidden z-0'>{children}</div>
+    <div className='h-screen w-screen flex flex-col text-text bg-[#160D17]'>
+      <div className='h-[13%] min-h-[70px] shadow-custom-dark w-full flex items-center justify-between bg-[var(--background)] rounded-br-[1.5vmax] rounded-bl-[1.5vmax] z-10 overflow-hidden'>
+        <Navbar />
+      </div>
+      {/* Círculos decorativos */}
+      <div
+        className={`absolute inset-0 overflow-clip transition-opacity duration-500 ease-in-out
+    ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+      >
+        <div className='absolute bottom-[-7vw] right-[2vw] w-[10vw] h-[10vw] bg-[#C57FAB] rounded-full -translate-y-1/2 shadow-custom-dark'></div>
+        <div className='absolute bottom-[-5vw] right-[15vw] w-[7vw] h-[7vw] bg-[#C57FAB] rounded-full -translate-y-1/2 shadow-custom-dark'></div>
+        <div className='absolute bottom-[-6vw] right-[12vw] w-[8vw] h-[8vw] bg-[#97639C] rounded-full translate-x-1/3 -translate-y-1/4 shadow-custom-dark'></div>
+        <div className='absolute bottom-[-9vw] right-[22vw] w-[8vw] h-[8vw] bg-[#2E1C31] rounded-full translate-x-1/4 -translate-y-1/2 shadow-custom-dark'></div>
+        <div className='absolute bottom-[-7vw] right-[0vw] w-[7vw] h-[7vw] bg-[#2E1C31] rounded-full translate-x-1/4 -translate-y-1/2 shadow-custom-dark'></div>
+        <div className='absolute bottom-[3vw] right-[27vw] w-[3.5vw] h-[3.5vw] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
+        <div className='absolute bottom-[6vw] right-[13vw] w-[2vw] h-[2vw] bg-[#EBE6EB] rounded-full shadow-custom-dark'></div>
+      </div>
+            <div
+        className={`
+    absolute mt-[30px] inset-0 overflow-x-hidden custom-scrollbar
+  `}
+      >
+        <div className='h-fit w-full flex items-center justify-center align-middle relative z-0 overflow-y-visible overflow-x-hidden mt-10'>
+        <div className={`absolute top-[1vw] left-[38vw] w-[6vw] h-[6vw] bg-[#C57FAB] rounded-full -translate-y-1/2 shadow-custom-dark transition-opacity duration-500 ease-in-out
+    ${isVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+        <div className={`absolute top-[5vw] left-[30vw] w-[10vw] h-[10vw] bg-[#97639C] rounded-full translate-x-1/3 -translate-y-1/4 shadow-custom-dark transition-opacity duration-500 ease-in-out
+    ${isVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+        <div className={`absolute top-[11vw] left-[27vw] w-[9vw] h-[9vw] bg-[#2E1C31] rounded-full translate-x-1/4 -translate-y-1/2 shadow-custom-dark transition-opacity duration-500 ease-in-out
+    ${isVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+        <div className={`absolute top-[13vw] left-[38vw] w-[3vw] h-[3vw] bg-[#EBE6EB] rounded-full shadow-custom-dark transition-opacity duration-500 ease-in-out
+    ${isVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+        <div className={`absolute top-[4vw] left-[45vw] w-[4vw] h-[4vw] bg-[#EBE6EB] rounded-full shadow-custom-dark transition-opacity duration-500 ease-in-out
+    ${isVisible ? 'opacity-100' : 'opacity-0'}`}></div>
+        <div className='flex flex-col justify-center items-center w-full h-[90vh]'>{children}</div>
+      </div>
       </div>
     </div>
   );
