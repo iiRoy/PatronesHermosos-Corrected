@@ -17,6 +17,7 @@ interface ButtonProps {
     width?: number | string;
     height?: number | string;
     strokeColor?: string;
+    strokeWidth?: number;
     fillColor?: string;
     className?: string;
   }>;
@@ -24,6 +25,7 @@ interface ButtonProps {
     width?: number | string;
     height?: number | string;
     strokeColor?: string;
+    strokeWidth?: number;
     fillColor?: string;
     className?: string;
   }>;
@@ -31,6 +33,7 @@ interface ButtonProps {
   href?: string;
   className?: string;
   activeTransition?: boolean;
+  stroke?: number;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -46,6 +49,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   href,
   className = '',
+  stroke,
   activeTransition = false,
 }) => {
   const router = useRouter();
@@ -100,6 +104,7 @@ const Button: React.FC<ButtonProps> = ({
             height='1.5rem'
             fillColor='#ebe6eb'
             strokeColor='currentColor'
+            strokeWidth={stroke = stroke || 0 }  
           />
         </div>
       )}
@@ -111,6 +116,7 @@ const Button: React.FC<ButtonProps> = ({
             height='2rem'
             fillColor='#ebe6eb'
             strokeColor='currentColor'
+            strokeWidth={stroke = stroke || 0 }  
           />
         </div>
       )}

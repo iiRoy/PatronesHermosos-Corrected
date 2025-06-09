@@ -1,28 +1,29 @@
 'use client';
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+
 import InputField from '@components/buttons_inputs/InputField';
-import Dropdown from '@components/buttons_inputs/Dropdown';
-import Button from '@components/buttons_inputs/Button';
-import Checkbox from '@components/buttons_inputs/Checkbox';
-import withIconDecorator from '@/components/decorators/IconDecorator';
-import Select from 'react-select';
-import { Country, State } from 'country-state-city';
+import Dropdown   from '@components/buttons_inputs/Dropdown';
+import Button     from '@components/buttons_inputs/Button';
+import Checkbox   from '@components/buttons_inputs/Checkbox';
 import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
-import Send from '@components/icons/ArrowFatRight';
-import {
-  FlowerLotus,
-  FileJpg,
-  FilePdf,
-  Sparkle,
-  UsersFour,
-  Bank,
-  Files,
-  Megaphone,
-  X,
-  Grains,
-  MapPin,
-} from '@/components/icons';
+import Select     from 'react-select';
+import { Country, State } from 'country-state-city';
+import withIconDecorator from '@/components/decorators/IconDecorator';
+import Send       from '@/components/icons/ArrowFatRight';
+import CollapsibleSection from '@/components/buttons_inputs/CollapsibleSection';
+
+import FlowerLotus from '@/components/icons/FlowerLotus';
+import Sparkle     from '@/components/icons/Sparkle';
+import UsersFour   from '@/components/icons/UsersFour';
+import Bank        from '@/components/icons/Bank';
+import Files       from '@/components/icons/Files';
+import Megaphone   from '@/components/icons/Megaphone';
+import FileJpg     from '@/components/icons/FileJpg';
+import FilePdf     from '@/components/icons/FilePdf';
+import MapPin      from '@/components/icons/MapPin';
+import X           from '@/components/icons/X';
+import Grains      from '@/components/icons/Grains';
 
 interface Coordinator {
   name: string;
@@ -32,7 +33,7 @@ interface Coordinator {
   phone: string;
 }
 
-interface GeneralCoordinator extends Coordinator {
+interface venueCoordinator extends Coordinator {
   gender: string;
   username: string;
   password: string;
@@ -47,7 +48,7 @@ interface Venue {
 }
 
 interface FormData {
-  generalCoordinator: GeneralCoordinator;
+  venueCoordinator: venueCoordinator;
   associatedCoordinator: Coordinator;
   staffCoordinator: Coordinator;
   participantsCoordinator: Coordinator;
@@ -57,7 +58,7 @@ interface FormData {
 const VenueRegistrationForm: React.FC = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    generalCoordinator: {
+    venueCoordinator: {
       name: '',
       lastNameP: '',
       lastNameM: '',
@@ -96,7 +97,6 @@ const VenueRegistrationForm: React.FC = () => {
       address: '',
     },
   });
-
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [logo, setLogo] = useState<File | null>(null);
   const [participationFile, setParticipationFile] = useState<File | null>(null);
@@ -128,12 +128,12 @@ const VenueRegistrationForm: React.FC = () => {
   }, []);
   const [regionOptions, setRegionOptions] = useState<{ value: string; label: string }[]>([]);
 
-  type GeneralCoordinatorKeys = keyof GeneralCoordinator;
+  type venueCoordinatorKeys = keyof venueCoordinator;
   type CoordinatorKeys = keyof Coordinator;
   type VenueKeys = keyof Venue;
   type Section = keyof FormData;
   type SubSectionMap = {
-    generalCoordinator: GeneralCoordinatorKeys;
+    venueCoordinator: venueCoordinatorKeys;
     associatedCoordinator: CoordinatorKeys;
     staffCoordinator: CoordinatorKeys;
     participantsCoordinator: CoordinatorKeys;
@@ -210,33 +210,33 @@ const VenueRegistrationForm: React.FC = () => {
     if (!formData.venue.address) newErrors.push('La dirección de la SEDE es obligatoria');
     if (!participationFile) newErrors.push('El archivo de participación es obligatorio');
 
-    if (!formData.generalCoordinator.name)
+    if (!formData.venueCoordinator.name)
       newErrors.push('El nombre de la Coordinadora de Sede es obligatorio');
-    if (!formData.generalCoordinator.lastNameP)
+    if (!formData.venueCoordinator.lastNameP)
       newErrors.push('El apellido paterno de la Coordinadora de Sede es obligatorio');
-    if (!formData.generalCoordinator.email)
+    if (!formData.venueCoordinator.email)
       newErrors.push('El correo electrónico de la Coordinadora de Sede es obligatorio');
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.generalCoordinator.email))
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.venueCoordinator.email))
       newErrors.push('El correo electrónico de la Coordinadora de Sede debe ser válido');
-    if (!formData.generalCoordinator.phone)
+    if (!formData.venueCoordinator.phone)
       newErrors.push('El celular de la Coordinadora de Sede es obligatorio');
-    if (!formData.generalCoordinator.gender)
+    if (!formData.venueCoordinator.gender)
       newErrors.push('El sexo de la Coordinadora de Sede es obligatorio');
-    if (!formData.generalCoordinator.username)
+    if (!formData.venueCoordinator.username)
       newErrors.push('El nombre de usuario de la Coordinadora de Sede es obligatorio');
-    if (!formData.generalCoordinator.password)
+    if (!formData.venueCoordinator.password)
       newErrors.push('La contraseña de la Coordinadora de Sede es obligatorio');
     else {
-      if (formData.generalCoordinator.password.length < 8)
+      if (formData.venueCoordinator.password.length < 8)
         newErrors.push('La contraseña debe tener al menos 8 caracteres');
-      if (!/[A-Z]/.test(formData.generalCoordinator.password))
+      if (!/[A-Z]/.test(formData.venueCoordinator.password))
         newErrors.push('La contraseña debe contener al menos una mayúscula');
-      if (!/[a-z]/.test(formData.generalCoordinator.password))
+      if (!/[a-z]/.test(formData.venueCoordinator.password))
         newErrors.push('La contraseña debe contener al menos una minúscula');
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.generalCoordinator.password))
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.venueCoordinator.password))
         newErrors.push('La contraseña debe contener al menos un carácter especial');
     }
-    if (formData.generalCoordinator.password !== formData.generalCoordinator.confirmPassword)
+    if (formData.venueCoordinator.password !== formData.venueCoordinator.confirmPassword)
       newErrors.push('Las contraseñas no coinciden');
 
     if (formData.associatedCoordinator.name) {
@@ -297,14 +297,14 @@ const VenueRegistrationForm: React.FC = () => {
       formDataToSend.append('country', formData.venue.country);
       formDataToSend.append('state', formData.venue.state);
       formDataToSend.append('address', formData.venue.address);
-      formDataToSend.append('generalCoordinator[name]', formData.generalCoordinator.name);
-      formDataToSend.append('generalCoordinator[lastNameP]', formData.generalCoordinator.lastNameP);
-      formDataToSend.append('generalCoordinator[lastNameM]', formData.generalCoordinator.lastNameM);
-      formDataToSend.append('generalCoordinator[email]', formData.generalCoordinator.email);
-      formDataToSend.append('generalCoordinator[phone]', formData.generalCoordinator.phone);
-      formDataToSend.append('generalCoordinator[gender]', formData.generalCoordinator.gender);
-      formDataToSend.append('generalCoordinator[username]', formData.generalCoordinator.username);
-      formDataToSend.append('generalCoordinator[password]', formData.generalCoordinator.password);
+      formDataToSend.append('venueCoordinator[name]', formData.venueCoordinator.name);
+      formDataToSend.append('venueCoordinator[lastNameP]', formData.venueCoordinator.lastNameP);
+      formDataToSend.append('venueCoordinator[lastNameM]', formData.venueCoordinator.lastNameM);
+      formDataToSend.append('venueCoordinator[email]', formData.venueCoordinator.email);
+      formDataToSend.append('venueCoordinator[phone]', formData.venueCoordinator.phone);
+      formDataToSend.append('venueCoordinator[gender]', formData.venueCoordinator.gender);
+      formDataToSend.append('venueCoordinator[username]', formData.venueCoordinator.username);
+      formDataToSend.append('venueCoordinator[password]', formData.venueCoordinator.password);
 
       if (formData.associatedCoordinator.name) {
         formDataToSend.append('associatedCoordinator[name]', formData.associatedCoordinator.name);
@@ -352,7 +352,7 @@ const VenueRegistrationForm: React.FC = () => {
       }
 
       if (profileImage) {
-        formDataToSend.append('generalCoordinator.profileImage', profileImage);
+        formDataToSend.append('venueCoordinator.profileImage', profileImage);
       }
       if (logo) {
         formDataToSend.append('logo', logo);
@@ -399,7 +399,7 @@ const VenueRegistrationForm: React.FC = () => {
       setIsErrorModalOpen(false);
 
       setFormData({
-        generalCoordinator: {
+        venueCoordinator: {
           name: '',
           lastNameP: '',
           lastNameM: '',
@@ -507,611 +507,596 @@ const VenueRegistrationForm: React.FC = () => {
       color: '#ebe6eb',
     }),
   };
-
+  
   return (
-    <div className='pagina-formulario flex flex-col min-h-screen text-white'>
-      <div className='pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white'>
-        <form onSubmit={handleSubmit}>
-          <div className='info-formulario min-h-screen text-white p-4 md:p-8 flex justify-center items-center'>
-            <div className='w-full max-w-6xl rounded-lg shadow-lg p-6 md:p-8'>
-              {/* Header */}
-              <div className='flex justify-between items-center mb-6'>
-                <div className='flex items-center'>
-                  <div className='w-2 rounded-full h-16 mr-4 bg-[#683756]'></div>
-                  <h1 className='text-2xl'>
-                    <span className='italic'>Formulario de Registro</span>
-                    <br />
-                    <span className='font-bold text-3xl'>Sede</span>
-                  </h1>
+    <div className="pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white">
+      <form onSubmit={handleSubmit}>
+        <div className="info-formulario p-4 md:p-8 flex justify-center">
+          <div className="w-full max-w-6xl rounded-lg shadow-lg bg-back p-6 md:p-8">
+            
+            {/* Header */}
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center space-x-4">
+                <div className="w-1 bg-purple-500 h-12 rounded-full" />
+                <div>
+                  <p className="italic text-gray-300">Formulario de Registro</p>
+                  <h1 className="text-3xl font-bold">Colaborador</h1>
                 </div>
-                <Button
-                  label='Regresar'
-                  variant='error'
-                  showLeftIcon
-                  type='button'
-                  IconLeft={X}
-                  href='/'
-                  className='px-4 py-2 rounded-full flex items-center'
-                />
               </div>
-              {/* Section: Datos Coordinadora de Sede */}
-              <div className='mb-6'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <FlowerLotus
-                      width='1.5rem'
-                      height='1.5rem'
-                      fillColor='#ebe6eb'
-                      strokeWidth={0}
-                    />
-                  </span>{' '}
-                  Datos Coordinadora de Sede
-                </h2>
-                <p className='text-gray-400 text-sm md:text-base mb-4'>
-                  Responde con veracidad las siguientes preguntas acerca de tus datos personales y
-                  de contacto.
-                  <br />
-                  Las secciones que contengan un asterisco (*) deberán responderse de manera
-                  obligatoria.
-                </p>
-              </div>
+              <Button
+                label="Regresar"
+                variant="error"
+                showLeftIcon
+                IconLeft={X}
+                onClick={() => router.back()}
+              />
+            </div>
+            
+            {/* Secciones colapsables */}
+<CollapsibleSection
+  title="Datos Personales"
+  Icon={FlowerLotus}
+  isCompleted={
+    Boolean(formData.venueCoordinator.name) &&
+    Boolean(formData.venueCoordinator.lastNameP) &&
+    Boolean(formData.venueCoordinator.email) &&
+    Boolean(formData.venueCoordinator.phone) &&
+    Boolean(formData.venueCoordinator.username) &&
+    Boolean(formData.venueCoordinator.password) &&
+    formData.venueCoordinator.password === formData.venueCoordinator.confirmPassword
+  }
+>
+  {/* Descripción */}
+  <p className="text-gray-600 text-sm mb-4">
+    Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.
+    <br />
+    Las secciones con * son obligatorias.
+  </p>
 
-              {/* Form Fields: Datos Coordinadora de Sede */}
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                <InputField
-                  label='Nombre(s)*'
-                  placeholder='Nombre(s)'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.generalCoordinator.name}
-                  onChangeText={(value: string) =>
-                    handleInputChange('generalCoordinator', 'name', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Paterno*'
-                  placeholder='Apellido Paterno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.generalCoordinator.lastNameP}
-                  onChangeText={(value: string) =>
-                    handleInputChange('generalCoordinator', 'lastNameP', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Materno'
-                  placeholder='Apellido Materno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.generalCoordinator.lastNameM}
-                  onChangeText={(value: string) =>
-                    handleInputChange('generalCoordinator', 'lastNameM', value)
-                  }
-                />
-                <InputField
-                  label='Correo Electrónico*'
-                  placeholder='correo1@ejemplo.com'
-                  variant='accent'
-                  icon='At'
-                  value={formData.generalCoordinator.email}
-                  onChangeText={(value: string) =>
-                    handleInputChange('generalCoordinator', 'email', value)
-                  }
-                />
-                <InputField
-                  label='Celular*'
-                  placeholder='+522221234567'
-                  variant='accent'
-                  icon='Phone'
-                  value={formData.generalCoordinator.phone}
-                  onChangeText={(value: string) =>
-                    handleInputChange('generalCoordinator', 'phone', value)
-                  }
-                />
-                <Dropdown
-                  label='Sexo*'
-                  options={['Femenino', 'Masculino', 'No binario', 'Prefiero no decir']}
-                  value={formData.generalCoordinator.gender}
+  {/* Campos en grid */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <InputField
+      label="Nombre(s)*"
+      placeholder="Nombre(s)"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.venueCoordinator.name}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'name', v)
+      }
+    />
+
+    <InputField
+      label="Apellido Paterno*"
+      placeholder="Apellido Paterno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.venueCoordinator.lastNameP}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'lastNameP', v)
+      }
+    />
+
+    <InputField
+      label="Apellido Materno"
+      placeholder="Apellido Materno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.venueCoordinator.lastNameM}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'lastNameM', v)
+      }
+    />
+
+    <InputField
+      label="Correo Electrónico*"
+      placeholder="correo1@ejemplo.com"
+      variant="accent"
+      icon="At"
+      value={formData.venueCoordinator.email}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'email', v)
+      }
+    />
+
+    <InputField
+      label="Celular*"
+      placeholder="+522221234567"
+      variant="accent"
+      icon="Phone"
+      value={formData.venueCoordinator.phone}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'phone', v)
+      }
+    />
+
+    <InputField
+      label="Nombre de Usuario*"
+      description="Sólo letras, números y guiones bajos."
+      placeholder="Us3r_n4me"
+      variant="secondary"
+      icon="UserPlus"
+      value={formData.venueCoordinator.username}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'username', v)
+      }
+    />
+
+                    <Dropdown
+                  label='Género*'
+                  options={['Femenino', 'No binario', 'Prefiero no decir']}
+                  value={formData.venueCoordinator.gender}
                   onChange={(value: string) =>
-                    handleInputChange('generalCoordinator', 'gender', value)
+                    handleInputChange('venueCoordinator', 'gender', value)
                   }
                   variant='accent'
                   Icon={withIconDecorator(Grains)}
                 />
-                <InputField
-                  label='Nombre de Usuario*'
-                  description='El nombre de usuario solo puede contener letras, números y guiones bajos.'
-                  placeholder='Us3r_n4me'
-                  variant='secondary'
-                  icon='UserPlus'
-                  value={formData.generalCoordinator.username}
-                  onChangeText={(value: string) =>
-                    handleInputChange('generalCoordinator', 'username', value)
-                  }
-                />
-                <div>
-                  <InputField
-                    label='Contraseña*'
-                    description='Debe tener un mínimo de 8 caracteres, contener una mayúscula, una minúscula y un carácter especial.'
-                    placeholder='********'
-                    variant='secondary'
-                    icon='Lock'
-                    value={formData.generalCoordinator.password}
-                    type={showPassword ? 'text' : 'password'}
-                    onChangeText={(value: string) =>
-                      handleInputChange('generalCoordinator', 'password', value)
-                    }
-                  />
-                  <div className='flex items-center mt-2'>
-                    <Checkbox
-                      label='Mostrar Contraseña'
-                      checked={showPassword}
-                      onChange={setShowPassword}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <InputField
-                    label='Confirmar Contraseña*'
-                    description='Confirma de manera correcta e identica la contraseña previamente registrada.'
-                    placeholder='********'
-                    variant='secondary'
-                    icon='Lock'
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={formData.generalCoordinator.confirmPassword}
-                    onChangeText={(value: string) =>
-                      handleInputChange('generalCoordinator', 'confirmPassword', value)
-                    }
-                  />
-                  <div className='flex items-center mt-2'>
-                    <Checkbox
-                      label='Mostrar Contraseña'
-                      checked={showConfirmPassword}
-                      onChange={setShowConfirmPassword}
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* Sube tu foto de perfil */}
-              <div className='mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo-amarilla'>
-                <div className='flex items-center titulo-tarjeta-archivo-amarilla'>
-                  <span className='text-purple-600 text-2xl mr-2 icono-tarjeta-archivo-amarilla'>
-                    <FileJpg width='2rem' height='2rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>
-                  <h3 className='text-lg font-semibold'>Sube tu foto de perfil</h3>
-                </div>
-                <p className='text-sm my-6'>
-                  Selecciona una foto de perfil con la cual las personas sean capaces de reconocerte
-                  dentro del sistema. No es obligatorio subir una imagen, sin embargo lo
-                  recomendamos.
-                </p>
-                <input
-                  type='file'
-                  accept='image/*'
-                  onChange={(e) => handleFileChange(e, setProfileImage)}
-                  className='mt-4'
-                />
-                {profileImage && (
-                  <p className='mt-2 text-xs text-gray-600'>
-                    Archivo seleccionado: {profileImage.name}
-                  </p>
-                )}
-              </div>
+    <InputField
+      label="Contraseña*"
+      description="Mín. 8 caracteres, 1 mayúscula, 1 minúscula y 1 carácter especial."
+      placeholder="********"
+      variant="secondary"
+      icon="Lock"
+      type={showPassword ? 'text' : 'password'}
+      value={formData.venueCoordinator.password}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'password', v)
+      }
+    />
 
-              {/* Section: Datos Coordinadora Asociada */}
-              <div className='mt-8'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <Sparkle width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>{' '}
-                  Datos Coordinadora Asociada
-                </h2>
-                <p className='text-gray-400 text-sm md:text-base mb-4'>
-                  Responde con veracidad las siguientes preguntas acerca de los datos de contacto de
-                  tu equipo de trabajo.
-                  <br />
-                  Las secciones que contengan un asterisco (*) deberán responderse de manera
-                  obligatoria.
-                </p>
-                <p className='text-gray-400 text-sm italic'>
-                  Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los
-                  roles faltantes automáticamente.
-                </p>
-              </div>
+    <InputField
+      label="Confirmar Contraseña*"
+      description="Debe coincidir con la contraseña anterior."
+      placeholder="********"
+      variant="secondary"
+      icon="Lock"
+      type={showConfirmPassword ? 'text' : 'password'}
+      value={formData.venueCoordinator.confirmPassword}
+      onChangeText={(v: string) =>
+        handleInputChange('venueCoordinator', 'confirmPassword', v)
+      }
+    />
+  </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
-                <InputField
-                  label='Nombre(s)*'
-                  placeholder='Nombre(s)'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.associatedCoordinator.name}
-                  onChangeText={(value: string) =>
-                    handleInputChange('associatedCoordinator', 'name', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Paterno*'
-                  placeholder='Apellido Paterno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.associatedCoordinator.lastNameP}
-                  onChangeText={(value: string) =>
-                    handleInputChange('associatedCoordinator', 'lastNameP', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Materno'
-                  placeholder='Apellido Materno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.associatedCoordinator.lastNameM}
-                  onChangeText={(value: string) =>
-                    handleInputChange('associatedCoordinator', 'lastNameM', value)
-                  }
-                />
-              </div>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <InputField
-                  label='Correo Electrónico*'
-                  placeholder='correo1@ejemplo.com'
-                  variant='accent'
-                  icon='At'
-                  value={formData.associatedCoordinator.email}
-                  onChangeText={(value: string) =>
-                    handleInputChange('associatedCoordinator', 'email', value)
-                  }
-                />
-                <InputField
-                  label='Celular*'
-                  placeholder='+522221234567'
-                  variant='accent'
-                  icon='Phone'
-                  value={formData.associatedCoordinator.phone}
-                  onChangeText={(value: string) =>
-                    handleInputChange('associatedCoordinator', 'phone', value)
-                  }
-                />
-              </div>
+  {/* Upload de foto */}
+  <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <h4 className="text-base font-semibold mb-2">Sube tu foto de perfil</h4>
+    <p className="text-gray-600 text-sm mb-4">
+      Selecciona una imagen para que te reconozcan en el sistema. No es obligatoria pero sí recomendada.
+    </p>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={e => handleFileChange(e, setProfileImage)}
+      className="block"
+    />
+    {profileImage && (
+      <p className="mt-2 text-xs text-gray-500">
+        Archivo: {profileImage.name}
+      </p>
+    )}
+  </div>
+</CollapsibleSection>
+            
+<CollapsibleSection
+  title="Datos Coordinadora Asociada"
+  Icon={Sparkle}
+  isCompleted={
+    Boolean(formData.associatedCoordinator.name) &&
+    Boolean(formData.associatedCoordinator.lastNameP) &&
+    Boolean(formData.associatedCoordinator.email) &&
+    Boolean(formData.associatedCoordinator.phone)
+  }
+>
+  {/* Descripción */}
+  <p className="text-gray-600 text-sm mb-4">
+    Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los roles faltantes automáticamente.
+  </p>
 
-              {/* Section: Datos Coordinadora de Informes (Staff) */}
-              <div className='mt-8'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <UsersFour width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>{' '}
-                  Datos Coordinadora de Informes (Staff)
-                </h2>
-                <p className='text-gray-400 text-sm md:text-base mb-4'>
-                  Responde con sinceridad las siguientes preguntas acerca de los datos de contacto
-                  de tu equipo de trabajo.
-                  <br />
-                  Las secciones que contengan un asterisco (*) deberán responderse de manera
-                  obligatoria.
-                </p>
-                <p className='text-gray-400 text-sm italic'>
-                  Si no se registra una coordinadora de informes, la coordinadora de sede asumirá
-                  los roles faltantes automáticamente.
-                </p>
-              </div>
+  {/* Campos en grid */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <InputField
+      label="Nombre(s)*"
+      placeholder="Nombre(s)"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.associatedCoordinator.name}
+      onChangeText={(v: string) =>
+        handleInputChange('associatedCoordinator', 'name', v)
+      }
+    />
 
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                <InputField
-                  label='Nombre(s)*'
-                  placeholder='Nombre(s)'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.staffCoordinator.name}
-                  onChangeText={(value: string) =>
-                    handleInputChange('staffCoordinator', 'name', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Paterno*'
-                  placeholder='Apellido Paterno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.staffCoordinator.lastNameP}
-                  onChangeText={(value: string) =>
-                    handleInputChange('staffCoordinator', 'lastNameP', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Materno'
-                  placeholder='Apellido Materno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.staffCoordinator.lastNameM}
-                  onChangeText={(value: string) =>
-                    handleInputChange('staffCoordinator', 'lastNameM', value)
-                  }
-                />
-              </div>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <InputField
-                  label='Correo Electrónico*'
-                  placeholder='correo1@ejemplo.com'
-                  variant='accent'
-                  icon='At'
-                  value={formData.staffCoordinator.email}
-                  onChangeText={(value: string) =>
-                    handleInputChange('staffCoordinator', 'email', value)
-                  }
-                />
-                <InputField
-                  label='Celular*'
-                  placeholder='+522221234567'
-                  variant='accent'
-                  icon='Phone'
-                  value={formData.staffCoordinator.phone}
-                  onChangeText={(value: string) =>
-                    handleInputChange('staffCoordinator', 'phone', value)
-                  }
-                />
-              </div>
+    <InputField
+      label="Apellido Paterno*"
+      placeholder="Apellido Paterno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.associatedCoordinator.lastNameP}
+      onChangeText={(v: string) =>
+        handleInputChange('associatedCoordinator', 'lastNameP', v)
+      }
+    />
 
-              {/* Section: Datos Coordinadora de Informes (Participantes) */}
-              <div className='mt-8'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <UsersFour width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>{' '}
-                  Datos Coordinadora de Informes (Participantes)
-                </h2>
-                <p className='text-gray-400 text-sm md:text-base mb-4'>
-                  Responde con sinceridad las siguientes preguntas acerca de los datos de contacto
-                  de tu equipo de trabajo.
-                  <br />
-                  Las secciones que contengan un asterisco (*) deberán responderse de manera
-                  obligatoria.
-                </p>
-                <p className='text-gray-400 text-sm italic'>
-                  Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los
-                  roles faltantes automáticamente.
-                </p>
-              </div>
+    <InputField
+      label="Apellido Materno"
+      placeholder="Apellido Materno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.associatedCoordinator.lastNameM}
+      onChangeText={(v: string) =>
+        handleInputChange('associatedCoordinator', 'lastNameM', v)
+      }
+    />
 
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                <InputField
-                  label='Nombre(s)*'
-                  placeholder='Nombre(s)'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.participantsCoordinator.name}
-                  onChangeText={(value: string) =>
-                    handleInputChange('participantsCoordinator', 'name', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Paterno*'
-                  placeholder='Apellido Paterno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.participantsCoordinator.lastNameP}
-                  onChangeText={(value: string) =>
-                    handleInputChange('participantsCoordinator', 'lastNameP', value)
-                  }
-                />
-                <InputField
-                  label='Apellido Materno'
-                  placeholder='Apellido Materno'
-                  variant='primary'
-                  icon='Fingerprint'
-                  value={formData.participantsCoordinator.lastNameM}
-                  onChangeText={(value: string) =>
-                    handleInputChange('participantsCoordinator', 'lastNameM', value)
-                  }
-                />
-              </div>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <InputField
-                  label='Correo Electrónico*'
-                  placeholder='correo1@ejemplo.com'
-                  variant='accent'
-                  icon='At'
-                  value={formData.participantsCoordinator.email}
-                  onChangeText={(value: string) =>
-                    handleInputChange('participantsCoordinator', 'email', value)
-                  }
-                />
-                <InputField
-                  label='Celular*'
-                  placeholder='+522221234567'
-                  variant='accent'
-                  icon='Phone'
-                  value={formData.participantsCoordinator.phone}
-                  onChangeText={(value: string) =>
-                    handleInputChange('participantsCoordinator', 'phone', value)
-                  }
-                />
-              </div>
+    <InputField
+      label="Correo Electrónico*"
+      placeholder="correo1@ejemplo.com"
+      variant="accent"
+      icon="At"
+      value={formData.associatedCoordinator.email}
+      onChangeText={(v: string) =>
+        handleInputChange('associatedCoordinator', 'email', v)
+      }
+    />
 
-              {/* Section: Datos SEDE */}
-              <div className='mt-8'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <Bank width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>{' '}
-                  Datos SEDE
-                </h2>
-                <p className='text-gray-400 text-sm md:text-base mb-4'>
-                  Responde con sinceridad las siguientes preguntas acerca de los datos de tu SEDE.
-                  <br />
-                  Las secciones que contengan un asterisco (*) deberán responderse de manera
-                  obligatoria.
-                </p>
-              </div>
+    <InputField
+      label="Celular*"
+      placeholder="+522221234567"
+      variant="accent"
+      icon="Phone"
+      value={formData.associatedCoordinator.phone}
+      onChangeText={(v: string) =>
+        handleInputChange('associatedCoordinator', 'phone', v)
+      }
+    />
+  </div>
+</CollapsibleSection>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <InputField
-                  label='Nombre de la SEDE*'
-                  placeholder='ITESM Puebla'
-                  variant='primary'
-                  icon='GraduationCap'
-                  value={formData.venue.name}
-                  onChangeText={(value: string) => handleInputChange('venue', 'name', value)}
-                />
-                <div>
-                  <label className='block text-sm font-medium text-gray-400 mb-1'>País*</label>
-                  <Select
-                    options={countryOptions}
-                    value={
-                      countryOptions.find((option) => option.label === formData.venue.country) ||
-                      null
-                    }
-                    onChange={handleCountryChange}
-                    placeholder='Selecciona un país'
-                    styles={selectStyles}
-                    isClearable
-                    components={{
-                      DropdownIndicator: () => (
-                        <MapPin
-                          width='1.5rem'
-                          height='1.5rem'
-                          fillColor='#ebe6eb'
-                          strokeWidth={0}
-                        />
-                      ),
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-400 mb-1'>
-                    Estado/Provincia*
-                  </label>
-                  <Select
-                    options={regionOptions}
-                    value={
-                      regionOptions.find((option) => option.label === formData.venue.state) || null
-                    }
-                    onChange={handleRegionChange}
-                    placeholder='Selecciona un estado/provincia'
-                    styles={selectStyles}
-                    isClearable
-                    isDisabled={!formData.venue.country}
-                    components={{
-                      DropdownIndicator: () => (
-                        <MapPin
-                          width='1.5rem'
-                          height='1.5rem'
-                          fillColor='#ebe6eb'
-                          strokeWidth={0}
-                        />
-                      ),
-                    }}
-                  />
-                </div>
-                <InputField
-                  label='Dirección*'
-                  placeholder='Dirección 123'
-                  variant='accent'
-                  icon='Flag'
-                  value={formData.venue.address}
-                  onChangeText={(value: string) => handleInputChange('venue', 'address', value)}
-                />
-              </div>
+            
+<CollapsibleSection
+  title="Datos Coordinadora de Informes (Staff)"
+  Icon={UsersFour}
+  isCompleted={
+    Boolean(formData.staffCoordinator.name) &&
+    Boolean(formData.staffCoordinator.lastNameP) &&
+    Boolean(formData.staffCoordinator.email) &&
+    Boolean(formData.staffCoordinator.phone)
+  }
+>
+  {/* Descripción */}
+  <p className="text-gray-600 text-sm mb-4">
+    Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
+  </p>
 
-              {/* Sube tu logo */}
-              <div className='mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo'>
-                <div className='flex items-center titulo-tarjeta-archivo'>
-                  <span className='text-2xl mr-2 icono-tarjeta-archivo'>
-                    <FileJpg width='2rem' height='2rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>
-                  <h3 className='text-lg font-semibold'>Sube tu logo</h3>
-                </div>
-                <p className='text-sm my-6'>
-                  Selecciona una imagen que represente a tu SEDE, la cual se presentará a los
-                  usuarios para su fácil reconocimiento. No es obligatorio subir una imagen, sin
-                  embargo lo recomendamos.
-                </p>
-                <input
-                  type='file'
-                  accept='image/*'
-                  onChange={(e) => handleFileChange(e, setLogo)}
-                  className='mt-4'
-                />
-                {logo && (
-                  <p className='mt-2 text-xs text-gray-600'>Archivo seleccionado: {logo.name}</p>
-                )}
-              </div>
+  {/* Campos en grid */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <InputField
+      label="Nombre(s)*"
+      placeholder="Nombre(s)"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.staffCoordinator.name}
+      onChangeText={(v: string) =>
+        handleInputChange('staffCoordinator', 'name', v)
+      }
+    />
 
-              {/* Convocatoria SEDE */}
-              <div className='mt-8'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <Files width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>{' '}
-                  Convocatoria SEDE
-                </h2>
-                <p className='text-gray-400 text-sm md:text-base mb-4'>
-                  Dentro de esta sección tendrás que subir tu permiso de participación, la cual
-                  deberá de estar firmado por un representante legal de la institución participante.
-                  <br />
-                  Esta sección es obligatoria.
-                </p>
-              </div>
+    <InputField
+      label="Apellido Paterno*"
+      placeholder="Apellido Paterno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.staffCoordinator.lastNameP}
+      onChangeText={(v: string) =>
+        handleInputChange('staffCoordinator', 'lastNameP', v)
+      }
+    />
 
-              {/* Download Section */}
-              <div className='mb-6 flex items-center gap-4'>
-                <p className='text-lg text-gray-400'>Descarga la convocatoria para sedes:</p>
-                <a
-                  href='/ConvocatoriaSEDES-PH2025.pdf'
-                  download='ConvocatoriaSEDES-PH2025.pdf'
-                  className='inline-flex items-center px-4 py-2 bg-[#97639c] text-white rounded hover:bg-[#6e2d75] ease-in-out duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500'
-                  role='button'
-                  aria-label='Descargar Convocatoria'
-                >
-                  Descargar Convocatoria
-                </a>
-              </div>
+    <InputField
+      label="Apellido Materno"
+      placeholder="Apellido Materno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.staffCoordinator.lastNameM}
+      onChangeText={(v: string) =>
+        handleInputChange('staffCoordinator', 'lastNameM', v)
+      }
+    />
 
-              <div className='mt-6 p-4 bg-white text-black rounded-lg tarjeta-archivo'>
-                <div className='flex items-center titulo-tarjeta-archivo'>
-                  <span className='text-2xl mr-2 icono-tarjeta-archivo'>
-                    <FilePdf width='2rem' height='2rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>
-                  <h3 className='text-lg font-semibold'>Sube tu convocatoria</h3>
-                </div>
-                <p className='text-gray-600 text-sm my-6'>
-                  Selecciona un documento para subir. Ten cuidado al subir tus documentos y verifica
-                  dos veces que se suba correctamente.
-                </p>
-                <input
-                  type='file'
-                  accept='.pdf'
-                  onChange={(e) => handleFileChange(e, setParticipationFile)}
-                  className='mt-4'
-                />
-                {participationFile && (
-                  <p className='mt-2 text-xs'>Archivo seleccionado: {participationFile.name}</p>
-                )}
-              </div>
+    <InputField
+      label="Correo Electrónico*"
+      placeholder="correo1@ejemplo.com"
+      variant="accent"
+      icon="At"
+      value={formData.staffCoordinator.email}
+      onChangeText={(v: string) =>
+        handleInputChange('staffCoordinator', 'email', v)
+      }
+    />
 
-              {/* Aviso de Privacidad */}
-              <div className='mt-8'>
-                <h2 className='text-xl md:text-2xl font-semibold flex items-center mb-2'>
-                  <span className='mr-2'>
-                    <Megaphone width='1.5rem' height='1.5rem' fillColor='#ebe6eb' strokeWidth={0} />
-                  </span>{' '}
-                  Aviso de Privacidad
-                </h2>
-                <p className='text-gray-400 text-sm'>
-                  Confirma que he leído, entendido y acepto el Aviso de Privacidad disponible en:
-                  <br />
-                  <a
-                    href='https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores'
-                    className='text-purple-400 hover:underline'
-                  >
-                    https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
-                  </a>
-                </p>
-                <div className='mt-2'>
-                  <Checkbox label='' checked={privacyAccepted} onChange={setPrivacyAccepted} />
-                </div>
-              </div>
+    <InputField
+      label="Celular*"
+      placeholder="+522221234567"
+      variant="accent"
+      icon="Phone"
+      value={formData.staffCoordinator.phone}
+      onChangeText={(v: string) =>
+        handleInputChange('staffCoordinator', 'phone', v)
+      }
+    />
+  </div>
+</CollapsibleSection>
 
-              {/* Submit Button */}
+            
+<CollapsibleSection
+  title="Datos Coordinadora de Informes (Participantes)"
+  Icon={UsersFour}
+  isCompleted={
+    Boolean(formData.participantsCoordinator.name) &&
+    Boolean(formData.participantsCoordinator.lastNameP) &&
+    Boolean(formData.participantsCoordinator.email) &&
+    Boolean(formData.participantsCoordinator.phone)
+  }
+>
+  {/* Descripción */}
+  <p className="text-gray-600 text-sm mb-4">
+    Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
+  </p>
+
+  {/* Campos en grid */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <InputField
+      label="Nombre(s)*"
+      placeholder="Nombre(s)"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.participantsCoordinator.name}
+      onChangeText={(v: string) =>
+        handleInputChange('participantsCoordinator', 'name', v)
+      }
+    />
+
+    <InputField
+      label="Apellido Paterno*"
+      placeholder="Apellido Paterno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.participantsCoordinator.lastNameP}
+      onChangeText={(v: string) =>
+        handleInputChange('participantsCoordinator', 'lastNameP', v)
+      }
+    />
+
+    <InputField
+      label="Apellido Materno"
+      placeholder="Apellido Materno"
+      variant="primary"
+      icon="Fingerprint"
+      value={formData.participantsCoordinator.lastNameM}
+      onChangeText={(v: string) =>
+        handleInputChange('participantsCoordinator', 'lastNameM', v)
+      }
+    />
+
+    <InputField
+      label="Correo Electrónico*"
+      placeholder="correo1@ejemplo.com"
+      variant="accent"
+      icon="At"
+      value={formData.participantsCoordinator.email}
+      onChangeText={(v: string) =>
+        handleInputChange('participantsCoordinator', 'email', v)
+      }
+    />
+
+    <InputField
+      label="Celular*"
+      placeholder="+522221234567"
+      variant="accent"
+      icon="Phone"
+      value={formData.participantsCoordinator.phone}
+      onChangeText={(v: string) =>
+        handleInputChange('participantsCoordinator', 'phone', v)
+      }
+    />
+  </div>
+</CollapsibleSection>
+
+            
+<CollapsibleSection
+  title="Datos SEDE"
+  Icon={Bank}
+  isCompleted={
+    Boolean(formData.venue.name) &&
+    Boolean(formData.venue.country) &&
+    Boolean(formData.venue.state) &&
+    Boolean(formData.venue.address)
+  }
+>
+  {/* Descripción */}
+  <p className="text-gray-600 text-sm mb-4">
+    Responde con sinceridad los datos de tu SEDE.
+    <br />
+    Las secciones con * son obligatorias.
+  </p>
+
+  {/* Campos en grid */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <InputField
+      label="Nombre de la SEDE*"
+      placeholder="ITESM Puebla"
+      variant="primary"
+      icon="GraduationCap"
+      value={formData.venue.name}
+      onChangeText={(v: string) =>
+        handleInputChange('venue', 'name', v)
+      }
+    />
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        País*
+      </label>
+      <Select
+        options={countryOptions}
+        value={
+          countryOptions.find(o => o.label === formData.venue.country) || null
+        }
+        onChange={handleCountryChange}
+        placeholder="Selecciona un país"
+        styles={selectStyles}
+        isClearable
+        components={{
+          DropdownIndicator: () => (
+            <MapPin
+              width="1.25rem"
+              height="1.25rem"
+              fillColor="#4a4a4a"
+              strokeWidth={0}
+            />
+          ),
+        }}
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Estado/Provincia*
+      </label>
+      <Select
+        options={regionOptions}
+        value={
+          regionOptions.find(o => o.label === formData.venue.state) || null
+        }
+        onChange={handleRegionChange}
+        placeholder="Selecciona un estado/provincia"
+        styles={selectStyles}
+        isClearable
+        isDisabled={!formData.venue.country}
+        components={{
+          DropdownIndicator: () => (
+            <MapPin
+              width="1.25rem"
+              height="1.25rem"
+              fillColor="#4a4a4a"
+              strokeWidth={0}
+            />
+          ),
+        }}
+      />
+    </div>
+
+    <InputField
+      label="Dirección*"
+      placeholder="Dirección 123"
+      variant="accent"
+      icon="Flag"
+      value={formData.venue.address}
+      onChangeText={(v: string) =>
+        handleInputChange('venue', 'address', v)
+      }
+    />
+  </div>
+</CollapsibleSection>
+            
+<CollapsibleSection
+  title="Logo y Convocatoria"
+  Icon={Files}
+  isCompleted={Boolean(logo) && Boolean(participationFile)}
+>
+  {/* Sube tu logo */}
+  <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="flex items-center mb-2 text-gray-800">
+      <FileJpg width="1.5rem" height="1.5rem" />
+      <h4 className="ml-2 text-base font-semibold">Sube tu logo</h4>
+    </div>
+    <p className="text-gray-600 text-sm mb-4">
+      Selecciona una imagen que represente a tu SEDE. No es obligatorio, pero sí recomendado.
+    </p>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={e => handleFileChange(e, setLogo)}
+      className="block"
+    />
+    {logo && (
+      <p className="mt-2 text-xs text-gray-500">
+        Archivo: {logo.name}
+      </p>
+    )}
+  </div>
+
+  {/* Convocatoria SEDE */}
+  <div className="mt-6">
+    <div className="flex items-center mb-2 text-gray-800">
+      <Files width="1.5rem" height="1.5rem" />
+      <h4 className="ml-2 text-base font-semibold">Convocatoria SEDE</h4>
+    </div>
+    <p className="text-gray-600 text-sm mb-4">
+      Debes subir tu permiso de participación firmado por un representante legal de la institución.
+    </p>
+    <a
+      href="/ConvocatoriaSEDES-PH2025.pdf"
+      download
+      className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition"
+    >
+      Descargar Convocatoria
+    </a>
+  </div>
+
+  {/* Sube tu convocatoria */}
+  <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="flex items-center mb-2 text-gray-800">
+      <FilePdf width="1.5rem" height="1.5rem" />
+      <h4 className="ml-2 text-base font-semibold">Sube tu convocatoria</h4>
+    </div>
+    <p className="text-gray-600 text-sm mb-4">
+      Selecciona el documento PDF de tu convocatoria. Verifica que se suba correctamente.
+    </p>
+    <input
+      type="file"
+      accept=".pdf"
+      onChange={e => handleFileChange(e, setParticipationFile)}
+      className="block"
+    />
+    {participationFile && (
+      <p className="mt-2 text-xs text-gray-500">
+        Archivo: {participationFile.name}
+      </p>
+    )}
+  </div>
+</CollapsibleSection>
+            
+<CollapsibleSection
+  title="Aviso de Privacidad"
+  Icon={Megaphone}
+  isCompleted={privacyAccepted}
+>
+  {/* Texto de enlace al aviso */}
+  <p className="text-gray-600 text-sm mb-4">
+    Confirmo que he leído, entendido y acepto el Aviso de Privacidad disponible en:  
+    <br />
+    <a
+      href="https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores"
+      className="text-purple-600 hover:underline"
+    >
+      https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
+    </a>
+  </p>
+
+  {/* Checkbox de aceptación */}
+  <div className="mt-2">
+    <Checkbox
+      label="He leído y acepto el Aviso de Privacidad"
+      checked={privacyAccepted}
+      onChange={setPrivacyAccepted}
+    />
+  </div>
+</CollapsibleSection>
+            
+            {/* Botón de envío */}
               <div className='mt-6 flex justify-end'>
                 <Button
                   label='Enviar Registro'
@@ -1122,11 +1107,9 @@ const VenueRegistrationForm: React.FC = () => {
                   className='px-6 py-2 rounded-full flex items-center text-white'
                 />
               </div>
-            </div>
+            
           </div>
-        </form>
-
-        <Modal
+                  <Modal
           isOpen={isErrorModalOpen}
           onClose={() => setIsErrorModalOpen(false)}
           title='Errores en el formulario'
@@ -1138,9 +1121,10 @@ const VenueRegistrationForm: React.FC = () => {
           onClose={() => setIsSuccessToastOpen(false)}
           message={success || ''}
         />
-      </div>
+        </div>
+      </form>
     </div>
   );
-};
+}
 
 export default VenueRegistrationForm;

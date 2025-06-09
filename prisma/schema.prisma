@@ -128,8 +128,8 @@ model participants {
   email              String?             @db.VarChar(255)
   year               String?             @db.VarChar(255)
   education          String?             @db.VarChar(255)
-  participation_file Bytes               @db.Blob
-  participation_file_path String?                  @db.VarChar(255)
+  participation_file Bytes               @db.LongBlob
+  participation_file_path String?        @db.VarChar(255)
   preferred_group    Int?                @db.UnsignedInt
   status             participants_status @default(Pendiente)
   id_group           Int?                @db.UnsignedInt
@@ -154,7 +154,7 @@ model superusers {
   maternal_name String?  @db.VarChar(255)
   name          String?  @db.VarChar(255)
   paternal_name String?  @db.VarChar(255)
-  profile_image Bytes?   @db.Blob
+  profile_image Bytes?   @db.LongBlob
   tokenVersion  Int      @default(0)
 }
 
@@ -179,7 +179,7 @@ model venue_coordinators {
   username           String                  @db.VarChar(255)
   password           String                  @db.VarChar(255)
   tokenVersion       Int                     @default(0)
-  profile_image      Bytes?                  @db.Blob
+  profile_image      Bytes?                  @db.LongBlob
   profile_image_path String?                 @db.VarChar(255)
   id_venue           Int                     @db.UnsignedInt
   status             VenueCoordinatorStatus  @default(Pendiente)
@@ -197,8 +197,8 @@ model venues {
   country                 String?                  @db.VarChar(255)
   state                   String?                  @db.VarChar(255)
   address                 String?                  @db.VarChar(255)
-  logo                    Bytes?                   @db.Blob
-  participation_file      Bytes                    @db.Blob
+  logo                    Bytes?                   @db.LongBlob
+  participation_file      Bytes                    @db.LongBlob
   logo_path               String?                  @db.VarChar(255)
   participation_file_path String?                  @db.VarChar(255)
   status                  venues_status            @default(Pendiente)

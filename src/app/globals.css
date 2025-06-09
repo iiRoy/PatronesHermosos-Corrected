@@ -111,9 +111,11 @@
 /* Fondo blanco diagonal */
 .bg-diagonal-blanco {
   background: linear-gradient(115deg, var(--text-color) 50%, transparent 50%);
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
+  filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
   z-index: 1;
 }
 
@@ -123,13 +125,13 @@
   position: absolute;
   top: 0;
   left: 0;
+  filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
   z-index: 1;
 }
 
 /* Estilo para el contenedor de la descripción con fondo morado y flecha */
 
 .pagina-inicio {
-  background-color: #160d17;
   min-height: 90.8vh;
 }
 

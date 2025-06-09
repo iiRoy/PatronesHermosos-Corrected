@@ -38,7 +38,7 @@ async function main() {
   await prisma.venues.deleteMany();
   await prisma.superusers.deleteMany();
 
-  // Resprisma auto-increment counters for all tables
+  // Resetea los contadores de auto-incremento de todas las tablas
   console.log('🔄 Reseteando contadores de auto-incremento...');
   await prisma.$executeRaw`ALTER TABLE participants AUTO_INCREMENT = 1`;
   await prisma.$executeRaw`ALTER TABLE collaborators AUTO_INCREMENT = 1`;

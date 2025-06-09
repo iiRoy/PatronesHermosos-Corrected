@@ -1106,7 +1106,7 @@ CREATE OR REPLACE PROCEDURE registrar_part(
     IN email_part VARCHAR(255),
     IN grado_part VARCHAR(255),
     IN escolaridad_part VARCHAR(255),
-    IN archivo_permiso BLOB,
+    IN archivo_permiso LONGBLOB,
     IN archivo_permiso_path VARCHAR(255),
     IN id_grupo INT,
 
@@ -1458,8 +1458,8 @@ CREATE OR REPLACE PROCEDURE registrar_sede(
     IN pais_sede VARCHAR(255),
     IN region_sede VARCHAR(255),
     IN direccion_sede VARCHAR(255),
-    IN logo BLOB,
-    IN convocatoria BLOB,
+    IN logo LONGBLOB,
+    IN convocatoria LONGBLOB,
     IN logo_path VARCHAR(255),
     IN convocatoria_path VARCHAR(255),
 
@@ -1472,7 +1472,7 @@ CREATE OR REPLACE PROCEDURE registrar_sede(
     IN sexo_general VARCHAR(255),
     IN usuario_general VARCHAR(255),
     IN contrasena_general VARCHAR(255),
-    IN imagen_perfil BLOB,
+    IN imagen_perfil LONGBLOB,
     IN imagen_perfil_path VARCHAR(255),
 
     -- Coordinadora Asociada

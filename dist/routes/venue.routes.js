@@ -32,7 +32,7 @@ const upload = (0, multer_1.default)({
         if (file.fieldname === 'participation_file' && file.mimetype !== 'application/pdf') {
             return cb(new Error('El archivo de participación debe ser un PDF'));
         }
-        if ((file.fieldname === 'logo' || file.fieldname === 'generalCoordinator.profileImage') &&
+        if ((file.fieldname === 'logo' || file.fieldname === 'venueCoordinator.profileImage') &&
             !file.mimetype.startsWith('image/')) {
             return cb(new Error('Los archivos de logo y foto de perfil deben ser imágenes'));
         }
@@ -51,7 +51,7 @@ router.get('/', venue_controller_1.default.getAll);
 router.post('/', upload.fields([
     { name: 'participation_file', maxCount: 1 },
     { name: 'logo', maxCount: 1 },
-    { name: 'generalCoordinator.profileImage', maxCount: 1 },
+    { name: 'venueCoordinator.profileImage', maxCount: 1 },
 ]), venueValidator_1.validateVenue, venue_controller_1.default.create);
 router.get('/specific', asyncHandler(authMiddleware_1.authMiddleware), venue_controller_1.default.getSpecificData); // Nueva ruta para obtener solo los datos específicos
 router.get('/:id', asyncHandler(authMiddleware_1.authMiddleware), venue_controller_1.default.getById);
