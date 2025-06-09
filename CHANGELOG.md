@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.2.0...v2.3.0) (2025-06-09)
+
+
+### Features
+
+* **diplomas:** Corrección de formato ([dc3b90a](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/dc3b90a78bdb613737d08e33801c8f89a7516075))
+
 # [2.2.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.1.0...v2.2.0) (2025-06-09)
 
 
