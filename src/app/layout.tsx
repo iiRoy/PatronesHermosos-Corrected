@@ -19,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
+        {/* Providers de contexto y layout cliente */}
         <TransitionProvider>
           <ClientLayout>{children}</ClientLayout>
         </TransitionProvider>

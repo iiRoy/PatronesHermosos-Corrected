@@ -48,16 +48,23 @@ const GestionCoordinadoras = () => {
     password: '',
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 5;
 
+  // Cargar token SOLO en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchCoordinadoras = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           notify({
             color: 'red',
             title: 'Error',
@@ -70,7 +77,7 @@ const GestionCoordinadoras = () => {
 
         const coordResponse = await fetch('/api/venue-coordinators/specific', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -78,7 +85,7 @@ const GestionCoordinadoras = () => {
 
         if (!coordResponse.ok) {
           if (coordResponse.status === 403) {
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             notify({
               color: 'red',
               title: 'Error',
@@ -89,13 +96,15 @@ const GestionCoordinadoras = () => {
             return;
           }
           throw new Error(
-            `Error fetching coordinators: ${coordResponse.status} - ${coordData.message || 'Unknown error'}`,
+            `Error fetching coordinators: ${coordResponse.status} - ${
+              coordData.message || 'Unknown error'
+            }`,
           );
         }
 
         const venuesResponse = await fetch('/api/venues', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
@@ -103,7 +112,7 @@ const GestionCoordinadoras = () => {
 
         if (!venuesResponse.ok) {
           if (venuesResponse.status === 403) {
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             notify({
               color: 'red',
               title: 'Error',
@@ -114,7 +123,9 @@ const GestionCoordinadoras = () => {
             return;
           }
           throw new Error(
-            `Error fetching venues: ${venuesResponse.status} - ${venuesDataResponse.message || 'Unknown error'}`,
+            `Error fetching venues: ${venuesResponse.status} - ${
+              venuesDataResponse.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -126,8 +137,9 @@ const GestionCoordinadoras = () => {
 
         const formattedData = coordData.data.map((coordinator: any) => ({
           id_venue_coord: coordinator.id_venue_coord,
-          nombre:
-            `${coordinator.name} ${coordinator.paternal_name || ''} ${coordinator.maternal_name || ''}`.trim(),
+          nombre: `${coordinator.name} ${coordinator.paternal_name || ''} ${
+            coordinator.maternal_name || ''
+          }`.trim(),
           email: coordinator.email || 'Sin correo',
           phone_number: coordinator.phone_number || 'Sin teléfono',
           venue: venuesMapData.get(coordinator.id_venue) || 'Sede desconocida',
@@ -148,8 +160,8 @@ const GestionCoordinadoras = () => {
         });
       }
     };
-    fetchCoordinadoras();
-  }, [router, notify]);
+    if (apiToken) fetchCoordinadoras();
+  }, [router, notify, apiToken]);
 
   const uniqueVenues = Array.from(
     new Set(coordinadorasData.map((coordinadora) => coordinadora.venue)),
@@ -269,8 +281,7 @@ const GestionCoordinadoras = () => {
     }
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -287,7 +298,7 @@ const GestionCoordinadoras = () => {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
           body: JSON.stringify(newCoordinatorData),
         },
@@ -303,8 +314,9 @@ const GestionCoordinadoras = () => {
         const newCoordinator = result.data;
         const formattedNewCoordinator: Coordinadora = {
           id_venue_coord: newCoordinator.id_venue_coord,
-          nombre:
-            `${newCoordinator.name || ''} ${newCoordinator.paternal_name || ''} ${newCoordinator.maternal_name || ''}`.trim(),
+          nombre: `${newCoordinator.name || ''} ${newCoordinator.paternal_name || ''} ${
+            newCoordinator.maternal_name || ''
+          }`.trim(),
           email: newCoordinatorData.email,
           phone_number: newCoordinatorData.phone_number,
           venue: selectedCoordinadora.venue,

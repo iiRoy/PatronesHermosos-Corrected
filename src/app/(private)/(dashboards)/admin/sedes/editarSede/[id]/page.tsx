@@ -31,19 +31,26 @@ const EditarSede = () => {
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
+
+  // Obtener token solo en cliente y guardarlo en estado
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const venueResponse = await fetch(`/api/venues/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
         if (!venueResponse.ok) {
@@ -54,7 +61,9 @@ const EditarSede = () => {
             throw new Error('Sede no encontrada');
           }
           throw new Error(
-            `Error fetching venue: ${venueResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching venue: ${venueResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const venueData = await venueResponse.json();
@@ -71,15 +80,14 @@ const EditarSede = () => {
       }
     };
 
-    if (id) {
+    if (id && apiToken) {
       fetchData();
     }
-  }, [id, router]);
+  }, [id, router, apiToken]);
 
   const handleSubmit = async () => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-      if (!token) {
+      if (!apiToken) {
         router.push('/login');
         return;
       }
@@ -93,13 +101,11 @@ const EditarSede = () => {
         status,
       };
 
-      console.log('Datos enviados:', updatedSede); // Depuración
-
       const response = await fetch(`/api/venues/basic/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(updatedSede),
       });

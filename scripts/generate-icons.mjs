@@ -17,8 +17,25 @@ if (fs.existsSync(outputPath)) {
   console.log('Carpeta creada: src/components/icons');
 }
 
+// Convierte atributos SVG de kebab-case a camelCase para JSX
+function svgAttributesToCamelCase(svg) {
+  return svg
+    .replace(/clip-path=/g, 'clipPath=')
+    .replace(/fill-rule=/g, 'fillRule=')
+    .replace(/stroke-linecap=/g, 'strokeLinecap=')
+    .replace(/stroke-linejoin=/g, 'strokeLinejoin=')
+    .replace(/stroke-miterlimit=/g, 'strokeMiterlimit=')
+    .replace(/stroke-dasharray=/g, 'strokeDasharray=')
+    .replace(/stroke-dashoffset=/g, 'strokeDashoffset=')
+    .replace(/viewBox=/g, 'viewBox=')
+    .replace(/stop-color=/g, 'stopColor=')
+    .replace(/stop-opacity=/g, 'stopOpacity=')
+    .replace(/xlink:href=/g, 'xlinkHref=')
+    .replace(/xmlns:xlink=/g, 'xmlnsXlink=');
+}
+
 const generateIconComponent = (iconName, svgContent) => {
-  const cleanedSvgContent = svgContent
+  let cleanedSvgContent = svgContent
     .replace(/stroke-width="[^"]*"/g, '')
     .replace(/stroke="[^"]*"/g, '')
     .replace(/fill="[^"]*"/g, '')
@@ -45,6 +62,9 @@ const generateIconComponent = (iconName, svgContent) => {
       '<svg ',
       `<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" `,
     );
+
+  // Aplica la conversión a camelCase
+  cleanedSvgContent = svgAttributesToCamelCase(cleanedSvgContent);
 
   return `'use client';
 import React from 'react';

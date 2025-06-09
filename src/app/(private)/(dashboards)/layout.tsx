@@ -6,6 +6,16 @@ import Image from 'next/image';
 import Menu from '@/components/headers_menu_users/Menu';
 import User from '@/components/headers_menu_users/User';
 import NotificationMenu from '@/components/headers_menu_users/NotificationMenu';
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
+
+interface DecodedToken {
+  userId: number;
+  email: string;
+  username: string;
+  role: string;
+  tokenVersion: number;
+}
 
 export default function DashboardLayout({
   children,
@@ -14,6 +24,10 @@ export default function DashboardLayout({
 }>) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSubmenuOverlay, setShowSubmenuOverlay] = useState(false);
+  const [apiToken, setApiToken] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<{ email: string; username: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   // Detecta si el submenu está activo para mostrar fondo morado
   useEffect(() => {
@@ -38,6 +52,30 @@ export default function DashboardLayout({
     media.addEventListener('change', handleMedia);
     return () => media.removeEventListener('change', handleMedia);
   }, []);
+
+  // Obtener token y decodificarlo solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      setApiToken(token);
+      if (token) {
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          setUserInfo({ email: decoded.email, username: decoded.username });
+        } catch (err) {
+          setError('Token inválido');
+          router.push('/login');
+        }
+      } else {
+        setError('No se encontró el token, por favor inicia sesión');
+        router.push('/login');
+      }
+    }
+  }, [router]);
+
+  if (error) {
+    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
+  }
 
   return (
     <div className='h-screen flex text-text bg-back'>

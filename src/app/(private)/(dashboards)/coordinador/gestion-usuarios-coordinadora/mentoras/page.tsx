@@ -29,6 +29,7 @@ interface DecodedToken {
   username: string;
   role: string;
   tokenVersion: number;
+  id_venue?: number;
 }
 
 const GestionMentoras = () => {
@@ -39,52 +40,55 @@ const GestionMentoras = () => {
   const [selectedMentora, setSelectedMentora] = useState<Mentora | null>(null);
   const [mentorasData, setMentorasData] = useState<Mentora[]>([]);
   const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 5;
 
+  // Obtener token y decodificarlo solo en cliente
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        console.log('Decoded token:', decoded);
-        if (decoded.role === 'venue_coordinator') {
-          setCoordinatorVenueId(decoded.userId);
-        } else {
-          setError('Este dashboard es solo para coordinadores de sede');
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      setApiToken(token);
+      if (token) {
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          if (decoded.role === 'venue_coordinator') {
+            // Preferir id_venue si existe, si no userId
+            setCoordinatorVenueId(decoded.id_venue ?? decoded.userId);
+          } else {
+            setError('Este dashboard es solo para coordinadores de sede');
+            router.push('/login');
+          }
+        } catch (err) {
+          console.error('Error al decodificar el token:', err);
+          setError('Token inválido');
           router.push('/login');
         }
-      } catch (err) {
-        console.error('Error al decodificar el token:', err);
-        setError('Token inválido');
+      } else {
+        setError('No se encontró el token, por favor inicia sesión');
         router.push('/login');
       }
-    } else {
-      setError('No se encontró el token, por favor inicia sesión');
-      router.push('/login');
     }
   }, [router]);
 
   useEffect(() => {
     const fetchMentoras = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const mentorsResponse = await fetch('/api/mentors', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
         const mentorsData = await mentorsResponse.json();
-        console.log('Mentors data from API:', mentorsData);
 
         if (!mentorsResponse.ok) {
           if (mentorsResponse.status === 403) {
@@ -92,7 +96,9 @@ const GestionMentoras = () => {
             return;
           }
           throw new Error(
-            `Error fetching mentors: ${mentorsResponse.status} - ${mentorsData.message || 'Unknown error'}`,
+            `Error fetching mentors: ${mentorsResponse.status} - ${
+              mentorsData.message || 'Unknown error'
+            }`,
           );
         }
 
@@ -101,7 +107,7 @@ const GestionMentoras = () => {
             (mentor: any) => coordinatorVenueId === null || mentor.id_venue === coordinatorVenueId,
           )
           .map((mentor: any) => {
-            const nameParts = mentor.name.trim().split(' ');
+            const nameParts = mentor.name?.trim().split(' ') ?? [];
             const nameOnly = nameParts[0] || 'Sin nombre';
             return {
               id_mentor: mentor.id_mentor,
@@ -117,17 +123,16 @@ const GestionMentoras = () => {
             };
           });
         setMentorasData(formattedData);
-        console.log('Formatted mentoras data:', formattedData);
       } catch (error: any) {
         console.error('Error al obtener mentoras:', error);
         setError(error.message);
       }
     };
 
-    if (coordinatorVenueId !== null) {
+    if (coordinatorVenueId !== null && apiToken) {
       fetchMentoras();
     }
-  }, [router, coordinatorVenueId]);
+  }, [router, coordinatorVenueId, apiToken]);
 
   const filteredData = useMemo(() => {
     const searchTerm = inputValue.toLowerCase().trim();
@@ -189,8 +194,7 @@ const GestionMentoras = () => {
     }
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -205,7 +209,7 @@ const GestionMentoras = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
       });
 

@@ -7,7 +7,9 @@ function LoadingScreen({ isVisible }: { isVisible: boolean }) {
   return (
     <div
       className={`fixed top-0 left-0 h-screen w-screen flex items-center justify-center bg-[#160D17] 
-        transition-opacity duration-1000 ease-in-out z-50 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        transition-opacity duration-1000 ease-in-out z-50 ${
+          isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
     >
       <span className='text-white text-lg animate-pulse'>Cargando...</span>
     </div>
@@ -16,43 +18,47 @@ function LoadingScreen({ isVisible }: { isVisible: boolean }) {
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showLoader, setShowLoader] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('user_id');
-    const storedToken = localStorage.getItem('api_token');
+    if (typeof window !== 'undefined') {
+      const storedUserId = localStorage.getItem('user_id');
+      const storedToken = localStorage.getItem('api_token');
+      setUserId(storedUserId);
+      setApiToken(storedToken);
 
-    const checkToken = async () => {
-      try {
-        const res = await fetch('/api/data?page=venues', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        });
+      const checkToken = async () => {
+        try {
+          const res = await fetch('/api/data?page=venues', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
 
-        if (res.status === 403) {
-          throw new Error('Token inválido o expirado');
+          if (res.status === 403) {
+            throw new Error('Token inválido o expirado');
+          }
+
+          setIsLoading(false);
+          setTimeout(() => {
+            setShowLoader(false);
+          }, 600);
+        } catch (error) {
+          console.warn('Token inválido, redirigiendo...');
+          localStorage.clear();
+          router.replace('/login');
         }
+      };
 
-        setUserId(storedUserId);
-        setIsLoading(false);
-        setTimeout(() => {
-          setShowLoader(false);
-        }, 600);
-      } catch (error) {
-        console.warn('Token inválido, redirigiendo...');
-        localStorage.clear();
+      if (!storedUserId || !storedToken) {
         router.replace('/login');
+      } else {
+        checkToken();
       }
-    };
-
-    if (!storedUserId || !storedToken) {
-      router.replace('/login');
-    } else {
-      checkToken();
     }
   }, [router]);
 

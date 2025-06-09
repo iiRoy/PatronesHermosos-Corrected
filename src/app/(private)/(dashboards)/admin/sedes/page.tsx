@@ -30,16 +30,23 @@ const SedesAdmin = () => {
   const [selectedSede, setSelectedSede] = useState<Sede | null>(null);
   const [sedesData, setSedesData] = useState<Sede[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 5;
 
+  // Obtener token solo en cliente y guardarlo en estado
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchSedes = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           notify({
             color: 'red',
             title: 'Error',
@@ -52,14 +59,14 @@ const SedesAdmin = () => {
 
         const response = await fetch('/api/venues/', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
         if (!response.ok) {
           const errorData = await response.json();
           if (response.status === 403) {
-            localStorage.removeItem('api_token');
+            if (typeof window !== 'undefined') localStorage.removeItem('api_token');
             notify({
               color: 'red',
               title: 'Error',
@@ -75,16 +82,17 @@ const SedesAdmin = () => {
         }
 
         const data = await response.json();
-        const formattedData = data.map((venue: any) => ({
+        // Mapeo robusto de campos, soportando diferentes nombres
+        const formattedData = (Array.isArray(data) ? data : data.data || []).map((venue: any) => ({
           id_venue: venue.id_venue,
           name: venue.name || 'Sin nombre',
+          estado: venue.state || venue.estado || 'Sin estado',
+          pais: venue.country || venue.pais || 'Sin país',
           location: venue.location || 'Sin ubicación',
           address: venue.address || 'Sin dirección',
           status: venue.status ? venue.status.replace(/_/g, ' ') : 'Pendiente',
         }));
         setSedesData(formattedData);
-
-        console.log('Datos crudos de la API:', data);
       } catch (error: any) {
         console.error('Error al obtener sedes:', error);
         setError(error.message);
@@ -96,15 +104,18 @@ const SedesAdmin = () => {
         });
       }
     };
-    fetchSedes();
-  }, [router, notify]);
+    if (apiToken) fetchSedes();
+  }, [router, notify, apiToken]);
 
-  const uniqueStatuses = Array.from(new Set(sedesData.map((item) => item.status))).map(
-    (status) => ({
+  // Estados únicos para el filtro, sin hardcodeo
+  const uniqueStatuses = useMemo(() => {
+    const set = new Set<string>();
+    sedesData.forEach((item) => set.add(item.status));
+    return Array.from(set).map((status) => ({
       label: status,
       value: status,
-    }),
-  );
+    }));
+  }, [sedesData]);
   const statusOptions = [{ label: 'Todos', value: '__All__' }, ...uniqueStatuses];
 
   const filteredData = useMemo(() => {
@@ -115,11 +126,12 @@ const SedesAdmin = () => {
         item.name.toLowerCase().includes(searchTerm) ||
         item.location.toLowerCase().includes(searchTerm) ||
         item.address.toLowerCase().includes(searchTerm) ||
-        item.status.toLowerCase().includes(searchTerm);
+        item.status.toLowerCase().includes(searchTerm) ||
+        item.estado.toLowerCase().includes(searchTerm) ||
+        item.pais.toLowerCase().includes(searchTerm);
       const matchesStatus = section === '__All__' || item.status === section;
-      const isValidStatus =
-        item.status === 'Registrada con participantes' ||
-        item.status === 'Registrada sin participantes';
+      // Solo mostrar sedes con status que no sea "Cancelada"
+      const isValidStatus = item.status.toLowerCase() !== 'cancelada';
       return matchesSearch && matchesStatus && isValidStatus;
     });
   }, [inputValue, section, sedesData]);
@@ -172,8 +184,7 @@ const SedesAdmin = () => {
     }
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -188,7 +199,7 @@ const SedesAdmin = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
       });
 
@@ -273,7 +284,7 @@ const SedesAdmin = () => {
             <tbody className='text-gray-700'>
               {paginatedData.map((sede, index) => (
                 <tr
-                  key={index}
+                  key={sede.id_venue}
                   className='border-t border-gray-300 hover:bg-gray-300 cursor-pointer'
                   onClick={() => handleDetailsClick(sede)}
                 >
@@ -345,6 +356,12 @@ const SedesAdmin = () => {
                 </p>
                 <p>
                   <strong>Estado:</strong> {selectedSede.status}
+                </p>
+                <p>
+                  <strong>Estado (región):</strong> {selectedSede.estado}
+                </p>
+                <p>
+                  <strong>País:</strong> {selectedSede.pais}
                 </p>
               </div>
               <div className='mt-6 flex justify-center'>

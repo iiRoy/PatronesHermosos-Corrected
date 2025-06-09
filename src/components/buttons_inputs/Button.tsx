@@ -6,9 +6,9 @@ import withIconDecorator from '../decorators/IconDecorator';
 import { useTransition } from '../TransitionContext';
 
 interface ButtonProps {
-  label?: string; // Made optional since some buttons (e.g., icons) may not have labels
+  label?: string;
   variant: 'primary' | 'secondary' | 'success' | 'error' | 'warning';
-  type?: 'button' | 'submit' | 'reset'; // New type prop
+  type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   round?: boolean;
   showLeftIcon?: boolean;
@@ -36,7 +36,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({
   label,
   variant,
-  type = 'button', // Default to button
+  type = 'button',
   disabled = false,
   round = false,
   showLeftIcon = false,
@@ -87,10 +87,10 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={classes}
-      type={type} // Pass type prop
+      type={type}
       onClick={handleClick}
       disabled={disabled}
-      aria-label={label || 'Button'} // Fallback for accessibility
+      aria-label={label || 'Button'}
       data-variant={variant}
     >
       {showLeftIcon && DecoratedIconL && (
@@ -103,10 +103,7 @@ const Button: React.FC<ButtonProps> = ({
           />
         </div>
       )}
-      {!round &&
-        label && ( // Only render label if provided
-          <span className='option-label text-[var(--text-color)]'>{label}</span>
-        )}
+      {!round && label && <span className='option-label text-[var(--text-color)]'>{label}</span>}
       {showRightIcon && DecoratedIconR && (
         <div className='ease-in-out duration-300 transition-colors'>
           <DecoratedIconR

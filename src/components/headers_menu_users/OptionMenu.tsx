@@ -233,10 +233,10 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     }
   }, [visible]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setVisible(false);
     setIsCustomizingColors(false);
-  };
+  }, [setVisible]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -247,7 +247,7 @@ const OptionsMenu: React.FC<ExtendedOptionsMenuProps> = (props) => {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [handleClose]);
 
   const handleViewChange = (targetView: 'customization' | 'download') => {
     if (currentView === targetView) return;

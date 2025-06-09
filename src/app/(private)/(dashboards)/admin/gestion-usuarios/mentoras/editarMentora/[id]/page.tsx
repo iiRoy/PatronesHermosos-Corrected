@@ -42,19 +42,26 @@ const EditarMentora = () => {
   const [selectedVenue, setSelectedVenue] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [apiToken, setApiToken] = useState<string | null>(null);
+
+  // Obtener token solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const mentorResponse = await fetch(`/api/mentors/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
         if (!mentorResponse.ok) {
@@ -65,7 +72,9 @@ const EditarMentora = () => {
             throw new Error('Mentora no encontrada');
           }
           throw new Error(
-            `Error fetching mentor: ${mentorResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching mentor: ${mentorResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const mentorData = await mentorResponse.json();
@@ -79,13 +88,15 @@ const EditarMentora = () => {
 
         const venuesResponse = await fetch('/api/venues', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
         if (!venuesResponse.ok) {
           const errorData = await venuesResponse.json();
           throw new Error(
-            `Error fetching venues: ${venuesResponse.status} - ${errorData.message || 'Unknown error'}`,
+            `Error fetching venues: ${venuesResponse.status} - ${
+              errorData.message || 'Unknown error'
+            }`,
           );
         }
         const venuesData = await venuesResponse.json();
@@ -99,10 +110,10 @@ const EditarMentora = () => {
       }
     };
 
-    if (id) {
+    if (id && apiToken) {
       fetchData();
     }
-  }, [id, router]);
+  }, [id, router, apiToken]);
 
   const venueOptions = venues.map((venue) => ({
     label: venue.name,
@@ -138,8 +149,7 @@ const EditarMentora = () => {
     }
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-      if (!token) {
+      if (!apiToken) {
         router.push('/login');
         return;
       }
@@ -162,7 +172,7 @@ const EditarMentora = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(updatedMentora),
       });

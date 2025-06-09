@@ -11,7 +11,7 @@ interface ModalProps {
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, messages }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Handle Esc key to close modal
+  // Cierra con tecla Esc
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -21,7 +21,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, messages }
     [onClose],
   );
 
-  // Focus trapping
+  // Focus trapping y eventos de teclado
   useEffect(() => {
     if (isOpen) {
       const focusableElements = modalRef.current?.querySelectorAll(

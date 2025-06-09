@@ -61,16 +61,23 @@ const EditarStaff = () => {
   const [venueName, setVenueName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [apiToken, setApiToken] = useState<string | null>(null);
 
   // Opciones para los select
   const roleOptions = ['Instructora', 'Facilitadora', 'Staff'];
   const genderOptions = ['Masculino', 'Femenino', 'Otro'];
 
+  // Obtener token solo en cliente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           notify({
             color: 'red',
             title: 'Error',
@@ -83,7 +90,7 @@ const EditarStaff = () => {
 
         const collaboratorResponse = await fetch(`/api/collaborators/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
         if (!collaboratorResponse.ok) {
@@ -124,17 +131,16 @@ const EditarStaff = () => {
       }
     };
 
-    if (id) {
+    if (id && apiToken) {
       fetchData();
     }
-  }, [id, router, notify]);
+  }, [id, router, notify, apiToken]);
 
   // Fetch available groups
   useEffect(() => {
     const fetchAvailableGroups = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           notify({
             color: 'red',
             title: 'Error',
@@ -146,7 +152,7 @@ const EditarStaff = () => {
         }
 
         const response = await fetch(`/api/collaborators/${id}/available-groups`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${apiToken}` },
         });
 
         if (!response.ok) {
@@ -173,10 +179,10 @@ const EditarStaff = () => {
       }
     };
 
-    if (collaborator) {
+    if (collaborator && apiToken) {
       fetchAvailableGroups();
     }
-  }, [collaborator, id, router, notify]);
+  }, [collaborator, id, router, notify, apiToken]);
 
   const validateForm = () => {
     const errors: string[] = [];
@@ -233,8 +239,7 @@ const EditarStaff = () => {
     }
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-      if (!token) {
+      if (!apiToken) {
         setValidationErrors(['No se encontró el token, redirigiendo al login']);
         router.push('/login');
         return;
@@ -257,7 +262,7 @@ const EditarStaff = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(updatedCollaborator),
       });
@@ -275,7 +280,7 @@ const EditarStaff = () => {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
           body: JSON.stringify({
             role: selectedRole,

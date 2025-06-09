@@ -12,6 +12,7 @@ export default function LoginLayout({
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState(false);
+  const [apiToken, setApiToken] = useState<string | null>(null);
 
   const handleResize = () => {
     // Tailwind breakpoint `md` = 768px, `lg` = 1024px
@@ -33,18 +34,22 @@ export default function LoginLayout({
   }, []);
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-    const storedRole = typeof window !== 'undefined' ? localStorage.getItem('user_role') : null;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      const storedRole = localStorage.getItem('user_role');
+      setApiToken(token);
+      setRole(storedRole);
 
-    if (token && storedRole) {
-      if (storedRole === 'superuser') {
-        router.push('/admin/estadisticas');
-      } else if (storedRole === 'venue_coordinator') {
-        router.push('/coordinador/estadisticas');
+      if (token && storedRole) {
+        if (storedRole === 'superuser') {
+          router.push('/admin/estadisticas');
+        } else if (storedRole === 'venue_coordinator') {
+          router.push('/coordinador/estadisticas');
+        }
+      } else {
+        setRole(null);
+        setLoading(false);
       }
-    } else {
-      setRole(null);
-      setLoading(false);
     }
   }, [router]);
 

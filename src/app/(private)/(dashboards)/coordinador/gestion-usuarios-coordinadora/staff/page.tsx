@@ -52,51 +52,53 @@ const GestionApoyo = () => {
   const [apoyoData, setApoyoData] = useState<Apoyo[]>([]);
   const [coordinatorVenueId, setCoordinatorVenueId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [apiToken, setApiToken] = useState<string | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
 
   const rowsPerPage = 10;
 
+  // Obtener token y decodificarlo solo en cliente
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        console.log('Decoded token:', decoded);
-        if (decoded.role === 'venue_coordinator') {
-          setCoordinatorVenueId(decoded.userId);
-        } else {
-          setError('Este dashboard es solo para coordinadores de sede');
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('api_token');
+      setApiToken(token);
+      if (token) {
+        try {
+          const decoded: DecodedToken = jwtDecode(token);
+          if (decoded.role === 'venue_coordinator') {
+            setCoordinatorVenueId(decoded.userId);
+          } else {
+            setError('Este dashboard es solo para coordinadores de sede');
+            router.push('/login');
+          }
+        } catch (err) {
+          console.error('Error al decodificar el token:', err);
+          setError('Token inválido');
           router.push('/login');
         }
-      } catch (err) {
-        console.error('Error al decodificar el token:', err);
-        setError('Token inválido');
+      } else {
+        setError('No se encontró el token, por favor inicia sesión');
         router.push('/login');
       }
-    } else {
-      setError('No se encontró el token, por favor inicia sesión');
-      router.push('/login');
     }
   }, [router]);
 
   useEffect(() => {
     const fetchApoyo = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('api_token') : '';
-        if (!token) {
+        if (!apiToken) {
           router.push('/login');
           return;
         }
 
         const collaboratorsResponse = await fetch('/api/collaborators', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${apiToken}`,
           },
         });
 
         const collaboratorsData = await collaboratorsResponse.json();
-        console.log('Collaborators data from API:', collaboratorsData);
 
         if (!collaboratorsResponse.ok) {
           if (collaboratorsResponse.status === 403) {
@@ -104,20 +106,15 @@ const GestionApoyo = () => {
             return;
           }
           throw new Error(
-            `Error fetching collaborators: ${collaboratorsResponse.status} - ${collaboratorsData.message || 'Unknown error'}`,
+            `Error fetching collaborators: ${collaboratorsResponse.status} - ${
+              collaboratorsData.message || 'Unknown error'
+            }`,
           );
         }
-
-        collaboratorsData.data.forEach((collab: any, index: number) => {
-          console.log(`Collaborator ${index + 1} id_venue:`, collab.id_venue);
-        });
 
         const formattedData = collaboratorsData.data
           .filter((collab: any) => {
             const collabVenueId = typeof collab.id_venue === 'number' ? collab.id_venue : null;
-            console.log(
-              `Filtering collaborator with id_venue: ${collab.id_venue}, coordinatorVenueId: ${coordinatorVenueId}`,
-            );
             return collabVenueId === coordinatorVenueId;
           })
           .map((collab: any) => ({
@@ -144,16 +141,15 @@ const GestionApoyo = () => {
           }));
 
         setApoyoData(formattedData);
-        console.log('Formatted apoyo data:', formattedData);
       } catch (error: any) {
         console.error('Error al obtener colaboradores:', error);
         setError(error.message);
       }
     };
-    if (coordinatorVenueId !== null) {
+    if (coordinatorVenueId !== null && apiToken) {
       fetchApoyo();
     }
-  }, [router, coordinatorVenueId]);
+  }, [router, coordinatorVenueId, apiToken]);
 
   const uniqueRoles = Array.from(new Set(apoyoData.map((apoyo) => apoyo.role))).sort();
 
@@ -237,8 +233,7 @@ const GestionApoyo = () => {
     }
 
     try {
-      const token = localStorage.getItem('api_token');
-      if (!token) {
+      if (!apiToken) {
         notify({
           color: 'red',
           title: 'Error',
@@ -253,7 +248,7 @@ const GestionApoyo = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${apiToken}`,
         },
       });
 

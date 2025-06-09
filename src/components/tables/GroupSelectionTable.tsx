@@ -244,7 +244,7 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
       {/* Group Details Popup */}
       {isGroupPopupOpen && selectedGroup && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-          <div className='texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-[80vh] max-h-full overflow-y-auto text-gray-800 custom-scrollbar-tabla'>
+          <div className='texto-popup bg-white p-6 rounded-lg shadow-lg w-96 relative max-h-full overflow-y-auto text-gray-800 custom-scrollbar-tabla'>
             <h2 className='text-3xl text-center'>Detalles del Grupo</h2>
             <div className='pt-6 pb-6'>
               <p>

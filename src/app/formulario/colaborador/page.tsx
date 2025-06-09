@@ -71,9 +71,13 @@ const CollaboratorRegistrationForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
+  const [apiToken, setApiToken] = useState<string | null>(null);
 
   // Fetch groups from API
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setApiToken(localStorage.getItem('api_token'));
+    }
     const fetchGroups = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/groups');
@@ -91,7 +95,9 @@ const CollaboratorRegistrationForm: React.FC = () => {
           sede: group.venues?.name || 'N/A',
           cupo: `${group.occupied_places || 0}/${group.max_places || 'N/A'} Personas`,
           horarios: `${group.start_hour || 'N/A'} - ${group.end_hour || 'N/A'}`,
-          fechas: `${group.start_date ? new Date(group.start_date).toLocaleDateString('es-MX') : 'N/A'} - ${group.end_date ? new Date(group.end_date).toLocaleDateString('es-MX') : 'N/A'}`,
+          fechas: `${
+            group.start_date ? new Date(group.start_date).toLocaleDateString('es-MX') : 'N/A'
+          } - ${group.end_date ? new Date(group.end_date).toLocaleDateString('es-MX') : 'N/A'}`,
         }));
         setGroups(transformedGroups);
       } catch (err) {

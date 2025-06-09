@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import withIconDecorator from '../decorators/IconDecorator';
 import { useMemo } from 'react';
-import { useTransition } from '../TransitionContext'; // ajusta path
+import { useTransition } from '../TransitionContext';
 
 interface OptionLinkProps {
   label: string;

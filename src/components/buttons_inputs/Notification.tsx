@@ -121,7 +121,7 @@ interface NotificationContextType {
   notifications: NotificationWithId[];
   notify: (options: NotificationOptions) => void;
   dismissToast: () => void;
-  dismissFromHistory: (id: number) => void; // Asegúrate de exponer este método
+  dismissFromHistory: (id: number) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType>({
@@ -200,6 +200,7 @@ export const NotificationProvider = ({
     </NotificationContext.Provider>
   );
 };
+
 export function NotificationsHistory() {
   const { notifications, dismissFromHistory } = useNotification();
   return (
