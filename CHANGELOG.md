@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.1.0...v2.2.0) (2025-06-09)
+
+
+### Features
+
+* **functions:** All the pages are up and running. ([a2230a3](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/a2230a307fb859b6cc4e36448f28e8b00fd4de07))
+
 # [2.1.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.2...v2.1.0) (2025-06-09)
 
 
