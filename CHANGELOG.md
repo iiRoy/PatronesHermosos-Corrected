@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.1...v2.0.2) (2025-06-09)
+
+
+### Bug Fixes
+
+* **Database:** Nuevos datos para la base de datos. ([4bd94bc](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/4bd94bc977557705cc300ba0cfad3d33a81304c1))
+
 ## [2.0.1](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.0...v2.0.1) (2025-06-09)
 
 
