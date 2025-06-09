@@ -1,87 +1,92 @@
 [
   {
-    "id_group": 1,
-    "excluded_date": "2025-04-28T00:00:00.000",
-    "reason": "Día festivo"
+    "id_group": 2,
+    "excluded_date": "2025-06-24",
+    "reason": "Día de inspiración creativa para el grupo"
+  },
+  {
+    "id_group": 2,
+    "excluded_date": "2025-06-25",
+    "reason": "Jornada de reflexión y descanso"
   },
   {
     "id_group": 3,
-    "excluded_date": "2025-04-20T00:00:00.000",
-    "reason": "Día festivo"
+    "excluded_date": "2025-06-23",
+    "reason": "Día azul: exploración digital"
   },
   {
     "id_group": 3,
-    "excluded_date": "2025-04-20T00:00:00.000",
-    "reason": "Día festivo"
+    "excluded_date": "2025-06-24",
+    "reason": "Hackathon de ideas locas"
+  },
+  {
+    "id_group": 3,
+    "excluded_date": "2025-06-25",
+    "reason": "Día de memes y creatividad"
   },
   {
     "id_group": 4,
-    "excluded_date": "2025-04-19T00:00:00.000",
-    "reason": "Día festivo"
+    "excluded_date": "2025-06-17",
+    "reason": "Día de círculos mágicos"
   },
   {
-    "id_group": 7,
-    "excluded_date": "2025-04-24T00:00:00.000",
-    "reason": "Día festivo"
+    "id_group": 4,
+    "excluded_date": "2025-06-18",
+    "reason": "Taller de risas y juegos"
   },
   {
-    "id_group": 7,
-    "excluded_date": "2025-04-24T00:00:00.000",
-    "reason": "Día festivo"
+    "id_group": 4,
+    "excluded_date": "2025-06-19",
+    "reason": "Día de descanso para mentes brillantes"
+  },
+  {
+    "id_group": 4,
+    "excluded_date": "2025-06-20",
+    "reason": "Jornada de creatividad extrema"
+  },
+  {
+    "id_group": 5,
+    "excluded_date": "2025-06-24",
+    "reason": "Día verde: conexión con la naturaleza"
+  },
+  {
+    "id_group": 5,
+    "excluded_date": "2025-06-25",
+    "reason": "Día de juegos matemáticos"
+  },
+  {
+    "id_group": 8,
+    "excluded_date": "2025-06-23",
+    "reason": "Día digital: exploración virtual"
+  },
+  {
+    "id_group": 8,
+    "excluded_date": "2025-06-24",
+    "reason": "Maratón de memes tecnológicos"
+  },
+  {
+    "id_group": 8,
+    "excluded_date": "2025-06-25",
+    "reason": "Día de descanso para la creatividad"
   },
   {
     "id_group": 9,
-    "excluded_date": "2025-04-19T00:00:00.000",
-    "reason": "Día festivo"
+    "excluded_date": "2025-06-27",
+    "reason": "Día de carneritos soñadores"
   },
   {
-    "id_group": 10,
-    "excluded_date": "2025-04-22T00:00:00.000",
-    "reason": "Día festivo"
+    "id_group": 9,
+    "excluded_date": "2025-06-28",
+    "reason": "Taller de cuentos y fantasía"
   },
   {
-    "id_group": 10,
-    "excluded_date": "2025-04-23T00:00:00.000",
-    "reason": "Día festivo"
+    "id_group": 9,
+    "excluded_date": "2025-06-29",
+    "reason": "Día de juegos y diversión"
   },
   {
-    "id_group": 11,
-    "excluded_date": "2025-04-29T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 12,
-    "excluded_date": "2025-04-22T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 12,
-    "excluded_date": "2025-04-23T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 13,
-    "excluded_date": "2025-04-22T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 14,
-    "excluded_date": "2025-04-24T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 16,
-    "excluded_date": "2025-04-26T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 17,
-    "excluded_date": "2025-04-26T00:00:00.000",
-    "reason": "Día festivo"
-  },
-  {
-    "id_group": 17,
-    "excluded_date": "2025-04-28T00:00:00.000",
-    "reason": "Día festivo"
+    "id_group": 9,
+    "excluded_date": "2025-06-30",
+    "reason": "Jornada de descanso y reflexión"
   }
 ]

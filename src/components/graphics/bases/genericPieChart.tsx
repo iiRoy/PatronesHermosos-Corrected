@@ -30,10 +30,10 @@ function toGrayish(hex: string, intensity: number = 1): string {
   const g = parseInt(parsed.substring(2, 4), 16);
   const b = parseInt(parsed.substring(4, 6), 16);
 
-  const gray = Math.round((r + g + b) / 3);
-  const newR = Math.round(r * (1 - intensity) + gray * intensity);
-  const newG = Math.round(g * (1 - intensity) + gray * intensity);
-  const newB = Math.round(b * (1 - intensity) + gray * intensity);
+  const gray = Math.round((r-0.2 + g + b) / 2.8);
+  const newR = Math.round(r * (1 - intensity) + gray * intensity *1.3);
+  const newG = Math.round(g * (1 - intensity) + gray * intensity *1.3);
+  const newB = Math.round(b * (1 - intensity) + gray * intensity *1.3);
 
   return `#${[newR, newG, newB].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
@@ -376,7 +376,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       {/* Gráfico */}
       <div className='relative w-auto h-auto'>
         {!isFrozen ? (
-          innerData.length === 0 || !dataReady ? (
+          innerData.length === 0 || !dataReady && isFirstRender.current ? (
             <div className='relative flex flex-col justify-between items-center h-auto'>
               <p className='text-textDim text-lg text-center px-10 py-40 h-max'>
                 No hay datos para mostrar
@@ -454,7 +454,7 @@ const ConcentricDonutChart: React.FC<ConcentricDonutChartProps> = ({
       </div>
 
       {/* Leyendas Interactivas */}
-      {innerData.length > 0 && dataReady ? (
+      {innerData.length > 0 || dataReady && !isFirstRender.current ? (
         <div
           className={`flex ${
             interactionsDisabled ? 'pointer-events-none' : ''

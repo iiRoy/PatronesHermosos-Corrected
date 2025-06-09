@@ -385,7 +385,7 @@ const GenericLineChart: React.FC<GenericLineChartProps> = ({
             value: sede.id.toString(),
             label: sede.name,
           }));
-        setSedes([{ value: '__all__', label: 'Todas las sedes' }, ...opciones]);
+        setSedes([{ value: '__all__', label: 'Todas las SEDES' }, ...opciones]);
       } else {
         console.warn(
           'No se encontraron sedes o el formato de respuesta es incorrecto:',
