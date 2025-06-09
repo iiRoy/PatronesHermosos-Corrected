@@ -1,6 +1,6 @@
 {
   "name": "patrones-hermosos",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only --ignore-watch .next --project tsconfig.server.json src/server.ts",
