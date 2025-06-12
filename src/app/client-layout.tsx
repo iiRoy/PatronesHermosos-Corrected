@@ -27,7 +27,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <>
       {showLoader && (
         <div
-          className={`fixed top-0 left-0 h-screen w-screen flex items-center justify-center bg-[#160D17] transition-opacity duration-1000 ease-in-out ${
+          className={`custom-scrollbar fixed top-0 left-0 h-screen w-screen flex items-center justify-center bg-[#160D17] transition-opacity duration-1000 ease-in-out ${
             isLoading ? 'opacity-100' : 'opacity-0'
           } z-50`}
         >
@@ -35,7 +35,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </div>
       )}
 
-      <div>
+      <div className='custom-scrollbar'>
         <NotificationProvider userId={userId || ''}>{children}</NotificationProvider>
       </div>
     </>

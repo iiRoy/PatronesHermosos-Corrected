@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import withIconDecorator from '../decorators/IconDecorator';
 import { useTransition } from '../TransitionContext';
+import { useMemo } from 'react';
 
 interface ButtonProps {
   label?: string;
@@ -56,8 +57,13 @@ const Button: React.FC<ButtonProps> = ({
   const pathname = usePathname();
   const { triggerTransition } = useTransition();
 
-  const DecoratedIconL = IconLeft ? withIconDecorator(IconLeft) : null;
-  const DecoratedIconR = IconRight ? withIconDecorator(IconRight) : null;
+const DecoratedIconL = useMemo(() => {
+  return IconLeft ? withIconDecorator(IconLeft) : null;
+}, [IconLeft]);
+
+const DecoratedIconR = useMemo(() => {
+  return IconRight ? withIconDecorator(IconRight) : null;
+}, [IconRight]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (disabled) return;
@@ -98,7 +104,7 @@ const Button: React.FC<ButtonProps> = ({
       data-variant={variant}
     >
       {showLeftIcon && DecoratedIconL && (
-        <div className='ease-in-out duration-500 transition-colors'>
+        <div className=''>
           <DecoratedIconL
             width='1.5rem'
             height='1.5rem'
@@ -116,7 +122,7 @@ const Button: React.FC<ButtonProps> = ({
             height='2rem'
             fillColor='#ebe6eb'
             strokeColor='currentColor'
-            strokeWidth={stroke = stroke || 0 }  
+            strokeWidth={stroke ?? 0}
           />
         </div>
       )}

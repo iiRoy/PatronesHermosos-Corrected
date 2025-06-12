@@ -24,6 +24,12 @@ const getAll = async (req, res) => {
             name: true,
           },
         },
+        excluded_days: {
+          select: {
+            excluded_date: true,
+            reason: true,
+          },
+        },
       },
     });
     res.json(groups);
@@ -300,7 +306,9 @@ const changeGroupStatus = async (req, res) => {
     `;
 
     res.status(200).json({
-      message: `Grupo con ID ${id} ${action === 'activar' ? 'activado' : 'desactivado'} exitosamente`,
+      message: `Grupo con ID ${id} ${
+        action === 'activar' ? 'activado' : 'desactivado'
+      } exitosamente`,
     });
   } catch (error) {
     console.error('Error al cambiar estado del grupo:', error);

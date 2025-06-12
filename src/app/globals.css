@@ -1321,6 +1321,35 @@
   }
 }
 
+select {
+  background-color: #f8f2f8; /* fondo claro como img 2/3 */
+  color: #5b2a86;            /* texto morado oscuro */
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #a855f7; /* anillo morado */
+}
+
+select option {
+  background-color: white;
+  color: #5b2a86;
+  font-weight: 400;
+  padding: 10px;
+}
+
+select option:checked {
+  background-color: #e0d4ed;
+  font-weight: 600;
+}
+
+select option:hover {
+  background-color: #f3e8ff;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -1328,5 +1357,6 @@
 
   body {
     @apply bg-background text-foreground;
+    @apply custom-scrollbar;
   }
 }

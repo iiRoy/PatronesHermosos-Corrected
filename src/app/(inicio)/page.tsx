@@ -83,14 +83,22 @@ export default function PatronesHermosos() {
                 onMouseEnter={() => setHoveredButton('participante')}
                 onMouseLeave={() => setHoveredButton(null)}
               >
+                                <div
+                  className={`${
+                    hoveredButton === 'participante'
+                      ? 'scale-[1.2]'
+                      : ''
+                  } transition-transform duration-500`}
+                >
                 <Button
                   label='Participante'
                   variant='primary'
                   showLeftIcon
                   IconLeft={DecoratedBookBookmark}
                   href='/formulario/participante'
-                  className='scale-[110%]'
+                  className=''
                 />
+                </div>
                 <div
                   className={`description-box ${
                     hoveredButton === 'participante'
@@ -119,14 +127,22 @@ export default function PatronesHermosos() {
                 onMouseEnter={() => setHoveredButton('colaborador')}
                 onMouseLeave={() => setHoveredButton(null)}
               >
+                <div
+                  className={`${
+                    hoveredButton === 'colaborador'
+                      ? 'scale-[1.2]'
+                      : ''
+                  } transition-transform duration-500`}
+                >
                 <Button
                   label='Colaborador'
                   variant='secondary'
                   showLeftIcon
                   IconLeft={Medal}
                   href='/formulario/colaborador'
-                  className='scale-[110%]'
+                  className=''
                 />
+                </div>
                 <div
                   className={`description-box-secondary ${
                     hoveredButton === 'colaborador'
@@ -155,14 +171,22 @@ export default function PatronesHermosos() {
                 onMouseEnter={() => setHoveredButton('sede')}
                 onMouseLeave={() => setHoveredButton(null)}
               >
+                                                <div
+                  className={`${
+                    hoveredButton === 'sede'
+                      ? 'scale-[1.2]'
+                      : ''
+                  } transition-transform duration-500`}
+                >
                 <Button
                   label='SEDE'
                   variant='primary'
                   showLeftIcon
                   IconLeft={Student}
                   href='/formulario/sede'
-                  className='scale-[110%]'
+                  className=''
                 />
+                </div>
                 <div
                   className={`description-box ${
                     hoveredButton === 'sede'

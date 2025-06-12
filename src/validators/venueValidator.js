@@ -32,7 +32,6 @@ const validateVenue = [
   // Venue fields
   body('name').notEmpty().withMessage('El nombre de la sede es obligatorio'),
   body('country').notEmpty().withMessage('El país de la sede es obligatoria'),
-  body('state').notEmpty().withMessage('La región de la sede es obligatoria'),
   body('address').notEmpty().withMessage('La dirección de la sede es obligatoria'),
 
   // General Coordinator fields
