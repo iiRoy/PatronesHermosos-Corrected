@@ -88,7 +88,7 @@ const InputField: React.FC<InputFieldProps> = ({
           onChange={handleChange}
         />
       </div>
-      {showError && error && <div className={errorClass}>{error}</div>}
+      {showError && error && <div className={'error-text-red'}>{error}</div>}
     </div>
   );
 };

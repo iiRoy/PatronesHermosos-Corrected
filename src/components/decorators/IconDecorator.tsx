@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import type { ComponentType } from 'react';
 
 interface IconProps {
   width?: number | string;
@@ -10,7 +11,7 @@ interface IconProps {
   className?: string;
 }
 
-const withIconDecorator = (Icon: React.FC<IconProps>) => {
+const withIconDecorator = (Icon: ComponentType<IconProps>) => {
   const DecoratedIcon: React.FC<IconProps> = (props) => {
     const [strokeWidth, setStrokeWidth] = useState<number>(1.1);
     const iconRef = useRef<HTMLDivElement>(null);

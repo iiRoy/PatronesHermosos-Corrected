@@ -81,7 +81,7 @@ router.patch('/:id/status', asyncHandler(authMiddleware_1.authMiddleware), (0, a
 // Serve files from uploads/tmp
 router.get('/files/:filename', async (req, res) => {
     const { filename } = req.params;
-    const filePath = path_1.default.join(__dirname, '..', 'uploads', 'tmp', filename);
+    const filePath = path_1.default.join(__dirname, '..', '..', 'public', 'participants', filename);
     try {
         // Check if file exists
         await promises_1.default.access(filePath);

@@ -1,11 +1,18 @@
 'use client';
 import React from 'react';
-import { CaretDoubleDown } from '@/components/icons';
+import withIconDecorator from '../decorators/IconDecorator';
+import { CaretDoubleDown as RawCaretDoubleDown } from '@/components/icons';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-// Tipo para soportar opciones como string o { label, value }
 type DropdownOption = string | { label: string; value: string };
+const CaretDoubleDown = withIconDecorator(RawCaretDoubleDown);
 
-// Define a type for label-value pairs
 interface Option {
   label: string;
   value: string;
@@ -15,7 +22,7 @@ interface DropdownProps {
   label: string;
   description?: string;
   showDescription?: boolean;
-  options: DropdownOption[] | string[] | Option[]; // Accept either string[] or Option[]
+  options: DropdownOption[] | string[] | Option[];
   value: string;
   darkText?: boolean;
   onChange: (value: string) => void;
@@ -32,6 +39,8 @@ interface DropdownProps {
     | 'text-color-disabled';
   dim?: boolean;
   Icon?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
+  error?: string;
+  disabled?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -45,43 +54,72 @@ const Dropdown: React.FC<DropdownProps> = ({
   variant = 'accent',
   dim = false,
   Icon,
+  error,
+  disabled = false,
 }) => {
-  const selectClass = `input input-${variant}${dim ? ' dim' : ''} relative`;
+  const selectClass = `input input-${variant}${dim ? ' dim' : ''} relative transition-all duration-500`;
   const labelClass = `label-input ${darkText ? ' darkText' : ''}`;
+  const getLabel = (val: string) => {
+    const selected = options.find((o) => (typeof o === 'string' ? o === val : o.value === val));
+    return typeof selected === 'string' ? selected : selected?.label ?? val;
+  };
 
   return (
-    <div className='container-input'>
+    <div className='container-input scrollbar-hide'>
       <div className={labelClass}>{label}</div>
       {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={selectClass}>
-        {Icon && (
-          <div className='icon-input'>
-            <Icon width={25} height={25} />
-          </div>
-        )}
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className='w-full pl-10 pr-10 py-2 bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer z-30'
-          disabled={variant?.includes('disabled')}
-        >
-          {options.map((option, index) => {
-            // Check if option is a string or an object
-            const isString = typeof option === 'string';
-            const optionValue = isString ? option : (option as Option).value;
-            const optionLabel = isString ? option : (option as Option).label;
+        <Select value={value} onValueChange={(val) => onChange(val)} disabled={disabled}>
+          {Icon &&
+            (() => {
+              const DecoratedIcon = withIconDecorator(Icon);
+              return (
+                <div className='icon-input'>
+                  <DecoratedIcon width={25} height={25} />
+                </div>
+              );
+            })()}
+          <SelectTrigger
+            className={`w-full text-md border-hidden shadow-none bg-transparent pr-10 py-2 focus:outline-none [&>svg]:hidden ${
+              disabled ? 'opacity-50 cursor-not-allowed' : 'text-white'
+            }`}
+            disabled={disabled}
+          >
+            {value ? (
+              <span>{getLabel(value)}</span>
+            ) : (
+              <span className='text-white opacity-30'>Selecciona una opción</span>
+            )}
+            <span className='icon-input absolute right-3 top-1/2 transform -translate-y-1/2'>
+              <CaretDoubleDown height={20} width={20} />
+            </span>
+          </SelectTrigger>
 
-            return (
-              <option key={isString ? option : option.value + index} value={optionValue}>
-                {optionLabel}
-              </option>
-            );
-          })}
-        </select>
-        <span className='absolute right-3 top-1/2 transform -translate-y-1/2'>
-          <CaretDoubleDown height={20} width={20} fillColor='#FFFFFF' strokeWidth={0} />
-        </span>
+          <SelectContent className='bg-[#f4edf4] text-[#822f87]'>
+            {options.map((option, index) => {
+              const val = typeof option === 'string' ? option : option.value;
+              const label = typeof option === 'string' ? option : option.label;
+
+              return (
+                <SelectItem
+                  key={val}
+                  value={val}
+                  className={`font-medium ${
+                    index % 2 === 0
+                      ? 'text-secondaryCol focus:bg-secondaryCol focus:text-text'
+                      : 'text-primaryCol focus:bg-primaryCol focus:text-text'
+                  }`}
+                >
+                  {label}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Error message */}
+      {error && <p className='text-sm text-red-500 mt-1 ml-1'>{error}</p>}
     </div>
   );
 };

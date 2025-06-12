@@ -3,27 +3,26 @@ import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 import InputField from '@components/buttons_inputs/InputField';
-import Dropdown   from '@components/buttons_inputs/Dropdown';
-import Button     from '@components/buttons_inputs/Button';
-import Checkbox   from '@components/buttons_inputs/Checkbox';
-import { Modal, Toast } from '@components/buttons_inputs/FormNotification';
-import Select     from 'react-select';
+import Dropdown from '@components/buttons_inputs/Dropdown';
+import Button from '@components/buttons_inputs/Button';
+import Checkbox from '@components/buttons_inputs/Checkbox';
+import { useNotification } from '@/components/buttons_inputs/Notification';
 import { Country, State } from 'country-state-city';
-import withIconDecorator from '@/components/decorators/IconDecorator';
-import Send       from '@/components/icons/ArrowFatRight';
+import Send from '@/components/icons/ArrowFatRight';
 import CollapsibleSection from '@/components/buttons_inputs/CollapsibleSection';
 
 import FlowerLotus from '@/components/icons/FlowerLotus';
-import Sparkle     from '@/components/icons/Sparkle';
-import UsersFour   from '@/components/icons/UsersFour';
-import Bank        from '@/components/icons/Bank';
-import Files       from '@/components/icons/Files';
-import Megaphone   from '@/components/icons/Megaphone';
-import FileJpg     from '@/components/icons/FileJpg';
-import FilePdf     from '@/components/icons/FilePdf';
-import MapPin      from '@/components/icons/MapPin';
-import X           from '@/components/icons/X';
-import Grains      from '@/components/icons/Grains';
+import Sparkle from '@/components/icons/Sparkle';
+import UsersFour from '@/components/icons/UsersFour';
+import Bank from '@/components/icons/Bank';
+import Files from '@/components/icons/Files';
+import Megaphone from '@/components/icons/Megaphone';
+import FileJpg from '@/components/icons/FileJpg';
+import FilePdf from '@/components/icons/FilePdf';
+import MapPin from '@/components/icons/MapPin';
+import X from '@/components/icons/X';
+import Grains from '@/components/icons/Grains';
+import { Island } from '@/components/icons';
 
 interface Coordinator {
   name: string;
@@ -56,6 +55,7 @@ interface FormData {
 }
 
 const VenueRegistrationForm: React.FC = () => {
+  const { notify } = useNotification();
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     venueCoordinator: {
@@ -103,29 +103,70 @@ const VenueRegistrationForm: React.FC = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-  const [isSuccessToastOpen, setIsSuccessToastOpen] = useState(false);
-  const [apiToken, setApiToken] = useState<string | null>(null);
+  const [inputErrors, setInputErrors] = useState<Record<string, string>>({});
+  const [sectionErrors, setSectionErrors] = useState({
+    venueCoordinator: false,
+    associatedCoordinator: false,
+    staffCoordinator: false,
+    participantsCoordinator: false,
+    venue: false,
+    documents: false,
+    privacy: false,
+  });
+  const [hasRegions, setHasRegions] = useState(true);
 
-  // Opcional: obtener token para futuras mejoras
-  useMemo(() => {
-    if (typeof window !== 'undefined') {
-      setApiToken(localStorage.getItem('api_token'));
-    }
-  }, []);
+  const validateField = <S extends Section>(
+    section: S,
+    field: string,
+    value: string,
+    subSection?: SubSectionMap[S],
+    customFormData?: FormData, // <-- agregar este argumento opcional
+  ): string | null => {
+    const updatedSection = {
+      ...(customFormData || formData)[section],
+      ...(subSection
+        ? {
+            [subSection]: {
+              ...((customFormData || formData)[section] as any)[subSection],
+              [field]: value,
+            },
+          }
+        : {
+            [field]: value,
+          }),
+    };
 
-  // Country and region options from country-state-city
+    const nextFormData: FormData = {
+      ...(customFormData || formData),
+      [section]: updatedSection,
+    };
+
+    const { fieldErrors } = getFieldErrors(nextFormData, {
+      hasRegions,
+      participationFile,
+      privacyAccepted,
+    });
+
+    return fieldErrors[section]?.[field] ?? null;
+  };
+
   const countryOptions = useMemo(() => {
-    const allowedCountries = ['Mexico', 'Ecuador', 'Costa Rica'];
+    const regionFormatter = new Intl.DisplayNames(['es'], { type: 'region' });
+
     return Country.getAllCountries()
-      .filter((country) => allowedCountries.includes(country.name))
-      .map((country) => ({
-        value: country.isoCode,
-        label: country.name,
-      }));
+      .map((country) => {
+        const displayName = regionFormatter.of(country.isoCode);
+        const isValidName =
+          displayName && displayName.trim() !== '' && displayName !== country.isoCode;
+
+        return {
+          value: country.isoCode,
+          label: isValidName ? displayName : country.name,
+        };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
   }, []);
+
   const [regionOptions, setRegionOptions] = useState<{ value: string; label: string }[]>([]);
 
   type venueCoordinatorKeys = keyof venueCoordinator;
@@ -140,58 +181,231 @@ const VenueRegistrationForm: React.FC = () => {
     venue: VenueKeys;
   };
 
+  const normalizePhone = (value: string) => value.replace(/\D/g, '');
+
   const handleInputChange = <S extends Section>(
     section: S,
     field: string,
     value: string,
     subSection?: SubSectionMap[S],
   ) => {
-    setFormData((prev: FormData) => {
+    let val = value;
+    if (field === 'phone') {
+      val = normalizePhone(value);
+    }
+
+    // PREPARA los nuevos valores para el formData actualizado
+    const updatedFormData = (() => {
       if (subSection) {
         return {
-          ...prev,
+          ...formData,
           [section]: {
-            ...prev[section],
+            ...formData[section],
             [subSection]: {
-              ...prev[section][subSection as keyof (typeof prev)[S]],
-              [field]: value,
+              ...formData[section][subSection as keyof (typeof formData)[S]],
+              [field]: val,
             },
           },
         };
       }
       return {
-        ...prev,
+        ...formData,
         [section]: {
-          ...prev[section],
-          [field]: value,
+          ...formData[section],
+          [field]: val,
         },
       };
+    })();
+
+    // Detecta si es campo dependiente
+    let additionalFieldsToValidate: [string, string][] = [];
+    if (section === 'venueCoordinator' && (field === 'password' || field === 'confirmPassword')) {
+      additionalFieldsToValidate = [
+        ['confirmPassword', updatedFormData.venueCoordinator.confirmPassword],
+        ['password', updatedFormData.venueCoordinator.password],
+      ];
+    } else if (section === 'associatedCoordinator' && (field === 'name' || field === 'lastNameP' || field === 'lastNameM' || field === 'email' || field === 'phone')) {
+      additionalFieldsToValidate = [
+        ['name', updatedFormData.associatedCoordinator.name],
+        ['lastNameP', updatedFormData.associatedCoordinator.lastNameP],
+        ['lastNameM', updatedFormData.associatedCoordinator.lastNameM],
+        ['email', updatedFormData.associatedCoordinator.email],
+        ['phone', updatedFormData.associatedCoordinator.phone],
+      ];
+    } else if (section === 'staffCoordinator' && (field === 'name' || field === 'lastNameP' || field === 'lastNameM' || field === 'email' || field === 'phone')) {
+      additionalFieldsToValidate = [
+        ['name', updatedFormData.staffCoordinator.name],
+        ['lastNameP', updatedFormData.staffCoordinator.lastNameP],
+        ['lastNameM', updatedFormData.staffCoordinator.lastNameM],
+        ['email', updatedFormData.staffCoordinator.email],
+        ['phone', updatedFormData.staffCoordinator.phone],
+      ];
+    } else if (section === 'participantsCoordinator' && (field === 'name' || field === 'lastNameP' || field === 'lastNameM' || field === 'email' || field === 'phone')) {
+      additionalFieldsToValidate = [
+        ['name', updatedFormData.participantsCoordinator.name],
+        ['lastNameP', updatedFormData.participantsCoordinator.lastNameP],
+        ['lastNameM', updatedFormData.participantsCoordinator.lastNameM],
+        ['email', updatedFormData.participantsCoordinator.email],
+        ['phone', updatedFormData.participantsCoordinator.phone],
+      ];
+    }
+
+    // Revalida solo los campos afectados
+    let currentErrors: Record<string, string> = { ...inputErrors };
+
+    // Valida campo principal
+    const mainError = validateField(section, field, val, subSection, updatedFormData);
+    currentErrors[`${section}.${field}`] = mainError ?? '';
+
+    // Valida campos dependientes (ej. confirmPassword y password)
+    additionalFieldsToValidate.forEach(([f, v]) => {
+      const err = validateField(section, f, v, subSection, updatedFormData);
+      currentErrors[`${section}.${f}`] = err ?? '';
     });
+
+    // Calcula si la sección tiene errores (al menos 1 error en los campos de esa sección)
+    const sectionHasError = Object.entries(currentErrors).some(
+      ([k, msg]) => k.startsWith(section + '.') && !!msg,
+    );
+
+    // Actualiza estados juntos, y el formData
+    setFormData(updatedFormData);
+    setInputErrors(currentErrors);
+    setSectionErrors((prev) => ({
+      ...prev,
+      [section]: sectionHasError,
+    }));
   };
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    type: 'image' | 'pdf',
+    fieldName: 'profileImage' | 'logo' | 'participationFile',
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
+    let errorMsg = '';
+    if (!file) {
+      setFile(null);
+    } else if (type === 'image' && !file.type.startsWith('image/')) {
+      errorMsg = 'Solo se permiten imágenes (JPG, PNG, etc.)';
+      setFile(null);
+    } else if (type === 'pdf' && file.type !== 'application/pdf') {
+      errorMsg = 'Solo se permiten archivos PDF';
+      setFile(null);
+    } else {
       setFile(file);
+    }
+
+    if (fieldName === 'profileImage') {
+      setInputErrors((prev) => ({
+        ...prev,
+        [`venueCoordinator.${fieldName}`]: errorMsg,
+      }));
+
+      setSectionErrors((prev) => {
+        const venueCoordErrors = Object.entries(inputErrors)
+          .filter(([k, v]) => k.startsWith('venueCoordinator.') && v)
+          .map(([k, v]) => v);
+
+        if (errorMsg) {venueCoordErrors.push(errorMsg)} else venueCoordErrors.pop();
+
+        return {
+          ...prev,
+          venueCoordinator: venueCoordErrors.length > 0,
+        };
+      });
+    } else {
+      setInputErrors((prev) => ({
+        ...prev,
+        [`documents.${fieldName}`]: errorMsg,
+      }));
+
+      setSectionErrors((prev) => {
+        const docsErrors = Object.entries(inputErrors)
+          .filter(([k, v]) => k.startsWith('documents.') && v)
+          .map(([k, v]) => v);
+
+        if (errorMsg) {docsErrors.push(errorMsg)} else docsErrors.pop();
+
+        return {
+          ...prev,
+          documents: docsErrors.length > 0,
+        };
+      });
     }
   };
 
-  // Handle country change
+const handlePrivacyChange = (checked: boolean) => {
+  setPrivacyAccepted(checked);
+
+  const { fieldErrors, sectionErrors: sErrors } = getFieldErrors(formData, {
+    hasRegions,
+    participationFile,
+    privacyAccepted: checked,
+  });
+
+  setInputErrors((prev) => ({
+    ...prev,
+    'privacy.accepted': fieldErrors?.privacy?.accepted ?? '',
+  }));
+
+  setSectionErrors((prev) => ({
+    ...prev,
+    privacy: sErrors.privacy,
+  }));
+};
+
   const handleCountryChange = (selectedOption: { value: string; label: string } | null) => {
-    const country = selectedOption ? selectedOption.label : '';
-    handleInputChange('venue', 'country', country);
-    handleInputChange('venue', 'state', ''); // Reset state
-    if (selectedOption) {
-      const regions = State.getStatesOfCountry(selectedOption.value).map((state) => ({
+    const countryName = selectedOption ? selectedOption.label : '';
+    const countryCode = selectedOption ? selectedOption.value : '';
+    let msg = '';
+
+    handleInputChange('venue', 'country', countryName)
+
+    setFormData((prev) => ({
+      ...prev,
+      venue: {
+        ...prev.venue,
+        country: countryName,
+        state: '',
+        address: '',
+      },
+    }));
+
+    setInputErrors((prev) => ({
+      ...prev,
+      [`venue.region`]: msg,
+    }));
+
+    setInputErrors((prev) => ({
+      ...prev,
+      [`venue.address`]: msg,
+    }));
+
+    setSectionErrors((prev) => {
+      const venueErrors = Object.entries(inputErrors)
+        .filter(([k, v]) => k.startsWith('venue.') && v)
+        .map(([k, v]) => v);
+
+      if (msg) {venueErrors.push(msg)} else venueErrors.pop();
+
+      return {
+        ...prev,
+        venue: venueErrors.length > 0,
+      };
+    });
+
+    if (countryCode) {
+      const regions = State.getStatesOfCountry(countryCode).map((state) => ({
         value: state.isoCode,
         label: state.name,
       }));
       setRegionOptions(regions);
+      setHasRegions(regions.length > 0);
     } else {
       setRegionOptions([]);
+      setHasRegions(false);
     }
   };
 
@@ -201,166 +415,235 @@ const VenueRegistrationForm: React.FC = () => {
     handleInputChange('venue', 'state', state);
   };
 
+  const flattenFieldErrors = (fieldErrors: {
+    [section: string]: { [field: string]: string };
+  }): Record<string, string> => {
+    const flat: Record<string, string> = {};
+    for (const section in fieldErrors) {
+      for (const field in fieldErrors[section]) {
+        flat[`${section}.${field}`] = fieldErrors[section][field];
+      }
+    }
+    return flat;
+  };
+
+  const getFieldErrors = (
+    data: FormData,
+    options: { hasRegions: boolean; participationFile: File | null; privacyAccepted: boolean },
+  ) => {
+    const { hasRegions, participationFile, privacyAccepted } = options;
+
+    const fieldErrors: { [section: string]: { [field: string]: string } } = {};
+    const sectionErrors = {
+      venueCoordinator: false,
+      associatedCoordinator: false,
+      staffCoordinator: false,
+      participantsCoordinator: false,
+      venue: false,
+      documents: false,
+      privacy: false,
+    };
+
+    const setError = (section: string, field: string, message: string) => {
+      if (!fieldErrors[section]) fieldErrors[section] = {};
+      fieldErrors[section][field] = message;
+      sectionErrors[section as keyof typeof sectionErrors] = true;
+    };
+
+    // Validaciones de SEDE
+    const venue = data.venue;
+    if (!venue.name?.trim()) setError('venue', 'name', 'El nombre de la SEDE es obligatorio*');
+    if (!venue.country?.trim()) setError('venue', 'country', 'El país de la SEDE es obligatorio*');
+    if (hasRegions && !venue.state?.trim()) {
+      setError('venue', 'state', 'El estado/provincia es obligatorio');
+    }
+    if (!venue.address?.trim()) setError('venue', 'address', 'La dirección es obligatoria*');
+
+    // Documentos
+    if (!participationFile)
+      setError('documents', 'participationFile', 'El archivo de participación es obligatorio*');
+
+    // Coordinadora de SEDE
+    const vc = data.venueCoordinator;
+    if (!vc.name?.trim()) setError('venueCoordinator', 'name', 'El nombre es obligatorio*');
+    if (!vc.lastNameP?.trim())
+      setError('venueCoordinator', 'lastNameP', 'El apellido paterno es obligatorio*');
+    if (!vc.email?.trim()) {
+      setError('venueCoordinator', 'email', 'El correo electrónico es obligatorio*');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vc.email)) {
+      setError('venueCoordinator', 'email', 'El correo electrónico no es válido*');
+    }
+    if (!vc.phone?.trim()) {
+      setError('venueCoordinator', 'phone', 'El celular electrónico es obligatorio*');
+    } else if (vc.phone.replace(/\D/g, '').length < 10) {
+      setError('venueCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+    }
+    if (!vc.gender?.trim()) setError('venueCoordinator', 'gender', 'El género es obligatorio*');
+    if (!vc.username?.trim())
+      setError('venueCoordinator', 'username', 'El nombre de usuario es obligatorio*');
+
+    if (!vc.password) {
+      setError('venueCoordinator', 'password', 'La contraseña es obligatoria*');
+    } else {
+      if (vc.password.length < 8) {
+        setError('venueCoordinator', 'password', 'Debe tener al menos 8 caracteres*');
+      } else if (!/[A-Z]/.test(vc.password)) {
+        setError('venueCoordinator', 'password', 'Debe contener al menos una mayúscula*');
+      } else if (!/[a-z]/.test(vc.password)) {
+        setError('venueCoordinator', 'password', 'Debe contener al menos una minúscula*');
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(vc.password)) {
+        setError('venueCoordinator', 'password', 'Debe contener al menos un carácter especial*');
+      }
+    }
+
+    if (!vc.confirmPassword) {
+      setError('venueCoordinator', 'confirmPassword', 'Debes confirmar tu contraseña*');
+    } else if (vc.password !== vc.confirmPassword) {
+      setError('venueCoordinator', 'confirmPassword', 'Las contraseñas no coinciden*');
+    }
+
+    // Coordinadora asociada
+    const assoc = data.associatedCoordinator;
+    if (assoc.name?.trim() || assoc.lastNameP?.trim() || assoc.lastNameM?.trim() || assoc.email?.trim() || assoc.phone?.trim()) {
+      if (!assoc.name?.trim()) {
+        setError('associatedCoordinator', 'name', 'El nombre es obligatorio para el registro*');
+      }
+
+      if (!assoc.lastNameP?.trim()) {
+        setError('associatedCoordinator', 'lastNameP', 'El apellido paterno es obligatorio para el registro*');
+      }
+      
+      if (!assoc.email?.trim()) {
+        setError('associatedCoordinator', 'email', 'El correo es obligatorio*');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(assoc.email)) {
+        setError('associatedCoordinator', 'email', 'El correo no es válido*');
+      }
+      if (!assoc.phone?.trim()) {
+        setError('associatedCoordinator', 'phone', 'El teléfono es obligatorio*');
+      } else if (assoc.phone.replace(/\D/g, '').length < 10) {
+      setError('associatedCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+    }
+    }
+
+    const staff = data.staffCoordinator;
+    if (staff.name?.trim() || staff.lastNameP?.trim() || staff.lastNameM?.trim() || staff.email?.trim() || staff.phone?.trim()) {
+      if (!staff.name?.trim()) {
+        setError('staffCoordinator', 'name', 'El nombre es obligatorio para el registro*');
+      }
+
+      if (!staff.lastNameP?.trim()) {
+        setError('staffCoordinator', 'lastNameP', 'El apellido paterno es obligatorio para el registro*');
+      }
+      
+      if (!staff.email?.trim()) {
+        setError('staffCoordinator', 'email', 'El correo es obligatorio*');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(staff.email)) {
+        setError('staffCoordinator', 'email', 'El correo no es válido*');
+      }
+      if (!staff.phone?.trim()) {
+        setError('staffCoordinator', 'phone', 'El teléfono es obligatorio*');
+      } else if (staff.phone.replace(/\D/g, '').length < 10) {
+      setError('staffCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+    }
+    }
+
+    const part = data.participantsCoordinator;
+    if (part.name?.trim() || part.lastNameP?.trim() || part.lastNameM?.trim() || part.email?.trim() || part.phone?.trim()) {
+      if (!part.name?.trim()) {
+        setError('participantsCoordinator', 'name', 'El nombre es obligatorio para el registro*');
+      }
+
+      if (!part.lastNameP?.trim()) {
+        setError('participantsCoordinator', 'lastNameP', 'El apellido paterno es obligatorio para el registro*');
+      }
+      
+      if (!part.email?.trim()) {
+        setError('participantsCoordinator', 'email', 'El correo es obligatorio*');
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(part.email)) {
+        setError('participantsCoordinator', 'email', 'El correo no es válido*');
+      }
+      if (!part.phone?.trim()) {
+        setError('participantsCoordinator', 'phone', 'El teléfono es obligatorio*');
+      } else if (part.phone.replace(/\D/g, '').length < 10) {
+      setError('participantsCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+    }
+    }
+
+    if (!privacyAccepted) setError('privacy', 'accepted', 'Debes aceptar el aviso de privacidad*');
+
+    return { fieldErrors, sectionErrors };
+  };
+
   const validateForm = () => {
-    const newErrors: string[] = [];
-
-    if (!formData.venue.name) newErrors.push('El nombre de la SEDE es obligatorio');
-    if (!formData.venue.country) newErrors.push('El país de la SEDE es obligatorio');
-    if (!formData.venue.state) newErrors.push('El estado/provincia de la SEDE es obligatorio');
-    if (!formData.venue.address) newErrors.push('La dirección de la SEDE es obligatoria');
-    if (!participationFile) newErrors.push('El archivo de participación es obligatorio');
-
-    if (!formData.venueCoordinator.name)
-      newErrors.push('El nombre de la Coordinadora de Sede es obligatorio');
-    if (!formData.venueCoordinator.lastNameP)
-      newErrors.push('El apellido paterno de la Coordinadora de Sede es obligatorio');
-    if (!formData.venueCoordinator.email)
-      newErrors.push('El correo electrónico de la Coordinadora de Sede es obligatorio');
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.venueCoordinator.email))
-      newErrors.push('El correo electrónico de la Coordinadora de Sede debe ser válido');
-    if (!formData.venueCoordinator.phone)
-      newErrors.push('El celular de la Coordinadora de Sede es obligatorio');
-    if (!formData.venueCoordinator.gender)
-      newErrors.push('El sexo de la Coordinadora de Sede es obligatorio');
-    if (!formData.venueCoordinator.username)
-      newErrors.push('El nombre de usuario de la Coordinadora de Sede es obligatorio');
-    if (!formData.venueCoordinator.password)
-      newErrors.push('La contraseña de la Coordinadora de Sede es obligatorio');
-    else {
-      if (formData.venueCoordinator.password.length < 8)
-        newErrors.push('La contraseña debe tener al menos 8 caracteres');
-      if (!/[A-Z]/.test(formData.venueCoordinator.password))
-        newErrors.push('La contraseña debe contener al menos una mayúscula');
-      if (!/[a-z]/.test(formData.venueCoordinator.password))
-        newErrors.push('La contraseña debe contener al menos una minúscula');
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.venueCoordinator.password))
-        newErrors.push('La contraseña debe contener al menos un carácter especial');
-    }
-    if (formData.venueCoordinator.password !== formData.venueCoordinator.confirmPassword)
-      newErrors.push('Las contraseñas no coinciden');
-
-    if (formData.associatedCoordinator.name) {
-      if (!formData.associatedCoordinator.email)
-        newErrors.push('El correo electrónico de la coordinadora asociada es obligatorio');
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.associatedCoordinator.email))
-        newErrors.push('El correo electrónico de la coordinadora asociada debe ser válido');
-      if (!formData.associatedCoordinator.phone)
-        newErrors.push('El celular de la coordinadora asociada es obligatorio');
-    }
-
-    if (formData.staffCoordinator.name) {
-      if (!formData.staffCoordinator.email)
-        newErrors.push(
-          'El correo electrónico de la coordinadora de informes (staff) es obligatorio',
-        );
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.staffCoordinator.email))
-        newErrors.push(
-          'El correo electrónico de la coordinadora de informes (staff) debe ser válido',
-        );
-      if (!formData.staffCoordinator.phone)
-        newErrors.push('El celular de la coordinadora de informes (staff) es obligatorio');
-    }
-
-    if (formData.participantsCoordinator.name) {
-      if (!formData.participantsCoordinator.email)
-        newErrors.push(
-          'El correo electrónico de la coordinadora de informes (participantes) es obligatorio',
-        );
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.participantsCoordinator.email))
-        newErrors.push(
-          'El correo electrónico de la coordinadora de informes (participantes) debe ser válido',
-        );
-      if (!formData.participantsCoordinator.phone)
-        newErrors.push('El celular de la coordinadora de informes (participantes) es obligatorio');
-    }
-
-    if (!privacyAccepted) newErrors.push('Debes aceptar el aviso de privacidad');
-
-    return newErrors;
+    return getFieldErrors(formData, {
+      hasRegions,
+      participationFile,
+      privacyAccepted,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateForm();
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
-      setIsErrorModalOpen(true);
-      setSuccess(null);
-      setIsSuccessToastOpen(false);
+    const { fieldErrors, sectionErrors } = validateForm();
+    const inputErrors = flattenFieldErrors(fieldErrors);
+
+    if (Object.keys(inputErrors).length > 0) {
+      setInputErrors(inputErrors);
+      setSectionErrors(sectionErrors);
+      notify({
+        color: 'red',
+        title: 'Error en el formulario',
+        message: 'Revisa los campos marcados en rojo antes de continuar.',
+        iconName: 'Warning',
+        variant: 'two',
+      });
       return;
     }
 
     try {
       const formDataToSend = new FormData();
+
+      // Datos de la SEDE
       formDataToSend.append('name', formData.venue.name);
       formDataToSend.append('country', formData.venue.country);
       formDataToSend.append('state', formData.venue.state);
       formDataToSend.append('address', formData.venue.address);
-      formDataToSend.append('venueCoordinator[name]', formData.venueCoordinator.name);
-      formDataToSend.append('venueCoordinator[lastNameP]', formData.venueCoordinator.lastNameP);
-      formDataToSend.append('venueCoordinator[lastNameM]', formData.venueCoordinator.lastNameM);
-      formDataToSend.append('venueCoordinator[email]', formData.venueCoordinator.email);
-      formDataToSend.append('venueCoordinator[phone]', formData.venueCoordinator.phone);
-      formDataToSend.append('venueCoordinator[gender]', formData.venueCoordinator.gender);
-      formDataToSend.append('venueCoordinator[username]', formData.venueCoordinator.username);
-      formDataToSend.append('venueCoordinator[password]', formData.venueCoordinator.password);
 
-      if (formData.associatedCoordinator.name) {
-        formDataToSend.append('associatedCoordinator[name]', formData.associatedCoordinator.name);
-        formDataToSend.append(
-          'associatedCoordinator[lastNameP]',
-          formData.associatedCoordinator.lastNameP,
-        );
-        formDataToSend.append(
-          'associatedCoordinator[lastNameM]',
-          formData.associatedCoordinator.lastNameM,
-        );
-        formDataToSend.append('associatedCoordinator[email]', formData.associatedCoordinator.email);
-        formDataToSend.append('associatedCoordinator[phone]', formData.associatedCoordinator.phone);
-      }
+      // Coordinadora de SEDE
+      const vc = formData.venueCoordinator;
+      formDataToSend.append('venueCoordinator[name]', vc.name);
+      formDataToSend.append('venueCoordinator[lastNameP]', vc.lastNameP);
+      formDataToSend.append('venueCoordinator[lastNameM]', vc.lastNameM);
+      formDataToSend.append('venueCoordinator[email]', vc.email);
+      formDataToSend.append('venueCoordinator[phone]', vc.phone);
+      formDataToSend.append('venueCoordinator[gender]', vc.gender);
+      formDataToSend.append('venueCoordinator[username]', vc.username);
+      formDataToSend.append('venueCoordinator[password]', vc.password);
 
-      if (formData.staffCoordinator.name) {
-        formDataToSend.append('staffCoordinator[name]', formData.staffCoordinator.name);
-        formDataToSend.append('staffCoordinator[lastNameP]', formData.staffCoordinator.lastNameP);
-        formDataToSend.append('staffCoordinator[lastNameM]', formData.staffCoordinator.lastNameM);
-        formDataToSend.append('staffCoordinator[email]', formData.staffCoordinator.email);
-        formDataToSend.append('staffCoordinator[phone]', formData.staffCoordinator.phone);
+      // Coordinadoras opcionales
+      const sections = [
+        'associatedCoordinator',
+        'staffCoordinator',
+        'participantsCoordinator',
+      ] as const;
+      for (const key of sections) {
+        const coor = formData[key];
+        if (coor.name) {
+          formDataToSend.append(`${key}[name]`, coor.name);
+          formDataToSend.append(`${key}[lastNameP]`, coor.lastNameP);
+          formDataToSend.append(`${key}[lastNameM]`, coor.lastNameM);
+          formDataToSend.append(`${key}[email]`, coor.email);
+          formDataToSend.append(`${key}[phone]`, coor.phone);
+        }
       }
 
-      if (formData.participantsCoordinator.name) {
-        formDataToSend.append(
-          'participantsCoordinator[name]',
-          formData.participantsCoordinator.name,
-        );
-        formDataToSend.append(
-          'participantsCoordinator[lastNameP]',
-          formData.participantsCoordinator.lastNameP,
-        );
-        formDataToSend.append(
-          'participantsCoordinator[lastNameM]',
-          formData.participantsCoordinator.lastNameM,
-        );
-        formDataToSend.append(
-          'participantsCoordinator[email]',
-          formData.participantsCoordinator.email,
-        );
-        formDataToSend.append(
-          'participantsCoordinator[phone]',
-          formData.participantsCoordinator.phone,
-        );
-      }
+      // Archivos
+      if (profileImage) formDataToSend.append('venueCoordinator.profileImage', profileImage);
+      if (logo) formDataToSend.append('logo', logo);
+      if (participationFile) formDataToSend.append('participation_file', participationFile);
 
-      if (profileImage) {
-        formDataToSend.append('venueCoordinator.profileImage', profileImage);
-      }
-      if (logo) {
-        formDataToSend.append('logo', logo);
-      }
-      if (participationFile) {
-        formDataToSend.append('participation_file', participationFile);
-      }
-
+      // Envío a la API
       const response = await fetch('http://localhost:3000/api/venues', {
         method: 'POST',
         body: formDataToSend,
@@ -369,34 +652,22 @@ const VenueRegistrationForm: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        if (response.status === 422 && data.errors) {
-          const backendErrors = data.errors.map((err: any) => err.msg);
-          setErrors(backendErrors);
-          setIsErrorModalOpen(true);
-          throw new Error(backendErrors.join(', '));
-        }
-        setErrors([data.message || 'Error al registrar el venue']);
-        setIsErrorModalOpen(true);
-        throw new Error(data.message || 'Error al registrar el venue');
+        const backendErrors = data?.errors?.map((err: any) => err.msg) || [
+          data.message || 'Error al registrar el venue',
+        ];
+        throw new Error(backendErrors.join(', '));
       }
 
-      let successMessage = data.message;
-      if (data.files) {
-        successMessage += '<br>Archivos disponibles:';
-        if (data.files.participation_file) {
-          successMessage += ` <a href="/api/venues/files/${data.files.participation_file}" target="_blank" class="text-purple-400 hover:underline">Convocatoria</a>`;
-        }
-        if (data.files.logo) {
-          successMessage += `, <a href="/api/venues/files/${data.files.logo}" target="_blank" class="text-purple-400 hover:underline">Logo</a>`;
-        }
-        if (data.files.profile_image) {
-          successMessage += `, <a href="/api/venues/files/${data.files.profile_image}" target="_blank" class="text-purple-400 hover:underline">Foto de Perfil</a>`;
-        }
-      }
-      setSuccess(successMessage);
-      setIsSuccessToastOpen(true);
-      setErrors([]);
-      setIsErrorModalOpen(false);
+      setInputErrors({});
+      setSectionErrors({
+        venueCoordinator: false,
+        associatedCoordinator: false,
+        staffCoordinator: false,
+        participantsCoordinator: false,
+        venue: false,
+        documents: false,
+        privacy: false,
+      });
 
       setFormData({
         venueCoordinator: {
@@ -443,186 +714,129 @@ const VenueRegistrationForm: React.FC = () => {
       setParticipationFile(null);
       setPrivacyAccepted(false);
     } catch (err: any) {
-      setErrors([err.message]);
-      setIsErrorModalOpen(true);
-      setSuccess(null);
-      setIsSuccessToastOpen(false);
+      notify({
+        color: 'red',
+        title: 'Error al registrar',
+        message: err.message || 'No se pudo enviar el formulario. Intenta de nuevo más tarde.',
+        iconName: 'Warning',
+        variant: 'two',
+      });
     }
   };
 
-  // Custom styles for react-select to match Dropdown
-  const selectStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: '#1a1a2e', // match dark bg
-      borderColor: state.isFocused ? '#a259e6' : '#4a4a6a',
-      borderRadius: '0.5rem',
-      minHeight: '2.5rem',
-      boxShadow: state.isFocused ? '0 0 0 2px #a259e6' : 'none',
-      color: '#ebe6eb',
-      '&:hover': { borderColor: '#a259e6' },
-      fontSize: '1rem',
-    }),
-    option: (provided: any, state: { isSelected: boolean; isFocused: boolean }) => ({
-      ...provided,
-      backgroundColor: state.isSelected ? '#a259e6' : state.isFocused ? '#2d2d44' : '#1a1a2e',
-      color: state.isSelected ? '#fff' : '#ebe6eb',
-      fontSize: '1rem',
-      cursor: 'pointer',
-    }),
-    singleValue: (provided: any) => ({
-      ...provided,
-      color: '#ebe6eb',
-      fontWeight: 500,
-    }),
-    menu: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#1a1a2e',
-      borderRadius: '0.5rem',
-      zIndex: 1000,
-      color: '#ebe6eb',
-    }),
-    placeholder: (provided: any) => ({
-      ...provided,
-      color: '#a3a3c2',
-      fontStyle: 'italic',
-    }),
-    input: (provided: any) => ({
-      ...provided,
-      color: '#ebe6eb',
-    }),
-    dropdownIndicator: (provided: any, state: any) => ({
-      ...provided,
-      color: state.isFocused ? '#a259e6' : '#ebe6eb',
-      '&:hover': { color: '#a259e6' },
-    }),
-    indicatorSeparator: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#4a4a6a',
-    }),
-    menuList: (provided: any) => ({
-      ...provided,
-      backgroundColor: '#1a1a2e',
-      borderRadius: '0.5rem',
-      color: '#ebe6eb',
-    }),
-  };
-  
   return (
-    <div className="pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white">
+    <div className='overflow-hidden pagina-formulario flex flex-col min-h-screen bg-gray-900 text-white'>
       <form onSubmit={handleSubmit}>
-        <div className="info-formulario p-4 md:p-8 flex justify-center">
-          <div className="w-full max-w-6xl rounded-lg shadow-lg bg-back p-6 md:p-8">
-            
+        <div className='info-formulario p-4 md:p-8 flex justify-center'>
+          <div className='w-full max-w-6xl rounded-lg shadow-lg bg-back p-6 md:p-8'>
             {/* Header */}
-            <div className="flex justify-between items-center mb-8">
-              <div className="flex items-center space-x-4">
-                <div className="w-1 bg-purple-500 h-12 rounded-full" />
-                <div>
-                  <p className="italic text-gray-300">Formulario de Registro</p>
-                  <h1 className="text-3xl font-bold">Colaborador</h1>
+            <div className='flex justify-between items-center mb-8'>
+              <div className='flex items-center space-x-4'>
+                <div className='flex flex-row items-center justify-center gap-5'>
+                  <div className='w-2 bg-[var(--primaryColor)] h-14 md:h-16 lg:h-24 rounded-full' />
+                  <div className='flex flex-col'>
+                  <p className='lg:text-3xl md:text-xl text-md italic text-gray-300'>Formulario de Registro</p>
+                  <h1 className='lg:text-6xl md:text-4xl text-2xl font-bold'>SEDE</h1>
+                  </div>
                 </div>
               </div>
+              <div className='scale-[0.70] md:scale-[0.85] lg:scale-100 md:mr-10 md:mt-3'>
               <Button
-                label="Regresar"
-                variant="error"
+                label='Regresar'
+                variant='error'
                 showLeftIcon
                 IconLeft={X}
                 onClick={() => router.back()}
               />
+              </div>
             </div>
-            
+
             {/* Secciones colapsables */}
-<CollapsibleSection
-  title="Datos Personales"
-  Icon={FlowerLotus}
-  isCompleted={
-    Boolean(formData.venueCoordinator.name) &&
-    Boolean(formData.venueCoordinator.lastNameP) &&
-    Boolean(formData.venueCoordinator.email) &&
-    Boolean(formData.venueCoordinator.phone) &&
-    Boolean(formData.venueCoordinator.username) &&
-    Boolean(formData.venueCoordinator.password) &&
-    formData.venueCoordinator.password === formData.venueCoordinator.confirmPassword
-  }
->
-  {/* Descripción */}
-  <p className="text-gray-600 text-sm mb-4">
-    Responde con veracidad las siguientes preguntas acerca de tus datos personales y de contacto.
-    <br />
-    Las secciones con * son obligatorias.
-  </p>
+            <CollapsibleSection
+              title='Datos Personales'
+              Icon={FlowerLotus}
+              isIncorrect={sectionErrors.venueCoordinator}
+              isCompleted={
+                Boolean(formData.venueCoordinator.name) &&
+                Boolean(formData.venueCoordinator.lastNameP) &&
+                Boolean(formData.venueCoordinator.email) &&
+                Boolean(formData.venueCoordinator.phone) &&
+                Boolean(formData.venueCoordinator.username) &&
+                Boolean(formData.venueCoordinator.password) &&
+                formData.venueCoordinator.password === formData.venueCoordinator.confirmPassword
+              }
+              Color={'#3D1C4FFF'}
+            >
+              {/* Descripción */}
+              <p className='text-gray-600 text-sm mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de tus datos personales y de
+                contacto.
+                <br />
+                <strong>Las secciones con * son obligatorias.</strong>
+              </p>
 
-  {/* Campos en grid */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <InputField
-      label="Nombre(s)*"
-      placeholder="Nombre(s)"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.venueCoordinator.name}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'name', v)
-      }
-    />
+              {/* Campos en grid */}
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                <InputField
+                  label='Nombre(s)*'
+                  placeholder='Nombre(s)'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.venueCoordinator.name}
+                  onChangeText={(v: string) => handleInputChange('venueCoordinator', 'name', v)}
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.name']}
+                />
 
-    <InputField
-      label="Apellido Paterno*"
-      placeholder="Apellido Paterno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.venueCoordinator.lastNameP}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'lastNameP', v)
-      }
-    />
+                <InputField
+                  label='Apellido Paterno*'
+                  placeholder='Apellido Paterno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.venueCoordinator.lastNameP}
+                  onChangeText={(v: string) =>
+                    handleInputChange('venueCoordinator', 'lastNameP', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.lastNameP']}
+                />
 
-    <InputField
-      label="Apellido Materno"
-      placeholder="Apellido Materno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.venueCoordinator.lastNameM}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'lastNameM', v)
-      }
-    />
+                <InputField
+                  label='Apellido Materno'
+                  placeholder='Apellido Materno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.venueCoordinator.lastNameM}
+                  onChangeText={(v: string) =>
+                    handleInputChange('venueCoordinator', 'lastNameM', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.lastNameM']}
+                />
 
-    <InputField
-      label="Correo Electrónico*"
-      placeholder="correo1@ejemplo.com"
-      variant="accent"
-      icon="At"
-      value={formData.venueCoordinator.email}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'email', v)
-      }
-    />
+                <InputField
+                  label='Correo Electrónico*'
+                  placeholder='correo1@ejemplo.com'
+                  variant='accent'
+                  icon='At'
+                  value={formData.venueCoordinator.email}
+                  onChangeText={(v: string) => handleInputChange('venueCoordinator', 'email', v)}
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.email']}
+                />
 
-    <InputField
-      label="Celular*"
-      placeholder="+522221234567"
-      variant="accent"
-      icon="Phone"
-      value={formData.venueCoordinator.phone}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'phone', v)
-      }
-    />
+                <InputField
+                  label='Celular*'
+                  placeholder='+522221234567'
+                  variant='accent'
+                  icon='Phone'
+                  value={formData.venueCoordinator.phone}
+                  onChangeText={(v: string) => handleInputChange('venueCoordinator', 'phone', v)}
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.phone']}
+                />
 
-    <InputField
-      label="Nombre de Usuario*"
-      description="Sólo letras, números y guiones bajos."
-      placeholder="Us3r_n4me"
-      variant="secondary"
-      icon="UserPlus"
-      value={formData.venueCoordinator.username}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'username', v)
-      }
-    />
-
-                    <Dropdown
+                <Dropdown
                   label='Género*'
                   options={['Femenino', 'No binario', 'Prefiero no decir']}
                   value={formData.venueCoordinator.gender}
@@ -630,501 +844,592 @@ const VenueRegistrationForm: React.FC = () => {
                     handleInputChange('venueCoordinator', 'gender', value)
                   }
                   variant='accent'
-                  Icon={withIconDecorator(Grains)}
+                  Icon={Grains}
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.gender']}
                 />
 
-    <InputField
-      label="Contraseña*"
-      description="Mín. 8 caracteres, 1 mayúscula, 1 minúscula y 1 carácter especial."
-      placeholder="********"
-      variant="secondary"
-      icon="Lock"
-      type={showPassword ? 'text' : 'password'}
-      value={formData.venueCoordinator.password}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'password', v)
-      }
-    />
+                <InputField
+                  label='Nombre de Usuario*'
+                  placeholder='Us3r_n4me'
+                  variant='secondary'
+                  icon='UserPlus'
+                  value={formData.venueCoordinator.username}
+                  onChangeText={(v: string) => handleInputChange('venueCoordinator', 'username', v)}
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.username']}
+                />
 
-    <InputField
-      label="Confirmar Contraseña*"
-      description="Debe coincidir con la contraseña anterior."
-      placeholder="********"
-      variant="secondary"
-      icon="Lock"
-      type={showConfirmPassword ? 'text' : 'password'}
-      value={formData.venueCoordinator.confirmPassword}
-      onChangeText={(v: string) =>
-        handleInputChange('venueCoordinator', 'confirmPassword', v)
-      }
-    />
-  </div>
+                <InputField
+                  label='Contraseña*'
+                  placeholder='********'
+                  variant='secondary'
+                  icon='Lock'
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.venueCoordinator.password}
+                  onChangeText={(v: string) => handleInputChange('venueCoordinator', 'password', v)}
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.password']}
+                />
 
-  {/* Upload de foto */}
-  <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-    <h4 className="text-base font-semibold mb-2">Sube tu foto de perfil</h4>
-    <p className="text-gray-600 text-sm mb-4">
-      Selecciona una imagen para que te reconozcan en el sistema. No es obligatoria pero sí recomendada.
-    </p>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={e => handleFileChange(e, setProfileImage)}
-      className="block"
-    />
-    {profileImage && (
-      <p className="mt-2 text-xs text-gray-500">
-        Archivo: {profileImage.name}
-      </p>
-    )}
-  </div>
-</CollapsibleSection>
-            
-<CollapsibleSection
-  title="Datos Coordinadora Asociada"
-  Icon={Sparkle}
-  isCompleted={
-    Boolean(formData.associatedCoordinator.name) &&
-    Boolean(formData.associatedCoordinator.lastNameP) &&
-    Boolean(formData.associatedCoordinator.email) &&
-    Boolean(formData.associatedCoordinator.phone)
-  }
->
-  {/* Descripción */}
-  <p className="text-gray-600 text-sm mb-4">
-    Si no se registra una coordinadora asociada, la coordinadora de sede asumirá los roles faltantes automáticamente.
-  </p>
-
-  {/* Campos en grid */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <InputField
-      label="Nombre(s)*"
-      placeholder="Nombre(s)"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.associatedCoordinator.name}
-      onChangeText={(v: string) =>
-        handleInputChange('associatedCoordinator', 'name', v)
-      }
-    />
-
-    <InputField
-      label="Apellido Paterno*"
-      placeholder="Apellido Paterno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.associatedCoordinator.lastNameP}
-      onChangeText={(v: string) =>
-        handleInputChange('associatedCoordinator', 'lastNameP', v)
-      }
-    />
-
-    <InputField
-      label="Apellido Materno"
-      placeholder="Apellido Materno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.associatedCoordinator.lastNameM}
-      onChangeText={(v: string) =>
-        handleInputChange('associatedCoordinator', 'lastNameM', v)
-      }
-    />
-
-    <InputField
-      label="Correo Electrónico*"
-      placeholder="correo1@ejemplo.com"
-      variant="accent"
-      icon="At"
-      value={formData.associatedCoordinator.email}
-      onChangeText={(v: string) =>
-        handleInputChange('associatedCoordinator', 'email', v)
-      }
-    />
-
-    <InputField
-      label="Celular*"
-      placeholder="+522221234567"
-      variant="accent"
-      icon="Phone"
-      value={formData.associatedCoordinator.phone}
-      onChangeText={(v: string) =>
-        handleInputChange('associatedCoordinator', 'phone', v)
-      }
-    />
-  </div>
-</CollapsibleSection>
-
-            
-<CollapsibleSection
-  title="Datos Coordinadora de Informes (Staff)"
-  Icon={UsersFour}
-  isCompleted={
-    Boolean(formData.staffCoordinator.name) &&
-    Boolean(formData.staffCoordinator.lastNameP) &&
-    Boolean(formData.staffCoordinator.email) &&
-    Boolean(formData.staffCoordinator.phone)
-  }
->
-  {/* Descripción */}
-  <p className="text-gray-600 text-sm mb-4">
-    Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
-  </p>
-
-  {/* Campos en grid */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <InputField
-      label="Nombre(s)*"
-      placeholder="Nombre(s)"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.staffCoordinator.name}
-      onChangeText={(v: string) =>
-        handleInputChange('staffCoordinator', 'name', v)
-      }
-    />
-
-    <InputField
-      label="Apellido Paterno*"
-      placeholder="Apellido Paterno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.staffCoordinator.lastNameP}
-      onChangeText={(v: string) =>
-        handleInputChange('staffCoordinator', 'lastNameP', v)
-      }
-    />
-
-    <InputField
-      label="Apellido Materno"
-      placeholder="Apellido Materno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.staffCoordinator.lastNameM}
-      onChangeText={(v: string) =>
-        handleInputChange('staffCoordinator', 'lastNameM', v)
-      }
-    />
-
-    <InputField
-      label="Correo Electrónico*"
-      placeholder="correo1@ejemplo.com"
-      variant="accent"
-      icon="At"
-      value={formData.staffCoordinator.email}
-      onChangeText={(v: string) =>
-        handleInputChange('staffCoordinator', 'email', v)
-      }
-    />
-
-    <InputField
-      label="Celular*"
-      placeholder="+522221234567"
-      variant="accent"
-      icon="Phone"
-      value={formData.staffCoordinator.phone}
-      onChangeText={(v: string) =>
-        handleInputChange('staffCoordinator', 'phone', v)
-      }
-    />
-  </div>
-</CollapsibleSection>
-
-            
-<CollapsibleSection
-  title="Datos Coordinadora de Informes (Participantes)"
-  Icon={UsersFour}
-  isCompleted={
-    Boolean(formData.participantsCoordinator.name) &&
-    Boolean(formData.participantsCoordinator.lastNameP) &&
-    Boolean(formData.participantsCoordinator.email) &&
-    Boolean(formData.participantsCoordinator.phone)
-  }
->
-  {/* Descripción */}
-  <p className="text-gray-600 text-sm mb-4">
-    Si no se registra una coordinadora de informe, la coordinadora de sede asumirá los roles faltantes automáticamente.
-  </p>
-
-  {/* Campos en grid */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <InputField
-      label="Nombre(s)*"
-      placeholder="Nombre(s)"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.participantsCoordinator.name}
-      onChangeText={(v: string) =>
-        handleInputChange('participantsCoordinator', 'name', v)
-      }
-    />
-
-    <InputField
-      label="Apellido Paterno*"
-      placeholder="Apellido Paterno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.participantsCoordinator.lastNameP}
-      onChangeText={(v: string) =>
-        handleInputChange('participantsCoordinator', 'lastNameP', v)
-      }
-    />
-
-    <InputField
-      label="Apellido Materno"
-      placeholder="Apellido Materno"
-      variant="primary"
-      icon="Fingerprint"
-      value={formData.participantsCoordinator.lastNameM}
-      onChangeText={(v: string) =>
-        handleInputChange('participantsCoordinator', 'lastNameM', v)
-      }
-    />
-
-    <InputField
-      label="Correo Electrónico*"
-      placeholder="correo1@ejemplo.com"
-      variant="accent"
-      icon="At"
-      value={formData.participantsCoordinator.email}
-      onChangeText={(v: string) =>
-        handleInputChange('participantsCoordinator', 'email', v)
-      }
-    />
-
-    <InputField
-      label="Celular*"
-      placeholder="+522221234567"
-      variant="accent"
-      icon="Phone"
-      value={formData.participantsCoordinator.phone}
-      onChangeText={(v: string) =>
-        handleInputChange('participantsCoordinator', 'phone', v)
-      }
-    />
-  </div>
-</CollapsibleSection>
-
-            
-<CollapsibleSection
-  title="Datos SEDE"
-  Icon={Bank}
-  isCompleted={
-    Boolean(formData.venue.name) &&
-    Boolean(formData.venue.country) &&
-    Boolean(formData.venue.state) &&
-    Boolean(formData.venue.address)
-  }
->
-  {/* Descripción */}
-  <p className="text-gray-600 text-sm mb-4">
-    Responde con sinceridad los datos de tu SEDE.
-    <br />
-    Las secciones con * son obligatorias.
-  </p>
-
-  {/* Campos en grid */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <InputField
-      label="Nombre de la SEDE*"
-      placeholder="ITESM Puebla"
-      variant="primary"
-      icon="GraduationCap"
-      value={formData.venue.name}
-      onChangeText={(v: string) =>
-        handleInputChange('venue', 'name', v)
-      }
-    />
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        País*
-      </label>
-      <Select
-        options={countryOptions}
-        value={
-          countryOptions.find(o => o.label === formData.venue.country) || null
-        }
-        onChange={handleCountryChange}
-        placeholder="Selecciona un país"
-        styles={selectStyles}
-        isClearable
-        components={{
-          DropdownIndicator: () => (
-            <MapPin
-              width="1.25rem"
-              height="1.25rem"
-              fillColor="#4a4a4a"
-              strokeWidth={0}
-            />
-          ),
-        }}
-      />
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        Estado/Provincia*
-      </label>
-      <Select
-        options={regionOptions}
-        value={
-          regionOptions.find(o => o.label === formData.venue.state) || null
-        }
-        onChange={handleRegionChange}
-        placeholder="Selecciona un estado/provincia"
-        styles={selectStyles}
-        isClearable
-        isDisabled={!formData.venue.country}
-        components={{
-          DropdownIndicator: () => (
-            <MapPin
-              width="1.25rem"
-              height="1.25rem"
-              fillColor="#4a4a4a"
-              strokeWidth={0}
-            />
-          ),
-        }}
-      />
-    </div>
-
-    <InputField
-      label="Dirección*"
-      placeholder="Dirección 123"
-      variant="accent"
-      icon="Flag"
-      value={formData.venue.address}
-      onChangeText={(v: string) =>
-        handleInputChange('venue', 'address', v)
-      }
-    />
-  </div>
-</CollapsibleSection>
-            
-<CollapsibleSection
-  title="Logo y Convocatoria"
-  Icon={Files}
-  isCompleted={Boolean(logo) && Boolean(participationFile)}
->
-  {/* Sube tu logo */}
-  <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-    <div className="flex items-center mb-2 text-gray-800">
-      <FileJpg width="1.5rem" height="1.5rem" />
-      <h4 className="ml-2 text-base font-semibold">Sube tu logo</h4>
-    </div>
-    <p className="text-gray-600 text-sm mb-4">
-      Selecciona una imagen que represente a tu SEDE. No es obligatorio, pero sí recomendado.
-    </p>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={e => handleFileChange(e, setLogo)}
-      className="block"
-    />
-    {logo && (
-      <p className="mt-2 text-xs text-gray-500">
-        Archivo: {logo.name}
-      </p>
-    )}
-  </div>
-
-  {/* Convocatoria SEDE */}
-  <div className="mt-6">
-    <div className="flex items-center mb-2 text-gray-800">
-      <Files width="1.5rem" height="1.5rem" />
-      <h4 className="ml-2 text-base font-semibold">Convocatoria SEDE</h4>
-    </div>
-    <p className="text-gray-600 text-sm mb-4">
-      Debes subir tu permiso de participación firmado por un representante legal de la institución.
-    </p>
-    <a
-      href="/ConvocatoriaSEDES-PH2025.pdf"
-      download
-      className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition"
-    >
-      Descargar Convocatoria
-    </a>
-  </div>
-
-  {/* Sube tu convocatoria */}
-  <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-    <div className="flex items-center mb-2 text-gray-800">
-      <FilePdf width="1.5rem" height="1.5rem" />
-      <h4 className="ml-2 text-base font-semibold">Sube tu convocatoria</h4>
-    </div>
-    <p className="text-gray-600 text-sm mb-4">
-      Selecciona el documento PDF de tu convocatoria. Verifica que se suba correctamente.
-    </p>
-    <input
-      type="file"
-      accept=".pdf"
-      onChange={e => handleFileChange(e, setParticipationFile)}
-      className="block"
-    />
-    {participationFile && (
-      <p className="mt-2 text-xs text-gray-500">
-        Archivo: {participationFile.name}
-      </p>
-    )}
-  </div>
-</CollapsibleSection>
-            
-<CollapsibleSection
-  title="Aviso de Privacidad"
-  Icon={Megaphone}
-  isCompleted={privacyAccepted}
->
-  {/* Texto de enlace al aviso */}
-  <p className="text-gray-600 text-sm mb-4">
-    Confirmo que he leído, entendido y acepto el Aviso de Privacidad disponible en:  
-    <br />
-    <a
-      href="https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores"
-      className="text-purple-600 hover:underline"
-    >
-      https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores
-    </a>
-  </p>
-
-  {/* Checkbox de aceptación */}
-  <div className="mt-2">
-    <Checkbox
-      label="He leído y acepto el Aviso de Privacidad"
-      checked={privacyAccepted}
-      onChange={setPrivacyAccepted}
-    />
-  </div>
-</CollapsibleSection>
-            
-            {/* Botón de envío */}
-              <div className='mt-6 flex justify-end'>
-                <Button
-                  label='Enviar Registro'
-                  variant='success'
-                  showRightIcon
-                  type='submit'
-                  IconRight={withIconDecorator(Send)}
-                  className='px-6 py-2 rounded-full flex items-center text-white'
+                <InputField
+                  label='Confirmar Contraseña*'
+                  placeholder='********'
+                  variant='secondary'
+                  icon='Lock'
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={formData.venueCoordinator.confirmPassword}
+                  onChangeText={(v: string) =>
+                    handleInputChange('venueCoordinator', 'confirmPassword', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['venueCoordinator.confirmPassword']}
                 />
               </div>
-            
-          </div>
-                  <Modal
-          isOpen={isErrorModalOpen}
-          onClose={() => setIsErrorModalOpen(false)}
-          title='Errores en el formulario'
-          messages={errors}
-        />
 
-        <Toast
-          isOpen={isSuccessToastOpen}
-          onClose={() => setIsSuccessToastOpen(false)}
-          message={success || ''}
-        />
+              {/* Sube tu foto */}
+              <div className='mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+                <div className='flex items-center mb-2 text-gray-800'>
+                  <FileJpg width='1.5rem' height='1.5rem' />
+                  <h4 className='ml-2 text-base font-semibold'>Sube tu foto de perfil</h4>
+                </div>
+                <p className='text-gray-600 text-sm mb-4'>
+                  Selecciona una imagen para que te reconozcan en el sistema. No es obligatoria pero
+                  sí recomendada.
+                </p>
+
+                <div>
+                  <label
+                    htmlFor='customFile'
+                    className='inline-block px-4 py-2 rounded-full bg-[var(--primaryColor)] text-white cursor-pointer hover:bg-[var(--primary-shade)] transition font-semibold'
+                  >
+                    Elegir imagen
+                  </label>
+                  <input
+                    id='customFile'
+                    type='file'
+                    accept='image/*'
+                    className='hidden'
+                    onChange={(e) => handleFileChange(e, setLogo, 'image', 'profileImage')}
+                  />
+                  {inputErrors['venueCoordinator.profileImage'] && (
+                    <p className='text-xs text-red-600 mt-2'>
+                      {inputErrors['venueCoordinator.profileImage']}
+                    </p>
+                  )}
+                  {logo && <p className='mt-2 text-xs text-gray-500'>{logo.name}</p>}
+                </div>
+              </div>
+              <p className='text-gray-600 text-sm mt-2'><strong>- Tu contraseña debe de tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 carácter especial.</strong></p>
+              <p className='text-gray-600 text-sm mt-1 mb-2'><strong>- Tu usuario debe de tener mínimo 6 caracteres, máximo 14 caracteres y solo puede usar letras, guiones bajos y números.</strong></p>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title='Datos Coordinadora Asociada'
+              Icon={Sparkle}
+              isCompleted={
+                Boolean(formData.associatedCoordinator.name) &&
+                Boolean(formData.associatedCoordinator.lastNameP) &&
+                Boolean(formData.associatedCoordinator.email) &&
+                Boolean(formData.associatedCoordinator.phone)
+              }
+              isIncorrect={sectionErrors.associatedCoordinator}
+              Color={'#4E2A62FF'}
+              Optional={true}
+            >
+              {/* Descripción */}
+              <p className='text-gray-600 text-sm mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu coordinadora asociada.
+                <br />
+                <strong>Puedes dejar en blanco esta sección si no tienes una coordinadora asociada. Si vas a llenar esta sección, recuerda que los espacios con * son obligatorios.</strong>
+              </p>
+              <p className='text-gray-600 text-sm mb-4'>
+                Si no se registra una coordinadora asociada, la coordinadora de SEDE asumirá los
+                roles faltantes automáticamente.
+              </p>
+
+              {/* Campos en grid */}
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                <InputField
+                  label='Nombre(s)*'
+                  placeholder='Nombre(s)'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.associatedCoordinator.name}
+                  onChangeText={(v: string) =>
+                    handleInputChange('associatedCoordinator', 'name', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['associatedCoordinator.name']}
+                />
+
+                <InputField
+                  label='Apellido Paterno*'
+                  placeholder='Apellido Paterno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.associatedCoordinator.lastNameP}
+                  onChangeText={(v: string) =>
+                    handleInputChange('associatedCoordinator', 'lastNameP', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['associatedCoordinator.lastNameP']}
+                />
+
+                <InputField
+                  label='Apellido Materno'
+                  placeholder='Apellido Materno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.associatedCoordinator.lastNameM}
+                  onChangeText={(v: string) =>
+                    handleInputChange('associatedCoordinator', 'lastNameM', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['associatedCoordinator.lastNameM']}
+                />
+
+                <InputField
+                  label='Correo Electrónico*'
+                  placeholder='correo1@ejemplo.com'
+                  variant='accent'
+                  icon='At'
+                  value={formData.associatedCoordinator.email}
+                  onChangeText={(v: string) =>
+                    handleInputChange('associatedCoordinator', 'email', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['associatedCoordinator.email']}
+                />
+
+                <InputField
+                  label='Celular*'
+                  placeholder='+522221234567'
+                  variant='accent'
+                  icon='Phone'
+                  value={formData.associatedCoordinator.phone}
+                  onChangeText={(v: string) =>
+                    handleInputChange('associatedCoordinator', 'phone', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['associatedCoordinator.phone']}
+                />
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title='Datos Coordinadora de Informes (Colaboradores)'
+              Icon={UsersFour}
+              isCompleted={
+                Boolean(formData.staffCoordinator.name) &&
+                Boolean(formData.staffCoordinator.lastNameP) &&
+                Boolean(formData.staffCoordinator.email) &&
+                Boolean(formData.staffCoordinator.phone)
+              }
+              isIncorrect={sectionErrors.staffCoordinator}
+              Color={'#633F76FF'}
+              Optional={true}
+            >
+              {/* Descripción */}
+              <p className='text-gray-600 text-sm mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu coordinadora de informes.
+                <br />
+                <strong>Puedes dejar en blanco esta sección si no tienes una coordinadora de informes. Si vas a llenar esta sección, recuerda que los espacios con * son obligatorios.</strong>
+              </p>
+              <p className='text-gray-600 text-sm mb-4'>
+                Si no se registra una coordinadora de informes para los colaboradores, la coordinadora de SEDE asumirá los
+                roles faltantes automáticamente.
+              </p>
+
+              {/* Campos en grid */}
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                <InputField
+                  label='Nombre(s)*'
+                  placeholder='Nombre(s)'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.staffCoordinator.name}
+                  onChangeText={(v: string) => handleInputChange('staffCoordinator', 'name', v)}
+                  darkText={true}
+                  error={inputErrors['staffCoordinator.name']}
+                />
+
+                <InputField
+                  label='Apellido Paterno*'
+                  placeholder='Apellido Paterno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.staffCoordinator.lastNameP}
+                  onChangeText={(v: string) =>
+                    handleInputChange('staffCoordinator', 'lastNameP', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['staffCoordinator.lastNameP']}
+                />
+
+                <InputField
+                  label='Apellido Materno'
+                  placeholder='Apellido Materno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.staffCoordinator.lastNameM}
+                  onChangeText={(v: string) =>
+                    handleInputChange('staffCoordinator', 'lastNameM', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['staffCoordinator.lastNameM']}
+                />
+
+                <InputField
+                  label='Correo Electrónico*'
+                  placeholder='correo1@ejemplo.com'
+                  variant='accent'
+                  icon='At'
+                  value={formData.staffCoordinator.email}
+                  onChangeText={(v: string) => handleInputChange('staffCoordinator', 'email', v)}
+                  darkText={true}
+                  error={inputErrors['staffCoordinator.email']}
+                />
+
+                <InputField
+                  label='Celular*'
+                  placeholder='+522221234567'
+                  variant='accent'
+                  icon='Phone'
+                  value={formData.staffCoordinator.phone}
+                  onChangeText={(v: string) => handleInputChange('staffCoordinator', 'phone', v)}
+                  darkText={true}
+                  error={inputErrors['staffCoordinator.phone']}
+                />
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title='Datos Coordinadora de Informes (Participantes)'
+              Icon={UsersFour}
+              isCompleted={
+                Boolean(formData.participantsCoordinator.name) &&
+                Boolean(formData.participantsCoordinator.lastNameP) &&
+                Boolean(formData.participantsCoordinator.email) &&
+                Boolean(formData.participantsCoordinator.phone)
+              }
+              isIncorrect={sectionErrors.participantsCoordinator}
+              Color={'#7F5C92FF'}
+              Optional={true}
+            >
+              {/* Descripción */}
+                            <p className='text-gray-600 text-sm mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu coordinadora de informes.
+                <br />
+                <strong>Puedes dejar en blanco esta sección si no tienes una coordinadora de informes. Si vas a llenar esta sección, recuerda que los espacios con * son obligatorios.</strong>
+              </p>
+              <p className='text-gray-600 text-sm mb-4'>
+                Si no se registra una coordinadora de informes para los participantes, la coordinadora de SEDE asumirá los
+                roles faltantes automáticamente.
+              </p>
+
+              {/* Campos en grid */}
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                <InputField
+                  label='Nombre(s)*'
+                  placeholder='Nombre(s)'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.participantsCoordinator.name}
+                  onChangeText={(v: string) =>
+                    handleInputChange('participantsCoordinator', 'name', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['participantsCoordinator.name']}
+                />
+
+                <InputField
+                  label='Apellido Paterno*'
+                  placeholder='Apellido Paterno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.participantsCoordinator.lastNameP}
+                  onChangeText={(v: string) =>
+                    handleInputChange('participantsCoordinator', 'lastNameP', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['participantsCoordinator.lastNameP']}
+                />
+
+                <InputField
+                  label='Apellido Materno'
+                  placeholder='Apellido Materno'
+                  variant='primary'
+                  icon='Fingerprint'
+                  value={formData.participantsCoordinator.lastNameM}
+                  onChangeText={(v: string) =>
+                    handleInputChange('participantsCoordinator', 'lastNameM', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['participantsCoordinator.lastNameM']}
+                />
+
+                <InputField
+                  label='Correo Electrónico*'
+                  placeholder='correo1@ejemplo.com'
+                  variant='accent'
+                  icon='At'
+                  value={formData.participantsCoordinator.email}
+                  onChangeText={(v: string) =>
+                    handleInputChange('participantsCoordinator', 'email', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['participantsCoordinator.email']}
+                />
+
+                <InputField
+                  label='Celular*'
+                  placeholder='+522221234567'
+                  variant='accent'
+                  icon='Phone'
+                  value={formData.participantsCoordinator.phone}
+                  onChangeText={(v: string) =>
+                    handleInputChange('participantsCoordinator', 'phone', v)
+                  }
+                  darkText={true}
+                  error={inputErrors['participantsCoordinator.phone']}
+                />
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title='Datos SEDE'
+              Icon={Bank}
+              isCompleted={
+                Boolean(formData.venue.name) &&
+                Boolean(formData.venue.country) &&
+                (Boolean(formData.venue.state) || !hasRegions) &&
+                Boolean(formData.venue.address)
+              }
+              isIncorrect={sectionErrors.venue}
+              Color={'#876898FF'}
+            >
+              {/* Descripción */}
+              <p className='text-gray-600 text-sm mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu SEDE.
+                <br />
+                <strong>Los espacios con * son obligatorios.</strong>
+              </p>
+
+              {/* Campos en grid */}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <InputField
+                  label='Nombre de la SEDE*'
+                  placeholder='ITESM Puebla'
+                  variant='primary'
+                  icon='GraduationCap'
+                  value={formData.venue.name}
+                  onChangeText={(v: string) => handleInputChange('venue', 'name', v)}
+                  darkText={true}
+                  error={inputErrors['venue.name']}
+                />
+
+                <Dropdown
+                  label='País*'
+                  options={countryOptions.map((c) => c.label)}
+                  value={formData.venue.country}
+                  onChange={(value: string) => {
+                    const selectedCountry = countryOptions.find((c) => c.label === value);
+                    handleCountryChange(selectedCountry ? selectedCountry : null);
+                  }}
+                  variant='accent'
+                  Icon={MapPin}
+                  darkText={true}
+                  error={inputErrors['venue.country']}
+                />
+
+                <div className='flex flex-col'>
+                  <Dropdown
+                    label='Estado*'
+                    options={regionOptions.map((r) => r.label)}
+                    value={formData.venue.state}
+                    onChange={(value: string) => {
+                      const selectedRegion = regionOptions.find((r) => r.label === value);
+                      handleRegionChange(selectedRegion ? selectedRegion : null);
+                    }}
+                    variant={!formData.venue.country || !hasRegions ? 'accent-disabled' : 'accent'}
+                    Icon={Island}
+                    darkText={true}
+                    error={inputErrors['venue.state']}
+                    dim={!formData.venue.country}
+                    disabled={formData.venue.country === '' || !formData.venue.country || !hasRegions}
+                  />
+
+                  {!hasRegions && formData.venue.country && (
+                    <p className='text-sm text-gray-400 mt-1 ml-1'>
+                      Este país no tiene estados o regiones para seleccionar.
+                    </p>
+                  )}
+                </div>
+
+                <InputField
+                  label='Dirección*'
+                  placeholder='Dirección 123'
+                  variant={!formData.venue.state && hasRegions ? 'accent-disabled' : 'accent'}
+                  icon='Flag'
+                  value={formData.venue.address}
+                  onChangeText={(v: string) => handleInputChange('venue', 'address', v)}
+                  darkText={true}
+                  error={inputErrors['venue.address']}
+                  disabled={formData.venue.state === '' || !formData.venue.state && hasRegions}
+                />
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title='Logo y Convocatoria'
+              Icon={Files}
+              isCompleted={Boolean(participationFile)}
+              isIncorrect={sectionErrors.documents}
+              Color={'#9577A6FF'}
+            >
+              {/* Sube tu logo */}
+              <p className='text-gray-600 text-sm mb-4'>
+                Sube los documentos que consideras que son indispensable para tu SEDE.
+                <br />
+                <strong>Los espacios con * son obligatorios.</strong>
+              </p>
+              <div className='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+                <div className='flex items-center mb-2 text-gray-800'>
+                  <FileJpg width='1.5rem' height='1.5rem' />
+                  <h4 className='ml-2 text-base font-semibold'>Sube tu logo</h4>
+                </div>
+                <p className='text-gray-600 text-sm mb-4'>
+                  Selecciona una imagen que represente a tu SEDE. No es obligatorio, pero sí
+                  recomendado.
+                </p>
+
+                <div>
+                  <label
+                    htmlFor='customLogo'
+                    className='inline-block px-4 py-2 rounded-full bg-[var(--primaryColor)] text-white cursor-pointer hover:bg-[var(--primary-shade)] transition font-semibold'
+                  >
+                    Elegir Imagen
+                  </label>
+                  <input
+                    id='customLogo'
+                    type='file'
+                    accept='image/*'
+                    className='hidden'
+                    onChange={(e) => handleFileChange(e, setLogo, 'image', 'logo')}
+                  />
+                  {inputErrors['documents.logo'] && (
+                    <p className='text-xs text-red-600 mt-2'>{inputErrors['documents.logo']}</p>
+                  )}
+                  {logo && <p className='mt-2 text-xs text-gray-500'>{logo.name}</p>}
+                </div>
+              </div>
+
+              {/* Convocatoria SEDE */}
+              <div className='mt-6'>
+                <div className='flex items-center mb-2 text-gray-800'>
+                  <Files width='1.5rem' height='1.5rem' />
+                  <h4 className='ml-2 text-base font-semibold'>Convocatoria SEDE *</h4>
+                </div>
+                <p className='text-gray-600 text-sm mb-4'>
+                  Debes subir tu permiso de participación firmado por un representante legal de la
+                  institución.
+                </p>
+                <a
+                  href='/ConvocatoriaSEDES-PH2025.pdf'
+                  download
+                  className='inline-flex items-center px-4 py-2 bg-[var(--secondaryColor)] text-white rounded hover:bg-[var(--secondary-shade)] transition'
+                >
+                  Descargar Convocatoria
+                </a>
+              </div>
+
+              {/* Sube tu convocatoria */}
+              <div className='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+                <div className='flex items-center mb-2 text-gray-800'>
+                  <FilePdf width='1.5rem' height='1.5rem' />
+                  <h4 className='ml-2 text-base font-semibold'>Sube tu convocatoria firmada *</h4>
+                </div>
+                <p className='text-gray-600 text-sm mb-4'>
+                  Selecciona el documento PDF de tu convocatoria. Verifica que se suba
+                  correctamente.
+                </p>
+
+                <div>
+                  <label
+                    htmlFor='customPDF'
+                    className='inline-block px-4 py-2 rounded-full bg-[var(--primaryColor)] text-white cursor-pointer hover:bg-[var(--primary-shade)] transition font-semibold'
+                  >
+                    Elegir Archivo
+                  </label>
+                  <input
+                    id='customPDF'
+                    type='file'
+                    accept='.pdf'
+                    className='hidden'
+                    onChange={(e) => handleFileChange(e, setParticipationFile, 'pdf', 'participationFile')}
+                  />
+                  {inputErrors['documents.participationFile'] && (
+                    <p className='text-xs text-red-600 mt-2'>
+                      {inputErrors['documents.participationFile']}
+                    </p>
+                  )}
+                  {participationFile && (
+                    <p className='mt-2 text-xs text-gray-500'>{participationFile.name}</p>
+                  )}
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title='Aviso de Privacidad'
+              Icon={Megaphone}
+              isCompleted={privacyAccepted}
+              isIncorrect={sectionErrors.privacy}
+              Color={'#A185B1FF'}
+            >
+              {/* Texto de enlace al aviso */}
+              <p className='text-gray-600 text-sm mb-4'>
+                Confirmo que he leído, entendido y acepto el&nbsp;
+                <a
+                  href='https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores'
+                  className='text-purple-600 hover:underline'
+                >
+                Aviso de Privacidad
+                </a>
+                &nbsp;para poder participar en Patrones Hermosos como una SEDE oficial del evento.
+              </p>
+
+              {/* Checkbox de aceptación */}
+              <div className='mt-2'>
+                <Checkbox
+                  label='Acepto el aviso de privacidad'
+                  checked={privacyAccepted}
+                  onChange={handlePrivacyChange}
+                />
+              </div>
+              {inputErrors['privacy.accepted'] && (
+                <p className='text-xs text-red-600 mt-2'>{inputErrors['privacy.accepted']}</p>
+              )}
+            </CollapsibleSection>
+
+            {/* Botón de envío */}
+            <div className='mt-6 flex justify-end'>
+              <Button
+                label='Enviar Registro'
+                variant='success'
+                showRightIcon
+                type='submit'
+                IconRight={Send}
+                className='px-6 py-2 rounded-full flex items-center text-white'
+                disabled={Object.values(inputErrors).some((msg) => !!msg)}
+              />
+            </div>
+          </div>
         </div>
       </form>
     </div>
   );
-}
+};
 
 export default VenueRegistrationForm;
