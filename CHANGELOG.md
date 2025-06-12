@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.3.0...v2.4.0) (2025-06-12)
+
+
+### Features
+
+* **formularios:** Recursos visuales y formularios corregidos. ([30987ab](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/30987abc5cea18d22ffa91cce1bf2200b3b66143))
+
 # [2.3.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.2.0...v2.3.0) (2025-06-09)
 
 
