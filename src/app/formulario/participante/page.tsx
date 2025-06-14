@@ -19,7 +19,8 @@ import Send from '@/components/icons/ArrowFatRight';
 import GraduationCap from '@/components/icons/GraduationCap';
 import BookOpenText from '@/components/icons/BookOpenText';
 
-import ParticipantGroupSelectionTable from '@components/tables/GroupSelectionTable';
+import ParticipantGroupSelectionTable from '../../../components/tables/GroupSelectionTableWrapper';
+
 import { Files, FilePdf } from '@/components/icons';
 
 interface ParticipantData {
@@ -218,8 +219,8 @@ const ParticipantRegistrationForm: React.FC = () => {
         section === 'participation_file'
           ? value
           : typeof baseFormData[section] === 'object' && baseFormData[section] !== null
-            ? { ...(baseFormData[section] as object), [field]: value }
-            : { [field]: value },
+          ? { ...(baseFormData[section] as object), [field]: value }
+          : { [field]: value },
     };
 
     const { fieldErrors } = getFieldErrors(updatedFormData as FormData);

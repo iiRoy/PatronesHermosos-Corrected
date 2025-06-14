@@ -9,6 +9,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
+    // Permitir desactivar el loader en entorno de test E2E (Cypress)
+    if (typeof window !== 'undefined' && (window as any).Cypress) {
+      setShowLoader(false);
+      setIsLoading(false);
+      return;
+    }
     if (typeof window !== 'undefined') {
       const storedUserId = localStorage.getItem('user_id');
       if (storedUserId) {

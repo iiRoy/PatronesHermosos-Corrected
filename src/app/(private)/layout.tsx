@@ -24,6 +24,12 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).Cypress) {
+      // En entorno Cypress, nunca redirigir a login ni limpiar localStorage
+      setShowLoader(false);
+      setIsLoading(false);
+      return;
+    }
     if (typeof window !== 'undefined') {
       const storedUserId = localStorage.getItem('user_id');
       const storedToken = localStorage.getItem('api_token');

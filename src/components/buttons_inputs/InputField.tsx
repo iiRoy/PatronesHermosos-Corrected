@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useId } from 'react';
 import withIconDecorator from '../decorators/IconDecorator';
 import * as Icons from '../icons';
 
@@ -28,6 +28,7 @@ interface InputFieldProps {
   value?: string;
   onChangeText?: (value: string) => void;
   type?: string;
+  id?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -41,25 +42,13 @@ const InputField: React.FC<InputFieldProps> = ({
   variant = 'accent',
   disabled = false,
   icon,
-  value,
+  value = '',
   onChangeText,
   type = 'text',
+  id,
 }) => {
-  const [inputValue, setInputValue] = useState(value ?? '');
-
-  useEffect(() => {
-    if (value !== undefined) {
-      setInputValue(value);
-    }
-  }, [value]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    if (onChangeText) {
-      onChangeText(newValue);
-    }
-  };
+  const autoId = useId();
+  const inputId = id || `${autoId}`;
 
   const inputClass = `input input-${variant}${disabled ? ' input-disabled' : ''}${
     darkText ? ' darkText' : ''
@@ -70,9 +59,17 @@ const InputField: React.FC<InputFieldProps> = ({
 
   const IconComponent = icon && Icons[icon] ? withIconDecorator(Icons[icon]) : null;
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChangeText) {
+      onChangeText(e.target.value);
+    }
+  };
+
   return (
     <div className='container-input'>
-      <div className={labelClass}>{label}</div>
+      <label className={labelClass} htmlFor={inputId}>
+        {label}
+      </label>
       {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={inputClass}>
         {IconComponent && (
@@ -81,10 +78,11 @@ const InputField: React.FC<InputFieldProps> = ({
           </div>
         )}
         <input
+          id={inputId}
           type={type}
           placeholder={placeholder}
           disabled={disabled}
-          value={inputValue}
+          value={value}
           onChange={handleChange}
         />
       </div>

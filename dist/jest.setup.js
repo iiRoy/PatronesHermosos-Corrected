@@ -1,0 +1,116 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// src/jest.setup.ts
+require("@testing-library/jest-dom");
+require("whatwg-fetch");
+// Polyfill global Response, Request y Headers para entorno Node
+if (typeof global.Response === 'undefined') {
+    global.Response = window.Response;
+}
+if (typeof global.Request === 'undefined') {
+    global.Request = window.Request;
+}
+if (typeof global.Headers === 'undefined') {
+    global.Headers = window.Headers;
+}
+// Mocks para los hooks de Next.js App Router
+jest.mock('next/navigation', () => ({
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        prefetch: jest.fn(),
+        back: jest.fn(),
+        forward: jest.fn(),
+        refresh: jest.fn(),
+        pathname: '/',
+        query: {},
+        asPath: '/',
+        events: { on: jest.fn(), off: jest.fn(), emit: jest.fn() },
+    }),
+    usePathname: () => '/',
+    useSearchParams: () => ({ get: jest.fn(), set: jest.fn() }),
+    useParams: () => ({}),
+    useSelectedLayoutSegments: () => [],
+    useSelectedLayoutSegment: () => '',
+    useTransition: () => ({
+        isPending: false,
+        startTransition: (fn) => fn(),
+        triggerTransition: jest.fn(),
+    }),
+}));
+// Mock global para window.matchMedia (soporte breakpoints Tailwind/Next.js en tests)
+if (!window.matchMedia) {
+    window.matchMedia = (query) => ({
+        matches: query.includes('min-width: 1024px') ||
+            query.includes('max-width: 1200px') ||
+            window.innerWidth >= 1024,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+    });
+}
+// Mock global para fetch en entorno de test (Node)
+if (!global.fetch) {
+    global.fetch = jest.fn((url, options) => {
+        // Simula respuesta para /api/backup
+        if (typeof url === 'string' && url.includes('/api/backup')) {
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                statusText: 'OK',
+                redirected: false,
+                type: 'basic',
+                url: '',
+                clone: jest.fn(),
+                body: null,
+                bodyUsed: false,
+                arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+                blob: () => Promise.resolve(new Blob([JSON.stringify({})], { type: 'application/zip' })),
+                formData: () => Promise.resolve(new FormData()),
+                json: () => Promise.resolve({ backup: true }),
+                text: () => Promise.resolve(''),
+                headers: {
+                    get: () => 'backup.zip',
+                    has: jest.fn(),
+                    forEach: jest.fn(),
+                    append: jest.fn(),
+                    delete: jest.fn(),
+                    entries: jest.fn(),
+                    keys: jest.fn(),
+                    values: jest.fn(),
+                },
+            });
+        }
+        // Mock genérico para otros fetch (simula Response)
+        return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+            redirected: false,
+            type: 'basic',
+            url: '',
+            clone: jest.fn(),
+            body: null,
+            bodyUsed: false,
+            arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+            blob: () => Promise.resolve(new Blob()),
+            formData: () => Promise.resolve(new FormData()),
+            json: () => Promise.resolve({}),
+            text: () => Promise.resolve(''),
+            headers: {
+                get: jest.fn(),
+                has: jest.fn(),
+                forEach: jest.fn(),
+                append: jest.fn(),
+                delete: jest.fn(),
+                entries: jest.fn(),
+                keys: jest.fn(),
+                values: jest.fn(),
+            },
+        });
+    });
+}

@@ -152,7 +152,12 @@ const GestionAuditLogs = () => {
   };
 
   if (error) {
-    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
+    return (
+      <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
+        <PageTitle>Gestión de Registros de Auditoría</PageTitle>
+        <div className='p-6 pl-14 text-red-500'>Error: {error}</div>
+      </div>
+    );
   }
 
   return (

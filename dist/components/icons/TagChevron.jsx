@@ -1,37 +1,12 @@
-'use strict';
+"use strict";
 'use client';
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
-Object.defineProperty(exports, '__esModule', { value: true });
-const react_1 = __importDefault(require('react'));
-const TagChevron = ({
-  width = 24,
-  height = 24,
-  strokeColor = 'currentColor',
-  fillColor = 'none',
-  strokeWidth = 1,
-}) => (
-  <svg
-    width={width}
-    height={height}
-    stroke={strokeColor}
-    fill={fillColor}
-    strokeWidth={strokeWidth}
-    vectorEffect='non-scaling-stroke'
-    xmlns='http://www.w3.org/2000/svg'
-    viewBox='0 0 24 24'
-  >
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_1 = __importDefault(require("react"));
+const TagChevron = ({ width = 24, height = 24, strokeColor = 'currentColor', fillColor = 'none', strokeWidth = 1, }) => (<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect='non-scaling-stroke' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
     {' '}
-    <path
-      stroke={strokeColor}
-      fill={fillColor}
-      strokeWidth={strokeWidth}
-      vectorEffect='non-scaling-stroke'
-      d='m23.438 11.376-4.28-6.416a1.875 1.875 0 0 0-1.56-.835H3a1.125 1.125 0 0 0-.938 1.75L6.149 12l-4.085 6.126A1.125 1.125 0 0 0 3 19.875h14.599a1.876 1.876 0 0 0 1.56-.835l4.279-6.416a1.126 1.126 0 0 0 0-1.248Zm-6.04 6.249H5.102l3.335-5a1.125 1.125 0 0 0 0-1.25l-3.335-5h12.296L21.148 12l-3.75 5.625Z'
-    />{' '}
-  </svg>
-);
+    <path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect='non-scaling-stroke' d='m23.438 11.376-4.28-6.416a1.875 1.875 0 0 0-1.56-.835H3a1.125 1.125 0 0 0-.938 1.75L6.149 12l-4.085 6.126A1.125 1.125 0 0 0 3 19.875h14.599a1.876 1.876 0 0 0 1.56-.835l4.279-6.416a1.126 1.126 0 0 0 0-1.248Zm-6.04 6.249H5.102l3.335-5a1.125 1.125 0 0 0 0-1.25l-3.335-5h12.296L21.148 12l-3.75 5.625Z'/>{' '}
+  </svg>);
 exports.default = TagChevron;

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useId } from 'react';
 import withIconDecorator from '../decorators/IconDecorator';
 import { CaretDoubleDown as RawCaretDoubleDown } from '@/components/icons';
 import {
@@ -41,6 +41,7 @@ interface DropdownProps {
   Icon?: React.FC<{ width?: number | string; height?: number | string; color?: string }>;
   error?: string;
   disabled?: boolean;
+  id?: string;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -56,20 +57,28 @@ const Dropdown: React.FC<DropdownProps> = ({
   Icon,
   error,
   disabled = false,
+  id,
 }) => {
-  const selectClass = `input input-${variant}${dim ? ' dim' : ''} relative transition-all duration-500`;
+  const generatedId = useId();
+  const selectId = id || generatedId;
+  const selectClass = `input input-${variant}${
+    dim ? ' dim' : ''
+  } relative transition-all duration-500`;
   const labelClass = `label-input ${darkText ? ' darkText' : ''}`;
   const getLabel = (val: string) => {
     const selected = options.find((o) => (typeof o === 'string' ? o === val : o.value === val));
-    return typeof selected === 'string' ? selected : (selected?.label ?? val);
+    return typeof selected === 'string' ? selected : selected?.label ?? val;
   };
 
   return (
     <div className='container-input scrollbar-hide'>
-      <div className={labelClass}>{label}</div>
+      <label className={labelClass} htmlFor={selectId}>
+        {label}
+      </label>
       {showDescription && description && <div className='description-input'>{description}</div>}
       <div className={selectClass}>
         <Select value={value} onValueChange={(val) => onChange(val)} disabled={disabled}>
+          {/* Icon decorado */}
           {Icon &&
             (() => {
               const DecoratedIcon = withIconDecorator(Icon);
@@ -80,6 +89,7 @@ const Dropdown: React.FC<DropdownProps> = ({
               );
             })()}
           <SelectTrigger
+            id={selectId}
             className={`w-full text-md border-hidden shadow-none bg-transparent pr-10 py-2 focus:outline-none [&>svg]:hidden ${
               disabled ? 'opacity-50 cursor-not-allowed' : 'text-white'
             }`}

@@ -60,13 +60,16 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className='pagination'>
+    <div className='pagination' role='navigation'>
       {/* Primera página */}
       <Link
         href={pageLinks[0] ?? '#'}
         scroll={false}
         className='page'
-        onClick={() => handlePageClick(0)}
+        onClick={(e) => {
+          e.preventDefault();
+          handlePageClick(0);
+        }}
       >
         «
       </Link>
@@ -75,7 +78,10 @@ const Pagination: React.FC<PaginationProps> = ({
         href={pageLinks[Math.max(0, activeIndex - 1)] ?? '#'}
         scroll={false}
         className='page'
-        onClick={() => handlePageClick(activeIndex - 1)}
+        onClick={(e) => {
+          e.preventDefault();
+          handlePageClick(activeIndex - 1);
+        }}
       >
         ‹
       </Link>
@@ -91,7 +97,10 @@ const Pagination: React.FC<PaginationProps> = ({
             href={pageLinks[p] ?? '#'}
             scroll={false}
             className={getPageClass(p)}
-            onClick={() => handlePageClick(p)}
+            onClick={(e) => {
+              e.preventDefault();
+              handlePageClick(p as number);
+            }}
           >
             {p + 1}
           </Link>
@@ -103,7 +112,10 @@ const Pagination: React.FC<PaginationProps> = ({
         href={pageLinks[Math.min(total - 1, activeIndex + 1)] ?? '#'}
         scroll={false}
         className='page'
-        onClick={() => handlePageClick(activeIndex + 1)}
+        onClick={(e) => {
+          e.preventDefault();
+          handlePageClick(activeIndex + 1);
+        }}
       >
         ›
       </Link>
@@ -112,7 +124,10 @@ const Pagination: React.FC<PaginationProps> = ({
         href={pageLinks[total - 1] ?? '#'}
         scroll={false}
         className='page'
-        onClick={() => handlePageClick(total - 1)}
+        onClick={(e) => {
+          e.preventDefault();
+          handlePageClick(total - 1);
+        }}
       >
         »
       </Link>

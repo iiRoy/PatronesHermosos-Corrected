@@ -214,9 +214,10 @@ const SolicitudesRegistroAdmin = () => {
     }
   };
 
-  const [apiToken, setApiToken] = useState<string | null>(null);
-
   // Obtener token solo en cliente y guardarlo en estado
+  const initialToken = typeof window !== 'undefined' ? localStorage.getItem('api_token') : null;
+  const [apiToken, setApiToken] = useState<string | null>(initialToken);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setApiToken(localStorage.getItem('api_token'));
@@ -282,8 +283,14 @@ const SolicitudesRegistroAdmin = () => {
           );
         }
         const venuesData = await venuesResponse.json();
-        setAllSedesData(venuesData); // todas las sedes
-        const pendingVenues = venuesData.filter((v: Sede) => v.status === 'Pendiente');
+        // Permitir ambos formatos: array directo o { dataForRequests: array }
+        const venuesArray = Array.isArray(venuesData)
+          ? venuesData
+          : Array.isArray(venuesData.dataForRequests)
+          ? venuesData.dataForRequests
+          : [];
+        setAllSedesData(venuesArray); // todas las sedes
+        const pendingVenues = venuesArray.filter((v: Sede) => v.status === 'Pendiente');
         setSedesData(pendingVenues); // solo pendientes
       } catch (error: any) {
         console.error('Error fetching data:', error);
@@ -301,8 +308,8 @@ const SolicitudesRegistroAdmin = () => {
       return section === 'PARTICIPANTES'
         ? participantesData
         : section === 'APOYO & STAFF'
-          ? apoyoStaffData
-          : sedesData;
+        ? apoyoStaffData
+        : sedesData;
     }
 
     if (section === 'PARTICIPANTES') {
@@ -1033,7 +1040,12 @@ const SolicitudesRegistroAdmin = () => {
   };
 
   if (error) {
-    return <div className='p-6 pl-14 text-red-500'>Error: {error}</div>;
+    return (
+      <div className='p-6 pl-14 flex gap-4 flex-col text-primaryShade pagina-sedes'>
+        <PageTitle>Solicitudes de Registro</PageTitle>
+        <div className='p-6 pl-14 text-red-500'>Error: {error}</div>
+      </div>
+    );
   }
 
   return (

@@ -44,6 +44,7 @@ const EditarCoordinadora = () => {
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [apiToken, setApiToken] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Obtener token solo en cliente
   useEffect(() => {
@@ -80,12 +81,15 @@ const EditarCoordinadora = () => {
         }
         const coordData = await coordResponse.json();
         setCoordinadora(coordData);
-        setName(coordData.name || '');
-        setPaternalName(coordData.paternal_name || '');
-        setMaternalName(coordData.maternal_name || '');
-        setEmail(coordData.email || '');
-        setPhoneNumber(coordData.phone_number || '');
-        setUsername(coordData.username || '');
+        if (!isInitialized) {
+          setName(coordData.name || '');
+          setPaternalName(coordData.paternal_name || '');
+          setMaternalName(coordData.maternal_name || '');
+          setEmail(coordData.email || '');
+          setPhoneNumber(coordData.phone_number || '');
+          setUsername(coordData.username || '');
+          setIsInitialized(true);
+        }
 
         const venuesResponse = await fetch('/api/venues', {
           headers: {
@@ -114,7 +118,7 @@ const EditarCoordinadora = () => {
     if (id && apiToken) {
       fetchData();
     }
-  }, [id, router, apiToken]);
+  }, [id, router, apiToken, isInitialized]);
 
   const venueOptions = venues.map((venue) => ({
     label: venue.name,
@@ -137,6 +141,10 @@ const EditarCoordinadora = () => {
     if (phoneNumber && !/^\+?\d{10,15}$/.test(phoneNumber)) {
       errors.push('El número de teléfono debe contener entre 10 y 15 dígitos');
     }
+
+    // Log temporal para depuración en test
+    // eslint-disable-next-line no-console
+    console.log('validateForm: errores', errors);
 
     setValidationErrors(errors);
     return errors.length === 0;
@@ -172,10 +180,11 @@ const EditarCoordinadora = () => {
 
       const response = await fetch(`/api/venue-coordinators/specific/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiToken}`,
-        },
+        headers:
+          {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiToken}`,
+          },
         body: JSON.stringify(updatedCoordinadora),
       });
 
@@ -209,6 +218,12 @@ const EditarCoordinadora = () => {
 
   if (!coordinadora) {
     return <div className='p-6 pl-14'>Cargando...</div>;
+  }
+
+  // Log temporal fuera del JSX para depuración
+  if (validationErrors.length > 0) {
+    // eslint-disable-next-line no-console
+    console.log('render validationErrors', validationErrors);
   }
 
   return (
@@ -288,7 +303,7 @@ const EditarCoordinadora = () => {
               showError={false}
               variant='accent'
               value={email}
-              onChangeText={(val) => setEmail(val)}
+              onChangeText={setEmail}
             />
           </div>
         </div>
@@ -303,11 +318,12 @@ const EditarCoordinadora = () => {
               showError={false}
               variant='secondary'
               value={phoneNumber}
-              onChangeText={(val) => setPhoneNumber(val)}
+              onChangeText={setPhoneNumber}
             />
           </div>
           <div className='basis-1/2'>
             <Dropdown
+              id='dropdown-sede'
               label='Sede'
               options={venueOptions}
               value={selectedVenue}
