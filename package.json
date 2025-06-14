@@ -9,6 +9,7 @@
     "build": "npm run build:server && next build",
     "release": "node scripts/release-all.js",
     "icons": "node scripts/generate-icons.mjs",
+    "unused-icons": "node scripts/unused-icons.mjs",
     "sql": "node scripts/json-to-sql.js",
     "merge": "node scripts/merge-release.js",
     "test": "jest"
@@ -40,6 +41,7 @@
     "express-validator": "^7.2.1",
     "framer-motion": "^12.9.1",
     "get-proto": "^1.0.1",
+    "glob": "^11.0.3",
     "helmet": "^8.1.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",

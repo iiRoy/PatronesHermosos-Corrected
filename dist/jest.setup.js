@@ -1,4 +1,5 @@
 "use strict";
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 // src/jest.setup.ts
 require("@testing-library/jest-dom");
@@ -114,3 +115,51 @@ if (!global.fetch) {
         });
     });
 }
+// Mock global para XMLHttpRequest en entorno de test (Node/jsdom)
+// Incluye las propiedades y métodos más comunes para compatibilidad con TypeScript y jsdom
+global.XMLHttpRequest = (_a = class {
+        constructor() {
+            this.onreadystatechange = null;
+            this.onerror = null;
+            this.onabort = null;
+            this.onload = null;
+            this.ontimeout = null;
+            this.onprogress = null;
+            this.onloadend = null;
+            this.onloadstart = null;
+            this.readyState = 4;
+            this.status = 200;
+            this.statusText = 'OK';
+            this.response = '';
+            this.responseText = '';
+            this.responseType = '';
+            this.responseXML = null;
+            this.responseURL = '';
+            this.timeout = 0;
+            this.upload = { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+            this.withCredentials = false;
+            this.abort = jest.fn();
+            this.addEventListener = jest.fn();
+            this.removeEventListener = jest.fn();
+            this.dispatchEvent = jest.fn();
+            this.getAllResponseHeaders = jest.fn(() => '');
+            this.getResponseHeader = jest.fn();
+            this.open = jest.fn();
+            this.overrideMimeType = jest.fn();
+            this.send = jest.fn();
+            this.setRequestHeader = jest.fn();
+        }
+    },
+    _a.UNSENT = 0,
+    _a.OPENED = 1,
+    _a.HEADERS_RECEIVED = 2,
+    _a.LOADING = 3,
+    _a.DONE = 4,
+    _a);
+// Importar React para usar en el mock global
+const React = require('react');
+// Mock global para GroupSelectionTable (usado en tests de participante)
+jest.mock('@components/tables/GroupSelectionTable', () => ({
+    __esModule: true,
+    default: () => React.createElement('div', { 'data-testid': 'group-table-mock' }, 'MOCK GROUP TABLE'),
+}));

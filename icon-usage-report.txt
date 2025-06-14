@@ -1,0 +1,409 @@
+🔍 Buscando iconos con patrón `src/components/icons/**/*.tsx`: 67 encontrados.
+🔍 Buscando archivos de app con patrón `src/**/*.{ts,tsx,js,jsx}`: 144 encontrados.
+
+📄 Reporte de uso de iconos:
+
+✅ src\components\icons\X.tsx se usa en (8):
+   - src\components\tables\ManagementTable.tsx
+   - src\components\headers_menu_users\OptionMenu.tsx
+   - src\components\graphics\bases\genericLineChart.tsx
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\page.tsx
+
+✅ src\components\icons\Warning.tsx se usa en (5):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\diplomas\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\page.tsx
+   - src\app\(private)\(dashboards)\admin\diplomas\page.tsx
+
+✅ src\components\icons\UserSound.tsx se usa en (3):
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\crear-grupo\page.tsx
+
+✅ src\components\icons\UsersFour.tsx se usa en (2):
+   - src\app\formulario\sede\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+
+✅ src\components\icons\Users.tsx se usa en (8):
+   - src\components\headers_menu_users\navbar.tsx
+   - src\components\headers_menu_users\Menu.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\crear-grupo\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\CardSection.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\CardSection.tsx
+
+✅ src\components\icons\UserPlus.tsx se usa en (1):
+   - src\app\formulario\sede\page.tsx
+
+✅ src\components\icons\User.tsx se usa en (9):
+   - src\components\headers_menu_users\User.tsx
+   - src\components\headers_menu_users\navbar.tsx
+   - src\components\headers_menu_users\Menu.tsx
+   - src\app\(private)\(dashboards)\layout.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\CardSection.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\editarCoordinadora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\CardSection.tsx
+
+✅ src\components\icons\Trash.tsx se usa en (10):
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\collabManagement.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\page.tsx
+
+✅ src\components\icons\Student.tsx se usa en (4):
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\StarFour.tsx se usa en (1):
+   - src\app\login\page.tsx
+
+✅ src\components\icons\Star.tsx se usa en (2):
+   - src\components\tables\ManagementTable.tsx
+   - src\components\headers_menu_users\OptionMenu.tsx
+
+✅ src\components\icons\Sparkle.tsx se usa en (1):
+   - src\app\formulario\sede\page.tsx
+
+✅ src\components\icons\Sidebar.tsx se usa en (1):
+   - src\app\(private)\(dashboards)\layout.tsx
+
+✅ src\components\icons\SealWarning.tsx se usa en (8):
+   - src\app\login\page.tsx
+   - src\app\formulario\participante\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\crear-grupo\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\diplomas\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\page.tsx
+   - src\app\(private)\(dashboards)\admin\diplomas\page.tsx
+
+✅ src\components\icons\Record.tsx se usa en (13):
+   - src\services\exportExcel.service.ts
+   - src\components\tables\GroupSelectionTable.tsx
+   - src\components\headers_menu_users\OptionMenu.tsx
+   - src\components\headers_menu_users\FiltroEvento.tsx
+   - src\components\graphics\bases\genericPieChart.tsx
+   - src\components\graphics\bases\genericLineChart.tsx
+   - src\components\graphics\bases\genericBarChart.tsx
+   - src\components\buttons_inputs\CollapsibleSection.tsx
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\CardSection.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\CardSection.tsx
+
+✅ src\components\icons\Phone.tsx se usa en (9):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\editarCoordinadora\[id]\page.tsx
+
+✅ src\components\icons\Numpad.tsx se usa en (1):
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+
+✅ src\components\icons\Megaphone.tsx se usa en (3):
+   - src\components\headers_menu_users\User.tsx
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+
+✅ src\components\icons\MedalMilitary.tsx se usa en (1):
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\Medal.tsx se usa en (3):
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\MapPin.tsx se usa en (7):
+   - src\app\formulario\sede\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\editarSede\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\editarCoordinadora\[id]\page.tsx
+
+✅ src\components\icons\MagnifyingGlass.tsx se usa en (19):
+   - src\components\tables\VenueSelectionTable.tsx
+   - src\components\tables\ManagementTable.tsx
+   - src\components\tables\GroupSelectionTable.tsx
+   - src\components\tables\DataTable.tsx
+   - src\app\(private)\(dashboards)\coordinador\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-audit-log\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\diplomas\page.tsx
+   - src\app\(private)\(dashboards)\admin\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\VerSede\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\collabManagement.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-audit-log\page.tsx
+   - src\app\(private)\(dashboards)\admin\diplomas\page.tsx
+
+✅ src\components\icons\Lock.tsx se usa en (2):
+   - src\app\login\page.tsx
+   - src\app\formulario\sede\page.tsx
+
+✅ src\components\icons\Link.tsx se usa en (5):
+   - src\components\headers_menu_users\User.tsx
+   - src\components\headers_menu_users\navbar.tsx
+   - src\components\buttons_inputs\SubmenuLink.tsx
+   - src\components\buttons_inputs\Pagination.tsx
+   - src\app\(private)\(dashboards)\layout.tsx
+
+✅ src\components\icons\LightbulbFilament.tsx se usa en (1):
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\Island.tsx se usa en (1):
+   - src\app\formulario\sede\page.tsx
+
+✅ src\components\icons\Info.tsx se usa en (2):
+   - src\components\headers_menu_users\User.tsx
+   - src\components\headers_menu_users\navbar.tsx
+
+✅ src\components\icons\Image.tsx se usa en (6):
+   - src\components\headers_menu_users\User.tsx
+   - src\components\headers_menu_users\navbar.tsx
+   - src\components\graphics\bases\genericPieChart.tsx
+   - src\app\login\page.tsx
+   - src\app\(private)\(dashboards)\layout.tsx
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\IdentificationBadge.tsx se usa en (3):
+   - src\components\headers_menu_users\Menu.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\CardSection.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\CardSection.tsx
+
+✅ src\components\icons\Highlighter.tsx se usa en (9):
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\collabManagement.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\page.tsx
+
+✅ src\components\icons\Heart.tsx se usa en (1):
+   - src\app\formulario\participante\page.tsx
+
+✅ src\components\icons\Grains.tsx se usa en (4):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+
+✅ src\components\icons\GraduationCap.tsx se usa en (2):
+   - src\components\headers_menu_users\Menu.tsx
+   - src\app\formulario\sede\page.tsx
+
+✅ src\components\icons\Globe.tsx se usa en (1):
+   - src\app\(private)\(dashboards)\admin\sedes\editarSede\[id]\page.tsx
+
+✅ src\components\icons\FlowerLotus.tsx se usa en (2):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+
+✅ src\components\icons\Flag.tsx se usa en (2):
+   - src\app\formulario\sede\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+
+✅ src\components\icons\FingerprintSimple.tsx se usa en (1):
+   - src\components\headers_menu_users\navbar.tsx
+
+✅ src\components\icons\Fingerprint.tsx se usa en (9):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\editarCoordinadora\[id]\page.tsx
+
+✅ src\components\icons\FileText.tsx se usa en (2):
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\editarParticipante\[id]\page.tsx
+
+✅ src\components\icons\Files.tsx se usa en (2):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+
+✅ src\components\icons\FilePdf.tsx se usa en (2):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+
+✅ src\components\icons\FileJpg.tsx se usa en (1):
+   - src\app\formulario\sede\page.tsx
+
+✅ src\components\icons\File.tsx se usa en (8):
+   - src\validators\participantsValidator.js
+   - src\routes\participants.routes.ts
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\page.tsx
+   - src\app\(private)\(dashboards)\admin\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\page.tsx
+
+✅ src\components\icons\Eye.tsx se usa en (14):
+   - src\components\tables\VenueSelectionTable.tsx
+   - src\components\tables\RegistrationTable.tsx
+   - src\components\tables\ManagementTable.tsx
+   - src\components\tables\GroupSelectionTable.tsx
+   - src\app\(private)\(dashboards)\coordinador\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\page.tsx
+
+✅ src\components\icons\EnvelopeOpen.tsx se usa en (2):
+   - src\app\(private)\(dashboards)\coordinador\diplomas\page.tsx
+   - src\app\(private)\(dashboards)\admin\diplomas\page.tsx
+
+✅ src\components\icons\Envelope.tsx se usa en (3):
+   - src\app\login\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\solicitudes\page.tsx
+
+✅ src\components\icons\Download.tsx se usa en (4):
+   - src\components\buttons_inputs\DownloadConvocation.tsx
+   - src\app\(private)\(dashboards)\coordinador\diplomas\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\page.tsx
+   - src\app\(private)\(dashboards)\admin\diplomas\page.tsx
+
+✅ src\components\icons\DotsThree.tsx se usa en (2):
+   - src\components\graphics\bases\genericPieChart.tsx
+   - src\components\graphics\bases\genericLineChart.tsx
+
+✅ src\components\icons\Clock.tsx se usa en (1):
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+
+✅ src\components\icons\CheckCircle.tsx se usa en (5):
+   - src\components\headers_menu_users\options\ColorPickerSection.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\diplomas\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\page.tsx
+   - src\app\(private)\(dashboards)\admin\diplomas\page.tsx
+
+✅ src\components\icons\Check.tsx se usa en (13):
+   - src\validators\venueValidator.js
+   - src\routes\venue.routes.ts
+   - src\routes\participants.routes.ts
+   - src\controllers\venue.controller.js
+   - src\controllers\participants.controller.js
+   - src\components\ui\select.tsx
+   - src\components\tables\VenueSelectionTable.tsx
+   - src\components\tables\ManagementTable.tsx
+   - src\components\tables\GroupSelectionTable.tsx
+   - src\components\buttons_inputs\Notification.tsx
+   - src\app\formulario\participante\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\solicitudes\page.tsx
+   - src\app\(private)\(dashboards)\admin\solicitudes\page.tsx
+
+✅ src\components\icons\ChatTeardropText.tsx se usa en (3):
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+
+✅ src\components\icons\Certificate.tsx se usa en (2):
+   - src\components\headers_menu_users\Menu.tsx
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\CaretDoubleDown.tsx se usa en (4):
+   - src\components\headers_menu_users\FiltroEvento.tsx
+   - src\components\buttons_inputs\Dropdown.tsx
+   - src\app\(private)\(dashboards)\coordinador\estadisticas\CardSection.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\CardSection.tsx
+
+✅ src\components\icons\Calendar.tsx se usa en (2):
+   - src\components\tables\GroupSelectionTable.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+
+✅ src\components\icons\Books.tsx se usa en (3):
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+
+✅ src\components\icons\BookOpenText.tsx se usa en (1):
+   - src\app\formulario\participante\page.tsx
+
+✅ src\components\icons\BookBookmark.tsx se usa en (1):
+   - src\app\(inicio)\page.tsx
+
+✅ src\components\icons\Bank.tsx se usa en (5):
+   - src\components\headers_menu_users\navbar.tsx
+   - src\components\headers_menu_users\Menu.tsx
+   - src\app\formulario\sede\page.tsx
+   - src\app\(private)\(dashboards)\admin\sedes\editarSede\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\estadisticas\CardSection.tsx
+
+✅ src\components\icons\At.tsx se usa en (9):
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\colaborador\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\gestion-usuarios-coordinadora\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\staff\editarApoyo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\participantes\editarParticipante\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\mentoras\editarMentora\[id]\page.tsx
+   - src\app\(private)\(dashboards)\admin\gestion-usuarios\coordinadoras\editarCoordinadora\[id]\page.tsx
+
+✅ src\components\icons\ArrowFatRight.tsx se usa en (4):
+   - src\components\buttons_inputs\CollapsibleSection.tsx
+   - src\app\formulario\sede\page.tsx
+   - src\app\formulario\participante\page.tsx
+   - src\app\formulario\colaborador\page.tsx
+
+✅ src\components\icons\ArrowFatLineRight.tsx se usa en (1):
+   - src\components\graphics\bases\genericLineChart.tsx
+
+✅ src\components\icons\ArrowFatLineLeft.tsx se usa en (1):
+   - src\components\graphics\bases\genericLineChart.tsx
+
+✅ src\components\icons\ArrowBendUpLeft.tsx se usa en (1):
+   - src\components\graphics\bases\genericPieChart.tsx
+
+✅ src\components\icons\ArrowArcLeft.tsx se usa en (1):
+   - src\components\headers_menu_users\User.tsx
+
+✅ src\components\icons\Armchair.tsx se usa en (2):
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\editar-grupo\[id]\page.tsx
+   - src\app\(private)\(dashboards)\coordinador\mi-sede\crear-grupo\page.tsx
+
+✅ src\components\icons\AddressBook.tsx se usa en (2):
+   - src\app\formulario\participante\page.tsx
+   - src\app\formulario\colaborador\page.tsx

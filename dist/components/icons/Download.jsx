@@ -5,8 +5,5 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
-const Download = ({ width = 24, height = 24, strokeColor = 'currentColor', fillColor = 'none', strokeWidth = 1, }) => (<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect='non-scaling-stroke' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-    {' '}
-    <path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect='non-scaling-stroke' d='M6.704 8.296a1.127 1.127 0 0 1 1.594-1.594l2.577 2.58V2.25a1.125 1.125 0 1 1 2.25 0v7.031l2.58-2.58a1.127 1.127 0 1 1 1.593 1.594l-4.5 4.5a1.125 1.125 0 0 1-1.594 0l-4.5-4.5ZM21 10.875h-3.375a1.125 1.125 0 1 0 0 2.25h3v5.25H3.375v-5.25h3a1.125 1.125 0 1 0 0-2.25H3a1.875 1.875 0 0 0-1.875 1.875v6A1.875 1.875 0 0 0 3 20.625h18a1.875 1.875 0 0 0 1.875-1.875v-6A1.875 1.875 0 0 0 21 10.875Zm-1.875 4.875a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z'/>{' '}
-  </svg>);
+const Download = ({ width = 24, height = 24, strokeColor = 'currentColor', fillColor = 'none', strokeWidth = 1 }) => (<svg width={width} height={height} stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path stroke={strokeColor} fill={fillColor} strokeWidth={strokeWidth} vectorEffect="non-scaling-stroke" d="M6.704 8.296a1.127 1.127 0 0 1 1.594-1.594l2.577 2.58V2.25a1.125 1.125 0 1 1 2.25 0v7.031l2.58-2.58a1.127 1.127 0 1 1 1.593 1.594l-4.5 4.5a1.125 1.125 0 0 1-1.594 0l-4.5-4.5ZM21 10.875h-3.375a1.125 1.125 0 1 0 0 2.25h3v5.25H3.375v-5.25h3a1.125 1.125 0 1 0 0-2.25H3a1.875 1.875 0 0 0-1.875 1.875v6A1.875 1.875 0 0 0 3 20.625h18a1.875 1.875 0 0 0 1.875-1.875v-6A1.875 1.875 0 0 0 21 10.875Zm-1.875 4.875a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"/> </svg>);
 exports.default = Download;
