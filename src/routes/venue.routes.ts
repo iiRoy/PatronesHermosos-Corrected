@@ -78,8 +78,18 @@ router.put(
   roleMiddleware(['admin', 'superuser']),
   venueController.updateBasic, // Nueva ruta para actualización básica
 );
-router.delete('/:id', asyncHandler(authMiddleware), roleMiddleware(['admin']), venueController.remove);
-router.post('/:id/cancel', asyncHandler(authMiddleware), roleMiddleware(['admin']), venueController.cancelVenue);
+router.delete(
+  '/:id',
+  asyncHandler(authMiddleware),
+  roleMiddleware(['admin']),
+  venueController.remove,
+);
+router.post(
+  '/:id/cancel',
+  asyncHandler(authMiddleware),
+  roleMiddleware(['admin']),
+  venueController.cancelVenue,
+);
 
 // Serve files from uploads/tmp
 router.get('/files/:filename', asyncHandler(authMiddleware), (req, res) => {

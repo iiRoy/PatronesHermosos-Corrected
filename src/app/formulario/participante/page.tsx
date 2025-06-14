@@ -218,8 +218,8 @@ const ParticipantRegistrationForm: React.FC = () => {
         section === 'participation_file'
           ? value
           : typeof baseFormData[section] === 'object' && baseFormData[section] !== null
-          ? { ...(baseFormData[section] as object), [field]: value }
-          : { [field]: value },
+            ? { ...(baseFormData[section] as object), [field]: value }
+            : { [field]: value },
     };
 
     const { fieldErrors } = getFieldErrors(updatedFormData as FormData);

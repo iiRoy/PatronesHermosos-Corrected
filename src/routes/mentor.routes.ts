@@ -53,7 +53,12 @@ router.put(
 );
 
 // Ruta para eliminar una mentora
-router.delete('/:id', asyncHandler(authMiddleware), roleMiddleware(['admin']), mentorController.remove);
+router.delete(
+  '/:id',
+  asyncHandler(authMiddleware),
+  roleMiddleware(['admin']),
+  mentorController.remove,
+);
 
 // Ruta para obtener los grupos de una mentora
 router.get(

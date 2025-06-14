@@ -1,14 +1,3 @@
-# 🎓 Patrones Hermosos
-
-Este proyecto está diseñado para gestionar datos del evento de Patrones Hermosos.
-
----
-
-## 🚀 Tecnologías utilizadas
-
-- **Frontend**: React.js + Tailwind
-- **Backend/API**: Node.js + Express
-- **Base de datos**: MySQL (Prisma ORM)
 - **Control de versiones**: Git + GitHub
 
 ---
@@ -34,39 +23,61 @@ main
 
 ## 📦 Instalación
 
-1. Clona el repositorio:
+Esta sección describe cómo poner en marcha **Patrones Hermosos** de manera local.
 
-```bash
-git clone https://github.com/usuario/proyecto.git
-cd proyecto
-```
+1. **Clona el repositorio**:
 
-2. Instala dependencias:
+   ```bash
+   git clone https://github.com/usuario/proyecto.git
+   cd proyecto
+   ```
 
-```bash
-npm install
-```
+2. **Instala las dependencias**:
 
-3. Configura el archivo `.env`:
+   ```bash
+   npm install
+   ```
 
-```env
-DATABASE_URL=mysql://usuario:contraseña@localhost:3306/nombre_db
-PORT=3000
-```
+3. **Crea el archivo `.env`** en la raíz del proyecto con la siguiente
+   configuración (ajusta los valores según tu entorno):
 
-4. Corre migraciones:
+   ```env
+   # Base de datos (para Prisma)
+   DATABASE_URL="mysql://root@localhost:3306/patrones-hermosos"
+   DATABASE_NAME=patrones-hermosos
 
-```bash
-npx prisma migrate dev
-```
+   # Backend (Express) configuraciones
+   JWT_SECRET=mi_clave_secreta
 
-5. Inicia el servidor:
+   # Frontend (Next.js) configuraciones accesibles en el navegador
+   NEXT_PUBLIC_API_URL=http://localhost:3000
 
-```bash
-npm install
-npm run build
-npm run dev
-```
+   # Configuración de correo electrónico
+   EMAIL_USER=TU_EMAIL
+   EMAIL_PASS=TU_CONTRASEÑA (Para saber cómo conectar tu cuenta de Gmail a este programa, puedes ver la siguiente página https://support.google.com/mail/answer/185833?hl=es-419)
+   ```
+
+4. **Crea o reinicia la base de datos** e instala el cliente de Prisma:
+
+   ```bash
+   npx prisma migrate reset
+   ```
+
+   Este comando elimina la base de datos existente (si la hay), aplica las
+   migraciones y ejecuta el _seed_ incluido.
+
+5. **Inicia el servidor de desarrollo**:
+
+   ```bash
+   npm run dev
+   ```
+
+6. **Comandos adicionales**:
+
+   - `npm run icons` – Genera los componentes React a partir de los SVG
+     almacenados en `public/assets/icons`.
+   - `npm run sql` – Convierte los archivos JSON de la carpeta `prisma/seed`
+     en un script SQL (`prisma/inserts.sql`).
 
 ---
 
@@ -92,11 +103,3 @@ Consulta la [Guía de Contribución](./COLABORACIÓN.md) para más detalles.
 - Siempre prueba antes de subir tus cambios.
 
 ---
-
-## 📬 Contacto
-
-Para dudas o sugerencias, contacta a los responsables del repositorio o abre un [issue](https://github.com/iiRoy/Patrones-Hermosos/issues).
-
----
-
-🚀 ¡Gracias por contribuir y ser parte de este proyecto!

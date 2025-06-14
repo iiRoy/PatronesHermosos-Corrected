@@ -20,6 +20,7 @@ import diplomaRoutes from './routes/diploma.routes';
 import groupRoutes from './routes/groups.routes';
 import registrationRoutes from './routes/registrations.routes';
 import auditLogRoutes from './routes/auditLog.routes';
+import adminRoutes from './routes/admin.routes';
 //import emailRoutes from './routes/email.routes';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -77,6 +78,7 @@ appNext.prepare().then(() => {
   app.use('/api/groups', groupRoutes);
   app.use('/api/registrations', registrationRoutes);
   app.use('/api/audit-logs', auditLogRoutes);
+  app.use('/api/admin', adminRoutes);
   //app.use('/api/emails', emailRoutes);
 
   app.get('/api', (_req: express.Request, res: express.Response) => {

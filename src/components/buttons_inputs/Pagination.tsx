@@ -5,9 +5,9 @@ import Link from 'next/link';
 
 interface PaginationProps {
   currentPage?: number; // índice basado en cero
-  pageLinks: string[];   // arreglo de hrefs para cada página
+  pageLinks: string[]; // arreglo de hrefs para cada página
   variant?: 'primary' | 'secondary-shade' | 'accent';
-  maxButtons?: number;   // máximo de botones intermedios visibles
+  maxButtons?: number; // máximo de botones intermedios visibles
   onPageChange?: (page: number) => void;
 }
 
@@ -60,12 +60,12 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="pagination">
+    <div className='pagination'>
       {/* Primera página */}
       <Link
         href={pageLinks[0] ?? '#'}
         scroll={false}
-        className="page"
+        className='page'
         onClick={() => handlePageClick(0)}
       >
         «
@@ -74,7 +74,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Link
         href={pageLinks[Math.max(0, activeIndex - 1)] ?? '#'}
         scroll={false}
-        className="page"
+        className='page'
         onClick={() => handlePageClick(activeIndex - 1)}
       >
         ‹
@@ -82,7 +82,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {pagesToShow.map((p, idx) =>
         p === 'ellipsis' ? (
-          <span key={`e${idx}`} className="page ellipsis">
+          <span key={`e${idx}`} className='page ellipsis'>
             …
           </span>
         ) : (
@@ -95,23 +95,23 @@ const Pagination: React.FC<PaginationProps> = ({
           >
             {p + 1}
           </Link>
-        )
+        ),
       )}
 
       {/* Página siguiente */}
       <Link
-        href={pageLinks[Math.min(total - 1, activeIndex + 1)]  ?? '#'}
+        href={pageLinks[Math.min(total - 1, activeIndex + 1)] ?? '#'}
         scroll={false}
-        className="page"
+        className='page'
         onClick={() => handlePageClick(activeIndex + 1)}
       >
         ›
       </Link>
       {/* Última página */}
       <Link
-        href={pageLinks[total - 1]  ?? '#'}
+        href={pageLinks[total - 1] ?? '#'}
         scroll={false}
-        className="page"
+        className='page'
         onClick={() => handlePageClick(total - 1)}
       >
         »

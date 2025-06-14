@@ -57,13 +57,13 @@ const Button: React.FC<ButtonProps> = ({
   const pathname = usePathname();
   const { triggerTransition } = useTransition();
 
-const DecoratedIconL = useMemo(() => {
-  return IconLeft ? withIconDecorator(IconLeft) : null;
-}, [IconLeft]);
+  const DecoratedIconL = useMemo(() => {
+    return IconLeft ? withIconDecorator(IconLeft) : null;
+  }, [IconLeft]);
 
-const DecoratedIconR = useMemo(() => {
-  return IconRight ? withIconDecorator(IconRight) : null;
-}, [IconRight]);
+  const DecoratedIconR = useMemo(() => {
+    return IconRight ? withIconDecorator(IconRight) : null;
+  }, [IconRight]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (disabled) return;
@@ -110,7 +110,7 @@ const DecoratedIconR = useMemo(() => {
             height='1.5rem'
             fillColor='#ebe6eb'
             strokeColor='currentColor'
-            strokeWidth={stroke = stroke || 0 }  
+            strokeWidth={(stroke = stroke || 0)}
           />
         </div>
       )}

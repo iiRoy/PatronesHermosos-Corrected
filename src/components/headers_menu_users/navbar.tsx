@@ -94,7 +94,7 @@ const Navbar = () => {
       <Link
         href='/'
         className='relative h-[8vmin] w-[8vmin] min-h-[60px] min-w-[60px] flex items-center justify-center'
-        onClick={e => {
+        onClick={(e) => {
           e.preventDefault();
           if (pathname !== '/') triggerTransition('/');
         }}
@@ -126,14 +126,10 @@ const Navbar = () => {
                     <span
                       tabIndex={0}
                       onClick={handlePostulateClick}
-                      className="cursor-pointer flex items-center"
+                      className='cursor-pointer flex items-center'
                       style={{ height: '100%' }}
                     >
-                      <OptionLink
-                        label={item.label}
-                        Icon={DecoratedIcon}
-                        href={item.href}
-                      />
+                      <OptionLink label={item.label} Icon={DecoratedIcon} href={item.href} />
                     </span>
                     {submenuVisible &&
                       createPortal(
@@ -147,8 +143,8 @@ const Navbar = () => {
                           onMouseLeave={triggerCloseSubmenu}
                         >
                           {/* flechita */}
-                          <div className="absolute left-[110px] -top-2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-white" />
-                          <div className="bg-white rounded-lg shadow-lg w-56 p-2 flex flex-col border border-[#6E2D75]">
+                          <div className='absolute left-[110px] -top-2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-white' />
+                          <div className='bg-white rounded-lg shadow-lg w-56 p-2 flex flex-col border border-[#6E2D75]'>
                             {submenuPostulateLinks.map(({ label, icon, href }) => {
                               const SubIcon = withIconDecorator(Icons[icon as keyof typeof Icons]);
                               const isActive = pathname?.startsWith(href);
@@ -158,12 +154,13 @@ const Navbar = () => {
                                   href={href}
                                   className={`
                                     flex items-center gap-2 px-3 py-2 rounded-md font-medium transition-colors
-                                    ${isActive
-                                      ? 'bg-[#6E2D75] text-white'
-                                      : 'text-[#6E2D75] hover:bg-[#ede6f7]'
+                                    ${
+                                      isActive
+                                        ? 'bg-[#6E2D75] text-white'
+                                        : 'text-[#6E2D75] hover:bg-[#ede6f7]'
                                     }
                                   `}
-                                  onClick={e => {
+                                  onClick={(e) => {
                                     e.preventDefault();
                                     if (pathname !== href) triggerTransition(href);
                                     setSubmenuVisible(false);
@@ -176,7 +173,7 @@ const Navbar = () => {
                             })}
                           </div>
                         </div>,
-                        document.body
+                        document.body,
                       )}
                   </div>
                 );

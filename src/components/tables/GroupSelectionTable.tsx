@@ -302,9 +302,7 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
               <tr
                 key={group.id_group}
                 className={`border-t border-gray-200 transition-colors duration-200 ${
-                  isSelected
-                    ? 'bg-[#ede6f7] border-l-8 border-l-[#6E2D75]'
-                    : ''
+                  isSelected ? 'bg-[#ede6f7] border-l-8 border-l-[#6E2D75]' : ''
                 }`}
               >
                 <td className='p-2 text-center'>{group.name}</td>
@@ -332,8 +330,8 @@ const ParticipantGroupSelectionTable: React.FC<ParticipantGroupSelectionTablePro
                     />
                   ) : (
                     <span
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-[#6E2D75] text-white text-xs font-bold"
-                      title="Grupo seleccionado"
+                      className='inline-flex items-center px-3 py-1 rounded-full bg-[#6E2D75] text-white text-xs font-bold'
+                      title='Grupo seleccionado'
                     >
                       Seleccionado
                     </span>

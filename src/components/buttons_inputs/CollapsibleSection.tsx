@@ -32,47 +32,65 @@ export default function CollapsibleSection({
 }: CollapsibleSectionProps) {
   const ToggleIcon = withIconDecorator(ArrowFatRight);
 
-if (Icon) {
-  Icon = withIconDecorator(Icon);
-}
+  if (Icon) {
+    Icon = withIconDecorator(Icon);
+  }
 
   return (
-    <Disclosure as="div" className="mb-8">
+    <Disclosure as='div' className='mb-8'>
       {({ open }) => (
         <>
-<Disclosure.Button
-  className={`
+          <Disclosure.Button
+            className={`
     flex justify-between items-center w-full
     px-6 py-4 text-lg font-semibold text-white rounded-t-lg
     focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75
     transition-colors duration-500
   `}
-  style={{
-    backgroundColor: isIncorrect
-      ? shiftHueTo(Color, 'red')
-      : isCompleted
-      ? shiftHueTo(Color, 'green')
-      : (Optional ? (Color ? shiftHueTo(Color, 'blue') : shiftHueTo('#97639c', 'blue')) : ( Color ? Color : '#97639c')),
-  }}
-  onMouseEnter={e => {
-    const button = e.currentTarget;
-    const bg = isIncorrect
-      ? shiftHueTo(Color, 'red')
-      : isCompleted
-      ? shiftHueTo(Color, 'green')
-      : (Optional ? (Color ? shiftHueTo(Color, 'blue') : shiftHueTo('#97639c', 'blue')) : ( Color ? Color : '#97639c'))
-    button.style.backgroundColor = adjustColorBrightness(bg, 20);
-  }}
-  onMouseLeave={e => {
-    const button = e.currentTarget;
-    button.style.backgroundColor = isIncorrect
-      ? shiftHueTo(Color, 'red')
-      : isCompleted
-      ? shiftHueTo(Color, 'green')
-      : (Optional ? (Color ? shiftHueTo(Color, 'blue') : shiftHueTo('#97639c', 'blue')) : ( Color ? Color : '#97639c'))
-  }}
->
-            <div className="flex items-center space-x-2">
+            style={{
+              backgroundColor: isIncorrect
+                ? shiftHueTo(Color, 'red')
+                : isCompleted
+                  ? shiftHueTo(Color, 'green')
+                  : Optional
+                    ? Color
+                      ? shiftHueTo(Color, 'blue')
+                      : shiftHueTo('#97639c', 'blue')
+                    : Color
+                      ? Color
+                      : '#97639c',
+            }}
+            onMouseEnter={(e) => {
+              const button = e.currentTarget;
+              const bg = isIncorrect
+                ? shiftHueTo(Color, 'red')
+                : isCompleted
+                  ? shiftHueTo(Color, 'green')
+                  : Optional
+                    ? Color
+                      ? shiftHueTo(Color, 'blue')
+                      : shiftHueTo('#97639c', 'blue')
+                    : Color
+                      ? Color
+                      : '#97639c';
+              button.style.backgroundColor = adjustColorBrightness(bg, 20);
+            }}
+            onMouseLeave={(e) => {
+              const button = e.currentTarget;
+              button.style.backgroundColor = isIncorrect
+                ? shiftHueTo(Color, 'red')
+                : isCompleted
+                  ? shiftHueTo(Color, 'green')
+                  : Optional
+                    ? Color
+                      ? shiftHueTo(Color, 'blue')
+                      : shiftHueTo('#97639c', 'blue')
+                    : Color
+                      ? Color
+                      : '#97639c';
+            }}
+          >
+            <div className='flex items-center space-x-2'>
               {Icon && <Icon width={24} height={24} />}
               <span>{title}</span>
             </div>
@@ -85,14 +103,17 @@ if (Icon) {
 
           <Transition
             show={open}
-            enter="transition-all duration-300 ease-in-out"
-            enterFrom="opacity-0 max-h-0"
-            enterTo="opacity-100 max-h-[1000px]"
-            leave="transition-all duration-200 ease-in-out"
-            leaveFrom="opacity-100 max-h-[1000px]"
-            leaveTo="opacity-0 max-h-0"
+            enter='transition-all duration-300 ease-in-out'
+            enterFrom='opacity-0 max-h-0'
+            enterTo='opacity-100 max-h-[1000px]'
+            leave='transition-all duration-200 ease-in-out'
+            leaveFrom='opacity-100 max-h-[1000px]'
+            leaveTo='opacity-0 max-h-0'
           >
-            <Disclosure.Panel static className="bg-white text-gray-800 p-6 rounded-b-lg border border-gray-200 shadow-sm overflow-hidden">
+            <Disclosure.Panel
+              static
+              className='bg-white text-gray-800 p-6 rounded-b-lg border border-gray-200 shadow-sm overflow-hidden'
+            >
               {children}
             </Disclosure.Panel>
           </Transition>
@@ -110,7 +131,10 @@ function adjustColorBrightness(hex: string, percent: number): string {
   }
 
   if (cleanHex.length === 3) {
-    cleanHex = cleanHex.split('').map(c => c + c).join('');
+    cleanHex = cleanHex
+      .split('')
+      .map((c) => c + c)
+      .join('');
   }
 
   if (!/^[0-9a-f]{6}$/.test(cleanHex)) {
@@ -139,7 +163,7 @@ function adjustColorBrightness(hex: string, percent: number): string {
 
 function shiftHueTo(
   hex: string | undefined,
-  hue: 'green' | 'red' | 'orange' | 'blue' | 'purple'
+  hue: 'green' | 'red' | 'orange' | 'blue' | 'purple',
 ): string {
   const hueMap: Record<typeof hue, number> = {
     red: 0,
@@ -149,7 +173,9 @@ function shiftHueTo(
     purple: 280,
   };
 
-  if (hex === undefined) { hex = '#97639c'}
+  if (hex === undefined) {
+    hex = '#97639c';
+  }
 
   const targetHue = hueMap[hue];
   hex = hex.replace('#', '');
@@ -167,15 +193,22 @@ function shiftHueTo(
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
   const delta = max - min;
-  let h = 0, s = 0;
+  let h = 0,
+    s = 0;
   const l = (max + min) / 2;
 
   if (delta !== 0) {
     s = l < 0.5 ? delta / (max + min) : delta / (2 - max - min);
     switch (max) {
-      case r: h = ((g - b) / delta + (g < b ? 6 : 0)); break;
-      case g: h = (b - r) / delta + 2; break;
-      case b: h = (r - g) / delta + 4; break;
+      case r:
+        h = (g - b) / delta + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / delta + 2;
+        break;
+      case b:
+        h = (r - g) / delta + 4;
+        break;
     }
     h *= 60;
   }
@@ -183,16 +216,18 @@ function shiftHueTo(
   h = targetHue;
 
   const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
   const m = l - c / 2;
 
-  let r1 = 0, g1 = 0, b1 = 0;
-  if (0 <= h && h < 60)       [r1, g1, b1] = [c, x, 0];
+  let r1 = 0,
+    g1 = 0,
+    b1 = 0;
+  if (0 <= h && h < 60) [r1, g1, b1] = [c, x, 0];
   else if (60 <= h && h < 120) [r1, g1, b1] = [x, c, 0];
-  else if (120 <= h && h < 180)[r1, g1, b1] = [0, c, x];
-  else if (180 <= h && h < 240)[r1, g1, b1] = [0, x, c];
-  else if (240 <= h && h < 300)[r1, g1, b1] = [x, 0, c];
-  else if (300 <= h && h < 360)[r1, g1, b1] = [c, 0, x];
+  else if (120 <= h && h < 180) [r1, g1, b1] = [0, c, x];
+  else if (180 <= h && h < 240) [r1, g1, b1] = [0, x, c];
+  else if (240 <= h && h < 300) [r1, g1, b1] = [x, 0, c];
+  else if (300 <= h && h < 360) [r1, g1, b1] = [c, 0, x];
 
   const rFinal = Math.round((r1 + m) * 255);
   const gFinal = Math.round((g1 + m) * 255);

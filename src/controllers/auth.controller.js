@@ -51,11 +51,9 @@ const login = async (req, res) => {
       ...(role === 'venue_coordinator' && { id_venue: user.id_venue }),
     };
 
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1d' }
-    );
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'mi_clave_secreta', {
+      expiresIn: '1d',
+    });
 
     return res.json({
       message: 'Login exitoso',

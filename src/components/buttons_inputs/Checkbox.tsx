@@ -28,8 +28,8 @@ const Checkbox: React.FC<CheckboxProps> = ({
           variant === 'primary'
             ? 'checkbox-odd'
             : variant === 'secondary'
-            ? 'checkbox-even'
-            : 'checkbox-accent'
+              ? 'checkbox-even'
+              : 'checkbox-accent'
         } checkbox-circle mr-2`}
       />
       {label && <span className='text-sm'>{label}</span>}

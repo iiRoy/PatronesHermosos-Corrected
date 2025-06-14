@@ -6,6 +6,8 @@ import GenericLineChart from '@/components/graphics/bases/genericLineChart';
 import PageTitle from '@/components/headers_menu_users/pageTitle';
 import CardSection from './CardSection';
 import { useIsResizing } from '@/components/hooks/useIsResizing';
+import Button from '@/components/buttons_inputs/Button';
+import { useNotification } from '@/components/buttons_inputs/Notification';
 
 const ChartWrapper = ({
   title,
@@ -82,11 +84,54 @@ const EstadisticasAdmin = () => {
   const [lineMinimized, setLineMinimized] = useState(false);
   const [barMinimized, setBarMinimized] = useState(false);
   const [userRole, setUserRole] = useState<string>('');
+  const [isBackingUp, setIsBackingUp] = useState(false);
   const isResizing = useIsResizing(800); // se puede ajustar
+  const { notify } = useNotification();
 
   useEffect(() => {
     setUserRole(typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : '');
   }, []);
+
+  // Descargar respaldo (Excel + diplomas en ZIP)
+  const handleBackup = async () => {
+    setIsBackingUp(true);
+    try {
+      const res = await fetch('/api/admin/backup', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${
+            typeof window !== 'undefined' ? localStorage.getItem('api_token') : ''
+          }`,
+        },
+      });
+      if (!res.ok) throw new Error('Error generando respaldo');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'respaldo.zip';
+      a.click();
+      a.remove();
+      notify({
+        color: 'green',
+        title: 'Respaldo descargado correctamente',
+        message: 'El respaldo (Excel + diplomas) se ha descargado exitosamente.',
+        iconName: 'CheckCircle',
+        variant: 'two',
+        duration: 5000,
+      });
+    } catch (err) {
+      notify({
+        color: 'red',
+        title: 'Error al descargar respaldo',
+        message: 'No se pudo descargar el respaldo. Intenta nuevamente más tarde.',
+        iconName: 'SealWarning',
+        variant: 'two',
+        duration: 5000,
+      });
+    }
+    setIsBackingUp(false);
+  };
 
   return (
     <div className='relative p-6 pl-9 flex flex-col gap-4 text-primaryShade'>
@@ -150,6 +195,18 @@ const EstadisticasAdmin = () => {
           maxItemsSelected={5}
         />
       </ChartWrapper>
+
+      {/* BOTÓN DE DESCARGA DE RESPALDO */}
+      <div className='flex flex-col gap-3 mt-10 items-end'>
+        <Button
+          label={isBackingUp ? 'Generando respaldo...' : 'Descargar respaldo (Excel + Diplomas)'}
+          variant='primary'
+          onClick={handleBackup}
+          disabled={isBackingUp}
+          showLeftIcon
+          IconLeft={() => <span className='material-icons'>download</span>}
+        />
+      </div>
     </div>
   );
 };

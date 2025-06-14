@@ -94,9 +94,7 @@ async function dataFill(user) {
     }
   }
 
-  const baseY = ['coordinadora de informes', 'coordinadora asociada'].includes(role)
-    ? 308
-    : 298;
+  const baseY = ['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 308 : 298;
 
   if (lines.length === 1) {
     const tw = font.widthOfTextAtSize(lines[0], fontSize);
@@ -130,8 +128,8 @@ async function dataFill(user) {
   // ----- 2) Dibujar SEDE -----
   if (campus) {
     page.drawText(campus, {
-      x: (['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 185 : 195),
-      y: (['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 232 : 222),
+      x: ['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 185 : 195,
+      y: ['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 232 : 222,
       size: 14,
       font,
       color: grayColor,
@@ -157,8 +155,8 @@ async function dataFill(user) {
     const rangeText = buildDateRange(si, ei);
     if (rangeText) {
       page.drawText(rangeText, {
-        x: (['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 118 : 128),
-        y: (['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 215 : 205),
+        x: ['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 118 : 128,
+        y: ['coordinadora de informes', 'coordinadora asociada'].includes(role) ? 215 : 205,
         size: 14,
         font,
         color: grayColor,
@@ -239,21 +237,29 @@ const generateDiplomas = async (req, res) => {
 const getDiplomaFilters = async (req, res) => {
   const { user_id = '', user_role = '' } = req.query;
   try {
-    let sedes = [], roles = [];
+    let sedes = [],
+      roles = [];
     if (user_role === 'superuser') {
       const todas = await prisma.venues.findMany({ select: { name: true } });
-      sedes = todas.map(v => v.name);
+      sedes = todas.map((v) => v.name);
       roles = [
-        'participante','staff','facilitadora','instructora','mentora',
-        'coordinadora asociada','coordinadora de sede','coordinadora de informes','superusuario'
+        'participante',
+        'staff',
+        'facilitadora',
+        'instructora',
+        'mentora',
+        'coordinadora asociada',
+        'coordinadora de sede',
+        'coordinadora de informes',
+        'superusuario',
       ];
     } else if (user_role === 'venue_coordinator') {
       const propias = await prisma.venues.findMany({
         where: { venue_coordinators: { some: { id_venue_coord: parseInt(user_id) } } },
-        select: { name: true }
+        select: { name: true },
       });
-      sedes = propias.map(v => v.name);
-      roles = ['participante','staff','facilitadora','instructora','mentora'];
+      sedes = propias.map((v) => v.name);
+      roles = ['participante', 'staff', 'facilitadora', 'instructora', 'mentora'];
     }
     return res.json({ sedes, roles });
   } catch (error) {
@@ -315,7 +321,7 @@ const sendDiplomasByEmail = async (req, res) => {
           to: user.email,
           cc: includeCopy ? loggedEmail : undefined,
           subject: '¡Felicidades por tu logro!',
-          template: '/templates/usuarios/diplomas',  // ruta a diplomas.ejs
+          template: '/templates/usuarios/diplomas', // ruta a diplomas.ejs
           data: {
             name: `${user.name} ${user.paternal_name}`,
             role: user.role,
@@ -359,7 +365,7 @@ const getDiplomaUsers = async (req, res) => {
       { name: { contains: search } },
       { paternal_name: { contains: search } },
       { maternal_name: { contains: search } },
-    ]
+    ],
   };
 
   try {
@@ -368,7 +374,7 @@ const getDiplomaUsers = async (req, res) => {
     if (user_role === 'venue_coordinator') {
       const coord = await prisma.venue_coordinators.findUnique({
         where: { id_venue_coord: parseInt(user_id) },
-        select: { id_venue: true }
+        select: { id_venue: true },
       });
       if (!coord) {
         return res.status(403).json({ error: 'Coordinador de sede no encontrado.' });
@@ -377,28 +383,31 @@ const getDiplomaUsers = async (req, res) => {
     }
 
     // Construyo el filtro de grupo único
-    const groupFilter = user_role === 'venue_coordinator'
-      ? {
-          id_venue: coordVenueId,
-          start_date: { lte: hoy }
-        }
-      : {
-          start_date: { lte: hoy },
-          ...(sede ? { venues: { name: sede } } : {})
-        };
+    const groupFilter =
+      user_role === 'venue_coordinator'
+        ? {
+            id_venue: coordVenueId,
+            start_date: { lte: hoy },
+          }
+        : {
+            start_date: { lte: hoy },
+            ...(sede ? { venues: { name: sede } } : {}),
+          };
 
     // 1) PARTICIPANTES
-    if (['superuser','venue_coordinator'].includes(user_role) &&
-        (role === '' || role === 'participante')) {
+    if (
+      ['superuser', 'venue_coordinator'].includes(user_role) &&
+      (role === '' || role === 'participante')
+    ) {
       const participantes = await prisma.participants.findMany({
         where: {
           ...filtroTexto,
           status: 'Aprobada',
-          groups: { is: groupFilter }
+          groups: { is: groupFilter },
         },
-        include: { groups: { include: { venues: true } } }
+        include: { groups: { include: { venues: true } } },
       });
-      participantes.forEach(p =>
+      participantes.forEach((p) =>
         usuarios.push({
           id: String(p.id_participant),
           name: p.name,
@@ -408,24 +417,26 @@ const getDiplomaUsers = async (req, res) => {
           role: 'participante',
           start_date: p.groups.start_date.toISOString().split('T')[0],
           end_date: p.groups.end_date.toISOString().split('T')[0],
-          email: p.email
-        })
+          email: p.email,
+        }),
       );
     }
 
     // 2) COLABORADORAS (staff, facilitadora, instructora)
-    if (['superuser','venue_coordinator'].includes(user_role) &&
-        (role === '' || ['staff','facilitadora','instructora'].includes(role))) {
+    if (
+      ['superuser', 'venue_coordinator'].includes(user_role) &&
+      (role === '' || ['staff', 'facilitadora', 'instructora'].includes(role))
+    ) {
       const colaboradoras = await prisma.collaborators.findMany({
         where: {
           ...filtroTexto,
           status: 'Aprobada',
           ...(role && { preferred_role: role.charAt(0).toUpperCase() + role.slice(1) }),
-          groups: { is: groupFilter }
+          groups: { is: groupFilter },
         },
-        include: { groups: { include: { venues: true } } }
+        include: { groups: { include: { venues: true } } },
       });
-      colaboradoras.forEach(c =>
+      colaboradoras.forEach((c) =>
         usuarios.push({
           id: String(c.id_collaborator),
           name: c.name,
@@ -435,51 +446,47 @@ const getDiplomaUsers = async (req, res) => {
           role: c.preferred_role.toLowerCase(),
           start_date: c.groups.start_date.toISOString().split('T')[0],
           end_date: c.groups.end_date.toISOString().split('T')[0],
-          email: c.email
-        })
+          email: c.email,
+        }),
       );
     }
 
-// 3) MENTORAS
-if (['superuser','venue_coordinator'].includes(user_role) &&
-    (role === '' || role === 'mentora')) {
-
-  const mentoras = await prisma.mentors.findMany({
-    where: {
-      ...filtroTexto,
-      status: 'Aprobada',
-      groups: { every: groupFilter }
-    },
-    include: {
-      groups: {
+    // 3) MENTORAS
+    if (
+      ['superuser', 'venue_coordinator'].includes(user_role) &&
+      (role === '' || role === 'mentora')
+    ) {
+      const mentoras = await prisma.mentors.findMany({
+        where: {
+          ...filtroTexto,
+          status: 'Aprobada',
+          groups: { every: groupFilter },
+        },
         include: {
-          venues: true
-        }
-      }
+          groups: {
+            include: {
+              venues: true,
+            },
+          },
+        },
+      });
+
+      mentoras.forEach((m) => {
+        const g = m.groups[0];
+        if (!g) return;
+        usuarios.push({
+          id: String(m.id_mentor),
+          name: m.name,
+          paternal_name: m.paternal_name,
+          maternal_name: m.maternal_name || '',
+          campus: g.venues.name,
+          role: 'mentora',
+          start_date: g.start_date.toISOString().split('T')[0],
+          end_date: g.end_date.toISOString().split('T')[0],
+          email: m.email,
+        });
+      });
     }
-  });
-
-  mentoras.forEach(m => {
-    const g = m.groups[0];
-    if (!g) return;
-    usuarios.push({
-      id: String(m.id_mentor),
-      name: m.name,
-      paternal_name: m.paternal_name,
-      maternal_name: m.maternal_name || '',
-      campus: g.venues.name,
-      role: 'mentora',
-      start_date: g.start_date
-        .toISOString()
-        .split('T')[0],
-      end_date: g.end_date
-        .toISOString()
-        .split('T')[0],
-      email: m.email
-    })
-  });
-}
-
 
     // ---------------- COORDINADORAS ASOCIADAS ----------------
     if (user_role === 'superuser' && (role === '' || role === 'coordinadora asociada')) {
@@ -559,7 +566,7 @@ if (['superuser','venue_coordinator'].includes(user_role) &&
           id: vc.id_venue_coord.toString(),
           name: vc.name || '',
           paternal_name: vc.paternal_name || '',
-                    maternal_name: vc.maternal_name || '',
+          maternal_name: vc.maternal_name || '',
           campus: vc.venues?.name || '',
           role: 'coordinadora de sede',
           start_date: startIso,
@@ -603,7 +610,7 @@ if (['superuser','venue_coordinator'].includes(user_role) &&
           id: c.id_assistant_coord.toString(),
           name: c.name || '',
           paternal_name: c.paternal_name || '',
-                    maternal_name: c.maternal_name || '',
+          maternal_name: c.maternal_name || '',
           campus: c.venues?.name || '',
           role: 'coordinadora de informes',
           start_date: startIso,
@@ -622,13 +629,13 @@ if (['superuser','venue_coordinator'].includes(user_role) &&
           id: su.id_superuser.toString(),
           name: su.name || '',
           paternal_name: su.paternal_name || '',
-                    maternal_name: su.maternal_name || '',
+          maternal_name: su.maternal_name || '',
           campus: '',
           role: 'superusuario',
           start_date: '',
           end_date: '',
           email: su.email || '',
-        })
+        }),
       );
     }
 
@@ -644,4 +651,5 @@ module.exports = {
   getDiplomaUsers,
   getDiplomaFilters,
   sendDiplomasByEmail,
+  dataFill,
 };

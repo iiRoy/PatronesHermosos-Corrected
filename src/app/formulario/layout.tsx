@@ -8,7 +8,6 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <div className='min-h-screen flex flex-col text-text bg-back'>
       <Navbar />

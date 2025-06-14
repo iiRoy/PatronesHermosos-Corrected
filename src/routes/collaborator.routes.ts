@@ -1,5 +1,7 @@
 import express from 'express';
-import collaboratorsController, { sendCustomEmailToCollaborator } from '../controllers/collaborator.controller';
+import collaboratorsController, {
+  sendCustomEmailToCollaborator,
+} from '../controllers/collaborator.controller';
 import { validateCollaborator } from '../validators/collaboratorValidator';
 import { authMiddleware, roleMiddleware } from '../middlewares/authMiddleware';
 

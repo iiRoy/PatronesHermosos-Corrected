@@ -224,7 +224,14 @@ const VenueRegistrationForm: React.FC = () => {
         ['confirmPassword', updatedFormData.venueCoordinator.confirmPassword],
         ['password', updatedFormData.venueCoordinator.password],
       ];
-    } else if (section === 'associatedCoordinator' && (field === 'name' || field === 'lastNameP' || field === 'lastNameM' || field === 'email' || field === 'phone')) {
+    } else if (
+      section === 'associatedCoordinator' &&
+      (field === 'name' ||
+        field === 'lastNameP' ||
+        field === 'lastNameM' ||
+        field === 'email' ||
+        field === 'phone')
+    ) {
       additionalFieldsToValidate = [
         ['name', updatedFormData.associatedCoordinator.name],
         ['lastNameP', updatedFormData.associatedCoordinator.lastNameP],
@@ -232,7 +239,14 @@ const VenueRegistrationForm: React.FC = () => {
         ['email', updatedFormData.associatedCoordinator.email],
         ['phone', updatedFormData.associatedCoordinator.phone],
       ];
-    } else if (section === 'staffCoordinator' && (field === 'name' || field === 'lastNameP' || field === 'lastNameM' || field === 'email' || field === 'phone')) {
+    } else if (
+      section === 'staffCoordinator' &&
+      (field === 'name' ||
+        field === 'lastNameP' ||
+        field === 'lastNameM' ||
+        field === 'email' ||
+        field === 'phone')
+    ) {
       additionalFieldsToValidate = [
         ['name', updatedFormData.staffCoordinator.name],
         ['lastNameP', updatedFormData.staffCoordinator.lastNameP],
@@ -240,7 +254,14 @@ const VenueRegistrationForm: React.FC = () => {
         ['email', updatedFormData.staffCoordinator.email],
         ['phone', updatedFormData.staffCoordinator.phone],
       ];
-    } else if (section === 'participantsCoordinator' && (field === 'name' || field === 'lastNameP' || field === 'lastNameM' || field === 'email' || field === 'phone')) {
+    } else if (
+      section === 'participantsCoordinator' &&
+      (field === 'name' ||
+        field === 'lastNameP' ||
+        field === 'lastNameM' ||
+        field === 'email' ||
+        field === 'phone')
+    ) {
       additionalFieldsToValidate = [
         ['name', updatedFormData.participantsCoordinator.name],
         ['lastNameP', updatedFormData.participantsCoordinator.lastNameP],
@@ -308,7 +329,9 @@ const VenueRegistrationForm: React.FC = () => {
           .filter(([k, v]) => k.startsWith('venueCoordinator.') && v)
           .map(([k, v]) => v);
 
-        if (errorMsg) {venueCoordErrors.push(errorMsg)} else venueCoordErrors.pop();
+        if (errorMsg) {
+          venueCoordErrors.push(errorMsg);
+        } else venueCoordErrors.pop();
 
         return {
           ...prev,
@@ -326,7 +349,9 @@ const VenueRegistrationForm: React.FC = () => {
           .filter(([k, v]) => k.startsWith('documents.') && v)
           .map(([k, v]) => v);
 
-        if (errorMsg) {docsErrors.push(errorMsg)} else docsErrors.pop();
+        if (errorMsg) {
+          docsErrors.push(errorMsg);
+        } else docsErrors.pop();
 
         return {
           ...prev,
@@ -336,32 +361,32 @@ const VenueRegistrationForm: React.FC = () => {
     }
   };
 
-const handlePrivacyChange = (checked: boolean) => {
-  setPrivacyAccepted(checked);
+  const handlePrivacyChange = (checked: boolean) => {
+    setPrivacyAccepted(checked);
 
-  const { fieldErrors, sectionErrors: sErrors } = getFieldErrors(formData, {
-    hasRegions,
-    participationFile,
-    privacyAccepted: checked,
-  });
+    const { fieldErrors, sectionErrors: sErrors } = getFieldErrors(formData, {
+      hasRegions,
+      participationFile,
+      privacyAccepted: checked,
+    });
 
-  setInputErrors((prev) => ({
-    ...prev,
-    'privacy.accepted': fieldErrors?.privacy?.accepted ?? '',
-  }));
+    setInputErrors((prev) => ({
+      ...prev,
+      'privacy.accepted': fieldErrors?.privacy?.accepted ?? '',
+    }));
 
-  setSectionErrors((prev) => ({
-    ...prev,
-    privacy: sErrors.privacy,
-  }));
-};
+    setSectionErrors((prev) => ({
+      ...prev,
+      privacy: sErrors.privacy,
+    }));
+  };
 
   const handleCountryChange = (selectedOption: { value: string; label: string } | null) => {
     const countryName = selectedOption ? selectedOption.label : '';
     const countryCode = selectedOption ? selectedOption.value : '';
     let msg = '';
 
-    handleInputChange('venue', 'country', countryName)
+    handleInputChange('venue', 'country', countryName);
 
     setFormData((prev) => ({
       ...prev,
@@ -388,7 +413,9 @@ const handlePrivacyChange = (checked: boolean) => {
         .filter(([k, v]) => k.startsWith('venue.') && v)
         .map(([k, v]) => v);
 
-      if (msg) {venueErrors.push(msg)} else venueErrors.pop();
+      if (msg) {
+        venueErrors.push(msg);
+      } else venueErrors.pop();
 
       return {
         ...prev,
@@ -504,15 +531,25 @@ const handlePrivacyChange = (checked: boolean) => {
 
     // Coordinadora asociada
     const assoc = data.associatedCoordinator;
-    if (assoc.name?.trim() || assoc.lastNameP?.trim() || assoc.lastNameM?.trim() || assoc.email?.trim() || assoc.phone?.trim()) {
+    if (
+      assoc.name?.trim() ||
+      assoc.lastNameP?.trim() ||
+      assoc.lastNameM?.trim() ||
+      assoc.email?.trim() ||
+      assoc.phone?.trim()
+    ) {
       if (!assoc.name?.trim()) {
         setError('associatedCoordinator', 'name', 'El nombre es obligatorio para el registro*');
       }
 
       if (!assoc.lastNameP?.trim()) {
-        setError('associatedCoordinator', 'lastNameP', 'El apellido paterno es obligatorio para el registro*');
+        setError(
+          'associatedCoordinator',
+          'lastNameP',
+          'El apellido paterno es obligatorio para el registro*',
+        );
       }
-      
+
       if (!assoc.email?.trim()) {
         setError('associatedCoordinator', 'email', 'El correo es obligatorio*');
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(assoc.email)) {
@@ -521,20 +558,30 @@ const handlePrivacyChange = (checked: boolean) => {
       if (!assoc.phone?.trim()) {
         setError('associatedCoordinator', 'phone', 'El teléfono es obligatorio*');
       } else if (assoc.phone.replace(/\D/g, '').length < 10) {
-      setError('associatedCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
-    }
+        setError('associatedCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+      }
     }
 
     const staff = data.staffCoordinator;
-    if (staff.name?.trim() || staff.lastNameP?.trim() || staff.lastNameM?.trim() || staff.email?.trim() || staff.phone?.trim()) {
+    if (
+      staff.name?.trim() ||
+      staff.lastNameP?.trim() ||
+      staff.lastNameM?.trim() ||
+      staff.email?.trim() ||
+      staff.phone?.trim()
+    ) {
       if (!staff.name?.trim()) {
         setError('staffCoordinator', 'name', 'El nombre es obligatorio para el registro*');
       }
 
       if (!staff.lastNameP?.trim()) {
-        setError('staffCoordinator', 'lastNameP', 'El apellido paterno es obligatorio para el registro*');
+        setError(
+          'staffCoordinator',
+          'lastNameP',
+          'El apellido paterno es obligatorio para el registro*',
+        );
       }
-      
+
       if (!staff.email?.trim()) {
         setError('staffCoordinator', 'email', 'El correo es obligatorio*');
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(staff.email)) {
@@ -543,20 +590,30 @@ const handlePrivacyChange = (checked: boolean) => {
       if (!staff.phone?.trim()) {
         setError('staffCoordinator', 'phone', 'El teléfono es obligatorio*');
       } else if (staff.phone.replace(/\D/g, '').length < 10) {
-      setError('staffCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
-    }
+        setError('staffCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+      }
     }
 
     const part = data.participantsCoordinator;
-    if (part.name?.trim() || part.lastNameP?.trim() || part.lastNameM?.trim() || part.email?.trim() || part.phone?.trim()) {
+    if (
+      part.name?.trim() ||
+      part.lastNameP?.trim() ||
+      part.lastNameM?.trim() ||
+      part.email?.trim() ||
+      part.phone?.trim()
+    ) {
       if (!part.name?.trim()) {
         setError('participantsCoordinator', 'name', 'El nombre es obligatorio para el registro*');
       }
 
       if (!part.lastNameP?.trim()) {
-        setError('participantsCoordinator', 'lastNameP', 'El apellido paterno es obligatorio para el registro*');
+        setError(
+          'participantsCoordinator',
+          'lastNameP',
+          'El apellido paterno es obligatorio para el registro*',
+        );
       }
-      
+
       if (!part.email?.trim()) {
         setError('participantsCoordinator', 'email', 'El correo es obligatorio*');
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(part.email)) {
@@ -565,8 +622,8 @@ const handlePrivacyChange = (checked: boolean) => {
       if (!part.phone?.trim()) {
         setError('participantsCoordinator', 'phone', 'El teléfono es obligatorio*');
       } else if (part.phone.replace(/\D/g, '').length < 10) {
-      setError('participantsCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
-    }
+        setError('participantsCoordinator', 'phone', 'El celular debe tener al menos 10 dígitos*');
+      }
     }
 
     if (!privacyAccepted) setError('privacy', 'accepted', 'Debes aceptar el aviso de privacidad*');
@@ -735,19 +792,21 @@ const handlePrivacyChange = (checked: boolean) => {
                 <div className='flex flex-row items-center justify-center gap-5'>
                   <div className='w-2 bg-[var(--primaryColor)] h-14 md:h-16 lg:h-24 rounded-full' />
                   <div className='flex flex-col'>
-                  <p className='lg:text-3xl md:text-xl text-md italic text-gray-300'>Formulario de Registro</p>
-                  <h1 className='lg:text-6xl md:text-4xl text-2xl font-bold'>SEDE</h1>
+                    <p className='lg:text-3xl md:text-xl text-md italic text-gray-300'>
+                      Formulario de Registro
+                    </p>
+                    <h1 className='lg:text-6xl md:text-4xl text-2xl font-bold'>SEDE</h1>
                   </div>
                 </div>
               </div>
               <div className='scale-[0.70] md:scale-[0.85] lg:scale-100 md:mr-10 md:mt-3'>
-              <Button
-                label='Regresar'
-                variant='error'
-                showLeftIcon
-                IconLeft={X}
-                onClick={() => router.back()}
-              />
+                <Button
+                  label='Regresar'
+                  variant='error'
+                  showLeftIcon
+                  IconLeft={X}
+                  onClick={() => router.back()}
+                />
               </div>
             </div>
 
@@ -920,8 +979,18 @@ const handlePrivacyChange = (checked: boolean) => {
                   {logo && <p className='mt-2 text-xs text-gray-500'>{logo.name}</p>}
                 </div>
               </div>
-              <p className='text-gray-600 text-sm mt-2'><strong>- Tu contraseña debe de tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 carácter especial.</strong></p>
-              <p className='text-gray-600 text-sm mt-1 mb-2'><strong>- Tu usuario debe de tener mínimo 6 caracteres, máximo 14 caracteres y solo puede usar letras, guiones bajos y números.</strong></p>
+              <p className='text-gray-600 text-sm mt-2'>
+                <strong>
+                  - Tu contraseña debe de tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1
+                  carácter especial.
+                </strong>
+              </p>
+              <p className='text-gray-600 text-sm mt-1 mb-2'>
+                <strong>
+                  - Tu usuario debe de tener mínimo 6 caracteres, máximo 14 caracteres y solo puede
+                  usar letras, guiones bajos y números.
+                </strong>
+              </p>
             </CollapsibleSection>
 
             <CollapsibleSection
@@ -939,9 +1008,13 @@ const handlePrivacyChange = (checked: boolean) => {
             >
               {/* Descripción */}
               <p className='text-gray-600 text-sm mb-4'>
-                Responde con veracidad las siguientes preguntas acerca de los datos de tu coordinadora asociada.
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu
+                coordinadora asociada.
                 <br />
-                <strong>Puedes dejar en blanco esta sección si no tienes una coordinadora asociada. Si vas a llenar esta sección, recuerda que los espacios con * son obligatorios.</strong>
+                <strong>
+                  Puedes dejar en blanco esta sección si no tienes una coordinadora asociada. Si vas
+                  a llenar esta sección, recuerda que los espacios con * son obligatorios.
+                </strong>
               </p>
               <p className='text-gray-600 text-sm mb-4'>
                 Si no se registra una coordinadora asociada, la coordinadora de SEDE asumirá los
@@ -1032,13 +1105,17 @@ const handlePrivacyChange = (checked: boolean) => {
             >
               {/* Descripción */}
               <p className='text-gray-600 text-sm mb-4'>
-                Responde con veracidad las siguientes preguntas acerca de los datos de tu coordinadora de informes.
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu
+                coordinadora de informes.
                 <br />
-                <strong>Puedes dejar en blanco esta sección si no tienes una coordinadora de informes. Si vas a llenar esta sección, recuerda que los espacios con * son obligatorios.</strong>
+                <strong>
+                  Puedes dejar en blanco esta sección si no tienes una coordinadora de informes. Si
+                  vas a llenar esta sección, recuerda que los espacios con * son obligatorios.
+                </strong>
               </p>
               <p className='text-gray-600 text-sm mb-4'>
-                Si no se registra una coordinadora de informes para los colaboradores, la coordinadora de SEDE asumirá los
-                roles faltantes automáticamente.
+                Si no se registra una coordinadora de informes para los colaboradores, la
+                coordinadora de SEDE asumirá los roles faltantes automáticamente.
               </p>
 
               {/* Campos en grid */}
@@ -1118,14 +1195,18 @@ const handlePrivacyChange = (checked: boolean) => {
               Optional={true}
             >
               {/* Descripción */}
-                            <p className='text-gray-600 text-sm mb-4'>
-                Responde con veracidad las siguientes preguntas acerca de los datos de tu coordinadora de informes.
+              <p className='text-gray-600 text-sm mb-4'>
+                Responde con veracidad las siguientes preguntas acerca de los datos de tu
+                coordinadora de informes.
                 <br />
-                <strong>Puedes dejar en blanco esta sección si no tienes una coordinadora de informes. Si vas a llenar esta sección, recuerda que los espacios con * son obligatorios.</strong>
+                <strong>
+                  Puedes dejar en blanco esta sección si no tienes una coordinadora de informes. Si
+                  vas a llenar esta sección, recuerda que los espacios con * son obligatorios.
+                </strong>
               </p>
               <p className='text-gray-600 text-sm mb-4'>
-                Si no se registra una coordinadora de informes para los participantes, la coordinadora de SEDE asumirá los
-                roles faltantes automáticamente.
+                Si no se registra una coordinadora de informes para los participantes, la
+                coordinadora de SEDE asumirá los roles faltantes automáticamente.
               </p>
 
               {/* Campos en grid */}
@@ -1257,7 +1338,9 @@ const handlePrivacyChange = (checked: boolean) => {
                     darkText={true}
                     error={inputErrors['venue.state']}
                     dim={!formData.venue.country}
-                    disabled={formData.venue.country === '' || !formData.venue.country || !hasRegions}
+                    disabled={
+                      formData.venue.country === '' || !formData.venue.country || !hasRegions
+                    }
                   />
 
                   {!hasRegions && formData.venue.country && (
@@ -1276,7 +1359,7 @@ const handlePrivacyChange = (checked: boolean) => {
                   onChangeText={(v: string) => handleInputChange('venue', 'address', v)}
                   darkText={true}
                   error={inputErrors['venue.address']}
-                  disabled={formData.venue.state === '' || !formData.venue.state && hasRegions}
+                  disabled={formData.venue.state === '' || (!formData.venue.state && hasRegions)}
                 />
               </div>
             </CollapsibleSection>
@@ -1367,7 +1450,9 @@ const handlePrivacyChange = (checked: boolean) => {
                     type='file'
                     accept='.pdf'
                     className='hidden'
-                    onChange={(e) => handleFileChange(e, setParticipationFile, 'pdf', 'participationFile')}
+                    onChange={(e) =>
+                      handleFileChange(e, setParticipationFile, 'pdf', 'participationFile')
+                    }
                   />
                   {inputErrors['documents.participationFile'] && (
                     <p className='text-xs text-red-600 mt-2'>
@@ -1395,7 +1480,7 @@ const handlePrivacyChange = (checked: boolean) => {
                   href='https://tec.mx/es/aviso-privacidad-participantes-expositores-panelistas-conferencias-moderadores'
                   className='text-purple-600 hover:underline'
                 >
-                Aviso de Privacidad
+                  Aviso de Privacidad
                 </a>
                 &nbsp;para poder participar en Patrones Hermosos como una SEDE oficial del evento.
               </p>

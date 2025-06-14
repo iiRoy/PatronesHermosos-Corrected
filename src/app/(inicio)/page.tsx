@@ -17,9 +17,9 @@ import { useState } from 'react';
 
 // Wrappers para que los íconos conserven estilos al colocarlos dentro de los popups
 const DecoratedMedalMilitary = withIconDecorator(MedalMilitary);
-const DecoratedLightbulb    = withIconDecorator(LightbulbFilament);
-const DecoratedCertificate  = withIconDecorator(Certificate);
-const DecoratedBookBookmark  = withIconDecorator(BookBookmark);
+const DecoratedLightbulb = withIconDecorator(LightbulbFilament);
+const DecoratedCertificate = withIconDecorator(Certificate);
+const DecoratedBookBookmark = withIconDecorator(BookBookmark);
 
 // Tipos para el estado de hover
 type ButtonType = 'participante' | 'colaborador' | 'sede' | null;
@@ -62,13 +62,9 @@ export default function PatronesHermosos() {
           <div className='relative z-20 text-center contenido-inicio lg:basis-3/4'>
             <div className='flex justify-end pb-16 items-center'>
               <h1 className='text-4xl mb-4 text-[#2E1C31] titulo-inicio text-center md:text-end'>
-                <span className='text-3xl lg:text-4xl italic'>
-                  ¡Nos alegra verte en
-                </span>
+                <span className='text-3xl lg:text-4xl italic'>¡Nos alegra verte en</span>
                 <br />
-                <span className='text-4xl lg:text-5xl font-semibold'>
-                  Patrones Hermosos!
-                </span>
+                <span className='text-4xl lg:text-5xl font-semibold'>Patrones Hermosos!</span>
               </h1>
               <div className='w-2 rounded-full h-24 lg:h-24 notification-icon-purple ml-4 hidden md:block'></div>
             </div>
@@ -83,21 +79,19 @@ export default function PatronesHermosos() {
                 onMouseEnter={() => setHoveredButton('participante')}
                 onMouseLeave={() => setHoveredButton(null)}
               >
-                                <div
+                <div
                   className={`${
-                    hoveredButton === 'participante'
-                      ? 'scale-[1.2]'
-                      : ''
+                    hoveredButton === 'participante' ? 'scale-[1.2]' : ''
                   } transition-transform duration-500`}
                 >
-                <Button
-                  label='Participante'
-                  variant='primary'
-                  showLeftIcon
-                  IconLeft={DecoratedBookBookmark}
-                  href='/formulario/participante'
-                  className=''
-                />
+                  <Button
+                    label='Participante'
+                    variant='primary'
+                    showLeftIcon
+                    IconLeft={DecoratedBookBookmark}
+                    href='/formulario/participante'
+                    className=''
+                  />
                 </div>
                 <div
                   className={`description-box ${
@@ -115,8 +109,8 @@ export default function PatronesHermosos() {
                     />
                   </div>
                   <p className='text-md text-white'>
-                    ¿Quieres participar en el evento? Asegúrate de registrarte en
-                    el siguiente formulario.
+                    ¿Quieres participar en el evento? Asegúrate de registrarte en el siguiente
+                    formulario.
                   </p>
                 </div>
               </div>
@@ -129,19 +123,17 @@ export default function PatronesHermosos() {
               >
                 <div
                   className={`${
-                    hoveredButton === 'colaborador'
-                      ? 'scale-[1.2]'
-                      : ''
+                    hoveredButton === 'colaborador' ? 'scale-[1.2]' : ''
                   } transition-transform duration-500`}
                 >
-                <Button
-                  label='Colaborador'
-                  variant='secondary'
-                  showLeftIcon
-                  IconLeft={Medal}
-                  href='/formulario/colaborador'
-                  className=''
-                />
+                  <Button
+                    label='Colaborador'
+                    variant='secondary'
+                    showLeftIcon
+                    IconLeft={Medal}
+                    href='/formulario/colaborador'
+                    className=''
+                  />
                 </div>
                 <div
                   className={`description-box-secondary ${
@@ -159,8 +151,7 @@ export default function PatronesHermosos() {
                     />
                   </div>
                   <p className='text-md text-white'>
-                    ¿Eres estudiante de universidad y te gustaría apoyarnos?
-                    Regístrate aquí.
+                    ¿Eres estudiante de universidad y te gustaría apoyarnos? Regístrate aquí.
                   </p>
                 </div>
               </div>
@@ -171,21 +162,19 @@ export default function PatronesHermosos() {
                 onMouseEnter={() => setHoveredButton('sede')}
                 onMouseLeave={() => setHoveredButton(null)}
               >
-                                                <div
+                <div
                   className={`${
-                    hoveredButton === 'sede'
-                      ? 'scale-[1.2]'
-                      : ''
+                    hoveredButton === 'sede' ? 'scale-[1.2]' : ''
                   } transition-transform duration-500`}
                 >
-                <Button
-                  label='SEDE'
-                  variant='primary'
-                  showLeftIcon
-                  IconLeft={Student}
-                  href='/formulario/sede'
-                  className=''
-                />
+                  <Button
+                    label='SEDE'
+                    variant='primary'
+                    showLeftIcon
+                    IconLeft={Student}
+                    href='/formulario/sede'
+                    className=''
+                  />
                 </div>
                 <div
                   className={`description-box ${
@@ -203,8 +192,8 @@ export default function PatronesHermosos() {
                     />
                   </div>
                   <p className='text-md text-white'>
-                    ¿Acaso quieres registrar a tu institución como SEDE? Completa
-                    el siguiente formulario.
+                    ¿Acaso quieres registrar a tu institución como SEDE? Completa el siguiente
+                    formulario.
                   </p>
                 </div>
               </div>

@@ -15,11 +15,7 @@ export interface AuthRequest extends Request {
   user?: AuthUser;
 }
 
-export const authMiddleware = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Token no proporcionado' });

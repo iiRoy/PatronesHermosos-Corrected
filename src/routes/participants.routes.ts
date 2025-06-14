@@ -3,15 +3,25 @@ import multer from 'multer';
 import * as multerTypes from 'multer';
 import path from 'path';
 import fs from 'fs/promises'; // Add fs for file serving
-import participantsController, { sendCustomEmailToParticipant } from '../controllers/participants.controller';
+import participantsController, {
+  sendCustomEmailToParticipant,
+} from '../controllers/participants.controller';
 import { validateParticipant } from '../validators/participantsValidator';
 import { authMiddleware, roleMiddleware } from '../middlewares/authMiddleware';
 
 const storage = multer.diskStorage({
-  destination: (_req: express.Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+  destination: (
+    _req: express.Request,
+    _file: Express.Multer.File,
+    cb: (error: Error | null, destination: string) => void,
+  ) => {
     cb(null, path.join(__dirname, '..', 'uploads', 'tmp'));
   },
-  filename: (_req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+  filename: (
+    _req: express.Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, filename: string) => void,
+  ) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, `participation_file-${uniqueSuffix}.pdf`);
   },

@@ -1,54 +1,46 @@
 # [2.4.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.3.0...v2.4.0) (2025-06-12)
 
-
 ### Features
 
-* **formularios:** Recursos visuales y formularios corregidos. ([30987ab](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/30987abc5cea18d22ffa91cce1bf2200b3b66143))
+- **formularios:** Recursos visuales y formularios corregidos. ([30987ab](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/30987abc5cea18d22ffa91cce1bf2200b3b66143))
 
 # [2.3.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.2.0...v2.3.0) (2025-06-09)
 
-
 ### Features
 
-* **diplomas:** Corrección de formato ([dc3b90a](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/dc3b90a78bdb613737d08e33801c8f89a7516075))
+- **diplomas:** Corrección de formato ([dc3b90a](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/dc3b90a78bdb613737d08e33801c8f89a7516075))
 
 # [2.2.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.1.0...v2.2.0) (2025-06-09)
 
-
 ### Features
 
-* **functions:** All the pages are up and running. ([a2230a3](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/a2230a307fb859b6cc4e36448f28e8b00fd4de07))
+- **functions:** All the pages are up and running. ([a2230a3](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/a2230a307fb859b6cc4e36448f28e8b00fd4de07))
 
 # [2.1.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.2...v2.1.0) (2025-06-09)
 
-
 ### Features
 
-* **backend:** Unificar el stack de servidor en TypeScript ([cbdc971](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/cbdc971f3bc9a01d081f78610205a72ed0aa4773))
+- **backend:** Unificar el stack de servidor en TypeScript ([cbdc971](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/cbdc971f3bc9a01d081f78610205a72ed0aa4773))
 
 ## [2.0.2](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.1...v2.0.2) (2025-06-09)
 
-
 ### Bug Fixes
 
-* **Database:** Nuevos datos para la base de datos. ([4bd94bc](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/4bd94bc977557705cc300ba0cfad3d33a81304c1))
+- **Database:** Nuevos datos para la base de datos. ([4bd94bc](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/4bd94bc977557705cc300ba0cfad3d33a81304c1))
 
 ## [2.0.1](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.0.0...v2.0.1) (2025-06-09)
 
-
 ### Bug Fixes
 
-* **Next:** Arreglo de errores de definiciones, robustes y otros problemas de Next.js) ([c4e649a](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/c4e649aee1a47767665707baada97839b83061fe))
+- **Next:** Arreglo de errores de definiciones, robustes y otros problemas de Next.js) ([c4e649a](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/c4e649aee1a47767665707baada97839b83061fe))
 
 # [2.0.0](https://github.com/iiRoy/Patrones-Hermosos/compare/v1.17.0...v2.0.0) (2025-06-08)
 
-
-* feat(style)!: formateo de todos los códigos ([fa99d12](https://github.com/iiRoy/Patrones-Hermosos/commit/fa99d1240da0a72f123b81952db3919a8561645b))
-
+- feat(style)!: formateo de todos los códigos ([fa99d12](https://github.com/iiRoy/Patrones-Hermosos/commit/fa99d1240da0a72f123b81952db3919a8561645b))
 
 ### BREAKING CHANGES
 
-* Se reformatearon todos los archivos, puede haber incompatibilidades.
+- Se reformatearon todos los archivos, puede haber incompatibilidades.
 
 ## 1.17.0 (2025-06-08)
 

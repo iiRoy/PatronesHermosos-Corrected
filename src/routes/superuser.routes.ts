@@ -10,7 +10,12 @@ function asyncHandler(fn: any) {
 }
 const router = express.Router();
 
-router.get('/', asyncHandler(authMiddleware), roleMiddleware(['admin']), superuserController.getAll);
+router.get(
+  '/',
+  asyncHandler(authMiddleware),
+  roleMiddleware(['admin']),
+  superuserController.getAll,
+);
 router.post('/', validateSuperUser, superuserController.create);
 router.get('/:id', asyncHandler(authMiddleware), superuserController.getById);
 router.put(
@@ -20,6 +25,11 @@ router.put(
   validateSuperUser,
   superuserController.update,
 );
-router.delete('/:id', asyncHandler(authMiddleware), roleMiddleware(['admin']), superuserController.remove);
+router.delete(
+  '/:id',
+  asyncHandler(authMiddleware),
+  roleMiddleware(['admin']),
+  superuserController.remove,
+);
 export default router;
 module.exports = router;

@@ -17,9 +17,7 @@
       "@semantic-release/commit-analyzer",
       {
         "preset": "conventionalcommits",
-        "releaseRules": [
-          { "breaking": true, "release": "major" }
-        ],
+        "releaseRules": [{ "breaking": true, "release": "major" }],
         "parserOpts": {
           "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES", "BREAKING"]
         }

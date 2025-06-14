@@ -9,10 +9,10 @@ export default function LoginLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
-  const [role, setRole] = useState<string | null>(null);
+  const [_role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState(false);
-  const [apiToken, setApiToken] = useState<string | null>(null);
+  const [_apiToken, setApiToken] = useState<string | null>(null);
 
   const handleResize = () => {
     // Tailwind breakpoint `md` = 768px, `lg` = 1024px
@@ -93,15 +93,11 @@ export default function LoginLayout({
         {balls.map((b, i) => (
           <div
             key={i}
-            className={`absolute rounded-full -translate-y-1/2 shadow-custom-dark animate-ball-float`}
             style={{
               animationDelay: `${b.delay}s`,
               animationDuration: '7s',
               ...{},
             }}
-            // Mantén las clases originales para tamaño y posición
-            // y añade la animación
-            // @ts-ignore
             className={`${b.className} absolute rounded-full -translate-y-1/2 shadow-custom-dark animate-ball-float`}
           ></div>
         ))}
@@ -115,7 +111,6 @@ export default function LoginLayout({
           {ballsTop.map((b, i) => (
             <div
               key={i}
-              className={`absolute rounded-full shadow-custom-dark animate-ball-float`}
               style={{
                 animationDelay: `${b.delay}s`,
                 animationDuration: '7s',
@@ -125,23 +120,47 @@ export default function LoginLayout({
               className={`${b.className} absolute rounded-full shadow-custom-dark animate-ball-float`}
             ></div>
           ))}
-          <div className='flex flex-col justify-center items-center w-full h-[90vh] animate-fade-in'>{children}</div>
+          <div className='flex flex-col justify-center items-center w-full h-[90vh] animate-fade-in'>
+            {children}
+          </div>
         </div>
       </div>
       {/* Animaciones personalizadas */}
       <style jsx global>{`
         @keyframes ball-float {
-          0% { transform: translateY(0) scale(1);}
-          10% { transform: translateY(-6px) scale(1.01);}
-          20% { transform: translateY(3px) scale(0.99);}
-          30% { transform: translateY(-4px) scale(1.01);}
-          40% { transform: translateY(2px) scale(1);}
-          50% { transform: translateY(-5px) scale(1.01);}
-          60% { transform: translateY(3px) scale(0.99);}
-          70% { transform: translateY(-3px) scale(1);}
-          80% { transform: translateY(2px) scale(1.01);}
-          90% { transform: translateY(-2px) scale(1);}
-          100% { transform: translateY(0) scale(1);}
+          0% {
+            transform: translateY(0) scale(1);
+          }
+          10% {
+            transform: translateY(-6px) scale(1.01);
+          }
+          20% {
+            transform: translateY(3px) scale(0.99);
+          }
+          30% {
+            transform: translateY(-4px) scale(1.01);
+          }
+          40% {
+            transform: translateY(2px) scale(1);
+          }
+          50% {
+            transform: translateY(-5px) scale(1.01);
+          }
+          60% {
+            transform: translateY(3px) scale(0.99);
+          }
+          70% {
+            transform: translateY(-3px) scale(1);
+          }
+          80% {
+            transform: translateY(2px) scale(1.01);
+          }
+          90% {
+            transform: translateY(-2px) scale(1);
+          }
+          100% {
+            transform: translateY(0) scale(1);
+          }
         }
         .animate-ball-float {
           animation-name: ball-float;
@@ -149,10 +168,18 @@ export default function LoginLayout({
           animation-iteration-count: infinite;
         }
         @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px);}
-          to { opacity: 1; transform: translateY(0);}
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-        .animate-fade-in { animation: fade-in 1s cubic-bezier(.4,0,.2,1) both; }
+        .animate-fade-in {
+          animation: fade-in 1s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
       `}</style>
     </div>
   );
