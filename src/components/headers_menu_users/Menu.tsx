@@ -118,7 +118,7 @@ const Menu: React.FC = () => {
       <div className='flex flex-col gap-[1.5vmax] px-2'>
         {[
           {
-            icon: 'ChartBarHorizontal',
+            icon: 'ChartPie',
             label: 'Estadísticas',
             href: '/estadisticas',
             visible: ['superuser', 'venue_coordinator'],
@@ -140,7 +140,7 @@ const Menu: React.FC = () => {
             visible: ['superuser', 'venue_coordinator'],
           },
           {
-            icon: 'ArrowSquareIn',
+            icon: 'Stack',
             label: 'Logs',
             href: '/gestion-audit-log',
             visible: ['superuser', 'venue_coordinator'],
