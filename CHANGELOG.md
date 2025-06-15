@@ -1,3 +1,13 @@
+# [4.0.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v3.1.0...v4.0.0) (2025-06-15)
+
+
+* style(files)!: Formateo de Archivos ([fb43c65](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/fb43c651637365fab8d31a5286c8d3b4cb855b3f))
+
+
+### BREAKING CHANGES
+
+* Se reformatearon todos los archivos.
+
 # [3.1.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v3.0.0...v3.1.0) (2025-06-14)
 
 ### Features
