@@ -1,3 +1,11 @@
+# [4.1.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v4.0.1...v4.1.0) (2025-06-15)
+
+
+### Features
+
+* **icons:** Arreglo de compatibilidad de iconos ([b0357f5](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/b0357f5311c2e04049d1042f9d9252e59eafc187))
+* **icons:** Arreglo de compatibilidad de iconos ([47dcde6](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/47dcde6d89a77e62d98804c0b16401d6820c2599))
+
 ## [4.0.1](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v4.0.0...v4.0.1) (2025-06-15)
 
 ### Bug Fixes
