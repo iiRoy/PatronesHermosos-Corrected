@@ -103,9 +103,11 @@ describe('DiplomasPage E2E', () => {
   });
   it('Stub 2: Selecciona todos los usuarios y verifica selección', () => {
     cy.get('thead input[type="checkbox"]').should('be.visible').check({ force: true });
-    cy.get('tbody input[type="checkbox"]').should('exist').each(($el) => {
-      cy.wrap($el).should('be.checked');
-    });
+    cy.get('tbody input[type="checkbox"]')
+      .should('exist')
+      .each(($el) => {
+        cy.wrap($el).should('be.checked');
+      });
   });
   it('Stub 3: Desmarca todos los usuarios y verifica', () => {
     cy.get('thead input[type="checkbox"]').uncheck({ force: true });

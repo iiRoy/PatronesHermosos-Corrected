@@ -1,19 +1,16 @@
 # [3.1.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v3.0.0...v3.1.0) (2025-06-14)
 
-
 ### Features
 
-* **testing:** Pruebas con Cypress + Jest ([b8433c6](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/b8433c670b88cdaed0c15bcc4501b6b056b4775f))
+- **testing:** Pruebas con Cypress + Jest ([b8433c6](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/b8433c670b88cdaed0c15bcc4501b6b056b4775f))
 
 # [3.0.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.4.0...v3.0.0) (2025-06-14)
 
-
-* feat(estadísticas)!: Backup listo! ([fceb12d](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/fceb12d407b83b4f2b095867797c27025a8cddc4))
-
+- feat(estadísticas)!: Backup listo! ([fceb12d](https://github.com/iiRoy/PatronesHermosos-Corrected/commit/fceb12d407b83b4f2b095867797c27025a8cddc4))
 
 ### BREAKING CHANGES
 
-* Se reformatearon todos los archivos.
+- Se reformatearon todos los archivos.
 
 # [2.4.0](https://github.com/iiRoy/PatronesHermosos-Corrected/compare/v2.3.0...v2.4.0) (2025-06-12)
 

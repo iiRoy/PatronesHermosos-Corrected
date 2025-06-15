@@ -287,8 +287,8 @@ const SolicitudesRegistroAdmin = () => {
         const venuesArray = Array.isArray(venuesData)
           ? venuesData
           : Array.isArray(venuesData.dataForRequests)
-          ? venuesData.dataForRequests
-          : [];
+            ? venuesData.dataForRequests
+            : [];
         setAllSedesData(venuesArray); // todas las sedes
         const pendingVenues = venuesArray.filter((v: Sede) => v.status === 'Pendiente');
         setSedesData(pendingVenues); // solo pendientes
@@ -308,8 +308,8 @@ const SolicitudesRegistroAdmin = () => {
       return section === 'PARTICIPANTES'
         ? participantesData
         : section === 'APOYO & STAFF'
-        ? apoyoStaffData
-        : sedesData;
+          ? apoyoStaffData
+          : sedesData;
     }
 
     if (section === 'PARTICIPANTES') {

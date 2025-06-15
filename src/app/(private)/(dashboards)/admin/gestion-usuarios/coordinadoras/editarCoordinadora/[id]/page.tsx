@@ -180,11 +180,10 @@ const EditarCoordinadora = () => {
 
       const response = await fetch(`/api/venue-coordinators/specific/${id}`, {
         method: 'PUT',
-        headers:
-          {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${apiToken}`,
-          },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiToken}`,
+        },
         body: JSON.stringify(updatedCoordinadora),
       });
 

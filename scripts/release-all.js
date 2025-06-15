@@ -72,6 +72,9 @@ if (args[1]) {
   run('git stash pop');
 }
 
+console.log('\x1b[36m%s\x1b[0m', 'Comprimiendo con LFS archivos pesados...');
+run('git lfs migrate import --include="src/__tests__/e2e/Pruebas Cypress.mp4" --include-ref=refs/heads/main');
+                                        
 console.log('\x1b[36m%s\x1b[0m', 'Agregando nuevamente todos los cambios...');
 run('git add .');
 

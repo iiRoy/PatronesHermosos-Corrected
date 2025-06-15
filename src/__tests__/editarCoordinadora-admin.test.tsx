@@ -289,8 +289,8 @@ describe('Stub tests for EditarCoordinadora', () => {
           ok: false,
           status: 500,
           json: () => Promise.resolve({ message: 'error' }),
-        })
-      )
+        }),
+      ),
     );
     render(<EditarCoordinadora />);
     expect(await screen.findByText(/Error/i)).toBeInTheDocument();
@@ -358,7 +358,9 @@ describe('Stub tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(screen.getByText(/El número de teléfono debe contener entre 10 y 15 dígitos/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/El número de teléfono debe contener entre 10 y 15 dígitos/),
+      ).toBeInTheDocument();
     });
   });
   test('Stub 19: El formulario no muestra errores de validación si los datos son válidos', async () => {
@@ -404,7 +406,7 @@ describe('Mock tests for EditarCoordinadora', () => {
   test('Mock 3: fetch es llamado con el endpoint correcto de venues', async () => {
     render(<EditarCoordinadora />);
     await waitFor(() =>
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venues'))).toBe(true),
+      expect(globalFetchMock.mock.calls.some((call) => call[0].includes('/api/venues'))).toBe(true),
     );
   });
   test('Mock 4: fetch es llamado con el header Authorization', async () => {
@@ -418,7 +420,11 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() =>
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true),
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true),
     );
   });
   test('Mock 6: fetch es llamado con método PUT al actualizar', async () => {
@@ -426,7 +432,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(putCall[1].method).toBe('PUT');
@@ -437,7 +445,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(JSON.parse(putCall[1].body)).toHaveProperty('name', 'Ana');
@@ -449,7 +459,11 @@ describe('Mock tests for EditarCoordinadora', () => {
     fireEvent.click(btn);
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.filter(call => call[0].includes('/api/venue-coordinators/specific/')).length).toBeGreaterThanOrEqual(2);
+      expect(
+        globalFetchMock.mock.calls.filter((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ).length,
+      ).toBeGreaterThanOrEqual(2);
     });
   });
   test('Mock 9: fetch es llamado con los datos modificados', async () => {
@@ -459,7 +473,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(JSON.parse(putCall[1].body)).toHaveProperty('name', 'María');
@@ -472,7 +488,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(JSON.parse(putCall[1].body)).toHaveProperty('username', 'nuevoUser');
@@ -485,7 +503,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(JSON.parse(putCall[1].body)).toHaveProperty('phone_number', '+529876543210');
@@ -498,7 +518,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(JSON.parse(putCall[1].body)).toHaveProperty('paternal_name', 'Martínez');
@@ -511,7 +533,9 @@ describe('Mock tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      const putCall = globalFetchMock.mock.calls.find(call => call[0].includes('/api/venue-coordinators/specific/'));
+      const putCall = globalFetchMock.mock.calls.find((call) =>
+        call[0].includes('/api/venue-coordinators/specific/'),
+      );
       expect(putCall).toBeDefined();
       if (!putCall) throw new Error('No se encontró la llamada PUT');
       expect(JSON.parse(putCall[1].body)).toHaveProperty('maternal_name', 'Ramírez');
@@ -521,30 +545,41 @@ describe('Mock tests for EditarCoordinadora', () => {
     // Primer fetch coordinadora exitoso
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve({
-          id_venue_coord: 1,
-          name: 'Ana',
-          paternal_name: 'García',
-          maternal_name: 'López',
-          email: 'ana@correo.com',
-          phone_number: '+521234567890',
-          username: 'anauser',
-          id_venue: 101,
-        }) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              id_venue_coord: 1,
+              name: 'Ana',
+              paternal_name: 'García',
+              maternal_name: 'López',
+              email: 'ana@correo.com',
+              phone_number: '+521234567890',
+              username: 'anauser',
+              id_venue: 101,
+            }),
+        }),
       ),
     );
     // Segundo fetch venues exitoso
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve([
-          { id_venue: 101, name: 'Sede A' },
-        ]) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve([{ id_venue: 101, name: 'Sede A' }]),
+        }),
       ),
     );
     // PUT con error
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: false, status: 500, json: () => Promise.resolve({ message: 'error' }) }),
+        createMockResponse({
+          ok: false,
+          status: 500,
+          json: () => Promise.resolve({ message: 'error' }),
+        }),
       ),
     );
     render(<EditarCoordinadora />);
@@ -614,7 +649,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
   test('Fake 9: Envía el formulario con correo inválido y muestra error', async () => {
@@ -634,7 +673,9 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(screen.getByText(/El número de teléfono debe contener entre 10 y 15 dígitos/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/El número de teléfono debe contener entre 10 y 15 dígitos/),
+      ).toBeInTheDocument();
     });
   });
   test('Fake 11: El botón Cancelar navega correctamente', async () => {
@@ -648,7 +689,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     fireEvent.click(btn);
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.filter(call => call[0].includes('/api/venue-coordinators/specific/')).length).toBeGreaterThanOrEqual(2);
+      expect(
+        globalFetchMock.mock.calls.filter((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ).length,
+      ).toBeGreaterThanOrEqual(2);
     });
   });
   test('Fake 13: El formulario muestra errores de validación si el correo está vacío', async () => {
@@ -668,7 +713,9 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(screen.getByText(/El número de teléfono debe contener entre 10 y 15 dígitos/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/El número de teléfono debe contener entre 10 y 15 dígitos/),
+      ).toBeInTheDocument();
     });
   });
   test('Fake 15: El formulario puede ser enviado con datos parcialmente modificados', async () => {
@@ -678,7 +725,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
   test('Fake 16: El formulario puede ser enviado con datos originales', async () => {
@@ -686,7 +737,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
   test('Fake 17: El formulario puede ser enviado con datos modificados', async () => {
@@ -698,7 +753,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
   test('Fake 18: El formulario puede ser enviado con username modificado', async () => {
@@ -708,7 +767,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
   test('Fake 19: El formulario puede ser enviado con teléfono modificado', async () => {
@@ -718,7 +781,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
   test('Fake 20: El formulario puede ser enviado con sede modificada', async () => {
@@ -728,7 +795,11 @@ describe('Fake tests for EditarCoordinadora', () => {
     const btn = await screen.findByRole('button', { name: /Confirmar/i });
     fireEvent.click(btn);
     await waitFor(() => {
-      expect(globalFetchMock.mock.calls.some(call => call[0].includes('/api/venue-coordinators/specific/'))).toBe(true);
+      expect(
+        globalFetchMock.mock.calls.some((call) =>
+          call[0].includes('/api/venue-coordinators/specific/'),
+        ),
+      ).toBe(true);
     });
   });
 });
@@ -758,7 +829,11 @@ describe('Spy tests for EditarCoordinadora', () => {
   test('Spy 2: Lanza error de consola si fetch coordinadora falla', async () => {
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: false, status: 500, json: () => Promise.resolve({ message: 'error' }) }),
+        createMockResponse({
+          ok: false,
+          status: 500,
+          json: () => Promise.resolve({ message: 'error' }),
+        }),
       ),
     );
     render(<EditarCoordinadora />);
@@ -769,21 +844,30 @@ describe('Spy tests for EditarCoordinadora', () => {
   test('Spy 3: Lanza error de consola si fetch venues falla', async () => {
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve({
-          id_venue_coord: 1,
-          name: 'Ana',
-          paternal_name: 'García',
-          maternal_name: 'López',
-          email: 'ana@correo.com',
-          phone_number: '+521234567890',
-          username: 'anauser',
-          id_venue: 101,
-        }) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              id_venue_coord: 1,
+              name: 'Ana',
+              paternal_name: 'García',
+              maternal_name: 'López',
+              email: 'ana@correo.com',
+              phone_number: '+521234567890',
+              username: 'anauser',
+              id_venue: 101,
+            }),
+        }),
       ),
     );
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: false, status: 500, json: () => Promise.resolve({ message: 'error' }) }),
+        createMockResponse({
+          ok: false,
+          status: 500,
+          json: () => Promise.resolve({ message: 'error' }),
+        }),
       ),
     );
     render(<EditarCoordinadora />);
@@ -805,16 +889,21 @@ describe('Spy tests for EditarCoordinadora', () => {
   test('Spy 5: Lanza error de consola si fetch venues retorna null', async () => {
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve({
-          id_venue_coord: 1,
-          name: 'Ana',
-          paternal_name: 'García',
-          maternal_name: 'López',
-          email: 'ana@correo.com',
-          phone_number: '+521234567890',
-          username: 'anauser',
-          id_venue: 101,
-        }) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              id_venue_coord: 1,
+              name: 'Ana',
+              paternal_name: 'García',
+              maternal_name: 'López',
+              email: 'ana@correo.com',
+              phone_number: '+521234567890',
+              username: 'anauser',
+              id_venue: 101,
+            }),
+        }),
       ),
     );
     globalFetchMock.mockImplementationOnce(() =>
@@ -837,16 +926,21 @@ describe('Spy tests for EditarCoordinadora', () => {
   test('Spy 7: Lanza error de consola si fetch venues lanza excepción', async () => {
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve({
-          id_venue_coord: 1,
-          name: 'Ana',
-          paternal_name: 'García',
-          maternal_name: 'López',
-          email: 'ana@correo.com',
-          phone_number: '+521234567890',
-          username: 'anauser',
-          id_venue: 101,
-        }) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              id_venue_coord: 1,
+              name: 'Ana',
+              paternal_name: 'García',
+              maternal_name: 'López',
+              email: 'ana@correo.com',
+              phone_number: '+521234567890',
+              username: 'anauser',
+              id_venue: 101,
+            }),
+        }),
       ),
     );
     globalFetchMock.mockImplementationOnce(() => Promise.reject(new Error('Network error')));
@@ -864,26 +958,39 @@ describe('Spy tests for EditarCoordinadora', () => {
   test('Spy 9: Lanza error de consola al enviar formulario con error de API', async () => {
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve({
-          id_venue_coord: 1,
-          name: 'Ana',
-          paternal_name: 'García',
-          maternal_name: 'López',
-          email: 'ana@correo.com',
-          phone_number: '+521234567890',
-          username: 'anauser',
-          id_venue: 101,
-        }) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () =>
+            Promise.resolve({
+              id_venue_coord: 1,
+              name: 'Ana',
+              paternal_name: 'García',
+              maternal_name: 'López',
+              email: 'ana@correo.com',
+              phone_number: '+521234567890',
+              username: 'anauser',
+              id_venue: 101,
+            }),
+        }),
       ),
     );
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: true, status: 200, json: () => Promise.resolve([{ id_venue: 101, name: 'Sede A' }]) }),
+        createMockResponse({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve([{ id_venue: 101, name: 'Sede A' }]),
+        }),
       ),
     );
     globalFetchMock.mockImplementationOnce(() =>
       Promise.resolve(
-        createMockResponse({ ok: false, status: 500, json: () => Promise.resolve({ message: 'error' }) }),
+        createMockResponse({
+          ok: false,
+          status: 500,
+          json: () => Promise.resolve({ message: 'error' }),
+        }),
       ),
     );
     render(<EditarCoordinadora />);

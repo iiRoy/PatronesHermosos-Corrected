@@ -67,7 +67,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   const labelClass = `label-input ${darkText ? ' darkText' : ''}`;
   const getLabel = (val: string) => {
     const selected = options.find((o) => (typeof o === 'string' ? o === val : o.value === val));
-    return typeof selected === 'string' ? selected : selected?.label ?? val;
+    return typeof selected === 'string' ? selected : (selected?.label ?? val);
   };
 
   return (

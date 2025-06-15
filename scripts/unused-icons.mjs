@@ -22,13 +22,17 @@ const appPattern = 'src/**/*.{ts,tsx,js,jsx}';
 const appFiles = sync(appPattern, {
   cwd: rootDir,
   absolute: true,
-  ignore: ['src/components/icons/**']
+  ignore: ['src/components/icons/**'],
 });
 
 // Prepare report lines
 const reportLines = [];
-reportLines.push(`🔍 Buscando iconos con patrón \`${iconPattern}\`: ${iconFiles.length} encontrados.`);
-reportLines.push(`🔍 Buscando archivos de app con patrón \`${appPattern}\`: ${appFiles.length} encontrados.`);
+reportLines.push(
+  `🔍 Buscando iconos con patrón \`${iconPattern}\`: ${iconFiles.length} encontrados.`,
+);
+reportLines.push(
+  `🔍 Buscando archivos de app con patrón \`${appPattern}\`: ${appFiles.length} encontrados.`,
+);
 
 if (iconFiles.length === 0) {
   reportLines.push('⚠️ No se encontraron archivos de iconos. Verifica la ruta y el patrón.');
@@ -40,13 +44,13 @@ if (iconFiles.length === 0) {
 reportLines.push('');
 reportLines.push('📄 Reporte de uso de iconos:');
 
-iconFiles.forEach(iconPath => {
+iconFiles.forEach((iconPath) => {
   const relativeIcon = path.relative(rootDir, iconPath);
   const iconName = path.basename(iconPath, '.tsx');
   const usageRegex = new RegExp(`\\b${iconName}\\b`, 'g');
 
   // Find app files containing the icon name
-  const usedIn = appFiles.filter(file => {
+  const usedIn = appFiles.filter((file) => {
     try {
       const content = fs.readFileSync(file, 'utf8');
       return usageRegex.test(content);
@@ -57,7 +61,7 @@ iconFiles.forEach(iconPath => {
 
   if (usedIn.length > 0) {
     reportLines.push(`\n✅ ${relativeIcon} se usa en (${usedIn.length}):`);
-    usedIn.forEach(file => {
+    usedIn.forEach((file) => {
       reportLines.push(`   - ${path.relative(rootDir, file)}`);
     });
   } else {
