@@ -137,4 +137,6 @@ Consulta la [Guía de Contribución](./COLABORACIÓN.md) para más detalles.
 
 ---
 
-Proyecto desarrollado y mantenido por el equipo de ByteForge.
+Proyecto desarrollado y mantenido por el equipo de ByteForge. 
+
+This software is based on the original work by Diego López Romero, Fernando Maggi Llerandi, Alejandro Guzmán Sánchez and Rodrigo López Guerra for the organization Patrones Hermosos, 2025.
