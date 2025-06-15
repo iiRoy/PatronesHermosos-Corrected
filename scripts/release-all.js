@@ -71,9 +71,6 @@ if (args[1]) {
   console.log('\x1b[36m%s\x1b[0m', 'Aplicando cambios guardados...');
   run('git stash pop');
 }
-
-console.log('\x1b[36m%s\x1b[0m', 'Comprimiendo con LFS archivos pesados...');
-run('git lfs migrate import --include="src/__tests__/e2e/Pruebas Cypress.mp4" --include-ref=refs/heads/main');
                                         
 console.log('\x1b[36m%s\x1b[0m', 'Agregando nuevamente todos los cambios...');
 run('git add .');
@@ -83,6 +80,9 @@ if (!run(`git commit -m "${commitMessage}"`)) {
   console.error('\x1b[31m%s\x1b[0m', '❌ Commit inválido (¿falló el hook commit-msg?)');
   process.exit(1);
 }
+
+console.log('\x1b[36m%s\x1b[0m', 'Comprimiendo con LFS archivos pesados...');
+run('git lfs migrate import --include="src/__tests__/e2e/Pruebas Cypress.mp4" --include-ref=refs/heads/main');
 
 console.log('\x1b[36m%s\x1b[0m', 'Ejecutando semantic-release...');
 if (!run('npx semantic-release --no-ci')) {

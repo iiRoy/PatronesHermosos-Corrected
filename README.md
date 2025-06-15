@@ -1,3 +1,14 @@
+# 🎓 Patrones HermososMore actions
+
+Este proyecto está diseñado para gestionar datos del evento de Patrones Hermosos.
+
+---
+
+## 🚀 Tecnologías utilizadas
+
+- **Frontend**: React.js + Tailwind
+- **Backend/API**: Node.js + Express
+- **Base de datos**: MySQL (Prisma ORM)
 - **Control de versiones**: Git + GitHub
 
 ---
